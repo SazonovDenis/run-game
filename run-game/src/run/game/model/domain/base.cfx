@@ -10,9 +10,6 @@
 
     <!-- Базовая структура словаря -->
     <domain name="tab.dict" parent="tab.id">
-        <!--@
-            Справочник
-        -->
         <field name="text" parent="string" size="200" title="Наименование"/>
         <field name="code" parent="string" size="50" title="Код"/>
         <field name="deleted" parent="boolean" title="Признак удаленной/скрытой записи"/>

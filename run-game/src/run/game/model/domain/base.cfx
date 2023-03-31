@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!-- Базовая структура таблицы -->
+    <domain name="tab.id" parent="id">
+        <field name="id" title="pk"/>
+    </domain>
+
+
+    <!-- Базовая структура словаря -->
+    <domain name="tab.dict" parent="tab.id">
+        <!--@
+            Справочник
+        -->
+        <field name="text" parent="string" size="200" title="Наименование"/>
+        <field name="code" parent="string" size="50" title="Код"/>
+        <field name="deleted" parent="boolean" title="Признак удаленной/скрытой записи"/>
+    </domain>
+
+
+</root>

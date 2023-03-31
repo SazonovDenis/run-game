@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Fact" parent="tab.id" tag.db="true"
+            title="Факт о сущности">
+        <!--@
+        Например: значения слова, перевод слова, картинка, звучание слова и т.п.
+        -->
+        <field name="item" parent="Item/ref" title="О какой сущности"/>
+        <field name="factType" parent="FactType/ref" title="Тип факта"/>
+        <field name="value" parent="blob" title="Содержание факта"/>
+    </domain>
+
+
+</root>

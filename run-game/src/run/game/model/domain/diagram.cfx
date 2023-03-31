@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <diagram name="fact" title="Сущности и факты">
+        <domain name="Fact"/>
+        <domain name="FactTag"/>
+        <domain name="FactType" showfields="false"/>
+        <domain name="Item"/>
+        <domain name="ItemTag"/>
+        <domain name="TagType" showfields="false"/>
+    </diagram>
+
+    <diagram name="doc" title="Документы">
+        <domain name="Doc"/>
+        <domain name="DocAttr"/>
+        <domain name="DocAttrType" showfields="false"/>
+    </diagram>
+
+
+</root>

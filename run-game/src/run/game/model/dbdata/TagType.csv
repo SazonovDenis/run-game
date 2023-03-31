@@ -1,0 +1,6 @@
+id,text,code
+1001,Тема слова,word-category
+1002,Уровень сложности,level-grade
+1003,Направление перевода слова,word-translate-direction
+1004,Часть речи,word-part-of-speech
+1005,Пример использования слова,word-use-sample

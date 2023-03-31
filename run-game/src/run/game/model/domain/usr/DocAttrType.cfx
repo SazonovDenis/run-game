@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="DocAttrType" parent="tab.dict" tag.db="true"
+            title="Тип атрибутов документа">
+    </domain>
+
+
+</root>

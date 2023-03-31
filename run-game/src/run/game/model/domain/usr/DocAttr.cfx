@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="DocAttr" parent="tab.id" tag.db="true"
+            title="Атрибуты документа">
+        <field name="doc" parent="Doc/ref"/>
+        <field name="docAttrType" parent="DocAttrType/ref"/>
+        <field name="val" parent="string" size="200" title="Значение атрибута"/>
+    </domain>
+
+
+</root>

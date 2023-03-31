@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Item" parent="tab.id" tag.db="true"
+            title="Сущность">
+        <!--@
+        Например: слово
+        -->
+        <field name="value" parent="string" size="500" title="Представление сущности (слово и его описание)"/>
+    </domain>
+
+
+</root>

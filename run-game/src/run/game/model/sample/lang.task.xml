@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <!-- Пример заданий для игры "Заучивание слов" -->
+
+    <!-- задание -->
+    <task fact="dog">
+
+        <task>
+
+        </task>
+
+        <option>
+
+        </option>
+
+        <option>
+
+        </option>
+
+        <fact type="translate" value="собака, пёс">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="base"/>
+        </fact>
+
+
+        <element type="sound"
+                 value="aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdl
+                    LCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=">
+
+            <tag type="level" value="base"/>
+        </element>
+
+
+    </task>
+
+
+</root>

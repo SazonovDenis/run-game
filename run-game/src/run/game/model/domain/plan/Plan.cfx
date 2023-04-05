@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Plan" parent="tab.id" tag.db="true"
+            title="План обучения игрока">
+        <!--@
+        Уровни для прохождения (карты), как постоянные, так и временные уровни для дуэлей и турниров.
+        -->
+        <field name="text" parent="string" size="200" title="Название плана"/>
+    </domain>
+
+
+</root>

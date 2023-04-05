@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="TaskOption" parent="tab.id" tag.db="true"
+            title="Вариант ответа на задание">
+        <!--@
+        -->
+        <field name="task" parent="Task/ref" title="На какое задание"/>
+
+        <field name="dataType" parent="DataType/ref"/>
+        <field name="value" parent="blob" title="Содержание факта"/>
+    </domain>
+
+
+</root>

@@ -1,3 +1,4 @@
 id,text,code
 1001,Перевод слова,word-translate
 1002,Звучание слова,word-sound
+1003,Изображение предмета,word-picture

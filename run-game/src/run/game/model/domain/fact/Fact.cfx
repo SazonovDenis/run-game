@@ -8,7 +8,8 @@
         Например: значения слова, перевод слова, картинка, звучание слова и т.п.
         -->
         <field name="item" parent="Item/ref" title="О какой сущности"/>
-        <field name="factType" parent="FactType/ref" title="Тип факта"/>
+
+        <field name="dataType" parent="DataType/ref"/>
         <field name="value" parent="blob" title="Содержание факта"/>
     </domain>
 

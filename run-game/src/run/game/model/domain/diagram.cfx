@@ -5,16 +5,31 @@
     <diagram name="fact" title="Сущности и факты">
         <domain name="Fact"/>
         <domain name="FactTag"/>
-        <domain name="FactType" showfields="false"/>
+        <domain name="DataType" showfields="false"/>
         <domain name="Item"/>
         <domain name="ItemTag"/>
         <domain name="TagType" showfields="false"/>
     </diagram>
 
-    <diagram name="doc" title="Документы">
-        <domain name="Doc"/>
-        <domain name="DocAttr"/>
-        <domain name="DocAttrType" showfields="false"/>
+    <diagram name="plan" title="Планы обучения (уровни, карты)">
+        <domain name="Plan"/>
+        <domain name="PlanFact"/>
+        <domain name="PlanTag"/>
+        <domain name="User" showfields="false"/>
+    </diagram>
+
+    <diagram name="task" title="Задания и ответы">
+        <domain name="Task"/>
+        <domain name="TaskOption"/>
+        <domain name="Fact" showfields="false"/>
+    </diagram>
+
+    <diagram name="userTask" title="Вопросы и ответы пользователей">
+        <domain name="Task" showfields="false"/>
+        <domain name="TaskOption" showfields="false"/>
+        <domain name="UserTask"/>
+        <domain name="UserAnswer"/>
+        <domain name="User" showfields="false"/>
     </diagram>
 
 

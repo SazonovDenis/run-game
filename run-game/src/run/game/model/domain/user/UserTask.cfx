@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="UserTask" parent="tab.id" tag.db="true"
+            title="Задания для пользователя">
+        <!--@
+        Задания, выданные пользователю.
+        -->
+        <field name="user" parent="User/ref"/>
+        <field name="task" parent="Task/ref"/>
+
+        <field name="taskDt" parent="datetime" title="Дата выдачи задания"/>
+        <field name="answerDt" parent="datetime" title="Дата ответа"/>
+        <field name="answerOption" parent="TaskOption/ref" title="Ответ пользователя"/>
+    </domain>
+
+
+</root>

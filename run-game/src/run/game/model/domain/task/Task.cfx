@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Task" parent="tab.id" tag.db="true"
+            title="Тестовое задание (вопрос)">
+        <!--@
+        К каждому тестовому заданию готовятся варианты ответов (TaskOption)
+        -->
+        <field name="item" parent="Item/ref" title="Проверяли знание об этой сущности"/>
+        <field name="factItem" parent="Fact/ref" title="На основе какого факта сформировано задание"/>
+        <field name="factOption" parent="Fact/ref" title="Проверяли знание этого факта"/>
+    </domain>
+
+
+</root>

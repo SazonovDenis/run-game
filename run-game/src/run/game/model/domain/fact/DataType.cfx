@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="DataType" parent="tab.dict" tag.db="true"
+            title="Словарь типов данных">
+        <!--@
+        Логический и/или физический тип: звук, изображение, текст с/без оформления
+        -->
+    </domain>
+
+
+</root>

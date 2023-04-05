@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="UserAnswer" parent="tab.id" tag.db="true"
+            title="Ответ пользователя на задание">
+        <!--@
+        -->
+        <field name="UserTask" parent="UserTask/ref"/>
+    </domain>
+
+
+</root>

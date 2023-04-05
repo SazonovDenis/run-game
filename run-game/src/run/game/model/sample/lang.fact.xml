@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <!-- Пример набора фактов для игры "Заучивание слов" -->
+
+    <!-- сущность -->
+    <item value="dog">
+        <tag type="category" value="animal"/>
+        <tag type="level" value="base"/>
+
+        <fact type="sound"
+              value="aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdl
+                    LCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=">
+
+            <tag type="level" value="base"/>
+        </fact>
+
+        <fact type="translate" value="собака, пёс">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="base"/>
+        </fact>
+
+
+        <fact type="translate" value="парень, малый">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="up"/>
+
+            <tag type="sample"
+                 value="cunning /sly/ dog - хитрая штучка, хитрец; прохиндей, шельма, хитрая бестия, лиса"/>
+        </fact>
+    </item>
+
+
+    <!-- сущность -->
+    <item value="run">
+        <tag type="category" value="action"/>
+        <tag type="level" value="base"/>
+
+        <fact type="sound"
+              value="uIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0
+                    c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0
+                    aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdl
+                    LCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=">
+
+            <tag type="level" value="up"/>
+        </fact>
+
+        <fact type="sound"
+              value="cmVyeXBlcHlvaTJ1aztsZXJydGsyNDA5Nm9wb2RnaGZncmh3cWV0a2g7bGFkZmJrcFxveGNr
+                    YmxtcWUneWx0Ow==">
+
+            <tag type="level" value="up"/>
+        </fact>
+
+        <fact type="sound"
+              value="ZVhCbGNIbHZhVEoxYXp0c1pYSnlkR3N5TkRBNU5tOXdiMlJuYUdabmNtaDNjV1YwYTJnN2JHRmta
+                    bUpyY0Z4dmVHTnIKICAgICAgICAgICAgICAgICAgICBZbXh0Y1dVbmVXeDBPdz09Ij4KICAgICAg
+                    ICAgICAgPHRhZyB0ZXh0PSJsZXZlbDp1cCIvPgogICAgICAgIDwvZmFjdD4=">
+
+            <tag type="level" value="up"/>
+        </fact>
+
+
+        <fact type="translate" value="бег, пробег">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="base"/>
+
+            <tag type="sample" value="at a run - бегом"/>
+            <tag type="sample" value="to come up at a run - подбежать"/>
+            <tag type="sample" value="on the run - а) на ходу, в движении б) второпях"/>
+        </fact>
+
+        <fact type="translate" value="рейс, маршрут">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="up"/>
+
+            <tag type="sample" value="ship's run - маршрут /рейс/ корабля"/>
+        </fact>
+
+        <fact type="translate" value="жидкий; расплавленный; растопленный">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="up"/>
+
+            <tag type="sample" value="run butter - топлёное масло"/>
+        </fact>
+
+        <fact type="translate" value="период, отрезок (времени), полоса">
+            <tag type="part" value="n"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="up"/>
+
+            <tag type="sample"
+                 value="a run of success [of good luck] - полоса успеха [везения /удачи/]"/>
+            <tag type="sample"
+                 value="a run of ill luck - несчастливая полоса, полоса невезения"/>
+            <tag type="sample" value="a long run of power - долгое пребывание у власти"/>
+            <tag type="sample" value="to have a long run - долго идти (на сцене)"/>
+            <tag type="sample" value="the play had a short run - эта пьеса шла недолго"/>
+        </fact>
+
+
+        <fact type="translate" value="бежать, бегать">
+            <tag type="part" value="v"/>
+            <tag type="translate" value="en-ru"/>
+            <tag type="level" value="base"/>
+
+            <tag type="sample"
+                 value="to run fast [slowly, as hard as one can, like a deer] — бегать быстро [медленно, изо всех сил, как олень]"/>
+            <tag type="sample" value="to run a mile — пробежать милю"/>
+        </fact>
+
+    </item>
+
+</root>

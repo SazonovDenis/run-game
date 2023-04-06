@@ -24,11 +24,10 @@
         <domain name="Fact" showfields="false"/>
     </diagram>
 
-    <diagram name="userTask" title="Вопросы и ответы пользователей">
+    <diagram name="usrTask" title="Вопросы и ответы пользователей">
         <domain name="Task" showfields="false"/>
         <domain name="TaskOption" showfields="false"/>
-        <domain name="UserTask"/>
-        <domain name="UserAnswer"/>
+        <domain name="UsrTask"/>
         <domain name="Usr" showfields="false"/>
     </diagram>
 

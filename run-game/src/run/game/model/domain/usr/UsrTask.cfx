@@ -2,7 +2,7 @@
 <root>
 
 
-    <domain name="UserTask" parent="tab.id" tag.db="true"
+    <domain name="UsrTask" parent="tab.id" tag.db="true"
             title="Задания для пользователя">
         <!--@
         Задания, выданные пользователю.
@@ -11,8 +11,9 @@
         <field name="task" parent="Task/ref"/>
 
         <field name="taskDt" parent="datetime" title="Дата выдачи задания"/>
+
         <field name="answerDt" parent="datetime" title="Дата ответа"/>
-        <field name="answerOption" parent="TaskOption/ref" title="Ответ пользователя"/>
+        <field name="answerOption" parent="TaskOption/ref" title="Вариант, выданный пользователю"/>
     </domain>
 
 

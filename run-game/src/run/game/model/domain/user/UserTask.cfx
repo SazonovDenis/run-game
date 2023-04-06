@@ -7,7 +7,7 @@
         <!--@
         Задания, выданные пользователю.
         -->
-        <field name="user" parent="User/ref"/>
+        <field name="usr" parent="Usr/ref"/>
         <field name="task" parent="Task/ref"/>
 
         <field name="taskDt" parent="datetime" title="Дата выдачи задания"/>

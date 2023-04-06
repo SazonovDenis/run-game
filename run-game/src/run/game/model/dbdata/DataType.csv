@@ -1,0 +1,5 @@
+id,text,code
+1001,Написание слова,word-spelling
+1002,Перевод слова,word-translate
+1003,Звучание слова,word-sound
+1004,Изображение предмета,word-picture

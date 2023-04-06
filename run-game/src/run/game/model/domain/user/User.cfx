@@ -2,7 +2,7 @@
 <root>
 
 
-    <domain name="User" parent="tab.id" tag.db="true"
+    <domain name="Usr" parent="tab.id" tag.db="true"
             title="Пользователь">
         <!--@
         Игрок, родитель, учитель

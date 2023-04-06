@@ -3,7 +3,7 @@
 
 
     <domain name="TagType" parent="tab.dict" tag.db="true"
-            title="Словарь типов тегов">
+            title="Тип тега">
         <!--@
         Например: category, level и т.п.
         -->

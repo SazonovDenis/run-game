@@ -15,7 +15,7 @@
         <domain name="Plan"/>
         <domain name="PlanFact"/>
         <domain name="PlanTag"/>
-        <domain name="User" showfields="false"/>
+        <domain name="Usr" showfields="false"/>
     </diagram>
 
     <diagram name="task" title="Задания и ответы">
@@ -29,7 +29,7 @@
         <domain name="TaskOption" showfields="false"/>
         <domain name="UserTask"/>
         <domain name="UserAnswer"/>
-        <domain name="User" showfields="false"/>
+        <domain name="Usr" showfields="false"/>
     </diagram>
 
 

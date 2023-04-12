@@ -1,4 +1,4 @@
-package run.game.dao.server
+package run.game.dao.game
 
 import jandcode.commons.*
 import jandcode.core.apx.test.*
@@ -30,14 +30,15 @@ class Server_Test extends Apx_Test {
         println()
         println("task.json")
         utils.outMap(UtJson.fromJson(taskJson))
-
     }
+
 
     @Test
     void getTask_rpc() throws Exception {
-        Map res = apx.execJsonRpc("api", "m/Server/getTask", [1001])
+        Map res = apx.execJsonRpc("api", "m/Game/getTask", [1001])
         utils.outMap(res)
     }
+
 
     @Test
     void getTask_reflect() throws Exception {
@@ -58,5 +59,6 @@ class Server_Test extends Apx_Test {
         String taskJson = UtJson.toJson(task)
         utils.outMap(UtJson.fromJson(taskJson))
     }
+
 
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <x-include path="*/index.cfx"/>
+
+    <dbm>
+
+        <model name="run.game.model">
+            <x-include path="**/*.model.cfx"/>
+        </model>
+
+    </dbm>
+
+</root>

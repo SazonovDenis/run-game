@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
+    <dao>
+        <!-- api работает через модель default -->
+        <holder name="api" invoker="model:default">
+        </holder>
+    </dao>
 
-    <x-include path="model/index-model.cfx"/>
+
+    <x-include path="dao/index.cfx"/>
+    <x-include path="model/index.cfx"/>
 
 </root>

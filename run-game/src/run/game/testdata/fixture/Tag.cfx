@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Tag.csv" parent="tab.id">
+        <field name="tagType" parent="string"/>
+        <field name="value" parent="string"/>
+    </domain>
+
+
+</root>

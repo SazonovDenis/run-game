@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <dbm>
+
+
+        <model name="run.game.model">
+            <x-include path="fixture/*.cfx"/>
+        </model>
+
+
+        <fixture-suite name="base">
+            <fixture-builder name="tag"
+                             class="run.game.testdata.fixture.Tag_fb"/>
+        </fixture-suite>
+
+
+    </dbm>
+
+</root>

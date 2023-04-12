@@ -13,7 +13,7 @@
         т.е. тега типа type="word-use-sample" со значением "at a run - бегом".
         -->
         <field name="tagType" parent="TagType/ref" title="Тип тэга"/>
-        <field name="value" parent="blob" title="Значение тэга"/>
+        <field name="value" parent="string" size="200" title="Значение тэга"/>
     </domain>
 
 

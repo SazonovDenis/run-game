@@ -9,7 +9,10 @@ temp
 temp.*
 out
 Thumbs.db
-_*
+_jc
+_app.cfx
+_cfg.cfx
+_logback.xml
 node_modules
 .idea*
 /app-run.bat

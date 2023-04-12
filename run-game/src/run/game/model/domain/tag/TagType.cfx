@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="TagType" parent="tab.dict" tag.db="true"
+            title="Тип тега">
+        <!--@
+        Например: category, level и т.п.
+        -->
+    </domain>
+
+
+</root>

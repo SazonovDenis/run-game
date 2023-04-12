@@ -3,12 +3,12 @@
 
 
     <domain name="FactTag" parent="tab.id" tag.db="true"
-            title="Теги фактов">
+            title="Тег факта">
         <!--@
+        Теги для данного факта из общего словаря тегов
         -->
         <field name="fact" parent="Fact/ref" title="О каком факте"/>
-        <field name="tagType" parent="TagType/ref" title="Тип тэга"/>
-        <field name="value" parent="blob" title="Значение тэга"/>
+        <field name="tag" parent="Tag/ref"/>
     </domain>
 
 

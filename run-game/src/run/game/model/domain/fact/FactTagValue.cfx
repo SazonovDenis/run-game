@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="FactTagValue" parent="tab.id" tag.db="true"
+            title="Значение тега факта">
+        <!--@
+        Собственные, уникальные значения для данного факта
+        -->
+        <field name="fact" parent="Fact/ref" title="О каком факте"/>
+        <field name="tagType" parent="TagType/ref" title="Тип тэга"/>
+        <field name="value" parent="blob" title="Значение тэга"/>
+    </domain>
+
+
+</root>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Tag" parent="tab.id" tag.db="true"
+            title="Тег">
+        <!--@
+        Словарь готовых значений тэгов. Типовые тэги, общие для всех,
+        например тег уровня обучения type="level-grade" value="base".
+
+        Некоторые сущности могут иметь собсвенные, уникальные тэги,
+        например FactTag может содержать тег примера словоупотребления,
+        т.е. тега типа type="word-use-sample" со значением "at a run - бегом".
+        -->
+        <field name="tagType" parent="TagType/ref" title="Тип тэга"/>
+        <field name="value" parent="blob" title="Значение тэга"/>
+    </domain>
+
+
+</root>

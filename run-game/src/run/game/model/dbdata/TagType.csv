@@ -4,3 +4,4 @@ id,text,code
 1003,Направление перевода слова,word-translate-direction
 1004,Часть речи,word-part-of-speech
 1005,Пример использования слова,word-use-sample
+1006,Топ ххх слов,top-list

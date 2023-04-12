@@ -1,6 +1,5 @@
-package run.game.dao.server;
+package run.game.dao.game;
 
-import jandcode.commons.*;
 import jandcode.core.dao.*;
 import jandcode.core.dbm.mdb.*;
 import run.game.dao.pojo.*;

@@ -4,10 +4,10 @@
     <dao>
         <holder name="api">
 
-            <item name="m/Server">
+            <item name="m/Game">
 
                 <item name="i" method="*"
-                      class="run.game.dao.server.Server"/>
+                      class="run.game.dao.game.Server"/>
 
             </item>
 

@@ -1,1 +1,0 @@
-https://studynow.ru/dicta/allwords

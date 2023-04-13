@@ -19,4 +19,4 @@ node_modules
 /app-run.sh
 /dataSources
 .ideaDataSources
-data/web-grab/mp3
+*.mp3

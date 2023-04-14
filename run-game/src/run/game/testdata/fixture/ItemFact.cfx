@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="dat.csv">
+        <field name="eng" parent="string"/>
+        <field name="rus" parent="string"/>
+        <field name="trans" parent="string"/>
+        <field name="category1" parent="string"/>
+        <field name="category2" parent="string"/>
+        <field name="category3" parent="string"/>
+        <field name="grade" parent="string"/>
+    </domain>
+
+    <domain name="dat.csv.bad" parent="dat.csv">
+        <field name="error" parent="string"/>
+        <field name="file" parent="string"/>
+    </domain>
+
+
+</root>

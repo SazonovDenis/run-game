@@ -31,11 +31,7 @@ class Server_Test extends Apx_Test {
         println("task.json")
         utils.outMap(UtJson.fromJson(taskJson))
     }
-/*
-^class
-    закончить grab,
-    сделать фикстуру, которая слой за слоем собирает Items и  Fact
-*/
+
 
     @Test
     void getTask_rpc() throws Exception {

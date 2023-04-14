@@ -3,26 +3,20 @@ from os.path import exists
 from os import mkdir
 from bs4 import BeautifulSoup
 
+# from https://kreekly.com
+
 #
-url_base = 'https://kreekly.com/lists/10000-samyh-populyarnyh-angliyskih-slov/'
 dir_base = "./"
-dicts = [
-]
 
 #
 path = dir_base + "mp3/"
 if not exists(path):
     mkdir(path)
-#
-for dict_name in dicts:
-    path = dir_base + "mp3/" + dict_name
-    if not exists(path):
-        mkdir(path)
 
 #
-url = url_base
+url = 'https://kreekly.com/lists/10000-samyh-populyarnyh-angliyskih-slov/'
 r = requests.get(url, allow_redirects=True)
-open("./r.html", 'wb').write(r.content)
+open("./page.html", 'wb').write(r.content)
 
 #
 file_csv = open("./dat.csv", 'wt')
@@ -42,13 +36,12 @@ for element in soup.find_all('div', class_='dict-word'):
     word_eng = element.find_all('span', class_="eng")[0].text
     word_rus = element.find_all('span', class_="rus")[0].text
     word_trans = element.find_all('span', class_="no-mobile transcript")[0].text
-    # price = element.find('span', class_="product-card__price").text.strip()
-    # ink = "https://kith.com/" + element.find('a').get('href')
 
     #
     for mp3 in mp3_lst:
         url = "https://kreekly.com/mp3/" + mp3
-        dict_name = mp3.split("-")[1].split(".")[0]
+        mp3_split = mp3.split("-")
+        dict_name = mp3_split[len(mp3_split) - 1].split(".")[0]
         mp3_file_dir = dir_base + "mp3/" + dict_name + "/"
         mp3_file_name = mp3_file_dir + word_eng + '.mp3'
 

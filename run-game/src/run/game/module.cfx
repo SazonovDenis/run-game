@@ -8,6 +8,7 @@
     </dao>
 
 
+    <x-include path="util/index.cfx"/>
     <x-include path="dao/index.cfx"/>
     <x-include path="model/index.cfx"/>
     <x-include path="testdata/index.cfx"/>

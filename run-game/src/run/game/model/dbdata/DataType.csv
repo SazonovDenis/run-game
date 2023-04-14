@@ -3,3 +3,4 @@ id,text,code
 1002,Перевод слова,word-translate
 1003,Звучание слова,word-sound
 1004,Изображение предмета,word-picture
+1005,Транскрибция слова,word-transcribtion

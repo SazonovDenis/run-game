@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <store>
+        <storeloader name="csv.game"
+                     class="run.game.util.StoreLoader_csv"/>
+    </store>
+
+</root>

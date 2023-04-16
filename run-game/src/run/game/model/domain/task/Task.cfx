@@ -8,8 +8,16 @@
         К каждому тестовому заданию готовятся варианты ответов (TaskOption)
         -->
         <field name="item" parent="Item/ref" title="Проверяли знание об этой сущности"/>
-        <field name="factItem" parent="Fact/ref" title="На основе какого факта сформировано задание"/>
-        <field name="factOption" parent="Fact/ref" title="Проверяли знание этого факта"/>
+        <field name="factQuestion" parent="Fact/ref" title="Факт - вопрос">
+            <!--@
+            Показывали этот факт
+            -->
+        </field>
+        <field name="factAnswer" parent="Fact/ref" title="Проверяли знание этого факта">
+            <!--@
+            Правильный ответ на задание. Показывали среди вариантов ответа
+            -->
+        </field>
     </domain>
 
 

@@ -3,9 +3,9 @@
 
 
     <domain name="UsrTask" parent="tab.id" tag.db="true"
-            title="Задания для пользователя">
+            title="Задание для пользователя">
         <!--@
-        Задания, выданные пользователю.
+        Задание, выданные пользователю.
         -->
         <field name="usr" parent="Usr/ref"/>
         <field name="task" parent="Task/ref"/>
@@ -13,7 +13,8 @@
         <field name="taskDt" parent="datetime" title="Дата выдачи задания"/>
 
         <field name="answerDt" parent="datetime" title="Дата ответа"/>
-        <field name="answerOption" parent="TaskOption/ref" title="Вариант, выданный пользователю"/>
+        <field name="answerTaskOption" parent="TaskOption/ref"
+               title="Вариант ответа, выбранный пользователем"/>
     </domain>
 
 

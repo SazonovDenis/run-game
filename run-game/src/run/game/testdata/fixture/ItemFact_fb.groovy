@@ -77,14 +77,16 @@ class ItemFact_fb extends BaseFixtureBuilder {
         br.close()
 
 
+        // Уникальность значений
+        Set<String> tagValueSet = new HashSet<>()
+        Map<String, StoreRecord> itemsMap = new HashMap<>()
+
         //
-        Map<String, StoreRecord> items = new HashMap<>()
-        Map<String, Set<String>> itemCategories = new HashMap<>()
         long genIdItem = 0
         long genIdItemTag = 0
         long genIdFact = 0
         long genIdFactTag = 0
-        long item = 0
+        long idItem = 0
 
         //
         for (String dir : dirs) {
@@ -124,27 +126,17 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         validateRus(rus)
 
                         // Первый раз встретили слово?
-                        StoreRecord recItem = items.get(eng)
+                        StoreRecord recItem = itemsMap.get(eng)
                         if (recItem == null) {
                             // Добавляем Item
                             recItem = stItem.add()
-                            items.put(eng, recItem)
-                            //
-                            itemCategories.put(eng, new HashSet<String>())
+                            itemsMap.put(eng, recItem)
                             //
                             genIdItem = genIdItem + 1
                             recItem.setValue("id", genIdItem)
                             recItem.setValue("value", eng)
                             //
-                            item = recItem.getLong("id")
-
-                            /*
-                            // Добавляем ItemTag:level-grade
-                            String levelGrade = getLevelGrade(eng)
-                            StoreRecord recItemTag = stItemTag.add()
-                            recItemTag.setValue("item", genItem)
-                            recItemTag.setValue("tag", getTag("level-grade", levelGrade))
-                            */
+                            idItem = recItem.getLong("id")
 
                             // Добавляем ItemTag:top-list
                             String topList = getTopList(wordFrequencyMap, dir, eng)
@@ -152,12 +144,21 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                 genIdItemTag = genIdItemTag + 1
                                 StoreRecord recItemTag_2 = stItemTag.add()
                                 recItemTag_2.setValue("id", genIdItemTag)
-                                recItemTag_2.setValue("item", item)
+                                recItemTag_2.setValue("item", idItem)
                                 recItemTag_2.setValue("tag", getTag("top-list", topList))
                             }
+
+                            // Добавляем Fact:word-spelling
+                            genIdFact = genIdFact + 1
+                            StoreRecord recFact = stFact.add()
+                            recFact.setValue("id", genIdFact)
+                            recFact.setValue("item", idItem)
+                            recFact.setValue("dataType", getDataType("word-spelling"))
+                            recFact.setValue("value", eng)
                         } else {
-                            item = recItem.getLong("id")
+                            idItem = recItem.getLong("id")
                         }
+
 
                         // Добавляем ItemTag:word-category
                         for (int n = 1; n <= 3; n++) {
@@ -165,11 +166,13 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             category = category.trim().toLowerCase()
                             if (!UtCnv.isEmpty(category)) {
                                 // С обеспечением уникальности
-                                if (!itemCategories.get(eng).contains(category)) {
+                                String key = idItem + "_word-category_" + category
+                                if (!tagValueSet.contains(key)) {
+                                    tagValueSet.add(key)
                                     genIdItemTag = genIdItemTag + 1
                                     StoreRecord recItemTag = stItemTag.add()
                                     recItemTag.setValue("id", genIdItemTag)
-                                    recItemTag.setValue("item", item)
+                                    recItemTag.setValue("item", idItem)
                                     recItemTag.setValue("tag", getTag("word-category", category))
                                 }
                             }
@@ -179,43 +182,55 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         String grade = recCsv.getString("grade")
                         grade = grade.trim().toLowerCase()
                         if (!UtCnv.isEmpty(grade)) {
-                            genIdItemTag = genIdItemTag + 1
-                            StoreRecord recItemTag = stItemTag.add()
-                            recItemTag.setValue("id", genIdItemTag)
-                            recItemTag.setValue("item", item)
-                            recItemTag.setValue("tag", getTag("level-grade", grade))
+                            String key = idItem + "_level-grade_" + grade
+                            if (!tagValueSet.contains(key)) {
+                                tagValueSet.add(key)
+                                //
+                                genIdItemTag = genIdItemTag + 1
+                                StoreRecord recItemTag = stItemTag.add()
+                                recItemTag.setValue("id", genIdItemTag)
+                                recItemTag.setValue("item", idItem)
+                                recItemTag.setValue("tag", getTag("level-grade", grade))
+                            }
                         }
 
-                        // Добавляем Fact
-                        genIdFact = genIdFact + 1
-                        StoreRecord recFact = stFact.add()
-                        recFact.setValue("id", genIdFact)
-                        recFact.setValue("item", item)
-                        recFact.setValue("dataType", getDataType("word-spelling"))
-                        recFact.setValue("value", eng)
-                        //
+                        // Добавляем Fact:word-transcribtion
                         String transcribtion = recCsv.getString("trans")
+                        transcribtion = clearTranscribtion(transcribtion)
                         if (!UtCnv.isEmpty(transcribtion)) {
-                            genIdFact = genIdFact + 1
-                            StoreRecord recFact_3 = stFact.add()
-                            recFact_3.setValue("id", genIdFact)
-                            recFact_3.setValue("item", item)
-                            recFact_3.setValue("dataType", getDataType("word-transcribtion"))
-                            recFact_3.setValue("value", transcribtion)
+                            String key = idItem + "_word-transcribtion_" + transcribtion
+                            if (!tagValueSet.contains(key)) {
+                                tagValueSet.add(key)
+                                //
+                                genIdFact = genIdFact + 1
+                                StoreRecord recFact_3 = stFact.add()
+                                recFact_3.setValue("id", genIdFact)
+                                recFact_3.setValue("item", idItem)
+                                recFact_3.setValue("dataType", getDataType("word-transcribtion"))
+                                recFact_3.setValue("value", transcribtion)
+                            }
                         }
-                        //
-                        genIdFact = genIdFact + 1
-                        StoreRecord recFact_1 = stFact.add()
-                        recFact_1.setValue("id", genIdFact)
-                        recFact_1.setValue("item", item)
-                        recFact_1.setValue("dataType", getDataType("word-translate"))
-                        recFact_1.setValue("value", rus)
-                        // Добавляем FactTag
-                        genIdFactTag = genIdFactTag + 1
-                        StoreRecord recFactTag = stFactTag.add()
-                        recFactTag.setValue("id", genIdFactTag)
-                        recFactTag.setValue("fact", recFact_1.getLong("id"))
-                        recFactTag.setValue("tag", getTag("word-translate-direction", "en-ru"))
+
+                        // Добавляем Fact:word-translate
+                        if (!UtCnv.isEmpty(rus)) {
+                            String key = idItem + "_word-translate_" + rus
+                            if (!tagValueSet.contains(key)) {
+                                tagValueSet.add(key)
+                                // Добавляем Fact
+                                genIdFact = genIdFact + 1
+                                StoreRecord recFact_1 = stFact.add()
+                                recFact_1.setValue("id", genIdFact)
+                                recFact_1.setValue("item", idItem)
+                                recFact_1.setValue("dataType", getDataType("word-translate"))
+                                recFact_1.setValue("value", rus)
+                                // Добавляем FactTag
+                                genIdFactTag = genIdFactTag + 1
+                                StoreRecord recFactTag = stFactTag.add()
+                                recFactTag.setValue("id", genIdFactTag)
+                                recFactTag.setValue("fact", recFact_1.getLong("id"))
+                                recFactTag.setValue("tag", getTag("word-translate-direction", "en-ru"))
+                            }
+                        }
 
                         //
                         logCube.logStepStep()
@@ -293,18 +308,24 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
 
     boolean validateEng(String eng) {
+        if (UtCnv.isEmpty(eng)) {
+            throw new XError("validate eng, isEmpty")
+        }
         if (isAlphasEng(eng)) {
             return true
         }
-        throw new XError("validate eng: " + eng)
+        //throw new XError("validate eng: " + eng)
     }
 
 
     boolean validateRus(String rus) {
+        if (UtCnv.isEmpty(rus)) {
+            //throw new XError("validate rus, isEmpty")
+        }
         if (isAlphasRus(rus)) {
             return true
         }
-        throw new XError("validate rus: " + rus)
+        //throw new XError("validate rus: " + rus)
     }
 
 
@@ -354,6 +375,17 @@ class ItemFact_fb extends BaseFixtureBuilder {
         s = s.replace("(!new!)", "")
         s = s.replace(" (tr!)", "")
         s = s.replace("(tr!)", "")
+
+        return s
+    }
+
+
+    String clearTranscribtion(String s) {
+        s = s.trim().toLowerCase()
+
+        s = s.replace("]", "")
+        s = s.replace("[", "")
+        s = s.trim()
 
         return s
     }

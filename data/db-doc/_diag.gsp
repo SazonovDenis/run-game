@@ -41,7 +41,7 @@ class ${d.dbTableName} [[../index.html#${d.dbTableName}]] ${colors} {
     for (f in d.fields) {
       def ft = utils.vars.get_field_type(f, diag.domainGroup)
       def ft_text = ft.text
-      if (ft.refInfo && !di.conf.hiderefs) {
+      if (ft.refInfo && di.showrefs) {
         // это ссылка
         if (ft.refInfo.refDomain != null) {
           ft_text = """<color:green>${ft_text}</color>"""

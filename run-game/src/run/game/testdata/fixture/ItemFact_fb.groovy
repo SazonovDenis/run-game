@@ -47,6 +47,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
         FixtureTable fxFact = fx.table("Fact")
         FixtureTable fxItemTag = fx.table("ItemTag")
         FixtureTable fxFactTag = fx.table("FactTag")
+        FixtureTable fxFactTagValue = fx.table("FactTagValue")
 
         //
         Logger log = UtLog.getLogConsole()
@@ -87,6 +88,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
         long genIdItemTag = 0
         long genIdFact = 0
         long genIdFactTag = 0
+        long genIdFactTagValue = 0
 
         //
         long idItem = 0
@@ -95,6 +97,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
         //
         for (String dir : dirs) {
             String[] files = new File(dirBase + dir).list(new WildcardFileFilter("dat*.csv"))
+            String[] dirsSound = new File(dirBase + dir + "/mp3").list(new DirectoryFileFilter())
+
+
             for (String file : files) {
                 String fileCsv = dirBase + dir + "/" + file
 
@@ -114,6 +119,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                 Store stItemTag = fxItemTag.getStore()
                 Store stFact = fxFact.getStore()
                 Store stFactTag = fxFactTag.getStore()
+                Store stFactTagValue = fxFactTagValue.getStore()
 
                 //
                 for (StoreRecord recCsv : stCsv) {
@@ -129,6 +135,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         validateEng(eng)
                         validateRus(rusArr)
 
+                        //
+                        List<String> soundFilesArr = getSoundFiles(dirBase + dir + "/mp3/", dirsSound, eng)
 
                         // Первый раз встретили слово?
                         StoreRecord recItem = itemsMap.get(eng)
@@ -220,8 +228,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             }
                         }
 
+                        // Добавляем Fact:word-translate
                         for (String translateRus : rusArr) {
-                            // Добавляем Fact:word-translate
                             if (!UtCnv.isEmpty(translateRus)) {
                                 key = idItem + "_word-translate_" + translateRus
                                 if (!tagValueSet.contains(key)) {
@@ -239,6 +247,35 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     recFactTag.setValue("id", genIdFactTag)
                                     recFactTag.setValue("fact", recFact_1.getLong("id"))
                                     recFactTag.setValue("tag", getTag("word-translate-direction", "en-ru"))
+                                }
+                            }
+                        }
+
+                        // Добавляем Fact:word-sound
+                        for (String soundFile : soundFilesArr) {
+                            if (!UtCnv.isEmpty(soundFile)) {
+                                key = idItem + "_word-sound_" + soundFile
+                                if (!tagValueSet.contains(key)) {
+                                    tagValueSet.add(key)
+                                    // Добавляем Fact:word-sound
+                                    genIdFact = genIdFact + 1
+                                    StoreRecord recFact_1 = stFact.add()
+                                    recFact_1.setValue("id", genIdFact)
+                                    recFact_1.setValue("item", idItem)
+                                    recFact_1.setValue("dataType", getDataType("word-sound"))
+                                    recFact_1.setValue("value", soundFile)
+                                    // Добавляем FactTagValue:word-sound-info
+                                    String[] siArr = soundFile.split("/")
+                                    if (!siArr[siArr.length - 2].equals("mp3")) {
+                                        String soundInfo = siArr[siArr.length - 2]
+                                        soundInfo = soundInfo.trim().toLowerCase()
+                                        genIdFactTagValue = genIdFactTagValue + 1
+                                        StoreRecord recFactTagValue = stFactTagValue.add()
+                                        recFactTagValue.setValue("id", genIdFactTagValue)
+                                        recFactTagValue.setValue("fact", recFact_1.getLong("id"))
+                                        recFactTagValue.setValue("tagType", idxTagType.get("word-sound-info").getLong("id"))
+                                        recFactTagValue.setValue("value", soundInfo)
+                                    }
                                 }
                             }
                         }
@@ -483,5 +520,22 @@ class ItemFact_fb extends BaseFixtureBuilder {
         } else {
             return posMax
         }
+    }
+
+    List<String> getSoundFiles(String dirBase, String[] dirsSound, String eng) {
+        List res = new ArrayList()
+
+        if (dirsSound == null) {
+            return res
+        }
+
+        for (String dirSound : dirsSound) {
+            String soundFileName = dirBase + dirSound + "/" + eng + ".mp3"
+            if (new File(soundFileName).exists()) {
+                res.add(soundFileName)
+            }
+        }
+
+        return res
     }
 }

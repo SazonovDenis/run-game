@@ -28,7 +28,7 @@ public class Server extends BaseMdbUtils {
      * @return {@link ServerTask}
      */
     @DaoMethod
-    public ServerTask getTask(long id) {
+    public ServerTask choiceTask(long id) {
         ServerTask res = new ServerTask();
 
         //

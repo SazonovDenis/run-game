@@ -1,6 +1,7 @@
 package run.game.dao.backstage;
 
 
+import jandcode.core.dbm.std.*;
 import run.game.dao.pojo.fact.*;
 import run.game.dao.pojo.task.*;
 
@@ -14,8 +15,16 @@ import run.game.dao.pojo.task.*;
  */
 public interface TaskCreator {
 
-    Task createTask(Fact fact);
+    /**
+     * Создает задание (и неправильные варианты ответа к нему).
+     *
+     * @param idItem      Дла какой сущности
+     * @param tagQuestion Факт какого типа пойдет как вопрос
+     * @param tagAnswer   Факт какого типа пойдет как ответ
+     * @return {question: rec, options: [rec]}
+     */
+    DataBox createTask(long idItem, String tagQuestion, String tagAnswer);
 
-    Task loadTask(long idTask);
+    DataBox loadTask(long idTask);
 
 }

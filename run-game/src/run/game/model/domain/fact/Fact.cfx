@@ -10,7 +10,7 @@
         <field name="item" parent="Item/ref" title="О какой сущности"/>
 
         <field name="dataType" parent="DataType/ref"/>
-        <field name="value" parent="blob" title="Содержание факта"/>
+        <field name="value" parent="string" size="500" title="Содержание факта"/>
     </domain>
 
 

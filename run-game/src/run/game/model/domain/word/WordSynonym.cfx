@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="WordSynonym" parent="tab.id" tag.db="true"
+            title="Синонимы для слова">
+        <!--@
+
+        -->
+        <field name="lang" parent="string" size="50" title="Язык слова"/>
+        <field name="word" parent="string" size="500" title="Слово"/>
+        <field name="synonyms" parent="blob" title="Синонимы слова"/>
+    </domain>
+
+
+</root>

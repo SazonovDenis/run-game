@@ -63,7 +63,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
         // Частота встречаемости
         Map<String, Integer> wordFrequencyMap = new HashMap<>()
-        File fileFr = new File(dirBase + "en_50k.txt")
+        File fileFr = new File(dirBase + "eng_top-50000.txt")
         BufferedReader br = new BufferedReader(new FileReader(fileFr))
         String s
         int pos = 0
@@ -347,11 +347,11 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
 
     public static boolean isAlphasEng(String s) {
-        return s != null && s.matches("^[a-zA-Z )(-/’!]*\$")
+        return s != null && s.matches("^[a-zA-Z )(/’!-]*\$")
     }
 
     public static boolean isAlphasRus(String s) {
-        return s != null && s.matches("^[а-яА-Я .,)(-/ё]*\$")
+        return s != null && s.matches("^[а-яА-Я .,)(/ё-]*\$")
     }
 
 
@@ -424,6 +424,11 @@ class ItemFact_fb extends BaseFixtureBuilder {
         s = s.replace(" )", ")")
         // рус "с" -> англ "с"
         s = s.replace("c", "с")
+        s = s.replace("c", "с")
+        //
+        if (s.endsWith(".") && !(s.contains("т.д.") || s.contains("т. д."))) {
+            s = s.substring(0, s.length() - 1)
+        }
 
         return s
     }

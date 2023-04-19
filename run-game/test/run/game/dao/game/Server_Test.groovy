@@ -13,7 +13,7 @@ class Server_Test extends Apx_Test {
     @Test
     void getTask() {
         def upd = mdb.create(Server)
-        ServerTask task = upd.getTask(999)
+        ServerTask task = upd.choiceTask(999)
 
         //
         println()

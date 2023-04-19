@@ -22,4 +22,12 @@ class TestData_Test extends Apx_Test {
         utils.outTableList(fx.stores, 10)
     }
 
+    @Test
+    public void fill_WordSynonym() throws Exception {
+        WordSynonym_fb fb = new WordSynonym_fb()
+        fb.dirBase = "../data/web-grab/"
+        Fixture fx = fb.build(model)
+        utils.outTableList(fx.stores, 10)
+    }
+
 }

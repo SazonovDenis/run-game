@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="WordDistance" parent="tab.id" tag.db="true"
+            title="Похожие слова">
+        <!--@
+        К каждому слову подготовлен набор похожих слов с наилучшим соответствием Джаро-Винклера,
+        в виде массива [слово: расстояние, слово1: расстояние1, ...]
+        -->
+        <field name="word" parent="string" size="500" title="Слово"/>
+        <field name="maches" parent="blob" title="Похожие слова"/>
+    </domain>
+
+
+</root>

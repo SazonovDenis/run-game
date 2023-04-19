@@ -41,4 +41,10 @@
     </diagram>
 
 
+    <diagram name="words" title="Информация по словам">
+        <domain name="WordDistance"/>
+        <domain name="WordSynonym"/>
+    </diagram>
+
+
 </root>

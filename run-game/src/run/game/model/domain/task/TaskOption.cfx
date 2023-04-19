@@ -11,7 +11,8 @@
                title="Заполняется, если вариант ответа правильный, иначе null"/>
 
         <field name="dataType" parent="DataType/ref"/>
-        <field name="value" parent="blob" title="Содержание варианта ответа"/>
+        <field name="value" parent="string" size="500"
+               title="Содержание варианта ответа"/>
     </domain>
 
 

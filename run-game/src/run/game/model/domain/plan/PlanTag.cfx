@@ -8,7 +8,7 @@
         -->
         <field name="plan" parent="Plan/ref"/>
         <field name="tagType" parent="TagType/ref" title="Тип тэга"/>
-        <field name="value" parent="blob" title="Значение тэга"/>
+        <field name="value" parent="string" size="500" title="Значение тэга"/>
     </domain>
 
 

@@ -13,7 +13,7 @@ class Server_Test extends Apx_Test {
 
     @Test
     void getTask() {
-        def upd = mdb.create(ServerImpl)
+        Server upd = mdb.create(ServerImpl)
         DataBox task = upd.choiceTask(999)
 
         //
@@ -44,7 +44,7 @@ class Server_Test extends Apx_Test {
 
 
         // Получаем задание
-        def upd = mdb.create(ServerImpl)
+        Server upd = mdb.create(ServerImpl)
         DataBox task = upd.choiceTask(999)
 
 
@@ -75,7 +75,7 @@ class Server_Test extends Apx_Test {
 
     @Test
     void getTask_rpc() throws Exception {
-        Map res = apx.execJsonRpc("api", "m/Game/getTask", [1001])
+        Map res = apx.execJsonRpc("api", "m/Game/choiceTask", [1001])
         utils.outMap(res)
     }
 

@@ -96,7 +96,7 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
         // Всё нормально?
         int falseOptionsTotalCount = valuesFalseArr.size()
         if (falseOptionsTotalCount <= optionsCount) {
-            throw new Exception("Не нашлось достаточного количества неправильных ответов")
+            throw new Exception("Не нашлось достаточного количества неправильных ответов, question: '" + recQuestion.getValue("factValue") + "', answer: '" + valueTrue + "'")
         }
 
 

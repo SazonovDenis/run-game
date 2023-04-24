@@ -12,7 +12,8 @@ class Server_Test extends Apx_Test {
 
 
     @Test
-    void getTask() {
+    void serializeTask() {
+        // Грузим задание
         Server upd = mdb.create(ServerImpl)
         DataBox task = upd.choiceTask(999)
 
@@ -33,6 +34,19 @@ class Server_Test extends Apx_Test {
         println()
         println("task.json")
         utils.outMap(UtJson.fromJson(taskJson))
+    }
+
+    @Test
+    void choiceTask() {
+        Server upd = mdb.create(ServerImpl)
+        DataBox task = upd.choiceTask(999)
+
+        //
+        println()
+        println("task")
+        mdb.outTable(task.get("task"))
+        mdb.outTable(task.get("taskOption"))
+        mdb.outTable(task.get("usrTask"))
     }
 
     @Test

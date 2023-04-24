@@ -7,7 +7,7 @@
             <item name="m/Game">
 
                 <item name="i" method="*"
-                      class="run.game.dao.game.Server"/>
+                      class="run.game.dao.game.ServerImpl"/>
 
             </item>
 

@@ -1,24 +1,27 @@
 package run.game.dao.game
 
 import jandcode.commons.*
+import jandcode.commons.rnd.*
+import jandcode.commons.rnd.impl.*
 import jandcode.core.apx.test.*
+import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
-import run.game.dao.pojo.*
-import run.game.dao.pojo.task.*
 
 class Server_Test extends Apx_Test {
 
 
     @Test
     void getTask() {
-        def upd = mdb.create(Server)
-        ServerTask task = upd.choiceTask(999)
+        def upd = mdb.create(ServerImpl)
+        DataBox task = upd.choiceTask(999)
 
         //
         println()
         println("task")
-        println(task)
+        mdb.outTable(task.get("task"))
+        mdb.outTable(task.get("taskOption"))
+        mdb.outTable(task.get("usrTask"))
 
         //
         println()
@@ -32,32 +35,48 @@ class Server_Test extends Apx_Test {
         utils.outMap(UtJson.fromJson(taskJson))
     }
 
+    @Test
+    void postTaskAnswer() {
+        //
+        println("UsrTask")
+        mdb.outTable(mdb.loadQuery("select * from UsrTask order by taskDt"))
+        println()
+
+
+        // Получаем задание
+        def upd = mdb.create(ServerImpl)
+        DataBox task = upd.choiceTask(999)
+
+
+        // Печатаем задание
+        mdb.outTable(task.get("task"))
+        mdb.outTable(task.get("taskOption"))
+        mdb.outTable(task.get("usrTask"))
+
+
+        // Пользователь отвечает
+        StoreRecord recUsrTask = task.get("usrTask")
+        long idUsrTask = recUsrTask.getLong("id")
+        //
+        Store stTaskOption = task.get("taskOption")
+        Rnd rnd = new RndImpl()
+        long idTaskOption = stTaskOption.get(rnd.num(0, stTaskOption.size() - 1)).getLong("id")
+
+
+        // Отправляем ответ пользователя
+        upd.postTaskAnswer(idUsrTask, idTaskOption)
+
+
+        //
+        println()
+        mdb.outTable(mdb.loadQuery("select * from UsrTask order by taskDt"))
+    }
+
 
     @Test
     void getTask_rpc() throws Exception {
         Map res = apx.execJsonRpc("api", "m/Game/getTask", [1001])
         utils.outMap(res)
-    }
-
-
-    @Test
-    void getTask_reflect() throws Exception {
-        Task task = new Task()
-        task.options = new ArrayList<>()
-
-        //
-        Store st = mdb.loadQuery("select id, text as value from TagType")
-        for (StoreRecord rec : st) {
-            TaskElement taskElement = new TaskElement()
-            UtReflect.getUtils().setProps(taskElement, rec.getValues())
-            task.options.add(taskElement)
-        }
-
-        //
-        println()
-        println("task.json")
-        String taskJson = UtJson.toJson(task)
-        utils.outMap(UtJson.fromJson(taskJson))
     }
 
 

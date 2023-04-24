@@ -9,9 +9,10 @@ import run.game.dao.pojo.task.*;
  * Готовит тестовое задание {@link Task} для проверки факта {@link Fact}.
  * <p>
  * Основное предназначение - придумать неправильные варианты ответов для факта.
+ * Для одного факта - несколько заданий с разными неправильными ответами.
  * <p>
  * Для фактов начального уровня (или для самых популярных) задания готовятся ЗАРАНЕЕ,
- * для одного факта - в нескольких экземплярах, предназначены для всех, выверяются вручную специалистами.
+ * предназначены для всех пользователей, возможно, выверяются вручную специалистами.
  */
 public interface TaskCreator {
 
@@ -21,10 +22,12 @@ public interface TaskCreator {
      * @param idItem      Дла какой сущности
      * @param tagQuestion Факт какого типа пойдет как вопрос
      * @param tagAnswer   Факт какого типа пойдет как ответ
-     * @return {question: rec, options: [rec]}
+     * @return {task: rec, options: [rec]}
      */
     DataBox createTask(long idItem, String tagQuestion, String tagAnswer);
 
     DataBox loadTask(long idTask);
+
+    long saveTask(DataBox task);
 
 }

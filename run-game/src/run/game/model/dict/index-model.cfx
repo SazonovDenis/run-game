@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <!-- расширение стандартного словаря -->
+    <domain name="dict.base">
+        <field name="code" parent="string"/>
+    </domain>
+
+    <dict name="dict.base" parent="base" abstract="true"
+          domain="dict.base"
+          handler="run.game.model.dict.DictHandlerLoadable"/>
+
+    <!-- словари -->
+    <dict name="DataType" parent="dict.base"/>
+
+</root>

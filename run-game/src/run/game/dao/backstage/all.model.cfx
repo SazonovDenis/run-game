@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <domain name="Task.question" parent="Task">
+
+        <field name="dataType" parent="Fact/dataType"/>
+        <field name="value" parent="Fact/value"/>
+
+    </domain>
+
+</root>

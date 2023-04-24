@@ -15,11 +15,12 @@ public class ServerImpl extends BaseMdbUtils implements Server {
 
     @DaoMethod
     public DataBox choiceTask(long idPaln) {
+        // Выбираем
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         // Выбираем факт
-        long idFact = selectFact(idPaln)
-
+        long idFact = statisticManager.selectFact(idPaln)
         // Выбираем задание
-        long idTask = selectTask(idFact)
+        long idTask = statisticManager.selectTask(idFact)
 
 
         // Грузим задание
@@ -74,18 +75,6 @@ public class ServerImpl extends BaseMdbUtils implements Server {
     }
 
 
-    @DaoMethod
-    public Store getFactStatistic(long idFact) {
-        return null;
-    }
-
-
-    @DaoMethod
-    public Map<Long, Store> getPlanStatistic(long idPaln) {
-        return null;
-    }
-
-
     String sqlUsrTask() {
         return """
 select * 
@@ -110,22 +99,4 @@ where
     }
 
 
-    /**
-     * Выбирает подходящий факт
-     */
-    long selectFact(long idPlan) {
-        Store stFact = mdb.loadQuery("select id from Fact", [])
-        long idFact = stFact.get(0).getLong("id")
-        return idFact
-    }
-
-    /**
-     * Выбирает подходящее задание
-     */
-    long selectTask(long idFact) {
-        //Store stTask = mdb.loadQuery("select id from Task where factQuestion = :fact", [fact: idFact])
-        Store stTask = mdb.loadQuery("select id from Task limit 10", [])
-        long idTask = stTask.get(0).getLong("id")
-        return idTask
-    }
 }

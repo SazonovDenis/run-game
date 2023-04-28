@@ -10,6 +10,7 @@ temp.*
 out
 Thumbs.db
 _jc
+_gen
 _notuse
 _app.cfx
 _cfg.cfx

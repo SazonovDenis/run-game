@@ -1,4 +1,5 @@
 import jandcode.core.jc.*
+import jandcode.core.nodejs.jc.*
 import jandcode.jc.*
 import jandcode.jc.std.*
 
@@ -6,6 +7,8 @@ class P extends ProjectScript {
 
     static beforeLoad = {
         include("jc/apx-project")
+        classpath("jandcode-core-nodejs-jc")
+        load(ut.env("project.jandcode-jsmodules", "./jandcode-jsmodules"))
     }
 
     void onInclude() {
@@ -22,6 +25,12 @@ class P extends ProjectScript {
             )
         }
         //
+        include(NodeJsRootProject).with {
+            modules(
+                    "js-modules/*/package.json",
+            )
+            mainModule = "js-modules/frontend"
+        }
     }
 
 }

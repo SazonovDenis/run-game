@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <web>
+        <mount-module/>
+    </web>
+
+    <web>
+        <action name="root"
+                template="#{module.packagepath.cur}/index.gsp"/>
+    </web>
+
+</root>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
+    <x-include path="web/index.cfx"/>
+
     <dao>
         <!-- api работает через модель default -->
         <holder name="api" invoker="model:default">
@@ -12,5 +14,6 @@
     <x-include path="dao/index.cfx"/>
     <x-include path="model/index.cfx"/>
     <x-include path="testdata/index.cfx"/>
+
 
 </root>

@@ -75,6 +75,24 @@ class TaskCreator_Test extends Apx_Test {
     }
 
     @Test
+    void createTask_sound() {
+        String word = "different"
+        long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
+
+        //
+        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+
+        //
+        for (int i = 0; i < 5; i++) {
+            DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
+
+            //
+            println()
+            printTask(task)
+        }
+    }
+
+    @Test
     void saveTask() {
         String word = "simple"
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")

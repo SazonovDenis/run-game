@@ -1,8 +1,8 @@
 <template>
     <div v-bind:id="'taskOption-'+taskOption.id" class="option"
          v-on:mousedown="onMouseDown"
-         v-on:mousemove="onMouseMove"
-         v-on:mouseup="onMouseUp"
+         v-on:mousemove="__onMouseMove"
+         v-on:mouseup="__onMouseUp"
 
          v-on:touchstart="onTouchStart"
          v-on:touchmove="onTouchMove"
@@ -23,133 +23,290 @@ export default {
     props: {
         taskOption: null,
         animationInterval: 100,
+        ballWidth: {
+            default: 32,
+            type: Number
+        },
+        ballHeihth: {
+            default: 32,
+            type: Number
+        },
+        goalSize: {
+            default: 16,
+            type: Number
+        },
     },
 
-    data: function() {
+    data() {
         return {
-            state: {}
+            state: {
+                dtStart: null,
+                dtStop: null,
+                drag: null,
+                x: null,
+                y: null,
+                sx: null,
+                sy: null,
+                goalValue: 5,
+            },
         }
     },
 
     methods: {
         onMouseDown(event) {
-            console.info("onMouseDown", event)
+            //console.info("onMouseDown", event)
+
+            let ev = {}
+            ev.pageX = event.pageX
+            ev.pageY = event.pageY
+            ev.srcElement = event.srcElement
+
+            let state = this.state
+            state.drag = true
+
+            //
+            document.addEventListener('mousemove', this.onMouseMove)
+            document.addEventListener('mouseup', this.onMouseUp)
+
+            //
+            this.doDragStart(ev)
+        },
+
+        onMouseMove(event) {
+            //console.info("onMouseMove", event)
+
+            let state = this.state
+
+            //
+            if (state.drag) {
+                let ev = {}
+                ev.pageX = event.pageX
+                ev.pageY = event.pageY
+                ev.srcElement = event.srcElement
+
+                this.doDragMove(ev)
+            }
+        },
+
+        onMouseUp(event) {
+            //console.info("onMouseUp", this.state.dtStart)
+
+            //
+            document.removeEventListener('mousemove', this.onMouseMove)
+            document.removeEventListener('mouseup', this.onMouseUp)
+
+            //
+            let state = this.state
+
+            //
+            if (state.drag) {
+                state.drag = false
+
+                let ev = {}
+                ev.pageX = event.pageX
+                ev.pageY = event.pageY
+                ev.srcElement = event.srcElement
+
+                this.doDragStop(ev)
+            }
+        },
+
+
+        doDragStart(ev) {
+            //console.info("doDragStart", ev)
 
             let ball = document.getElementById("ball")
-            let obj = event.srcElement
+            let goal = document.getElementById("goal")
+
+            let obj = ev.srcElement
             let state = this.state
             let taskOption = this.taskOption
-            let animationInterval = this.animationInterval
 
-            let ballWidth = 32
-            let ballHeihth = 32
+            state.dtStart = new Date()
+            state.sx = ev.pageX
+            state.sy = ev.pageY
+            state.x = ev.pageX
+            state.y = ev.pageY
 
-            console.info("obj: ", obj)
+            //console.info("obj: ", obj)
             console.info("obj.id: ", obj.id)
 
+            //
+            clearInterval(state.interval)
+
+            //
             ball.style.display = 'block'
             ball.innerText = taskOption.text
 
-            clearInterval(state.interval)
+            //
+            this.moveElementTo(ball, state.x, state.y)
+        },
 
-            // передвинуть мяч под координаты курсора
-            // и сдвинуть на половину ширины/высоты для центрирования
-            function moveAt(el, pageX, pageY) {
-                el.style.left = pageX - el.offsetWidth / 2 + 'px'
-                el.style.top = pageY - el.offsetHeight / 2 + 'px'
-            }
-
-            function onMouseMove(event) {
-
-                moveAt(ball, event.pageX, event.pageY)
-            }
-
-            moveAt(ball, event.pageX, event.pageY)
+        doDragMove(ev) {
+            //console.info("doDragMove", ev)
 
             //
-            state.x = event.pageX
-            state.y = event.pageY
-            state.dtStart = new Date()
+            let state = this.state
+            let ball = document.getElementById("ball")
 
-            // (3) перемещать по экрану
-            document.addEventListener('mousemove', onMouseMove)
+            //
+            state.x = ev.pageX
+            state.y = ev.pageY
 
-            // (4) положить мяч, удалить более ненужные обработчики событий
-            ball.onmouseup = function(event) {
-                document.removeEventListener('mousemove', onMouseMove)
-                ball.onmouseup = null
+            //
+            this.moveElementTo(ball, state.x, state.y)
+        },
 
+        doDragStop(ev) {
+            //console.info("doDragStop", ev)
 
-                state.dtStop = new Date()
-                state.duration = Math.abs(state.dtStop - state.dtStart)
+            let state = this.state
 
-                let framesIn = state.duration / animationInterval
-                state.dx = (event.pageX - state.x) / framesIn
-                state.dy = (event.pageY - state.y) / framesIn
-                //
-                state.x = event.pageX
-                state.y = event.pageY
+            let ball = document.getElementById("ball")
+            let goal = document.getElementById("goal")
 
-                //
-                console.info(ball)
-                console.info("startAnimation, state", state)
+            //
+            state.x = ev.pageX
+            state.y = ev.pageY
+            //
+            state.dtStop = new Date()
+            state.duration = Math.abs(state.dtStop - state.dtStart)
+            //
+            let framesInSec = state.duration / this.animationInterval
+            state.dx = (state.x - state.sx) / framesInSec
+            state.dy = (state.y - state.sy) / framesInSec
 
-                startAnimation(ball, state.dx, state.dy)
-                //ball.style.display = 'none'
-            }
+            //
+            this.startMoveAnimation(ball, state.dx, state.dy)
+        },
 
-            function startAnimation(el, dx, dy) {
-                state.interval = setInterval(() => {
-                    state.x = state.x + dx
-                    state.y = state.y + dy
+        startMoveAnimation(el, dx, dy) {
+            let ball = document.getElementById("ball")
+            let goal = document.getElementById("goal")
 
-                    if (state.x + ballWidth > innerWidth || state.x < 0 || state.y + ballHeihth > innerHeight || state.y < 0) {
-                        clearInterval(state.interval)
-                        ball.style.display = "none"
-                        return
+            let state = this.state
+
+            state.interval = setInterval(() => {
+                state.x = state.x + dx
+                state.y = state.y + dy
+
+                if (state.x + this.ballWidth > innerWidth || state.x < 0 || state.y + this.ballHeihth > innerHeight || state.y < 0) {
+                    clearInterval(state.interval)
+                    ball.style.display = "none"
+                    return
+                }
+
+                if (this.intersect(ball, goal)) {
+                    state.goalValue = state.goalValue - 1
+
+                    //
+                    clearInterval(state.interval)
+
+                    //
+                    this.setGoalValue(state.goalValue)
+                    ball.style.display = "none"
+
+                    //
+                    if (state.goalValue <= 0) {
+                        goal.style.display = "none"
                     }
+                }
 
-                    moveAt(el, state.x, state.y)
-                }, animationInterval)
-            }
-        },
-
-        onMouseMove(ev) {
-            //console.info("onMouseMove", ev)
-        },
-
-        onMouseUp(ev) {
-            console.info("onMouseUp", ev)
+                this.moveElementTo(el, state.x, state.y)
+            }, this.animationInterval)
         },
 
         onTouchStart(event) {
-            console.info("onTouchStart", event)
-            let ball = event.srcElement
+            let touch = event.touches[event.touches.length - 1]
+
+            //
+            let ev = {}
+            ev.pageX = touch.pageX
+            ev.pageY = touch.pageY
+            ev.srcElement = event.srcElement
+
+            //
+            let state = this.state
+            state.drag = true
+
+            //
+            this.doDragStart(ev)
         },
 
-        onTouchMove(ev) {
-            console.info("onTouchMove", ev)
+        onTouchMove(event) {
+            let touch = event.touches[event.touches.length - 1]
+
+            //
+            let ev = {}
+            ev.pageX = touch.pageX
+            ev.pageY = touch.pageY
+            ev.srcElement = event.srcElement
+
+            //
+            this.doDragMove(ev)
         },
 
-        onTouchEnd(ev) {
-            console.info("onTouchEnd", ev)
+        onTouchEnd(event) {
+            //console.info("onTouchCancel", event)
+
+            //
+            let ev = {}
+            if (event.touches.length > 0) {
+                let touch = event.touches[event.touches.length - 1]
+                ev.pageX = touch.pageX
+                ev.pageY = touch.pageY
+                ev.srcElement = event.srcElement
+            } else {
+                let state = this.state
+
+                ev.pageX = state.x
+                ev.pageY = state.y
+                ev.srcElement = event.srcElement
+            }
+
+            //
+            this.doDragStop(ev)
         },
 
-        onTouchCancel(ev) {
-            console.info("onTouchCancel", ev)
+        onTouchCancel(event) {
+            //console.info("onTouchCancel", event)
+            this.onTouchEnd(event)
         },
 
         onDragStart(ev) {
             return false
         },
 
-        moveAt(pageX, pageY) {
-            let ball = this
-            ball.style.left = pageX - ball.offsetWidth / 2 + 'px'
-            ball.style.top = pageY - ball.offsetHeight / 2 + 'px'
+        // передвинуть мяч под координаты курсора
+        // и сдвинуть на половину ширины/высоты для центрирования
+        moveElementTo(el, x, y) {
+            el.style.left = x - el.offsetWidth / 2 + 'px'
+            el.style.top = y - el.offsetHeight / 2 + 'px'
         },
 
+        intersect(ball, goal) {
+            if (
+                ball.offsetTop > goal.offsetTop && ball.offsetTop < goal.offsetTop + goal.clientHeight &&
+                ball.offsetLeft > goal.offsetLeft && ball.offsetLeft < goal.offsetLeft + goal.clientWidth
+            ) {
+                return true
+            } else {
+                return false
+            }
+        },
 
+        setGoalValue(goalValue) {
+            let goal = document.getElementById("goal")
+            let state = this.state
+
+            //goal.style.width = this.goalSize * goalValue + "px"
+            goal.style.height = this.goalSize * goalValue + "px"
+        },
+
+    },
+
+    mounted() {
+        this.setGoalValue(this.state.goalValue)
     },
 
     computed: {}
@@ -160,6 +317,7 @@ export default {
 <style>
 
 .option {
+    user-select: none;
     max-width: 20em;
     margin: 5px;
     padding: 5px;

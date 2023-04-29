@@ -11,6 +11,7 @@ export function run() {
 
     let routes = [
         {path: '', frame: Home},
+        {path: '/start', frame: import('./Start')},
     ]
 
     apx.app.onBeforeRun(async () => {

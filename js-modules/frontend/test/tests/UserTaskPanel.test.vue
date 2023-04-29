@@ -8,7 +8,6 @@
 
 //import {apx, kisBase} from '../vendor'
 
-import RepairWellInfoWidget from "../../src/comp/UserTaskPanel"
 import UserTaskPanel from "../../src/comp/UserTaskPanel"
 
 function data() {
@@ -18,32 +17,22 @@ function data() {
 export default {
     components: {
         UserTaskPanel,
-        RepairWellInfoWidget,
     },
 
     data() {
         return {
             usrTask: {
                 task: {
-                    text: "В чем смысл жизни",
+                    text: "смысл жизни",
                     dataType: "string",
                 },
                 taskOptions: [
                     {
-                        text: "Радоваться"
+                        text: "радоваться"
                     },
                     {
-                        text: "Грустить"
+                        text: "грустить"
                     },
-                    {
-                        text: "Дожди"
-                    },
-                    {
-                        text: "Туманы"
-                    },
-                    {
-                        text: "Холода и ветра не должны нас пугать, ведь все есть движение духа"
-                    }
                 ]
             }
         }
@@ -64,18 +53,23 @@ export default {
             },
             taskOptions: [
                 {
+                    id: 1039,
                     text: "Радоваться 23"
                 },
                 {
+                    id: 8503,
                     text: "Грустить 54"
                 },
                 {
+                    id: 2034,
                     text: "Дожди 454"
                 },
                 {
+                    id: 5103,
                     text: "Туманы 455"
                 },
                 {
+                    id: 4022,
                     text: "Холода 54 и ветра не должны нас пугать, ведь все есть движение духа"
                 }
             ]

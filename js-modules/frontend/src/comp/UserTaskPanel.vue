@@ -9,6 +9,13 @@
         <div style="border: 1px solid red">
             <TaskOptions :taskOptions="usrTask.taskOptions"/>
         </div>
+
+        <q-btn color="white" text-color="black" label="Standard"/>
+
+
+        <TouchPanelGame class="touch">
+        </TouchPanelGame>
+
     </div>
 
 </template>
@@ -18,9 +25,10 @@
 
 import Task from "./Task"
 import TaskOptions from "./TaskOptions"
+import TouchPanelGame from "./TouchPanelGame"
 
 export default {
-    components: {Task, TaskOptions},
+    components: {TouchPanelGame, Task, TaskOptions},
 
     props: {
         usrTask: {
@@ -43,3 +51,11 @@ export default {
 }
 </script>
 
+
+<style>
+
+.touch {
+    _background-color: #e6ffda;
+}
+
+</style>

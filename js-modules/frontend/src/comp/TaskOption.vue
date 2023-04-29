@@ -1,15 +1,13 @@
 <template>
     <div v-bind:id="'taskOption-'+taskOption.id" class="option"
          v-on:mousedown="onMouseDown"
-         v-on:mousemove="__onMouseMove"
-         v-on:mouseup="__onMouseUp"
 
          v-on:touchstart="onTouchStart"
          v-on:touchmove="onTouchMove"
          v-on:touchend="onTouchEnd"
          v-on:touchcancel="onTouchCancel"
 
-         v-on:ondragstart="onDragStart">
+    >
         Вариант: {{ taskOption.text }}
     </div>
 </template>
@@ -271,10 +269,6 @@ export default {
         onTouchCancel(event) {
             //console.info("onTouchCancel", event)
             this.onTouchEnd(event)
-        },
-
-        onDragStart(ev) {
-            return false
         },
 
         // передвинуть мяч под координаты курсора

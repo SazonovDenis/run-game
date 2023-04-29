@@ -10,11 +10,7 @@
             <TaskOptions :taskOptions="usrTask.taskOptions"/>
         </div>
 
-        <q-btn color="white" text-color="black" label="Standard"/>
-
-
-        <TouchPanelGame class="touch">
-        </TouchPanelGame>
+        <q-btn color="white" text-color="black" label="Reset"/>
 
     </div>
 

@@ -20,7 +20,10 @@ export default {
 
     props: {
         taskOption: null,
-        animationInterval: 100,
+        animationInterval: {
+            default: 10,
+            type: Number
+        },
         ballWidth: {
             default: 32,
             type: Number
@@ -31,6 +34,10 @@ export default {
         },
         goalSize: {
             default: 16,
+            type: Number
+        },
+        minDl: {
+            default: 5,
             type: Number
         },
     },
@@ -170,9 +177,15 @@ export default {
             state.dtStop = new Date()
             state.duration = Math.abs(state.dtStop - state.dtStart)
             //
-            let framesInSec = state.duration / this.animationInterval
-            state.dx = (state.x - state.sx) / framesInSec
-            state.dy = (state.y - state.sy) / framesInSec
+            let dragK = state.duration / this.animationInterval
+            state.dx = (state.x - state.sx) / dragK
+            state.dy = (state.y - state.sy) / dragK
+            // Чтобы не слишком медленно летело
+            let dl = Math.sqrt(state.dx * state.dx + state.dy * state.dy)
+            if (dl < this.minDl) {
+                state.dx = state.dx * this.minDl / dl
+                state.dy = state.dy * this.minDl / dl
+            }
 
             //
             this.startMoveAnimation(ball, state.dx, state.dy)
@@ -185,16 +198,23 @@ export default {
             let state = this.state
 
             state.interval = setInterval(() => {
+                // Шаг
                 state.x = state.x + dx
                 state.y = state.y + dy
 
-                if (state.x + this.ballWidth > innerWidth || state.x < 0 || state.y + this.ballHeihth > innerHeight || state.y < 0) {
-                    clearInterval(state.interval)
-                    ball.style.display = "none"
-                    return
+                // Пересечения определяем как пересечение отрезка, проведенного
+                // от предыдущей точки движения до текущей с прямоугольником цели.
+                // Так мы не дадим "проскочить" снаряду сквозь цель
+                // при слишком большой скорости движения.
+                let rectTrace = {
+                    x1: state.x,
+                    x2: state.x - dx,
+                    y1: state.y,
+                    y2: state.y - dy,
                 }
-
-                if (this.intersect(ball, goal)) {
+                let rectGoal = this.getElRect(goal)
+                //
+                if (this.intersectRect(rectTrace, rectGoal)) {
                     state.goalValue = state.goalValue - 1
 
                     //
@@ -208,9 +228,20 @@ export default {
                     if (state.goalValue <= 0) {
                         goal.style.display = "none"
                     }
+
+                    //
+                    return
                 }
 
-                this.moveElementTo(el, state.x, state.y)
+                // Выход за границы
+                if (state.x + this.ballWidth > innerWidth || state.x < 0 || state.y + this.ballHeihth > innerHeight || state.y < 0) {
+                    clearInterval(state.interval)
+                    ball.style.display = "none"
+                    return
+                }
+
+                // Продолжение движения
+                this.moveElementTo(ball, state.x, state.y)
             }, this.animationInterval)
         },
 
@@ -271,14 +302,34 @@ export default {
             this.onTouchEnd(event)
         },
 
-        // передвинуть мяч под координаты курсора
+        // передвинуть под координаты x, y
         // и сдвинуть на половину ширины/высоты для центрирования
         moveElementTo(el, x, y) {
             el.style.left = x - el.offsetWidth / 2 + 'px'
             el.style.top = y - el.offsetHeight / 2 + 'px'
         },
 
+        getElRect(el) {
+            let rect = {
+                x1: el.offsetLeft,
+                x2: el.offsetLeft + el.clientWidth,
+                y1: el.offsetTop,
+                y2: el.offsetTop + el.clientHeight,
+            }
+            return rect
+        },
+
         intersect(ball, goal) {
+            let rectA = this.getElRect(goal)
+            let rectB = this.getElRect(ball)
+
+            return this.intersectRect(rectA, rectB)
+        },
+
+        intersect_(ball, goal) {
+            let rectA = getElRect(goal)
+            let rectB = getElRect(ball)
+
             if (
                 ball.offsetTop > goal.offsetTop && ball.offsetTop < goal.offsetTop + goal.clientHeight &&
                 ball.offsetLeft > goal.offsetLeft && ball.offsetLeft < goal.offsetLeft + goal.clientWidth
@@ -287,6 +338,44 @@ export default {
             } else {
                 return false
             }
+        },
+
+        getXMin(rect) {
+            if (rect.x1 < rect.x2) {return rect.x1} else {return rect.x2}
+        },
+
+        getXMax(rect) {
+            if (rect.x1 > rect.x2) {return rect.x1} else {return rect.x2}
+        },
+
+        getYMin(rect) {
+            if (rect.y1 < rect.y2) {return rect.y1} else {return rect.y2}
+        },
+
+        getYMax(rect) {
+            if (rect.y1 > rect.y2) {return rect.y1} else {return rect.y2}
+        },
+
+        intersectRect(rectA, rectB) {
+            let bxMin = this.getXMin(rectB)
+            let bxMax = this.getXMax(rectB)
+            let axMin = this.getXMin(rectA)
+            let axMax = this.getXMax(rectA)
+
+            let ayMin = this.getYMin(rectA)
+            let ayMax = this.getYMax(rectA)
+            let byMin = this.getYMin(rectB)
+            let byMax = this.getYMax(rectB)
+
+            return (
+                bxMin >= axMin && bxMin <= axMax ||
+                bxMax >= axMin && bxMax <= axMax ||
+                bxMin <= axMin && bxMax >= axMax
+            ) && (
+                byMin >= ayMin && byMin <= ayMax ||
+                byMax >= ayMin && byMax <= ayMax ||
+                byMin <= ayMin && byMax >= ayMax
+            );
         },
 
         setGoalValue(goalValue) {

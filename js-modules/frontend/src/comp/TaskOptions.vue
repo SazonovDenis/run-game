@@ -6,7 +6,7 @@
         <div id="goal" class="goal">Попади</div>
 
         <div v-for="taskOption in taskOptions">
-            <TaskOption :taskOption="taskOption" :animationInterval="20"/>
+            <TaskOption :taskOption="taskOption" :animationInterval="10"/>
         </div>
 
     </div>
@@ -49,10 +49,10 @@ export default {
 
 .goal {
     position: absolute;
-    width: 10em;
+    width: 7em;
     height: 10em;
     bottom: 50px;
-    left: 30%;
+    left: 40%;
     border-radius: 1em;
     background-color: rgba(0, 143, 200, 0.3);
     z-index: 1000;

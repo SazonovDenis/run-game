@@ -17,35 +17,12 @@ export default {
         UserTaskPanel,
     },
 
+/*
     data() {
         return {
-            usrTask: {
-                /*
-                                task: {
-                                    text: "В чем смысл жизни",
-                                    dataType: "string",
-                                },
-                                taskOptions: [
-                                    {
-                                        text: "Радоваться"
-                                    },
-                                    {
-                                        text: "Грустить"
-                                    },
-                                    {
-                                        text: "Дожди"
-                                    },
-                                    {
-                                        text: "Туманы"
-                                    },
-                                    {
-                                        text: "Холода и ветра не должны нас пугать, ведь все есть движение духа"
-                                    }
-                                ]
-                */
-            }
         }
     },
+*/
 
 
     created() {
@@ -57,24 +34,24 @@ export default {
 
         let data = {
             task: {
-                text: "В чем смысл жизни1",
+                text: "В чем смысл жизни HOME",
                 dataType: "string",
             },
             taskOptions: [
                 {
-                    text: "Радоваться 23"
+                    text: "Радоваться  HOME"
                 },
                 {
-                    text: "Грустить 54"
+                    text: "Грустить  HOME"
                 },
                 {
-                    text: "Дожди 454"
+                    text: "Дожди  HOME"
                 },
                 {
-                    text: "Туманы 455"
+                    text: "Туманы  HOME"
                 },
                 {
-                    text: "Холода 54 и ветра не должны нас пугать, ведь все есть движение духа"
+                    text: "Холода  HOME и ветра не должны нас пугать, ведь все есть движение духа"
                 }
             ]
         }

@@ -2,11 +2,11 @@
     <div class="options">
         Варианты ответов
 
-        <div id="ball" class="ball">&nbsp;</div>
-        <div id="goal" class="goal">Попади</div>
-
         <div v-for="taskOption in taskOptions">
-            <TaskOption :taskOption="taskOption" :animationInterval="10"/>
+            <TaskOption :taskOption="taskOption" :state="state"
+                        :animationInterval="10"
+                        v-on:changeGoalValue="this.$emit('changeGoalValue')"
+            />
         </div>
 
     </div>
@@ -20,10 +20,17 @@ export default {
     components: {TaskOption},
 
     props: {
-        taskOptions: null
+        taskOptions: null,
+        state: null,
     },
 
-    methods: {},
+    methods: {
+        changeGoalValueX(v) {
+            console.info("changeGoalValue X", v)
+            this.$emit('changeGoalValue', v)
+        },
+
+    },
 
     computed: {}
 }
@@ -35,28 +42,6 @@ export default {
 .options {
     user-select: none;
     touch-action: none;
-}
-
-.ball {
-    position: absolute;
-    width: 2em;
-    height: 2em;
-    border-radius: 1em;
-    background-color: rgba(100, 200, 0, 0.3);
-    z-index: 1000;
-    display: none;
-}
-
-.goal {
-    position: absolute;
-    width: 7em;
-    height: 10em;
-    bottom: 50px;
-    left: 40%;
-    border-radius: 1em;
-    background-color: rgba(0, 143, 200, 0.3);
-    z-index: 1000;
-    display: block;
 }
 
 </style>

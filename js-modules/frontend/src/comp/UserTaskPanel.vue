@@ -1,16 +1,22 @@
 <template>
     <div>
-        Вопрос и варианты ответов
+        <div>
+            Вопрос и варианты ответов
+        </div>
 
         <div style="border: 1px solid green">
             <Task :task="usrTask.task"/>
         </div>
 
-        <div style="border: 1px solid red">
-            <TaskOptions :taskOptions="usrTask.taskOptions"/>
+        <div style="border: 1px solid red; bottom: 10px">
+            <TaskOptions :taskOptions="usrTask.taskOptions" :state="dataState"
+                         v-on:changeGoalValue="this.$emit('changeGoalValue')"/>
         </div>
 
-        <q-btn color="white" text-color="black" label="Reset"/>
+
+        <Ball id="ball" :drag="dataState.drag"/>
+
+        <Goal id="goal" :goal="dataState.goal"/>
 
     </div>
 
@@ -19,27 +25,32 @@
 <script>
 
 
+import Ball from "./Ball"
+import Goal from "./Goal"
 import Task from "./Task"
 import TaskOptions from "./TaskOptions"
-import TouchPanelGame from "./TouchPanelGame"
 
 export default {
-    components: {TouchPanelGame, Task, TaskOptions},
+    components: {Ball, Goal, Task, TaskOptions},
 
     props: {
-        usrTask: {
-            task: null,
-            taskOptions: null
-        }
+        usrTask: {},
+        dataState: {},
     },
 
     /*
-        data() {
-            return {
-
-            }
+        created() {
+            this.dataState = data
         },
     */
+
+    mounted() {
+        //console.info("=== UserTaskPanel.mounted")
+        //console.info("dataState: " + this.dataState)
+        //console.info("dataState.drag: " + this.dataState.drag)
+        //console.info("dataState.goal: " + this.dataState.goal)
+        //console.info()
+    },
 
     methods: {},
 
@@ -49,9 +60,5 @@ export default {
 
 
 <style>
-
-.touch {
-    _background-color: #e6ffda;
-}
 
 </style>

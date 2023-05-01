@@ -1,6 +1,7 @@
 <template>
     <div class="question">
-        Вопрос: {{ task.text }}
+        <span>Вопрос: {{ task.text }} </span>
+        <q-btn color="blue" text-color="black" label="AUD"/>
     </div>
 </template>
 
@@ -11,15 +12,8 @@ export default {
     components: {},
 
     props: {
-        task: null
+        task: {}
     },
-
-    /*
-        data() {
-            return {
-            }
-        },
-    */
 
     methods: {},
 

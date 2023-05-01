@@ -1,6 +1,9 @@
 <template>
-    <q-btn color="white" text-color="black" label="Reset" v-on:click="resetTasks()"/>
-    <q-btn color="white" text-color="black" label="Reset Goal" v-on:click="resetGoal()"/>
+    <!--
+        <q-btn color="white" text-color="black" label="Reset" v-on:click="test_resetTasks()"/>
+        <q-btn color="white" text-color="black" label="Reset Goal"
+               v-on:click="resetGoalValue()"/>
+    -->
 
     <UserTaskPanel :usrTask="usrTask" :dataState="dataState"
                    v-on:changeGoalValue="changeGoalValue"/>
@@ -50,15 +53,19 @@ export default {
 
     methods: {
         changeGoalValue(v) {
-            console.info("changeGoalValueY", v)
+            console.info("changeGoalValue", v)
             console.info("this.goal.value: " + this.dataState.goal.value)
             if (this.dataState.goal.value == 0) {
-                this.resetGoal()
+                // Новое задание
                 this.loadNextTask()
+                // Новая цель
+                this.resetGoalValue()
+                this.setGoalInfo()
             }
         },
 
         loadNextTask() {
+            // Грузим новое задание с сервера
             this.taskIdx = this.taskIdx + 1;
             if (this.taskIdx >= data.tasks.length) {
                 this.taskIdx = 0;
@@ -66,23 +73,23 @@ export default {
             //
             let dataTask = data.tasks[this.taskIdx]
 
-            //
+
+            // Присваиваем данные задания себе
             this.usrTask = dataTask
 
-            //
-            this.dataState.goal = {
-                text: "Hit here " + (this.taskIdx + 1) + " !!!",
-                value: 3,
-            }
 
-            //
         },
 
-        resetGoal() {
-            this.dataState.goal.value = 5
+        setGoalInfo() {
+            this.dataState.goal.text = "Hit here, task#" + (this.taskIdx + 1)
         },
 
-        resetTasks() {
+        // Сбрасываем состояние результата (цели)
+        resetGoalValue() {
+            this.dataState.goal.value = 3
+        },
+
+        test_resetTasks() {
             this.taskIdx = -1;
             this.loadNextTask();
         },
@@ -98,6 +105,8 @@ export default {
         //let res = await kisBase.daoApi.invoke("m/Game/choiceTask", [1001])
 
         this.loadNextTask();
+        this.resetGoalValue();
+        this.setGoalInfo()
     }
 
 }

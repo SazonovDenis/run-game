@@ -1,5 +1,5 @@
 <template>
-    <div class="options">
+    <div class="options" id="options">
         Варианты ответов
 
         <div v-for="taskOption in taskOptions">

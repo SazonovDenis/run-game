@@ -66,8 +66,8 @@ export default {
 
             //
             let ev = {}
-            ev.pageX = event.pageX
-            ev.pageY = event.pageY
+            ev.pageX = event.clientX
+            ev.pageY = event.clientY
             ev.srcElement = event.srcElement
 
             //
@@ -84,8 +84,8 @@ export default {
             if (stateGrag.drag) {
                 //
                 let ev = {}
-                ev.pageX = event.pageX
-                ev.pageY = event.pageY
+                ev.pageX = event.clientX
+                ev.pageY = event.clientY
                 ev.srcElement = event.srcElement
 
                 //
@@ -107,8 +107,8 @@ export default {
 
                 //
                 let ev = {}
-                ev.pageX = event.pageX
-                ev.pageY = event.pageY
+                ev.pageX = event.clientX
+                ev.pageY = event.clientY
                 ev.srcElement = event.srcElement
 
                 //

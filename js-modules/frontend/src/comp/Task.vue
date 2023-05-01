@@ -1,7 +1,7 @@
 <template>
     <div class="question">
-        <span>Вопрос: {{ task.text }} </span>
         <q-btn color="blue" text-color="black" label="AUD"/>
+        <span>Вопрос: {{ task.text }} </span>
     </div>
 </template>
 

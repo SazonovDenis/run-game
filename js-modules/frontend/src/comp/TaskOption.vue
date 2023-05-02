@@ -1,14 +1,21 @@
 <template>
-    <div v-bind:id="'taskOption-'+taskOption.id" class="option"
-         v-on:mousedown="onMouseDown"
+    <div>
 
-         v-on:touchstart="onTouchStart"
-         v-on:touchmove="onTouchMove"
-         v-on:touchend="onTouchEnd"
-         v-on:touchcancel="onTouchCancel"
-         v-on:click="xxx"
-    >
-        Вариант: {{ taskOption.text }}
+        <div v-if="this.taskOption.sound">
+            <q-btn color="blue" text-color="black" label="Play" @click="play"/>
+        </div>
+
+        <div v-bind:id="'taskOption-'+taskOption.id" class="option"
+             v-on:mousedown="onMouseDown"
+
+             v-on:touchstart="onTouchStart"
+             v-on:touchmove="onTouchMove"
+             v-on:touchend="onTouchEnd"
+             v-on:touchcancel="onTouchCancel"
+             v-on:click="xxx"
+        >
+            Вариант: {{ taskOption.text }}
+        </div>
     </div>
 </template>
 
@@ -320,10 +327,21 @@ export default {
             el.style.top = y - el.offsetHeight / 2 + 'px'
         },
 
+        play() {
+            if (this.taskOption.sound) {
+                this.audio.play()
+            }
+        },
+
     },
 
     mounted() {
+        let audio = this.audio = new Audio()
+        if (this.taskOption.sound) {
+            audio.src = this.taskOption.sound
+        }
     },
+
 
     computed: {}
 }

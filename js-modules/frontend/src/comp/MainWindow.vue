@@ -1,6 +1,6 @@
 <template>
+    <q-btn color="white" text-color="black" label="Next" v-on:click="test_nextTask()"/>
     <!--
-        <q-btn color="white" text-color="black" label="Reset" v-on:click="test_resetTasks()"/>
         <q-btn color="white" text-color="black" label="Reset Goal"
                v-on:click="resetGoalValue()"/>
     -->
@@ -94,6 +94,10 @@ export default {
             this.loadNextTask();
         },
 
+        test_nextTask() {
+            this.loadNextTask();
+        },
+
 
     },
 
@@ -104,6 +108,7 @@ export default {
 
         //let res = await kisBase.daoApi.invoke("m/Game/choiceTask", [1001])
 
+        this.taskIdx = -1;
         this.loadNextTask();
         this.resetGoalValue();
         this.setGoalInfo()

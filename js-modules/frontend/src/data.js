@@ -9,12 +9,14 @@ export default {
             taskOptions: [
                 {
                     id: 1039,
-                    text: "Радоваться 23 test",
+                    text: "investigate - Радоваться 23 test",
                     real: true,
+                    sound: "https://mnemoenglish.ru/sound/englishdom/investigate.mp3",
                 },
                 {
                     id: 8503,
-                    text: "Грустить 54 test"
+                    text: "mirror - Грустить 54 test",
+                    sound: "https://mnemoenglish.ru/sound/englishdom/mirror.mp3",
                 },
                 {
                     id: 2034,
@@ -34,7 +36,8 @@ export default {
         {
             task: {
                 id: 2,
-                text: "смысл еды",
+                text: "arrange - смысл еды",
+                sound: "https://mnemoenglish.ru/sound/englishdom/arrange.mp3",
             },
             taskOptions: [
                 {
@@ -52,7 +55,8 @@ export default {
         {
             task: {
                 id: 2,
-                text: "цвет кота",
+                text: "boast - цвет кота",
+                sound: "https://mnemoenglish.ru/sound/englishdom/boast.mp3",
             },
             taskOptions: [
                 {

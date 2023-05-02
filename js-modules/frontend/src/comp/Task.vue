@@ -1,6 +1,9 @@
 <template>
     <div class="question">
-        <q-btn color="blue" text-color="black" label="AUD"/>
+        <div v-if="this.task.sound">
+            <q-btn color="blue" text-color="black" label="Play" @click="play"/>
+        </div>
+
         <span>Вопрос: {{ task.text }} </span>
     </div>
 </template>
@@ -15,9 +18,35 @@ export default {
         task: {}
     },
 
-    methods: {},
+    methods: {
+        play() {
+            if (this.task.sound) {
+                this.audio.play()
+            }
+        }
+    },
 
-    computed: {}
+    watch: {
+        task: {
+            handler(newValue, oldValue) {
+                if (this.task.sound) {
+                    this.audio.src = this.task.sound
+                } else {
+                    this.audio.src = ""
+                }
+            }, deep: true,
+        }
+    },
+
+    computed: {},
+
+    mounted() {
+        let audio = this.audio = new Audio()
+        audio.addEventListener('loadeddata', function() {
+            //loaded = true;
+            audio.play();
+        }, false);
+    },
 }
 </script>
 

@@ -1,13 +1,17 @@
 <template>
-    <div class="question">
+    <div class="question" @click="play">
         <!--
                 <span>Вопрос: </span>
         -->
-        <span>{{ task.text }}</span>
-        <div v-if="this.task.sound">
-            <q-btn color="blue" text-color="black" label="Play" @click="play"/>
-        </div>
+        <span v-if="this.task.sound">
+            <q-icon size="2em" name="asterisk"/>
+            <span>&nbsp;</span>
+        </span>
 
+        <span>{{ task.text }}</span>
+
+        <span>&nbsp;</span>
+        <q-icon size="2em" name="help" @click="getHint"/>
     </div>
 </template>
 
@@ -18,7 +22,8 @@ export default {
     components: {},
 
     props: {
-        task: {}
+        task: {},
+        state: {},
     },
 
     methods: {
@@ -26,7 +31,10 @@ export default {
             if (this.task.sound) {
                 this.audio.play()
             }
-        }
+        },
+        getHint() {
+            this.state.game.modeShowOptions = "hint-true"
+        },
     },
 
     watch: {

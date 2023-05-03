@@ -14,7 +14,7 @@
              v-on:touchcancel="onTouchCancel"
              v-on:click="xxx"
         >
-            Вариант: {{ taskOption.text }}
+            {{ taskOption.text }}
         </div>
     </div>
 </template>
@@ -187,6 +187,7 @@ export default {
             let stateGrag = this.state.drag
             let stateGoal = this.state.goal
             let stateBall = this.state.ball
+            let stateGame = this.state.game
 
             //
             let elBall = document.getElementById("ball")
@@ -214,12 +215,16 @@ export default {
                 stateGrag.dy = stateGrag.dy * this.maxDl / dl
             }
 
+            // Выбрали правильный ответ - отреагируем
             if (this.isOptionIsTrueAnswer(this.taskOption)) {
                 this.ballIsTrue = true
+                stateGame.modeShowOptions = null
             } else {
                 this.ballIsTrue = false
                 stateBall.text = ""
                 stateGoal.value = stateGoal.value + 1
+                stateGame.modeShowOptions = "hint-true"
+                stateGame.goalHitSize = 1
             }
             stateBall.value = 1
 
@@ -234,6 +239,7 @@ export default {
             let stateGrag = this.state.drag
             let stateGoal = this.state.goal
             let stateBall = this.state.ball
+            let stateGame = this.state.game
 
             //
             stateGrag.interval = setInterval(() => {
@@ -255,7 +261,7 @@ export default {
                 //
                 if (utilsCore.intersectRect(rectTrace, rectGoal)) {
                     if (this.ballIsTrue) {
-                        stateGoal.value = stateGoal.value - 1
+                        stateGoal.value = stateGoal.value - stateGame.goalHitSize
                     }
 
                     //

@@ -1,10 +1,10 @@
 <template>
     <div class="options" id="options">
-<!--
-        Варианты ответов
--->
+        <!--
+                Варианты ответов
+        -->
 
-        <div v-for="taskOption in taskOptions">
+        <div v-for="taskOption in taskOptions" v-bind:class="getClassName(taskOption)">
             <TaskOption :taskOption="taskOption" :state="state"
                         :animationInterval="10"
                         v-on:changeGoalValue="this.$emit('changeGoalValue')"
@@ -32,6 +32,11 @@ export default {
             this.$emit('changeGoalValue', v)
         },
 
+        getClassName(taskOption) {
+            if (this.state.game.modeShowOptions == "hint-true" && taskOption.trueFact) {
+                return "fact-true"
+            }
+        },
     },
 
     computed: {}
@@ -44,6 +49,10 @@ export default {
 .options {
     user-select: none;
     touch-action: none;
+}
+
+.fact-true {
+    border: 2px solid green;
 }
 
 </style>

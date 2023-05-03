@@ -1,8 +1,8 @@
 <template>
     <div class="user-task">
 
-        <div _style="border: 1px solid green">
-            <Task :task="usrTask.task"/>
+        <div>
+            <Task :task="usrTask.task" :state="dataState"/>
         </div>
 
 
@@ -12,7 +12,7 @@
         <div class="game-field">-</div>
 
 
-        <div _style="border: 1px solid red; bottom: 10px" class="task-options">
+        <div class="task-options">
             <TaskOptions :taskOptions="usrTask.taskOptions" :state="dataState"
                          v-on:changeGoalValue="this.$emit('changeGoalValue')"/>
         </div>

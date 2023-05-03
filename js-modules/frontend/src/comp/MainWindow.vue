@@ -45,10 +45,18 @@ export default {
                     text: null,
                     value: 0,
                 },
-            },
-
-            taskIdx: 1,
+                Utqvgktq                game
+    :
+        {
+            modeShowOptions: null,
+                goalHitSize
+        :
+            null,
         }
+    },
+
+        taskIdx: 1,
+    }
     },
 
     methods: {
@@ -77,7 +85,10 @@ export default {
             // Присваиваем данные задания себе
             this.usrTask = dataTask
 
-            //
+            // Разные умолчания
+            this.dataState.game.modeShowOptions = null
+            this.dataState.game.goalHitSize = 4
+            this.resetGoalValue()
             this.setGoalInfo()
         },
 

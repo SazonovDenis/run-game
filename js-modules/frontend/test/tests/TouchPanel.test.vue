@@ -10,8 +10,8 @@
 <script>
 
 
-import TouchPanel from "../../src/comp/TouchPanel"
-import TouchPanelGame from "../../src/comp/TouchPanelGame"
+import TouchPanel from "../../src/comp/notuse/TouchPanel"
+import TouchPanelGame from "../../src/comp/notuse/TouchPanelGame"
 
 function data() {
     return {}

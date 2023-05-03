@@ -1,9 +1,5 @@
 <template>
     <q-btn color="white" text-color="black" label="Next" v-on:click="test_nextTask()"/>
-    <!--
-        <q-btn color="white" text-color="black" label="Reset Goal"
-               v-on:click="resetGoalValue()"/>
-    -->
 
     <UserTaskPanel :usrTask="usrTask" :dataState="dataState"
                    v-on:changeGoalValue="changeGoalValue"/>
@@ -45,6 +41,10 @@ export default {
                     text: null,
                     value: null,
                 },
+                ball: {
+                    text: null,
+                    value: 0,
+                },
             },
 
             taskIdx: 1,
@@ -77,16 +77,17 @@ export default {
             // Присваиваем данные задания себе
             this.usrTask = dataTask
 
-
+            //
+            this.setGoalInfo()
         },
 
         setGoalInfo() {
-            this.dataState.goal.text = "Hit here, task#" + (this.taskIdx + 1)
+            this.dataState.goal.text = "Hit here #" + (this.taskIdx + 1) + ", " + this.usrTask.task.text
         },
 
         // Сбрасываем состояние результата (цели)
         resetGoalValue() {
-            this.dataState.goal.value = 3
+            this.dataState.goal.value = 4
         },
 
         test_resetTasks() {

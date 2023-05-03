@@ -1,5 +1,8 @@
 <template>
-    <div class="ball-panel">&nbsp;</div>
+    <div class="ball-panel"
+         v-bind:style="{ display: display, width: width,  height: height }">
+        {{ ball.text }}
+    </div>
 </template>
 
 <script>
@@ -8,11 +11,32 @@
 export default {
     components: {},
 
-    props: {},
+    props: {
+        ball: {}
+    },
 
     methods: {},
 
-    computed: {}
+    computed: {
+
+        width() {
+            return 2 * this.ball.value + 'em'
+        },
+
+        height() {
+            return 2 * this.ball.value + 'em'
+        },
+
+        display() {
+            if (this.ball.value <= 0) {
+                return "none"
+            } else {
+                return "block"
+            }
+        },
+
+    }
+
 }
 </script>
 
@@ -20,12 +44,12 @@ export default {
 <style>
 
 .ball-panel {
-    width: 2em;
-    height: 2em;
-    border-radius: 1em;
+    _width: 2em;
+    _height: 2em;
+    border-radius: 2em;
     background-color: rgba(100, 200, 0, 0.3);
     z-index: 2000;
-    display: none;
+    _display: none;
 }
 
 </style>

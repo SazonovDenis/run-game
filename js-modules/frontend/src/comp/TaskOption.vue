@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div class="option">
 
         <div v-if="this.taskOption.sound">
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
 
-        <div v-bind:id="'taskOption-'+taskOption.id" class="option"
+        <div v-bind:id="'taskOption-'+taskOption.id"
              v-on:mousedown="onMouseDown"
 
              v-on:touchstart="onTouchStart"
@@ -46,7 +46,11 @@ export default {
             type: Number
         },
         minDl: {
-            default: 5,
+            default: 2,
+            type: Number
+        },
+        maxDl: {
+            default: 6,
             type: Number
         },
         state: {},
@@ -135,6 +139,7 @@ export default {
 
             let stateGrag = this.state.drag
             let stateGoal = this.state.goal
+            let stateBall = this.state.ball
 
             stateGrag.dtStart = new Date()
             stateGrag.sx = ev.pageX
@@ -149,8 +154,10 @@ export default {
             clearInterval(stateGrag.interval)
 
             //
-            elBall.style.display = 'block'
-            elBall.innerText = taskOption.text
+            stateBall.value = 1
+            stateBall.text = taskOption.text
+            //elBall.style.display = 'block'
+            //elBall.innerText = taskOption.text
 
             //
             this.moveElementTo(elBall, stateGrag.x, stateGrag.y)
@@ -179,6 +186,7 @@ export default {
 
             let stateGrag = this.state.drag
             let stateGoal = this.state.goal
+            let stateBall = this.state.ball
 
             //
             let elBall = document.getElementById("ball")
@@ -194,12 +202,26 @@ export default {
             let dragK = stateGrag.duration / this.animationInterval
             stateGrag.dx = (stateGrag.x - stateGrag.sx) / dragK
             stateGrag.dy = (stateGrag.y - stateGrag.sy) / dragK
-            // Чтобы не слишком медленно летело
+            // Чтобы  летело не слишком медленно...
             let dl = Math.sqrt(stateGrag.dx * stateGrag.dx + stateGrag.dy * stateGrag.dy)
             if (dl < this.minDl) {
                 stateGrag.dx = stateGrag.dx * this.minDl / dl
                 stateGrag.dy = stateGrag.dy * this.minDl / dl
             }
+            // ... и не слишком быстро
+            if (dl > this.maxDl) {
+                stateGrag.dx = stateGrag.dx * this.maxDl / dl
+                stateGrag.dy = stateGrag.dy * this.maxDl / dl
+            }
+
+            if (this.isOptionIsTrueAnswer(this.taskOption)) {
+                this.ballIsTrue = true
+            } else {
+                this.ballIsTrue = false
+                stateBall.text = ""
+                stateGoal.value = stateGoal.value + 1
+            }
+            stateBall.value = 1
 
             //
             this.startMoveAnimation(elBall, stateGrag.dx, stateGrag.dy)
@@ -211,6 +233,7 @@ export default {
 
             let stateGrag = this.state.drag
             let stateGoal = this.state.goal
+            let stateBall = this.state.ball
 
             //
             stateGrag.interval = setInterval(() => {
@@ -231,13 +254,16 @@ export default {
                 let rectGoal = utilsCore.getElRect(elGoal)
                 //
                 if (utilsCore.intersectRect(rectTrace, rectGoal)) {
-                    stateGoal.value = stateGoal.value - 1
+                    if (this.ballIsTrue) {
+                        stateGoal.value = stateGoal.value - 1
+                    }
 
                     //
                     clearInterval(stateGrag.interval)
 
                     //
-                    elBall.style.display = "none"
+                    stateBall.value = 0
+                    //elBall.style.display = "none"
 
                     //
                     this.$emit('changeGoalValue', stateGoal.value)
@@ -249,11 +275,18 @@ export default {
                 // Выход за границы
                 if (stateGrag.x + this.ballWidth > innerWidth || stateGrag.x < 0 || stateGrag.y + this.ballHeihth > innerHeight || stateGrag.y < 0) {
                     clearInterval(stateGrag.interval)
-                    elBall.style.display = "none"
+                    stateBall.value = 0
+                    //elBall.style.display = "none"
                     return
                 }
 
                 // Продолжение движения
+                if (!this.ballIsTrue) {
+                    stateBall.value = stateBall.value - 1.9 * (this.animationInterval / 1000)
+                } else {
+                    stateBall.value = stateBall.value + 1.2 * (this.animationInterval / 1000)
+                }
+                //
                 this.moveElementTo(elBall, stateGrag.x, stateGrag.y)
             }, this.animationInterval)
         },
@@ -320,6 +353,14 @@ export default {
             this.onTouchEnd(event)
         },
 
+        isOptionIsTrueAnswer(taskOption) {
+            if (taskOption.trueFact) {
+                return true
+            } else {
+                return false
+            }
+        },
+
         // передвинуть под координаты x, y
         // и сдвинуть на половину ширины/высоты для центрирования
         moveElementTo(el, x, y) {
@@ -354,7 +395,7 @@ export default {
     user-select: none;
     max-width: 20em;
     margin: 5px;
-    padding: 5px;
+    padding: 10px;
     border-radius: 5px;
     background-color: #fff5da;
 }

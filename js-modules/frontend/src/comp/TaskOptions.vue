@@ -1,6 +1,8 @@
 <template>
     <div class="options" id="options">
+<!--
         Варианты ответов
+-->
 
         <div v-for="taskOption in taskOptions">
             <TaskOption :taskOption="taskOption" :state="state"

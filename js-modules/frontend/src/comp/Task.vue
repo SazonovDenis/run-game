@@ -1,10 +1,13 @@
 <template>
     <div class="question">
+        <!--
+                <span>Вопрос: </span>
+        -->
+        <span>{{ task.text }}</span>
         <div v-if="this.task.sound">
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
 
-        <span>Вопрос: {{ task.text }} </span>
     </div>
 </template>
 

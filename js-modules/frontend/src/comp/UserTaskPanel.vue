@@ -1,23 +1,24 @@
 <template>
     <div class="user-task">
-        <div>
-            Вопрос и варианты ответов
-        </div>
 
-        <div style="border: 1px solid green">
+        <div _style="border: 1px solid green">
             <Task :task="usrTask.task"/>
         </div>
 
+
         <Goal class="goal" id="goal" :goal="dataState.goal"/>
+
 
         <div class="game-field">-</div>
 
-        <div style="border: 1px solid red; bottom: 10px" class="task-options">
+
+        <div _style="border: 1px solid red; bottom: 10px" class="task-options">
             <TaskOptions :taskOptions="usrTask.taskOptions" :state="dataState"
                          v-on:changeGoalValue="this.$emit('changeGoalValue')"/>
         </div>
 
-        <Ball class="ball" id="ball" :drag="dataState.drag"/>
+
+        <Ball class="ball" id="ball" :drag="dataState.drag" :ball="dataState.ball"/>
 
     </div>
 
@@ -68,6 +69,7 @@ export default {
 }
 
 .game-field {
+    border: 1px dotted red;
     height: 200px;
 }
 

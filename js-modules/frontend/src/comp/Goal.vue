@@ -1,7 +1,9 @@
 <template>
-    <div class="goal-panel" v-bind:style="{ height: height, display: display }">
-        <div>{{ goal.text }}</div>
-        <div class="goal-value">{{ goal.value }}</div>
+    <div class="goal-panel" v-bind:style="{ display: display }">
+        <div class="goal-value-bar" v-bind:style="{ height: height }">
+            <div class="goal-value">{{ goal.text }}</div>
+            <div class="goal-value-text">{{ goal.value }}</div>
+        </div>
     </div>
 </template>
 
@@ -39,16 +41,25 @@ export default {
 <style>
 
 .goal-panel {
-    padding: 10px;
     text-align: center;
     width: 7em;
+    height: 8em;
     border-radius: 1em;
-    background-color: rgba(0, 143, 200, 0.3);
+    border: 2px solid rgba(0, 143, 200, 0.6);
     z-index: 1000;
     display: block;
 }
 
 .goal-value {
+    padding: 5px;
+}
+
+.goal-value-bar {
+    border-radius: 1em;
+    background-color: rgba(0, 143, 200, 0.3);
+}
+
+.goal-value-text {
     font-size: 200%;
 }
 

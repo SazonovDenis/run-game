@@ -3,20 +3,18 @@ export default {
     tasks: [
         {
             task: {
-                id: 1,
-                text: "В чем смысл жизни 1 test",
+                id: 11,
+                text: "В чем смысл жизни",
             },
             taskOptions: [
                 {
                     id: 1039,
-                    text: "investigate - Радоваться 23 test",
-                    real: true,
-                    sound: "https://mnemoenglish.ru/sound/englishdom/investigate.mp3",
+                    text: "Радоваться 23 test",
+                    trueFact: true,
                 },
                 {
                     id: 8503,
-                    text: "mirror - Грустить 54 test",
-                    sound: "https://mnemoenglish.ru/sound/englishdom/mirror.mp3",
+                    text: "Грустить 54 test",
                 },
                 {
                     id: 2034,
@@ -33,17 +31,101 @@ export default {
             ],
         },
 
+
+        {
+            task: {
+                id: 1,
+                text: "mirror",
+                sound: "https://mnemoenglish.ru/sound/englishdom/mirror.mp3",
+            },
+            taskOptions: [
+                {
+                    id: 8503,
+                    text: "Грустить",
+                },
+                {
+                    id: 2034,
+                    text: "Движение"
+                },
+                {
+                    id: 5103,
+                    text: "Туманы"
+                },
+                {
+                    id: 1039,
+                    text: "Зеркало",
+                    trueFact: true,
+                },
+                {
+                    id: 4022,
+                    text: "Холода и ветра"
+                }
+            ],
+        },
+
+
         {
             task: {
                 id: 2,
-                text: "arrange - смысл еды",
+                text: "arrange",
                 sound: "https://mnemoenglish.ru/sound/englishdom/arrange.mp3",
             },
             taskOptions: [
                 {
                     id: 18503,
+                    text: "хвастовство, похвальба"
+                },
+                {
+                    id: 18501,
+                    text: "приводить в порядок",
+                    trueFact: true,
+                },
+                {
+                    id: 18508,
+                    text: "плохая погода"
+                },
+            ]
+        },
+
+
+        {
+            task: {
+                id: 2,
+                text: "boast",
+                sound: "https://mnemoenglish.ru/sound/englishdom/boast.mp3",
+            },
+            taskOptions: [
+                {
+                    id: 201,
+                    text: "карать"
+                },
+                {
+                    id: 202,
+                    text: "послать мяч за боковую линию"
+                },
+                {
+                    id: 203,
+                    text: "хвастовство, похвальба",
+                    trueFact: true,
+                },
+                {
+                    id: 204,
+                    text: "красота, приятность",
+                },
+            ]
+        },
+
+
+        {
+            task: {
+                id: 12,
+                text: "смысл еды",
+            },
+            taskOptions: [
+                {
+                    id: 18503,
                     text: "радоваться",
-                    real: true,
+                    trueFact: true,
                 },
                 {
                     id: 18503,
@@ -52,11 +134,11 @@ export default {
             ]
         },
 
+
         {
             task: {
-                id: 2,
-                text: "boast - цвет кота",
-                sound: "https://mnemoenglish.ru/sound/englishdom/boast.mp3",
+                id: 13,
+                text: "цвет кота",
             },
             taskOptions: [
                 {
@@ -69,12 +151,16 @@ export default {
                 },
                 {
                     id: 203,
+                    text: "в клетку"
+                },
+                {
+                    id: 203,
                     text: "зеленый"
                 },
                 {
                     id: 204,
-                    text: "черный",
-                    real: true,
+                    text: "в полоску",
+                    trueFact: true,
                 },
             ]
         }

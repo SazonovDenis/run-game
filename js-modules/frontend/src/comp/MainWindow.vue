@@ -45,18 +45,14 @@ export default {
                     text: null,
                     value: 0,
                 },
-                Utqvgktq                game
-    :
-        {
-            modeShowOptions: null,
-                goalHitSize
-        :
-            null,
-        }
-    },
+                game: {
+                    modeShowOptions: null,
+                    goalHitSize: null,
+                }
+            },
 
-        taskIdx: 1,
-    }
+            taskIdx: 1,
+        }
     },
 
     methods: {

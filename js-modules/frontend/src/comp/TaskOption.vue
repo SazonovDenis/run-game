@@ -226,6 +226,9 @@ export default {
                 this.ballIsTrue = false
                 stateBall.text = ""
                 stateGoal.value = stateGoal.value + 1
+                if (stateGoal.value > 10) {
+                    stateGoal.value = 10
+                }
                 stateGame.modeShowOptions = "hint-true"
                 stateGame.goalHitSize = 1
             }
@@ -293,7 +296,10 @@ export default {
                 if (!this.ballIsTrue) {
                     stateBall.value = stateBall.value - 1.9 * (this.animationInterval / 1000)
                 } else {
-                    stateBall.value = stateBall.value + 1.2 * (this.animationInterval / 1000)
+                    stateBall.value = stateBall.value + 2.5 * (this.animationInterval / 1000)
+                }
+                if (stateBall.value > 5) {
+                    stateBall.value = 5
                 }
                 //
                 this.moveElementTo(elBall, stateGrag.x, stateGrag.y)

@@ -49,11 +49,11 @@ export default {
             type: Number
         },
         minDl: {
-            default: 2,
+            default: 100,
             type: Number
         },
         maxDl: {
-            default: 6,
+            default: 1000,
             type: Number
         },
         state: {},
@@ -68,42 +68,42 @@ export default {
             //console.info("onMouseDown", event)
 
             //
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
 
             //
-            stateGrag.drag = true
+            stateDrag.drag = true
 
             //
             document.addEventListener('mousemove', this.onMouseMove)
             document.addEventListener('mouseup', this.onMouseUp)
 
             //
-            let ev = {}
-            ev.pageX = event.clientX
-            ev.pageY = event.clientY
-            ev.srcElement = event.srcElement
+            let eventDrag = {}
+            eventDrag.x = event.pageX
+            eventDrag.y = event.pageY
+            eventDrag.srcElement = event.srcElement
 
             //
-            this.doDragStart(ev)
+            this.doDragStart(eventDrag)
         },
 
         onMouseMove(event) {
             //console.info("onMouseMove", event)
 
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
 
             //
-            if (stateGrag.drag) {
+            if (stateDrag.drag) {
                 //
-                let ev = {}
-                ev.pageX = event.clientX
-                ev.pageY = event.clientY
-                ev.srcElement = event.srcElement
+                let eventDrag = {}
+                eventDrag.x = event.pageX
+                eventDrag.y = event.pageY
+                eventDrag.srcElement = event.srcElement
 
                 //
-                this.doDragMove(ev)
+                this.doDragMove(eventDrag)
             }
         },
 
@@ -112,82 +112,83 @@ export default {
             document.removeEventListener('mouseup', this.onMouseUp)
 
             //
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
 
             //
-            if (stateGrag.drag) {
-                stateGrag.drag = false
+            if (stateDrag.drag) {
+                stateDrag.drag = false
 
                 //
-                let ev = {}
-                ev.pageX = event.clientX
-                ev.pageY = event.clientY
-                ev.srcElement = event.srcElement
+                let eventDrag = {}
+                eventDrag.x = event.pageX
+                eventDrag.y = event.pageY
+                eventDrag.srcElement = event.srcElement
 
                 //
-                this.doDragStop(ev)
+                this.doDragStop(eventDrag)
             }
         },
 
 
-        doDragStart(ev) {
-            //console.info("doDragStart", ev)
+        doDragStart(eventDrag) {
+            //console.info("doDragStart", eventDrag)
 
             let elBall = document.getElementById("ball")
             let elGoal = document.getElementById("goal")
 
-            let obj = ev.srcElement
+            let obj = eventDrag.srcElement
             let taskOption = this.taskOption
 
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
             let stateBall = this.state.ball
 
-            stateGrag.dtStart = new Date()
-            stateGrag.sx = ev.pageX
-            stateGrag.sy = ev.pageY
-            stateGrag.x = ev.pageX
-            stateGrag.y = ev.pageY
+            stateDrag.dtStart = new Date()
+            stateDrag.sx = eventDrag.x
+            stateDrag.sy = eventDrag.y
+            stateDrag.x = eventDrag.x
+            stateDrag.y = eventDrag.y
 
-            //console.info("obj: ", obj)
+            //
             console.info("obj.id: ", obj.id)
 
             //
-            clearInterval(stateGrag.interval)
+            clearInterval(stateDrag.interval)
 
             //
             stateBall.value = 1
             stateBall.text = taskOption.text
-            //elBall.style.display = 'block'
-            //elBall.innerText = taskOption.text
 
             //
-            this.moveElementTo(elBall, stateGrag.x, stateGrag.y)
+            stateBall.x = stateDrag.x
+            stateBall.y = stateDrag.y
         },
 
-        doDragMove(ev) {
-            //console.info("doDragMove", ev)
+        doDragMove(eventDrag) {
+            //console.info("doDragMove", eventDrag)
 
             //
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
+            let stateBall = this.state.ball
 
             //
             let elBall = document.getElementById("ball")
 
             //
-            stateGrag.x = ev.pageX
-            stateGrag.y = ev.pageY
+            stateDrag.x = eventDrag.x
+            stateDrag.y = eventDrag.y
 
             //
-            this.moveElementTo(elBall, stateGrag.x, stateGrag.y)
+            stateBall.x = stateDrag.x
+            stateBall.y = stateDrag.y
         },
 
-        doDragStop(ev) {
-            //console.info("doDragStop", ev)
+        doDragStop(eventDrag) {
+            //console.info("doDragStop", eventDrag)
 
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
             let stateBall = this.state.ball
             let stateGame = this.state.game
@@ -197,26 +198,32 @@ export default {
             let goal = document.getElementById("goal")
 
             //
-            stateGrag.x = ev.pageX
-            stateGrag.y = ev.pageY
-            //
-            stateGrag.dtStop = new Date()
-            stateGrag.duration = Math.abs(stateGrag.dtStop - stateGrag.dtStart)
-            //
-            let dragK = stateGrag.duration / this.animationInterval
-            stateGrag.dx = (stateGrag.x - stateGrag.sx) / dragK
-            stateGrag.dy = (stateGrag.y - stateGrag.sy) / dragK
-            // Чтобы  летело не слишком медленно...
-            let dl = Math.sqrt(stateGrag.dx * stateGrag.dx + stateGrag.dy * stateGrag.dy)
+            stateDrag.x = eventDrag.x
+            stateDrag.y = eventDrag.y
+            stateDrag.dtStop = new Date()
+            stateDrag.duration = Math.abs(stateDrag.dtStop - stateDrag.dtStart)
+
+            // Скорость броска, пкс/сек
+            let dx = 1000 * (stateDrag.x - stateDrag.sx) / stateDrag.duration
+            let dy = 1000 * (stateDrag.y - stateDrag.sy) / stateDrag.duration
+
+            // Чтобы  летело не слишком...
+            let dl = Math.sqrt(dx * dx + dy * dy)
+            // ... не слишком медленно...
             if (dl < this.minDl) {
-                stateGrag.dx = stateGrag.dx * this.minDl / dl
-                stateGrag.dy = stateGrag.dy * this.minDl / dl
+                dx = dx * this.minDl / dl
+                dy = dy * this.minDl / dl
             }
             // ... и не слишком быстро
             if (dl > this.maxDl) {
-                stateGrag.dx = stateGrag.dx * this.maxDl / dl
-                stateGrag.dy = stateGrag.dy * this.maxDl / dl
+                dx = dx * this.maxDl / dl
+                dy = dy * this.maxDl / dl
             }
+
+            // Учтем количество кадров в секунду
+            let framePerSec = 1000 / this.animationInterval
+            stateDrag.dx = dx / framePerSec
+            stateDrag.dy = dy / framePerSec
 
             // Выбрали правильный ответ - отреагируем
             if (this.isOptionIsTrueAnswer(this.taskOption)) {
@@ -235,33 +242,33 @@ export default {
             stateBall.value = 1
 
             //
-            this.startMoveAnimation(elBall, stateGrag.dx, stateGrag.dy)
+            this.startMoveAnimation(elBall, stateDrag.dx, stateDrag.dy)
         },
 
         startMoveAnimation(el, dx, dy) {
             let elBall = document.getElementById("ball")
             let elGoal = document.getElementById("goal")
 
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
             let stateBall = this.state.ball
             let stateGame = this.state.game
 
             //
-            stateGrag.interval = setInterval(() => {
+            stateDrag.interval = setInterval(() => {
                 // Шаг
-                stateGrag.x = stateGrag.x + dx
-                stateGrag.y = stateGrag.y + dy
+                stateDrag.x = stateDrag.x + dx
+                stateDrag.y = stateDrag.y + dy
 
                 // Пересечения определяем как пересечение отрезка, проведенного
                 // от предыдущей точки движения до текущей с прямоугольником цели.
                 // Так мы не дадим "проскочить" снаряду сквозь цель
                 // при слишком большой скорости движения.
                 let rectTrace = {
-                    x1: stateGrag.x,
-                    x2: stateGrag.x - dx,
-                    y1: stateGrag.y,
-                    y2: stateGrag.y - dy,
+                    x1: stateDrag.x,
+                    x2: stateDrag.x - dx,
+                    y1: stateDrag.y,
+                    y2: stateDrag.y - dy,
                 }
                 let rectGoal = utilsCore.getElRect(elGoal)
                 //
@@ -271,7 +278,7 @@ export default {
                     }
 
                     //
-                    clearInterval(stateGrag.interval)
+                    clearInterval(stateDrag.interval)
 
                     //
                     stateBall.value = 0
@@ -284,25 +291,31 @@ export default {
                     return
                 }
 
-                // Выход за границы
-                if (stateGrag.x + this.ballWidth > innerWidth || stateGrag.x < 0 || stateGrag.y + this.ballHeihth > innerHeight || stateGrag.y < 0) {
-                    clearInterval(stateGrag.interval)
+                // Выход шарика за границы экрана
+                if (stateDrag.x + this.ballWidth > innerWidth || stateDrag.x < 0 || stateDrag.y + this.ballHeihth > innerHeight || stateDrag.y < 0) {
+                    clearInterval(stateDrag.interval)
                     stateBall.value = 0
-                    //elBall.style.display = "none"
                     return
                 }
 
-                // Продолжение движения
+                // Рост или уменьшение по ходу движения
+                let framePerSec = 1000 / this.animationInterval
                 if (!this.ballIsTrue) {
-                    stateBall.value = stateBall.value - 1.9 * (this.animationInterval / 1000)
+                    stateBall.value = stateBall.value - 1.9 / framePerSec
                 } else {
-                    stateBall.value = stateBall.value + 2.5 * (this.animationInterval / 1000)
+                    stateBall.value = stateBall.value + 2.1 / framePerSec
                 }
-                if (stateBall.value > 5) {
-                    stateBall.value = 5
+
+                // Выход размера шарика за ограничение размера
+                if (stateBall.value > 5 || stateBall.value < 0) {
+                    clearInterval(stateDrag.interval)
+                    stateBall.value = 0
+
                 }
-                //
-                this.moveElementTo(elBall, stateGrag.x, stateGrag.y)
+
+                // Продолжение движения
+                stateBall.x = stateDrag.x
+                stateBall.y = stateDrag.y
             }, this.animationInterval)
         },
 
@@ -310,57 +323,57 @@ export default {
             let touch = event.touches[event.touches.length - 1]
 
             //
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
 
             //
-            stateGrag.drag = true
+            stateDrag.drag = true
 
             //
-            let ev = {}
-            ev.pageX = touch.pageX
-            ev.pageY = touch.pageY
-            ev.srcElement = event.srcElement
+            let eventDrag = {}
+            eventDrag.x = touch.pageX
+            eventDrag.y = touch.pageY
+            eventDrag.srcElement = event.srcElement
 
             //
-            this.doDragStart(ev)
+            this.doDragStart(eventDrag)
         },
 
         onTouchMove(event) {
             let touch = event.touches[event.touches.length - 1]
 
             //
-            let ev = {}
-            ev.pageX = touch.pageX
-            ev.pageY = touch.pageY
-            ev.srcElement = event.srcElement
+            let eventDrag = {}
+            eventDrag.x = touch.pageX
+            eventDrag.y = touch.pageY
+            eventDrag.srcElement = event.srcElement
 
             //
-            this.doDragMove(ev)
+            this.doDragMove(eventDrag)
         },
 
         onTouchEnd(event) {
             //console.info("onTouchCancel", event)
 
             //
-            let stateGrag = this.state.drag
+            let stateDrag = this.state.drag
             let stateGoal = this.state.goal
 
             //
-            let ev = {}
+            let eventDrag = {}
             if (event.touches.length > 0) {
                 let touch = event.touches[event.touches.length - 1]
-                ev.pageX = touch.pageX
-                ev.pageY = touch.pageY
-                ev.srcElement = event.srcElement
+                eventDrag.x = touch.pageX
+                eventDrag.y = touch.pageY
+                eventDrag.srcElement = event.srcElement
             } else {
-                ev.pageX = stateGrag.x
-                ev.pageY = stateGrag.y
-                ev.srcElement = event.srcElement
+                eventDrag.x = stateDrag.x
+                eventDrag.y = stateDrag.y
+                eventDrag.srcElement = event.srcElement
             }
 
             //
-            this.doDragStop(ev)
+            this.doDragStop(eventDrag)
         },
 
         onTouchCancel(event) {

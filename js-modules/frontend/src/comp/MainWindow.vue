@@ -57,8 +57,8 @@ export default {
 
     methods: {
         changeGoalValue(v) {
-            console.info("changeGoalValue", v)
-            console.info("this.goal.value: " + this.dataState.goal.value)
+            //console.info("changeGoalValue", v)
+            //console.info("this.goal.value: " + this.dataState.goal.value)
             if (this.dataState.goal.value == 0) {
                 // Новое задание
                 this.loadNextTask()

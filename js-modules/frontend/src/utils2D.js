@@ -41,9 +41,9 @@ export default {
     getElRect(el) {
         let rect = {
             x1: el.offsetLeft,
-            x2: el.offsetLeft + el.clientWidth,
+            x2: el.offsetLeft + el.offsetWidth,
             y1: el.offsetTop,
-            y2: el.offsetTop + el.clientHeight,
+            y2: el.offsetTop + el.offsetHeight,
         }
         return rect
     },

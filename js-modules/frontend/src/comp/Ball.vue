@@ -1,6 +1,6 @@
 <template>
     <div class="ball-panel"
-         v-bind:style="{ display: display, width: width,  height: height }">
+         v-bind:style="{ display: display, width: width,  height: height , left: left,  top: top }">
         {{ ball.text }}
     </div>
 </template>
@@ -12,19 +12,43 @@ export default {
     components: {},
 
     props: {
-        ball: {}
+        ball: {},
     },
 
-    methods: {},
+    data() {
+        return {
+            widthBase: 50
+        }
+    },
+
+    methods: {
+        getSize() {
+            let d = this.widthBase
+
+            if (this.$el && this.$el.offsetWidth && this.$el.offsetWidth > 0) {
+                d = this.$el.offsetWidth
+            }
+
+            return d
+        }
+    },
 
     computed: {
 
         width() {
-            return 2 * this.ball.value + 'em'
+            return this.widthBase * this.ball.value + 'px'
         },
 
         height() {
-            return 2 * this.ball.value + 'em'
+            return this.widthBase * this.ball.value + 'px'
+        },
+
+        left() {
+            return this.ball.x - this.getSize() / 2 + "px"
+        },
+
+        top() {
+            return this.ball.y - this.getSize() / 2 + "px"
         },
 
         display() {
@@ -44,9 +68,10 @@ export default {
 <style>
 
 .ball-panel {
+    border: 1px solid green;
     user-select: none;
-    _width: 2em;
-    _height: 2em;
+    width: 1em;
+    height: 1em;
     border-radius: 10em;
     background-color: rgba(100, 200, 0, 0.3);
     z-index: 2000;

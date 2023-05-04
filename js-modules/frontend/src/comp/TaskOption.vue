@@ -282,7 +282,6 @@ export default {
 
                     //
                     stateBall.value = 0
-                    //elBall.style.display = "none"
 
                     //
                     apx.app.eventBus.emit("changeGoalValue", stateGoal.value)
@@ -303,7 +302,7 @@ export default {
                 if (!this.ballIsTrue) {
                     stateBall.value = stateBall.value - 1.9 / framePerSec
                 } else {
-                    stateBall.value = stateBall.value + 2.1 / framePerSec
+                    stateBall.value = stateBall.value + 1.1 / framePerSec
                 }
 
                 // Выход размера шарика за ограничение размера

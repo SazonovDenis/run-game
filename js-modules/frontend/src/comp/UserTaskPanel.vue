@@ -39,20 +39,6 @@ export default {
         dataState: {},
     },
 
-    /*
-        created() {
-            this.dataState = data
-        },
-    */
-
-    mounted() {
-        //console.info("=== UserTaskPanel.mounted")
-        //console.info("dataState: " + this.dataState)
-        //console.info("dataState.drag: " + this.dataState.drag)
-        //console.info("dataState.goal: " + this.dataState.goal)
-        //console.info()
-    },
-
     methods: {},
 
     computed: {}

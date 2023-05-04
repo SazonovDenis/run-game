@@ -44,12 +44,12 @@ export default {
 <style>
 
 .ball-panel {
+    user-select: none;
     _width: 2em;
     _height: 2em;
-    border-radius: 2em;
+    border-radius: 10em;
     background-color: rgba(100, 200, 0, 0.3);
     z-index: 2000;
-    _display: none;
 }
 
 </style>

@@ -7,7 +7,6 @@
         <div v-for="taskOption in taskOptions" v-bind:class="getClassName(taskOption)">
             <TaskOption :taskOption="taskOption" :state="state"
                         :animationInterval="10"
-                        v-on:changeGoalValue="this.$emit('changeGoalValue')"
             />
         </div>
 
@@ -27,11 +26,6 @@ export default {
     },
 
     methods: {
-        changeGoalValueX(v) {
-            console.info("changeGoalValue X", v)
-            this.$emit('changeGoalValue', v)
-        },
-
         getClassName(taskOption) {
             if (this.state.game.modeShowOptions == "hint-true" && taskOption.trueFact) {
                 return "fact-true"

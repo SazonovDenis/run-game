@@ -13,8 +13,7 @@
 
 
         <div class="task-options">
-            <TaskOptions :taskOptions="usrTask.taskOptions" :state="dataState"
-                         v-on:changeGoalValue="this.$emit('changeGoalValue')"/>
+            <TaskOptions :taskOptions="usrTask.taskOptions" :state="dataState"/>
         </div>
 
 

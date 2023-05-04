@@ -22,9 +22,12 @@
 <script>
 
 import utilsCore from "../utils2D"
+import {apx} from '../vendor'
 
 export default {
-    components: {},
+    components: {
+        apx
+    },
 
     props: {
         taskOption: {},
@@ -272,7 +275,7 @@ export default {
                     //elBall.style.display = "none"
 
                     //
-                    this.$emit('changeGoalValue', stateGoal.value)
+                    apx.app.eventBus.emit("changeGoalValue", stateGoal.value)
 
                     //
                     return

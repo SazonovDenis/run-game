@@ -1,8 +1,7 @@
 <template>
     <q-btn color="white" text-color="black" label="Next" v-on:click="test_nextTask()"/>
 
-    <UserTaskPanel :usrTask="usrTask" :dataState="dataState"
-                   v-on:changeGoalValue="changeGoalValue"/>
+    <UserTaskPanel :usrTask="usrTask" :dataState="dataState"/>
 
 </template>
 
@@ -11,6 +10,7 @@
 
 import UserTaskPanel from "./UserTaskPanel"
 import data from "../data"
+import {apx} from "../vendor"
 
 export default {
     name: "MainWindow",
@@ -120,6 +120,9 @@ export default {
         this.loadNextTask();
         this.resetGoalValue();
         this.setGoalInfo()
+
+        apx.app.eventBus.on("changeGoalValue", this.changeGoalValue)
+
     }
 
 }

@@ -5,9 +5,7 @@
         -->
 
         <div v-for="taskOption in taskOptions" v-bind:class="getClassName(taskOption)">
-            <TaskOption :taskOption="taskOption" :state="state"
-                        :animationInterval="10"
-            />
+            <TaskOption :taskOption="taskOption" :state="state"/>
         </div>
 
     </div>

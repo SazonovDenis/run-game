@@ -127,13 +127,13 @@
 
 <script>
 
-import {jcBase} from '../vendor'
+//import {jcBase} from '../vendor'
 
 export default {
 
     name: "ToolbarWindow",
 
-    components: {jcBase},
+    //components: {jcBase},
 
     data() {
         return {

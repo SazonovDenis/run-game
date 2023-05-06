@@ -9,14 +9,14 @@
 <script>
 
 import UserTaskPanel from "./UserTaskPanel"
-import data from "../data"
+import gameplay from "../gameplay"
 import {apx} from "../vendor"
 
 export default {
     name: "MainWindow",
 
     components: {
-        UserTaskPanel,
+        UserTaskPanel, gameplay
     },
 
     // Состояние игрового мира
@@ -44,6 +44,7 @@ export default {
                 ball: {
                     text: null,
                     value: 0,
+                    ballIsTrue: null,
                 },
                 game: {
                     modeShowOptions: null,
@@ -56,73 +57,26 @@ export default {
     },
 
     methods: {
-        changeGoalValue(v) {
-            //console.info("changeGoalValue", v)
-            //console.info("this.goal.value: " + this.dataState.goal.value)
-            if (this.dataState.goal.value == 0) {
-                // Новое задание
-                this.loadNextTask()
-                // Новая цель
-                this.resetGoalValue()
-                this.setGoalInfo()
-            }
+
+        // Присваиваем данные задания себе
+        loadedUsrTask(usrTask) {
+            this.usrTask = usrTask
         },
-
-        loadNextTask() {
-            // Грузим новое задание с сервера
-            this.taskIdx = this.taskIdx + 1;
-            if (this.taskIdx >= data.tasks.length) {
-                this.taskIdx = 0;
-            }
-            //
-            let dataTask = data.tasks[this.taskIdx]
-
-
-            // Присваиваем данные задания себе
-            this.usrTask = dataTask
-
-            // Разные умолчания
-            this.dataState.game.modeShowOptions = null
-            this.dataState.game.goalHitSize = 4
-            this.resetGoalValue()
-            this.setGoalInfo()
-        },
-
-        setGoalInfo() {
-            this.dataState.goal.text = "Hit here #" + (this.taskIdx + 1) + ", " + this.usrTask.task.text
-        },
-
-        // Сбрасываем состояние результата (цели)
-        resetGoalValue() {
-            this.dataState.goal.value = 4
-        },
-
-        test_resetTasks() {
-            this.taskIdx = -1;
-            this.loadNextTask();
-        },
-
-        test_nextTask() {
-            this.loadNextTask();
-        },
-
-
     },
 
-    async mounted() {
+    mounted() {
         //console.info("=== UserTaskPanel.test#created")
 
         //let res = await kisBase.daoApi.loadStore('m/Game/choiceTask', [1001])
 
         //let res = await kisBase.daoApi.invoke("m/Game/choiceTask", [1001])
 
-        this.taskIdx = -1;
-        this.loadNextTask();
-        this.resetGoalValue();
-        this.setGoalInfo()
 
-        apx.app.eventBus.on("changeGoalValue", this.changeGoalValue)
+        apx.app.eventBus.on("loadedUsrTask", this.loadedUsrTask)
 
+        //
+        gameplay.init(this.dataState)
+        gameplay.nextTask()
     }
 
 }

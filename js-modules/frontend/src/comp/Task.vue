@@ -1,17 +1,22 @@
 <template>
     <div class="question" @click="play">
 
-        <span v-if="doShowSound">
-            <q-icon size="2em" name="asterisk"/>
+        <div v-if="doShowSound" class="task-sound">
+            <q-icon size="1.5em" name="asterisk"/>
             <span>&nbsp;</span>
-        </span>
+        </div>
 
-        <span v-if="doShowText">
+        <div v-if="doShowText" class="task-text">
             {{ task.text }}
-        </span>
+        </div>
+        <div v-else class="task-text">
+            &nbsp;
+        </div>
 
-        <span>&nbsp;</span>
-        <q-icon size="2em" name="help" @click="showHint"/>
+        <div class="task-help">
+            <q-icon size="2em" name="help" @click="showHint"/>
+        </div>
+
     </div>
 </template>
 
@@ -113,13 +118,29 @@ export default {
 
 <style>
 
+.task-help, .task-sound, .task-text {
+    height: 1.3em;
+}
+
 .question {
+    display: flex;
+    flex-direction: row;
+
     user-select: none;
-    max-width: 20em;
+    _max-width: 20em;
     margin: 5px;
     padding: 5px;
     border-radius: 5px;
     background-color: #e6ffda;
+}
+
+.task-sound {
+    color: #7a7a7a;
+}
+
+.task-text {
+    width: 100%;
+    font-size: 1.5em;
 }
 
 </style>

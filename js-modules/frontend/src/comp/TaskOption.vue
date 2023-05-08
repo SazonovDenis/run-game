@@ -5,14 +5,14 @@
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
 
-        <div
-            v-on:mousedown="onMouseDown"
+        <div class="option-text"
+             v-on:mousedown="onMouseDown"
 
-            v-on:touchstart="onTouchStart"
-            v-on:touchmove="onTouchMove"
-            v-on:touchend="onTouchEnd"
-            v-on:touchcancel="onTouchCancel"
-            v-on:click="no-click"
+             v-on:touchstart="onTouchStart"
+             v-on:touchmove="onTouchMove"
+             v-on:touchend="onTouchEnd"
+             v-on:touchcancel="onTouchCancel"
+             v-on:click="no-click"
         >
             {{ taskOption.text }}
         </div>
@@ -222,6 +222,11 @@ export default {
     border-radius: 5px;
     background-color: #fff5da;
 }
+
+.option-text {
+    font-size: 1.5em;
+}
+
 
 </style>
 

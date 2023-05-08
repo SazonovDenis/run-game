@@ -48,18 +48,18 @@ export default {
     // Новое задание
     async nextTask() {
         // Грузим новое задание с сервера
-        let dataTask = await ctx.th.api_choiceTask()
+        let dataUsrTask = await ctx.th.api_choiceUstTask()
 
         // Уведомим об изменении задания
-        ctx.eventBus.emit("loadedUsrTask", dataTask)
+        ctx.eventBus.emit("loadedUsrTask", dataUsrTask)
 
         // Разные умолчания
         ctx.state.game.modeShowOptions = null
         // Новая цель
-        ctx.th.resetGoal(dataTask.task.text)
+        ctx.th.resetGoal(dataUsrTask.task.text)
     },
 
-    async api_choiceTask() {
+    async api_choiceUstTask() {
         if (ctx.state.testData) {
             ctx.state.testData_taskIdx = ctx.state.testData_taskIdx + 1;
             if (ctx.state.testData_taskIdx >= testData.tasks.length) {

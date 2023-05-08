@@ -215,9 +215,12 @@ where
 
     String sqlTaskOption() {
         return """
-select * 
-from TaskOption
-where TaskOption.task = :id 
+select 
+    *
+from 
+    TaskOption
+where
+    TaskOption.task = :id 
 """
     }
 

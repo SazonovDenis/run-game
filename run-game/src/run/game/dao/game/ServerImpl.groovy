@@ -5,6 +5,7 @@ import jandcode.core.dao.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
+import run.game.dao.*
 import run.game.dao.backstage.*
 
 /**
@@ -27,36 +28,43 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
         DataBox task = taskCreator.loadTask(idTask)
 
-        // Не показываем правильный ответ на задание
+        //
         StoreRecord recTask = task.get("task")
-        recTask.setValue("factAnswer", null)
+        StoreRecord resTask = mdb.createStoreRecord("usr.Task")
+        if (recTask.getLong("dataType") == DbConst.DataType_word_sound) {
+            resTask.setValue("sound", recTask.getValue("value"))
+        } else {
+            resTask.setValue("text", recTask.getValue("value"))
+        }
         //
         Store stTaskOption = task.get("taskOption")
+        Store resTaskOption = mdb.createStore("usr.TaskOption")
         for (StoreRecord recTaskOption : stTaskOption) {
-            recTaskOption.setValue("trueFact", null)
+            resTaskOption.add([
+                    "id"      : recTaskOption.getValue("id"),
+                    "text"    : recTaskOption.getValue("value"),
+                    "trueFact": !recTaskOption.isValueNull("trueFact"),
+            ])
         }
 
 
         // Формируем задание для пользователя
-        StoreRecord recUsrTask = mdb.createStoreRecord("UsrTask")
-        //recUsrTask.setValue("usr", idUsr)
-        recUsrTask.setValue("task", recTask.getValue("id"))
-        recUsrTask.setValue("taskDt", XDateTime.now())
+        UsrTask_upd taskUpd = mdb.create(UsrTask_upd)
+        StoreRecord recUsrTask = taskUpd.ins(recTask.getLong("id"))
 
         //
-        long idUsrTask = mdb.insertRec("UsrTask", recUsrTask)
-        recUsrTask.setValue("id", idUsrTask)
+        resTask.setValue("id", recUsrTask.getValue("id"))
+        resTask.setValue("taskDt", recUsrTask.getValue("taskDt"))
 
 
         // Выдаем задание для пользователя
         DataBox res = new DataBox()
-        res.put("task", recTask)
-        res.put("taskOption", stTaskOption)
-        res.put("usrTask", recUsrTask)
+        res.put("task", resTask)
+        res.put("taskOption", resTaskOption)
 
 
         //
-        return res;
+        return res
     }
 
 

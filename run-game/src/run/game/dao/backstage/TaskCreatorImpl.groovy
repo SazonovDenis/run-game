@@ -6,6 +6,7 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
+import run.game.dao.*
 
 public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
 
@@ -30,9 +31,9 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
     public DataBox createTask(long idItem, String dataTypeQuestion, String dataTypeAnswer) {
         DataBox res = new DataBox()
 
-        //
-        Store stQuestion = mdb.loadQuery(sql(), [id: idItem, dataType: dataTypeQuestion])
-        Store stAnswer = mdb.loadQuery(sql(), [id: idItem, dataType: dataTypeAnswer])
+        // Загружаем факты "вопрос" и "ответ"
+        Store stQuestion = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: dataTypeQuestion])
+        Store stAnswer = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: dataTypeAnswer])
 
         //
         if (stQuestion.size() == 0) {
@@ -181,9 +182,28 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
             }
         }
 
-        //
+
+        // ---
+        // Формируем stTaskValue: звуковое сопровождение
+        Store stTaskValue = mdb.createStore("TaskValue")
+        if (dataTypeQuestion.equals(DbConst.DataType_CODE_word_spelling)) {
+            // Загружаем факты "звук"
+            Store stQuestionTaskValue = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: DbConst.DataType_CODE_word_sound])
+            // Выбираем факт "звук"
+            if (stQuestionTaskValue.size() != 0) {
+                StoreRecord recQuestionTaskValue = stQuestionTaskValue.get(rnd.num(0, stQuestionTaskValue.size() - 1))
+                StoreRecord recTaskValue = stTaskValue.add()
+                recTaskValue.setValue("dataType", recQuestionTaskValue.getValue("factDataType"))
+                recTaskValue.setValue("value", recQuestionTaskValue.getValue("factValue"))
+
+            }
+        }
+
+
+        // ---
         res.put("task", recTask)
         res.put("taskOption", stTaskOption)
+        res.put("taskValue", stTaskValue)
 
         //
         return res
@@ -196,12 +216,15 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
         //
         StoreRecord recTask = mdb.createStoreRecord("Task.question")
         Store stTaskOption = mdb.createStore("TaskOption")
-        mdb.loadQueryRecord(recTask, sqlTask(), [id: idTask])
+        Store stTaskValue = mdb.createStore("TaskValue")
+        mdb.loadQueryRecord(recTask, sqlFactForTask(), [id: idTask])
         mdb.loadQuery(stTaskOption, sqlTaskOption(), [id: idTask])
+        mdb.loadQuery(stTaskValue, sqlTaskValue(), [id: idTask])
 
         //
         res.put("task", recTask)
         res.put("taskOption", stTaskOption)
+        res.put("taskValue", stTaskValue)
 
         //
         return res
@@ -210,6 +233,7 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
     public long saveTask(DataBox task) {
         StoreRecord recTask = mdb.createStoreRecord("Task", task.get("task"))
         Store stTaskOption = task.get("taskOption")
+        Store stTaskValue = task.get("taskValue")
 
         //
         long idTask = mdb.insertRec("Task", recTask)
@@ -222,10 +246,18 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
             mdb.insertRec("TaskOption", recTaskOption)
         }
 
+        //
+        for (StoreRecord rec : stTaskValue) {
+            StoreRecord recTaskValue = mdb.createStoreRecord("TaskValue")
+            recTaskValue.setValues(rec.getValues())
+            recTaskValue.setValue("task", idTask)
+            mdb.insertRec("TaskValue", recTaskValue)
+        }
+
         return idTask
     }
 
-    String sqlTask() {
+    String sqlFactForTask() {
         return """
 select 
     Task.*,
@@ -250,7 +282,18 @@ where
 """
     }
 
-    String sql() {
+    String sqlTaskValue() {
+        return """
+select 
+    *
+from 
+    TaskValue
+where
+    TaskValue.task = :id 
+"""
+    }
+
+    String sqlFactValue() {
         return """
 select
     Item.id item,

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="TaskValue" parent="tab.id" tag.db="true"
+            title="Доополнительное значение факта для задания">
+        <!--@
+        Для более богатого показа задания.
+        Так, для всех заданий, где у факта значение dataType == "word-translate" или "word-spelling",
+        формируется дополнительная запись в TaskValue.
+        Эта дополнительная запись формируется на основе факта, где dataType == "word-sound"
+        (если такой факт есть)
+        -->
+        <field name="task" parent="Task/ref" title="На какое задание"/>
+
+        <field name="dataType" parent="DataType/ref"/>
+        <field name="value" parent="string" size="500"
+               title="Значение"/>
+    </domain>
+
+
+</root>

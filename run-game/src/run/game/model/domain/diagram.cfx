@@ -34,6 +34,7 @@
     <diagram name="tasks" title="Задания, варианты и ответы пользователей">
         <domain name="Task"/>
         <domain name="TaskOption"/>
+        <domain name="TaskValue"/>
         <domain name="Fact" showfields="false"/>
 
         <domain name="UsrTask"/>

@@ -55,7 +55,7 @@ class TaskCreator_Test extends Apx_Test {
     }
 
     @Test
-    void createTask1() {
+    void createTask_spelling1() {
         String word = "different"
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
@@ -63,7 +63,7 @@ class TaskCreator_Test extends Apx_Test {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
 
         //
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
 
             //
@@ -73,7 +73,7 @@ class TaskCreator_Test extends Apx_Test {
     }
 
     @Test
-    void createTask2() {
+    void createTask_spelling2() {
         String word = "break in"
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
@@ -109,7 +109,7 @@ class TaskCreator_Test extends Apx_Test {
     }
 
     @Test
-    void saveTask() {
+    void saveTask_spelling() {
         String word = "simple"
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
@@ -158,7 +158,7 @@ class TaskCreator_Test extends Apx_Test {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
 
         //
-        long idItem = 1001
+        long idItem = 2001
         for (int j = 0; j < 20; j++) {
             for (int i = 0; i < 5; i++) {
                 try {
@@ -183,6 +183,8 @@ class TaskCreator_Test extends Apx_Test {
         mdb.resolveDicts(task)
         utils.outTable(task.get("task"))
         utils.outTable(task.get("taskOption"))
+        println("taskValue")
+        utils.outTable(task.get("taskValue"))
     }
 
     void printTaskOneLine(DataBox task) {

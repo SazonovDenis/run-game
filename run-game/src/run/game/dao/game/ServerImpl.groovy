@@ -31,7 +31,7 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
         DataBox task = taskCreator.loadTask(idTask)
 
-        //
+        // Основной вопрос задания
         StoreRecord recTask = task.get("task")
         StoreRecord resTask = mdb.createStoreRecord("usr.Task")
         if (recTask.getLong("dataType") == DbConst.DataType_word_sound) {
@@ -39,7 +39,14 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         } else {
             resTask.setValue("text", recTask.getValue("value"))
         }
-        //
+        // Другие типы данных задания. Например, звук, если тип задания - текст
+        Store stTaskValue = task.get("taskValue")
+        for (StoreRecord recTaskValue : stTaskValue) {
+            if (recTaskValue.getLong("dataType") == DbConst.DataType_word_sound) {
+                resTask.setValue("sound", recTaskValue.getValue("value"))
+            }
+        }
+        // Варианты ответа
         Store stTaskOption = task.get("taskOption")
         Store resTaskOption = mdb.createStore("usr.TaskOption")
         for (StoreRecord recTaskOption : stTaskOption) {

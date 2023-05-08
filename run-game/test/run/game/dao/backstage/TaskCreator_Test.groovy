@@ -13,7 +13,7 @@ class TaskCreator_Test extends Apx_Test {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
 
         //
-        long idTask = 1002
+        long idTask = 1082
         DataBox task = taskCreator.loadTask(idTask)
 
         //
@@ -170,7 +170,7 @@ class TaskCreator_Test extends Apx_Test {
     }
 
     void printTaskOneLine(DataBox task) {
-        println(task.get("task").getValue("value") + ": " + task.get("taskOption").getUniqueValues("value").join(" | "))
+        println(task.get("task").getValue("id") + ", " + task.get("task").getValue("value") + ": " + task.get("taskOption").getUniqueValues("value").join(" | "))
     }
 
 }

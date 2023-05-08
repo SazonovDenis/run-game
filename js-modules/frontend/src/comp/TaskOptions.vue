@@ -1,9 +1,5 @@
 <template>
     <div class="options" id="options">
-        <!--
-                Варианты ответов
-        -->
-
         <div v-for="taskOption in taskOptions" v-bind:class="getClassName(taskOption)">
             <TaskOption :taskOption="taskOption" :state="state"/>
         </div>

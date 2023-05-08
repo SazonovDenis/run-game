@@ -1,18 +1,18 @@
 <template>
-    <div class="option">
+    <div class="option" v-bind:id="'taskOption-'+taskOption.id">
 
         <div v-if="this.taskOption.sound">
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
 
-        <div v-bind:id="'taskOption-'+taskOption.id"
-             v-on:mousedown="onMouseDown"
+        <div
+            v-on:mousedown="onMouseDown"
 
-             v-on:touchstart="onTouchStart"
-             v-on:touchmove="onTouchMove"
-             v-on:touchend="onTouchEnd"
-             v-on:touchcancel="onTouchCancel"
-             v-on:click="no-click"
+            v-on:touchstart="onTouchStart"
+            v-on:touchmove="onTouchMove"
+            v-on:touchend="onTouchEnd"
+            v-on:touchcancel="onTouchCancel"
+            v-on:click="no-click"
         >
             {{ taskOption.text }}
         </div>

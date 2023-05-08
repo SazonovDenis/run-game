@@ -23,6 +23,9 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         // Выбираем задание
         long idTask = statisticManager.selectTask(idFact)
 
+        ////////////////////////////////////////////////
+        //idTask = 1082
+        ////////////////////////////////////////////////
 
         // Грузим задание
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)

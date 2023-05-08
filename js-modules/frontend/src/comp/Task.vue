@@ -1,8 +1,5 @@
 <template>
     <div class="question" @click="play">
-        <!--
-                <span>Вопрос: </span>
-        -->
         <span v-if="this.task.sound">
             <q-icon size="2em" name="asterisk"/>
             <span>&nbsp;</span>

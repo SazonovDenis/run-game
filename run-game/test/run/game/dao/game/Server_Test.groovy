@@ -15,7 +15,7 @@ class Server_Test extends Apx_Test {
     void serializeTask() {
         // Грузим задание
         Server upd = mdb.create(ServerImpl)
-        DataBox task = upd.choiceTask(999)
+        DataBox task = upd.choiceTask(9999)
 
         //
         println()
@@ -39,14 +39,13 @@ class Server_Test extends Apx_Test {
     @Test
     void choiceTask() {
         Server upd = mdb.create(ServerImpl)
-        DataBox task = upd.choiceTask(999)
+        DataBox task = upd.choiceTask(9999)
 
         //
         println()
         println("task")
         mdb.outTable(task.get("task"))
         mdb.outTable(task.get("taskOption"))
-        mdb.outTable(task.get("usrTask"))
     }
 
     @Test
@@ -59,7 +58,7 @@ class Server_Test extends Apx_Test {
 
         // Получаем задание
         Server upd = mdb.create(ServerImpl)
-        DataBox task = upd.choiceTask(999)
+        DataBox task = upd.choiceTask(9999)
 
 
         // Печатаем задание

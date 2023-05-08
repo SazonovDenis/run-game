@@ -2,6 +2,7 @@ import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
 import utilsCore from "./utils2D"
 import testData from "./gameplayTestData"
+import {daoApi} from "./dao"
 
 export default {
 
@@ -49,6 +50,8 @@ export default {
     },
 
     api_choiceTask() {
+        let res = daoApi.loadStore('m/Game/choiceTask', [1001])
+
         ctx.state.taskIdx = ctx.state.taskIdx + 1;
         if (ctx.state.taskIdx >= testData.tasks.length) {
             ctx.state.taskIdx = 0;

@@ -5,6 +5,18 @@
 
     <!-- ===================================================================== -->
 
+    <web>
+        <mount name="mp3"
+               virtualPath="sound"
+               realPath="data/web-grab"
+        />
+
+        <filetype name="mp3" type="bin" mime="audio/mpeg3"/>
+
+    </web>
+
+    <!-- ===================================================================== -->
+
     <x-include path="app-dev.cfx" required="false"/>
     <x-include path="_app.cfx" required="false"/>
     <x-include path="cfg.cfx" required="false"/>

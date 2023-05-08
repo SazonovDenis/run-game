@@ -1,5 +1,5 @@
 <template>
-    <q-btn color="white" text-color="black" label="Next" v-on:click="test_nextTask()"/>
+    <q-btn color="white" text-color="black" label="Next" v-on:click="nextTask"/>
 
     <UserTaskPanel :usrTask="usrTask" :dataState="dataState"/>
 
@@ -11,6 +11,7 @@
 import UserTaskPanel from "./UserTaskPanel"
 import gameplay from "../gameplay"
 import {apx} from "../vendor"
+import {daoApi} from "../dao/index"
 
 export default {
     name: "MainWindow",
@@ -59,7 +60,12 @@ export default {
     methods: {
 
         // Присваиваем данные задания себе
-        loadedUsrTask(usrTask) {
+        nextTask() {
+            gameplay.nextTask()
+        },
+
+        // Присваиваем данные задания себе
+        onLoadedUsrTask(usrTask) {
             this.usrTask = usrTask
         },
     },
@@ -67,12 +73,10 @@ export default {
     mounted() {
         //console.info("=== UserTaskPanel.test#created")
 
-        //let res = await kisBase.daoApi.loadStore('m/Game/choiceTask', [1001])
-
         //let res = await kisBase.daoApi.invoke("m/Game/choiceTask", [1001])
 
 
-        apx.app.eventBus.on("loadedUsrTask", this.loadedUsrTask)
+        apx.app.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
 
         //
         gameplay.init(this.dataState)

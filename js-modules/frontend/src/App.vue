@@ -1,11 +1,13 @@
 <template>
-    <decor-app>
-
-    </decor-app>
+    <div>
+        <jc-frame-shower-page/>
+    </div>
 </template>
 
 <script>
 import {apx} from './vendor'
+
+// Единственный экран приложения
 
 export default {
     extends: apx.JcApp,

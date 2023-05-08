@@ -14,7 +14,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>${ctx.title}</title>
+  <title>${ctx.title}!</title>
   <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>

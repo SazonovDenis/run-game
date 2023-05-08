@@ -17,6 +17,7 @@
 
 <script>
 
+import {apx} from "../vendor"
 
 export default {
     components: {},
@@ -45,6 +46,7 @@ export default {
                 } else {
                     this.audio.src = ""
                 }
+                this.audio.src = apx.url.ref("sound/1000-puzzle-english/mp3/campbridge_UK/able.mp3")
             }, deep: true,
         }
     },

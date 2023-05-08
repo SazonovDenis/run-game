@@ -86,6 +86,13 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         // Если idTaskOption не соответствует idUsrTask, запись загрузится пустой
         StoreRecord recTaskOption = mdb.loadQueryRecord(sqlUsrTaskOption(), [id: idUsrTask, taskOption: idTaskOption])
 
+        //
+        if (!recUsrTask.isValueNull("answerTaskOption")) {
+            mdb.validateErrors.addError("Ответ на задание уже дан")
+        }
+        //
+        mdb.validateErrors.checkErrors()
+
         // Обновляем
         recUsrTask.setValue("answerTaskOption", recTaskOption.getValue("id"))
         recUsrTask.setValue("answerDt", XDateTime.now())

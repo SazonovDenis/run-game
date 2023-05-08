@@ -55,6 +55,7 @@ export default {
 
         // Разные умолчания
         ctx.state.game.modeShowOptions = null
+        ctx.state.game.postTaskAnswerDone = false
         // Новая цель
         ctx.th.resetGoal(dataUsrTask.task.text)
     },
@@ -104,6 +105,12 @@ export default {
         }
 
         //
+        if (ctx.state.game.postTaskAnswerDone) {
+            return
+        }
+        ctx.state.game.postTaskAnswerDone = true
+
+        //
         let res = daoApi.loadStore('m/Game/postTaskAnswer', [idUsrTask, idTaskOption])
 
         //
@@ -137,9 +144,6 @@ export default {
         stateDrag.sy = eventDrag.y
         stateDrag.x = eventDrag.x
         stateDrag.y = eventDrag.y
-
-        //
-        console.info("obj.id: ", obj.id)
 
         //
         clearInterval(stateDrag.interval)
@@ -336,8 +340,13 @@ export default {
 
     onShowHint(v) {
         if (v) {
+            // Показывать подсказки
             ctx.state.game.modeShowOptions = "hint-true"
-            //
+
+            // Ответ с подсказкой не отправлять
+            ctx.state.game.postTaskAnswerDone = true
+
+            // Уменьшим силу удара
             if (ctx.state.game.goalHitSize > ctx.settings.goalHitSizeHint) {
                 ctx.state.game.goalHitSize = ctx.settings.goalHitSizeHint
             }

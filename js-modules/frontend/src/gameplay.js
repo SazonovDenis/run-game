@@ -3,7 +3,11 @@ import ctx from "./gameplayCtx"
 import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
+import testData from "./gameplayTestData"
+
 export default {
+
+    testData: true,
 
     settings: {
         animationInterval: 10,
@@ -34,8 +38,11 @@ export default {
         //
         ctx.eventBus.on("*", this.onEvent)
 
-        // Инициализация состояния
-        ctx.state.taskIdx = -1;
+        // Инициализация состояния тестовых данных
+        if (this.testData) {
+            ctx.state.testData = this.testData;
+            ctx.state.testData_taskIdx = -1;
+        }
     },
 
     // Новое задание
@@ -53,6 +60,19 @@ export default {
     },
 
     async api_choiceTask() {
+        if (ctx.state.testData) {
+            ctx.state.testData_taskIdx = ctx.state.testData_taskIdx + 1;
+            if (ctx.state.testData_taskIdx >= testData.tasks.length) {
+                ctx.state.testData_taskIdx = 0;
+            }
+            //
+            let res = testData.tasks[ctx.state.testData_taskIdx]
+
+            //
+            return res
+        }
+
+        //
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [9999])
 
         //
@@ -64,34 +84,29 @@ export default {
             taskOptions,
         }
 
-        // Чтобы можно было получить код задания по одному ответу - нужно в интерфейсе
+        // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
         for (let i = 0; i < taskOptions.length; i++) {
             let taskOption = taskOptions[i]
             taskOption.task = task.id
         }
 
-        //
         //console.info("task", task)
         //console.info("taskOptions", taskOptions)
         //console.info("res", res)
-
-        //
-        /*
-                ctx.state.taskIdx = ctx.state.taskIdx + 1;
-                if (ctx.state.taskIdx >= testData.tasks.length) {
-                    ctx.state.taskIdx = 0;
-                }
-                //
-                return testData.tasks[ctx.state.taskIdx]
-        */
 
         //
         return res
     },
 
     api_postTaskAnswer(idUsrTask, idTaskOption) {
+        if (ctx.state.testData) {
+            return
+        }
+
+        //
         let res = daoApi.loadStore('m/Game/postTaskAnswer', [idUsrTask, idTaskOption])
 
+        //
         return res
     },
 

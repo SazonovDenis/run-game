@@ -11,7 +11,6 @@
 import UserTaskPanel from "./UserTaskPanel"
 import gameplay from "../gameplay"
 import {apx} from "../vendor"
-import {daoApi} from "../dao/index"
 
 export default {
     name: "MainWindow",
@@ -53,7 +52,7 @@ export default {
                 }
             },
 
-            taskIdx: 1,
+            testData_taskIdx: 1,
         }
     },
 

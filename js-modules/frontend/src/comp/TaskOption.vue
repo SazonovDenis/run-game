@@ -22,6 +22,7 @@
 <script>
 
 import {apx} from '../vendor'
+import ctx from "../gameplayCtx"
 
 export default {
     components: {
@@ -61,7 +62,7 @@ export default {
             eventDrag.taskOption = this.taskOption
 
             //
-            this.eventBus.emit("dragstart", eventDrag)
+            ctx.eventBus.emit("dragstart", eventDrag)
             //this.doDragStart(eventDrag)
         },
 
@@ -81,7 +82,7 @@ export default {
                 eventDrag.taskOption = this.taskOption
 
                 //
-                this.eventBus.emit("drag", eventDrag)
+                ctx.eventBus.emit("drag", eventDrag)
                 //this.doDragMove(eventDrag)
             }
         },
@@ -106,7 +107,7 @@ export default {
                 eventDrag.taskOption = this.taskOption
 
                 //
-                this.eventBus.emit("dragend", eventDrag)
+                ctx.eventBus.emit("dragend", eventDrag)
                 //this.doDragEnd(eventDrag)
             }
         },
@@ -130,7 +131,7 @@ export default {
             eventDrag.taskOption = this.taskOption
 
             //
-            this.eventBus.emit("dragstart", eventDrag)
+            ctx.eventBus.emit("dragstart", eventDrag)
             //this.doDragStart(eventDrag)
         },
 
@@ -145,7 +146,7 @@ export default {
             eventDrag.taskOption = this.taskOption
 
             //
-            this.eventBus.emit("drag", eventDrag)
+            ctx.eventBus.emit("drag", eventDrag)
             //this.doDragMove(eventDrag)
         },
 
@@ -170,7 +171,7 @@ export default {
             eventDrag.taskOption = this.taskOption
 
             //
-            this.eventBus.emit("dragend", eventDrag)
+            ctx.eventBus.emit("dragend", eventDrag)
             //this.doDragEnd(eventDrag)
         },
 
@@ -203,9 +204,6 @@ export default {
         if (this.taskOption.sound) {
             audio.src = this.taskOption.sound
         }
-
-        //
-        this.eventBus = apx.app.eventBus
     },
 
     computed: {}

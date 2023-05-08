@@ -10,7 +10,7 @@
 
 import UserTaskPanel from "./UserTaskPanel"
 import gameplay from "../gameplay"
-import {apx} from "../vendor"
+import ctx from "../gameplayCtx"
 
 export default {
     name: "MainWindow",
@@ -69,16 +69,14 @@ export default {
         },
     },
 
+    created() {
+        gameplay.init(this.dataState)
+    },
+
     mounted() {
-        //console.info("=== UserTaskPanel.test#created")
-
-        //let res = await kisBase.daoApi.invoke("m/Game/choiceTask", [1001])
-
-
-        apx.app.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
+        ctx.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
 
         //
-        gameplay.init(this.dataState)
         gameplay.nextTask()
     }
 

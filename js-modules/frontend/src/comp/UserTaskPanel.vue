@@ -55,7 +55,7 @@ export default {
 
 .game-field {
     border: 1px dotted red;
-    height: 150px;
+    height: 100px;
 }
 
 .task-options {

@@ -52,9 +52,7 @@ export default {
         },
 
         showHint() {
-            if (this.task.text) {
-                this.audio.play()
-            }
+            this.play()
             //
             this.alwaysShowText = true
             //

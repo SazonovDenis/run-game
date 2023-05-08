@@ -7,6 +7,7 @@
 <script>
 
 import {apx} from './vendor'
+import utils from './utils'
 
 export default {
 
@@ -23,34 +24,9 @@ export default {
 
     methods: {
         click() {
-            this.openFullscreen()
+            utils.openFullscreen()
             apx.showFrame({frame: import("./Home")})
         },
-
-        /* View in fullscreen */
-        openFullscreen() {
-            /* Get the documentElement (<html>) to display the page in fullscreen */
-            var elem = document.documentElement;
-
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
-            }
-        },
-
-        /* Close fullscreen */
-        closeFullscreen() {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
-            }
-        }
 
     }
 }

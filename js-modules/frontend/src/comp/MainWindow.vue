@@ -1,5 +1,6 @@
 <template>
     <q-btn color="white" text-color="black" label="Next" v-on:click="nextTask"/>
+    <q-btn color="white" text-color="black" label="Full" v-on:click="openFullscreen()"/>
 
     <UserTaskPanel :usrTask="usrTask" :dataState="dataState"/>
 
@@ -11,6 +12,7 @@
 import UserTaskPanel from "./UserTaskPanel"
 import gameplay from "../gameplay"
 import ctx from "../gameplayCtx"
+import utils from '../utils'
 
 export default {
     name: "MainWindow",
@@ -58,7 +60,10 @@ export default {
 
     methods: {
 
-        // Присваиваем данные задания себе
+        openFullscreen() {
+            utils.openFullscreen()
+        },
+
         nextTask() {
             gameplay.nextTask()
         },

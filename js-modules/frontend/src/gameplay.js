@@ -1,7 +1,6 @@
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
 import utilsCore from "./utils2D"
-import testData from "./gameplayTestData"
 import {daoApi} from "./dao"
 
 export default {
@@ -49,15 +48,47 @@ export default {
         ctx.th.setGoalInfo(dataTask.task.text)
     },
 
-    api_choiceTask() {
-        let res = daoApi.loadStore('m/Game/choiceTask', [1001])
+    async api_choiceTask() {
+        let resApi = await daoApi.loadStore('m/Game/choiceTask', [9999])
 
-        ctx.state.taskIdx = ctx.state.taskIdx + 1;
-        if (ctx.state.taskIdx >= testData.tasks.length) {
-            ctx.state.taskIdx = 0;
-        }
         //
-        return testData.tasks[ctx.state.taskIdx]
+        let task = resApi.task.records[0]
+        let taskOptions = resApi.taskOption.records
+
+        let res = {
+            task,
+            taskOptions,
+        }
+
+        // Чтобы можно было получить код задания по одному ответу - нужно в интерфейсе
+        for (let i = 0; i < taskOptions.length; i++) {
+            let taskOption = taskOptions[i]
+            taskOption.task = task.id
+        }
+
+        //
+        console.info("task", task)
+        console.info("taskOptions", taskOptions)
+        console.info("res", res)
+
+        //
+        /*
+                ctx.state.taskIdx = ctx.state.taskIdx + 1;
+                if (ctx.state.taskIdx >= testData.tasks.length) {
+                    ctx.state.taskIdx = 0;
+                }
+                //
+                return testData.tasks[ctx.state.taskIdx]
+        */
+
+        //
+        return res
+    },
+
+    api_postTaskAnswer(idUsrTask, idTaskOption) {
+        let res = daoApi.loadStore('m/Game/postTaskAnswer', [idUsrTask, idTaskOption])
+
+        return res
     },
 
     setGoalInfo(text) {
@@ -132,6 +163,10 @@ export default {
         let stateGoal = ctx.state.goal
         let stateBall = ctx.state.ball
         let stateGame = ctx.state.game
+
+
+        // Уведомим сервер
+        ctx.th.api_postTaskAnswer(eventDrag.taskOption.task, eventDrag.taskOption.id)
 
         //
         let elBall = document.getElementById("ball")

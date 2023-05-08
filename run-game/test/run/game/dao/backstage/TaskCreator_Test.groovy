@@ -13,7 +13,7 @@ class TaskCreator_Test extends Apx_Test {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
 
         //
-        long idTask = 1082
+        long idTask = 1047
         DataBox task = taskCreator.loadTask(idTask)
 
         //
@@ -35,6 +35,22 @@ class TaskCreator_Test extends Apx_Test {
             } catch (Exception e) {
                 println(e.message)
             }
+        }
+    }
+
+    @Test
+    void createTaskForItem() {
+        long idItem = 1078
+
+        //
+        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+
+        //
+        for (int i = 0; i < 10; i++) {
+            DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
+
+            println()
+            printTask(task)
         }
     }
 

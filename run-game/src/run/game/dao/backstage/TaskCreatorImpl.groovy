@@ -11,6 +11,7 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
 
     StoreIndex idxDataType
     Store st_wordRus
+    Rnd rnd
 
     void setMdb(Mdb mdb) {
         super.setMdb(mdb)
@@ -21,6 +22,9 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
 
         // Источники неправильных ответов
         st_wordRus = mdb.loadQuery("select * from Fact where dataType = " + idxDataType.get("word-translate").getLong("id"))
+
+        //
+        rnd = new RndImpl(0)
     }
 
     public DataBox createTask(long idItem, String dataTypeQuestion, String dataTypeAnswer) {
@@ -41,9 +45,6 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
         // ---
         // Типа запросили пару "word-translate -> word-spelling"
         // ---
-
-        //
-        Rnd rnd = new RndImpl()
 
         // Выбираем "факт вопрос" и "факт ответ"
         StoreRecord recQuestion = stQuestion.get(rnd.num(0, stQuestion.size() - 1))
@@ -68,25 +69,50 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
 
         // ---
         // Фильтруем неправильные варианты
+        String[] valueTrueWords = valueTrue.split("[ ,;)(]")
 
-        // Синонимы правильного ответа - чтобы исключить их из "ложных" вариантов
-        // (иначе пользователь запутается)
+        // Формируем синонимы правильного ответа,
+        // чтобы исключить их из "ложных" вариантов (иначе пользователь запутается)
         Set set_synonyms = new HashSet()
-        for (String valueTrueWord : valueTrue.split("[ ,;]")) {
+        for (String valueTrueWord : valueTrueWords) {
             if (valueTrueWord.length() == 0) {
                 continue
             }
             StoreRecord rec_synonyms = mdb.loadQueryRecord("select * from WordSynonym where word = :word and lang = :lang", [word: valueTrueWord, lang: "rus"], false)
             if (rec_synonyms != null) {
-                String sSynonyms = new String(rec_synonyms.getValue("synonyms"), "utf-8")
-                set_synonyms.addAll(UtJson.fromJson(sSynonyms))
+                String strSynonymsJson = new String(rec_synonyms.getValue("synonyms"), "utf-8")
+                Collection collSynonymsJson = UtJson.fromJson(strSynonymsJson)
+                set_synonyms.addAll(collSynonymsJson)
             }
         }
 
-        // Фильтруем
+        // Фильтруем по совпадению хотя-бы одного слова из правильного ответа
+        // с хотя бы одним словом из неправильного варианта
+        Set set_maches = new HashSet()
+        for (String valueTrueWord : valueTrueWords) {
+            if (valueTrueWord.length() == 0) {
+                continue
+            }
+
+            for (String valueFalse : valuesFalseSet) {
+                String[] valueFalseWords = valueFalse.split("[ ,;)(]")
+                for (String valueFalseWord : valueFalseWords) {
+                    if (valueFalseWord.length() == 0) {
+                        continue
+                    }
+
+                    if (valueFalseWord.equalsIgnoreCase(valueTrueWord)) {
+                        set_maches.add(valueFalse)
+                        break
+                    }
+                }
+            }
+        }
+
+        // Фильтруем синонимы и совпадения
         List<String> valuesFalseArr = new ArrayList<>()
         for (String falseValue : valuesFalseSet) {
-            if (!set_synonyms.contains(falseValue)) {
+            if (!set_synonyms.contains(falseValue) && !set_maches.contains(falseValue)) {
                 valuesFalseArr.add(falseValue)
             }
         }

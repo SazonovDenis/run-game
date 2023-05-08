@@ -11,6 +11,8 @@
 
 
         <fixture-suite name="base">
+            <fixture-builder name="usr"
+                             class="run.game.testdata.fixture.Usr_fb"/>
             <fixture-builder name="tag"
                              class="run.game.testdata.fixture.Tag_fb"/>
             <fixture-builder name="itemFact"

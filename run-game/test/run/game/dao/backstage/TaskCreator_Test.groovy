@@ -112,7 +112,7 @@ class TaskCreator_Test extends Apx_Test {
     }
 
     @Test
-    void saveTasks() {
+    void createSaveTasks_spelling() {
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
 
         //
@@ -122,6 +122,32 @@ class TaskCreator_Test extends Apx_Test {
                 try {
                     //
                     DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
+
+                    //
+                    taskCreator.saveTask(task)
+
+                    //
+                    printTaskOneLine(task)
+                } catch (Exception e) {
+                    println(e.message)
+                }
+            }
+            //
+            idItem = idItem + 7
+        }
+    }
+
+    @Test
+    void createSaveTasks_sound() {
+        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+
+        //
+        long idItem = 1001
+        for (int j = 0; j < 20; j++) {
+            for (int i = 0; i < 5; i++) {
+                try {
+                    //
+                    DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
 
                     //
                     taskCreator.saveTask(task)

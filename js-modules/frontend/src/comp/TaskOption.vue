@@ -188,7 +188,11 @@ export default {
 
         play() {
             if (this.taskOption.sound) {
-                this.audio.play()
+                try {
+                    this.audio.play()
+                } catch(e) {
+                    console.error(e)
+                }
             }
         },
 

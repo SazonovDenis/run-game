@@ -8,7 +8,9 @@
             <span>&nbsp;</span>
         </span>
 
-        <span>{{ task.text }}</span>
+        <span v-if="this.task.text">
+            {{ task.text }}
+        </span>
 
         <span>&nbsp;</span>
         <q-icon size="2em" name="help" @click="getHint"/>
@@ -30,7 +32,11 @@ export default {
     methods: {
         play() {
             if (this.task.sound) {
-                this.audio.play()
+                try {
+                    this.audio.play()
+                } catch(e) {
+                    console.error(e)
+                }
             }
         },
         getHint() {
@@ -42,11 +48,11 @@ export default {
         task: {
             handler(newValue, oldValue) {
                 if (this.task.sound) {
-                    this.audio.src = this.task.sound
+                    this.audio.src = apx.url.ref("sound/" + this.task.sound)
                 } else {
                     this.audio.src = ""
                 }
-                this.audio.src = apx.url.ref("sound/1000-puzzle-english/mp3/campbridge_UK/able.mp3")
+                //this.audio.src = apx.url.ref("sound/1000-puzzle-english/mp3/campbridge_UK/able.mp3")
             }, deep: true,
         }
     },

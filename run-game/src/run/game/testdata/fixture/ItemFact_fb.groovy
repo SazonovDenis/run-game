@@ -263,7 +263,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     recFact_1.setValue("id", genIdFact)
                                     recFact_1.setValue("item", idItem)
                                     recFact_1.setValue("dataType", getDataType("word-sound"))
-                                    recFact_1.setValue("value", soundFile)
+                                    String soundFileValue = soundFile.substring(dirBase.length())
+                                    recFact_1.setValue("value", soundFileValue)
                                     // Добавляем FactTagValue:word-sound-info
                                     String[] siArr = soundFile.split("/")
                                     if (!siArr[siArr.length - 2].equals("mp3")) {

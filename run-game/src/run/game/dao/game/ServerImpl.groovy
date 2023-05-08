@@ -23,10 +23,6 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         // Выбираем задание
         long idTask = statisticManager.selectTask(idFact)
 
-        ////////////////////////////////////////////////
-        //idTask = 1082
-        ////////////////////////////////////////////////
-
         // Грузим задание
         TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
         DataBox task = taskCreator.loadTask(idTask)
@@ -39,11 +35,15 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         } else {
             resTask.setValue("text", recTask.getValue("value"))
         }
+        resTask.setValue("dataType", recTask.getValue("dataType"))
         // Другие типы данных задания. Например, звук, если тип задания - текст
         Store stTaskValue = task.get("taskValue")
         for (StoreRecord recTaskValue : stTaskValue) {
             if (recTaskValue.getLong("dataType") == DbConst.DataType_word_sound) {
                 resTask.setValue("sound", recTaskValue.getValue("value"))
+            }
+            if (recTaskValue.getLong("dataType") == DbConst.DataType_word_spelling) {
+                resTask.setValue("text", recTaskValue.getValue("value"))
             }
         }
         // Варианты ответа

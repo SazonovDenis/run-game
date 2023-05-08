@@ -198,6 +198,18 @@ public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
 
             }
         }
+        if (dataTypeQuestion.equals(DbConst.DataType_CODE_word_sound)) {
+            // Загружаем факты "написание"
+            Store stQuestionTaskValue = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: DbConst.DataType_CODE_word_spelling])
+            // Выбираем факт "написание"
+            if (stQuestionTaskValue.size() != 0) {
+                StoreRecord recQuestionTaskValue = stQuestionTaskValue.get(rnd.num(0, stQuestionTaskValue.size() - 1))
+                StoreRecord recTaskValue = stTaskValue.add()
+                recTaskValue.setValue("dataType", recQuestionTaskValue.getValue("factDataType"))
+                recTaskValue.setValue("value", recQuestionTaskValue.getValue("factValue"))
+
+            }
+        }
 
 
         // ---

@@ -3,6 +3,7 @@
 
     <domain name="usr.Task">
         <field name="id" parent="long"/>
+        <field name="dataType" parent="long"/>
         <field name="taskDt" parent="UsrTask/taskDt"/>
         <field name="text" parent="string"/>
         <field name="sound" parent="string"/>

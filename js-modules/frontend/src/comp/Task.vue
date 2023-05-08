@@ -19,7 +19,7 @@
 
 import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
-import ctx from "run-game-frontend/src/gameplayCtx"
+import ctx from "../gameplayCtx"
 
 export default {
     components: {},
@@ -36,6 +36,10 @@ export default {
     },
 
     methods: {
+
+        onTaskOptionSelected(taskOption) {
+            this.alwaysShowText = true
+        },
 
         play() {
             if (this.task.sound) {
@@ -104,6 +108,9 @@ export default {
         audio.addEventListener('loadeddata', function() {
             this.play()
         }, false)
+
+        //
+        ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
     },
 }
 </script>
@@ -112,6 +119,7 @@ export default {
 <style>
 
 .question {
+    user-select: none;
     max-width: 20em;
     margin: 5px;
     padding: 5px;

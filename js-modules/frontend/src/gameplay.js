@@ -235,6 +235,9 @@ export default {
         stateBall.value = 1
 
         //
+        ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)
+
+        //
         ctx.th.startMoveAnimation(elBall)
     },
 
@@ -334,7 +337,10 @@ export default {
     onShowHint(v) {
         if (v) {
             ctx.state.game.modeShowOptions = "hint-true"
-            ctx.state.game.goalHitSize = ctx.settings.goalHitSizeHint
+            //
+            if (ctx.state.game.goalHitSize > ctx.settings.goalHitSizeHint) {
+                ctx.state.game.goalHitSize = ctx.settings.goalHitSizeHint
+            }
         }
     },
 

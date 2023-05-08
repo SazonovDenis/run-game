@@ -1,6 +1,8 @@
 export default {
 
     // Состояние игрового мира
-    state: {}
+    state: {},
+
+    usrTask: {},
 
 }

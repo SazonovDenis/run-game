@@ -71,6 +71,7 @@ export default {
         // Присваиваем данные задания себе
         onLoadedUsrTask(usrTask) {
             this.usrTask = usrTask
+            ctx.usrTask = this.usrTask
         },
     },
 
@@ -82,7 +83,7 @@ export default {
         ctx.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
 
         //
-        gameplay.nextTask()
+        this.nextTask()
     }
 
 }

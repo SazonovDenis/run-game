@@ -59,11 +59,6 @@ export default {
         // Перемешаем ответы
         dataUsrTask.taskOptions = ctx.th.shuffleTaskOptions(dataUsrTask.taskOptions)
 
-        //
-        console.info("---")
-        console.info("task", dataUsrTask.task)
-        console.info("taskOptions", dataUsrTask.taskOptions)
-
         // Уведомим об изменении задания
         ctx.eventBus.emit("loadedUsrTask", dataUsrTask)
 
@@ -241,6 +236,9 @@ export default {
         }
         stateBall.value = 1
 
+        // Перемешаем ответы
+        ctx.usrTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.usrTask.taskOptions)
+
         //
         ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)
 
@@ -262,7 +260,6 @@ export default {
         //
         for (let i = 0; i < taskOptions.length; i++) {
             let taskOption = taskOptions[i]
-            console.info("taskOption", taskOption)
             if (Math.random() * 2 > 1) {
                 taskOptionsRes.push(taskOption)
             } else {

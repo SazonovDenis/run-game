@@ -10,13 +10,14 @@
         </span>
 
         <span>&nbsp;</span>
-        <q-icon size="2em" name="help" @click="getHint"/>
+        <q-icon size="2em" name="help" @click="showHint"/>
     </div>
 </template>
 
 <script>
 
 import {apx} from "../vendor"
+import ctx from "run-game-frontend/src/gameplayCtx"
 
 export default {
     components: {},
@@ -36,8 +37,8 @@ export default {
                 }
             }
         },
-        getHint() {
-            this.state.game.modeShowOptions = "hint-true"
+        showHint() {
+            ctx.eventBus.emit("showHint", true)
         },
     },
 

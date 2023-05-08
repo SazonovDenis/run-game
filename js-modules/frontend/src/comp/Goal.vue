@@ -1,9 +1,7 @@
 <template>
     <div class="goal-panel" v-bind:style="{ display: display }">
-        <div class="goal-value-bar" v-bind:style="{ height: height }">
-            <div class="goal-value">{{ goal.text }}</div>
-            <div class="goal-value-text">{{ goal.value }}</div>
-        </div>
+        <span v-for="(x, index) in getValuesArr()"
+              v-bind:class="'goal-value ' + getClassName(index)">★</span>
     </div>
 </template>
 
@@ -17,16 +15,24 @@ export default {
         goal: {},
     },
 
-    methods: {},
+    methods: {
+        getValuesArr() {
+            return new Array(this.goal.valueGoal)
+        },
+
+        getClassName(value) {
+            if (value >= this.goal.valueDone) {
+                return "done-false"
+            } else {
+                return "done-true"
+            }
+        },
+    },
 
     computed: {
 
-        height() {
-            return 2 * this.goal.value + 'em'
-        },
-
         display() {
-            if (this.goal.value <= 0) {
+            if (this.goal.valueDone >= this.goal.valueGoal) {
                 return "none"
             } else {
                 return "block"
@@ -41,26 +47,21 @@ export default {
 <style>
 
 .goal-panel {
-    text-align: center;
-    width: 7em;
-    height: 8em;
-    border-radius: 1em;
-    border: 2px solid rgba(0, 143, 200, 0.6);
+    _border: 1px solid red;
     z-index: 1000;
-    display: block;
 }
 
 .goal-value {
-    padding: 5px;
+    font-size: 1.5em;
+    padding: 2px;
 }
 
-.goal-value-bar {
-    border-radius: 1em;
-    background-color: rgba(0, 143, 200, 0.3);
+.done-true {
+    color: rgba(15, 200, 0, 0.5);
 }
 
-.goal-value-text {
-    font-size: 200%;
+.done-false {
+    color: rgba(10, 10, 10, 0.3);
 }
 
 </style>

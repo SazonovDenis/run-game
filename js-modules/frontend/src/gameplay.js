@@ -12,6 +12,10 @@ export default {
         goalSize: 16,
         minDl: 100,
         maxDl: 1000,
+        valueGoalMax: 10,
+        goalHitSizeDefault: 4,
+        goalHitSizeHint: 2,
+        goalHitSizeError: 1,
     },
 
     init(state) {
@@ -25,7 +29,8 @@ export default {
         ctx.eventBus.on("dragstart", this.on_dragstart)
         ctx.eventBus.on("drag", this.on_drag)
         ctx.eventBus.on("dragend", this.on_dragend)
-        ctx.eventBus.on("changeGoalValue", this.on_changeGoalValue)
+        ctx.eventBus.on("change:goal.value", this.onChange_goalValue)
+        ctx.eventBus.on("showHint", this.onShowHint)
         //
         ctx.eventBus.on("*", this.onEvent)
 
@@ -44,8 +49,7 @@ export default {
         // Разные умолчания
         ctx.state.game.modeShowOptions = null
         // Новая цель
-        ctx.th.resetGoal()
-        ctx.th.setGoalInfo(dataTask.task.text)
+        ctx.th.resetGoal(dataTask.task.text)
     },
 
     async api_choiceTask() {
@@ -67,9 +71,9 @@ export default {
         }
 
         //
-        console.info("task", task)
-        console.info("taskOptions", taskOptions)
-        console.info("res", res)
+        //console.info("task", task)
+        //console.info("taskOptions", taskOptions)
+        //console.info("res", res)
 
         //
         /*
@@ -91,14 +95,12 @@ export default {
         return res
     },
 
-    setGoalInfo(text) {
-        ctx.state.goal.text = "Hit here #" + (ctx.state.taskIdx + 1) + ", " + text
-    },
-
     // Сбрасываем состояние результата (цели)
-    resetGoal() {
-        ctx.state.game.goalHitSize = 4
-        ctx.state.goal.value = 4
+    resetGoal(text) {
+        ctx.state.game.goalHitSize = ctx.settings.goalHitSizeDefault
+        ctx.state.goal.text = text
+        ctx.state.goal.valueGoal = 4
+        ctx.state.goal.valueDone = 0
     },
 
 
@@ -208,12 +210,12 @@ export default {
         } else {
             ctx.state.ball.ballIsTrue = false
             stateBall.text = ""
-            stateGoal.value = stateGoal.value + 1
-            if (stateGoal.value > 10) {
-                stateGoal.value = 10
+            stateGoal.valueGoal = stateGoal.valueGoal + 1
+            if (stateGoal.valueGoal > ctx.settings.valueGoalMax) {
+                stateGoal.valueGoal = ctx.settings.valueGoalMax
             }
             stateGame.modeShowOptions = "hint-true"
-            stateGame.goalHitSize = 1
+            stateGame.goalHitSize = ctx.settings.goalHitSizeError
         }
         stateBall.value = 1
 
@@ -264,7 +266,7 @@ export default {
         //
         if (utilsCore.intersectRect(rectTrace, rectGoal)) {
             if (ctx.state.ball.ballIsTrue) {
-                stateGoal.value = stateGoal.value - stateGame.goalHitSize
+                stateGoal.valueDone = stateGoal.valueDone + stateGame.goalHitSize
             }
 
             //
@@ -274,7 +276,7 @@ export default {
             stateBall.value = 0
 
             //
-            ctx.eventBus.emit("changeGoalValue", stateGoal.value)
+            ctx.eventBus.emit("change:goal.value", stateGoal.value)
 
             //
             return
@@ -308,9 +310,16 @@ export default {
     },
 
 
-    on_changeGoalValue(ev, obj) {
-        if (ctx.state.goal.value == 0) {
+    onChange_goalValue(v) {
+        if (ctx.state.goal.valueDone >= ctx.state.goal.valueGoal) {
             ctx.th.nextTask()
+        }
+    },
+
+    onShowHint(v) {
+        if (v) {
+            ctx.state.game.modeShowOptions = "hint-true"
+            ctx.state.game.goalHitSize = ctx.settings.goalHitSizeHint
         }
     },
 

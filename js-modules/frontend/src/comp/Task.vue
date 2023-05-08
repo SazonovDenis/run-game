@@ -94,10 +94,7 @@ export default {
 
         doShowSound() {
             return (
-                this.task.sound != null &&
-                (
-                    this.task.dataType == dbConst.DataType_word_sound
-                )
+                this.task.sound != null
             )
         },
 

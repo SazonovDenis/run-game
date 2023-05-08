@@ -50,13 +50,28 @@ export default {
         // Грузим новое задание с сервера
         let dataUsrTask = await ctx.th.api_choiceUstTask()
 
+        // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
+        for (let i = 0; i < dataUsrTask.taskOptions.length; i++) {
+            let taskOption = dataUsrTask.taskOptions[i]
+            taskOption.task = dataUsrTask.task.id
+        }
+
+        // Перемешаем ответы
+        dataUsrTask.taskOptions = ctx.th.shuffleTaskOptions(dataUsrTask.taskOptions)
+
+        //
+        console.info("---")
+        console.info("task", dataUsrTask.task)
+        console.info("taskOptions", dataUsrTask.taskOptions)
+
         // Уведомим об изменении задания
         ctx.eventBus.emit("loadedUsrTask", dataUsrTask)
 
         // Разные умолчания
         ctx.state.game.modeShowOptions = null
         ctx.state.game.postTaskAnswerDone = false
-        // Новая цель
+
+        // Состояние цели
         ctx.th.resetGoal(dataUsrTask.task.text)
     },
 
@@ -73,27 +88,15 @@ export default {
             return res
         }
 
+
         //
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [9999])
 
         //
-        let task = resApi.task.records[0]
-        let taskOptions = resApi.taskOption.records
-
         let res = {
-            task,
-            taskOptions,
+            task: resApi.task.records[0],
+            taskOptions: resApi.taskOption.records,
         }
-
-        // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
-        for (let i = 0; i < taskOptions.length; i++) {
-            let taskOption = taskOptions[i]
-            taskOption.task = task.id
-        }
-
-        //console.info("task", task)
-        //console.info("taskOptions", taskOptions)
-        //console.info("res", res)
 
         //
         return res
@@ -251,6 +254,24 @@ export default {
         } else {
             return false
         }
+    },
+
+    shuffleTaskOptions(taskOptions) {
+        let taskOptionsRes = []
+
+        //
+        for (let i = 0; i < taskOptions.length; i++) {
+            let taskOption = taskOptions[i]
+            console.info("taskOption", taskOption)
+            if (Math.random() * 2 > 1) {
+                taskOptionsRes.push(taskOption)
+            } else {
+                taskOptionsRes.unshift(taskOption)
+            }
+        }
+
+        //
+        return taskOptionsRes
     },
 
     startMoveAnimation(el) {

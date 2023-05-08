@@ -138,6 +138,10 @@ export default {
     color: #7a7a7a;
 }
 
+.task-help {
+    color: #474747;
+}
+
 .task-text {
     width: 100%;
     font-size: 1.5em;

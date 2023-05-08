@@ -9,7 +9,7 @@
         <Goal class="goal" id="goal" :goal="dataState.goal"/>
 
 
-        <div class="game-field">-</div>
+        <div class="game-field">&nbsp;</div>
 
 
         <div class="task-options">
@@ -54,7 +54,7 @@ export default {
 }
 
 .game-field {
-    border: 1px dotted red;
+    _border: 1px dotted red;
     height: 100px;
 }
 

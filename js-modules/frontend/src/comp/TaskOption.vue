@@ -220,7 +220,7 @@ export default {
     margin: 5px;
     padding: 10px;
     border-radius: 5px;
-    background-color: #fff5da;
+    background-color: #ecf9ff;
 }
 
 .option-text {

@@ -1,21 +1,30 @@
 <template>
 
     <div class="main-window-menu">
-        <q-btn color="white" text-color="black" label="Next" v-on:click="nextTask"/>
+        Fdnjhbpfwbz?
+        <q-btn color="white" text-color="black" label="Next"
+               v-if="user.id > 0"
+               v-on:click="nextTask"/>
 
         <q-btn color="white" text-color="black" label="User 1"
+               v-if="user.id == 0"
                v-on:click="login('user1', '111')"/>
         <q-btn color="white" text-color="black" label="User 2"
+               v-if="user.id == 0"
                v-on:click="login('user2', '222')"/>
         <q-btn color="white" text-color="black" label="Logout"
+               v-if="user.id > 0"
                v-on:click="logout()"/>
         <q-btn color="white" text-color="black" label="Full"
+               v-if="user.id > 0"
                v-on:click="openFullscreen()"/>
 
         <UserInfo :user="user"/>
     </div>
 
-    <UserTaskPanel :usrTask="usrTask" :dataState="dataState"/>
+    <UserTaskPanel
+        v-if="user.id > 0"
+        :usrTask="usrTask" :dataState="dataState"/>
 
 </template>
 
@@ -70,7 +79,7 @@ export default {
             },
 
             user: {
-                id: null,
+                id: 0,
                 name: null,
                 color: null,
             },
@@ -90,6 +99,14 @@ export default {
             this.user.id = res.data.id
             this.user.name = res.data.name
             this.user.color = res.data.color
+
+            //
+            this.openFullscreen()
+
+            //
+            if (this.user.id > 0) {
+                this.nextTask()
+            }
         },
 
         async logout() {
@@ -100,6 +117,10 @@ export default {
             this.user.id = res.data.id
             this.user.name = res.data.name
             this.user.color = res.data.color
+            //
+            if (!this.user.id) {
+                this.user.id = 0
+            }
         },
 
         async getUserInfo() {
@@ -110,6 +131,10 @@ export default {
             this.user.id = res.data.id
             this.user.name = res.data.name
             this.user.color = res.data.color
+            //
+            if (!this.user.id) {
+                this.user.id = 0
+            }
         },
 
         openFullscreen() {

@@ -1,7 +1,6 @@
 <template>
 
     <div class="main-window-menu">
-        Fdnjhbpfwbz?
         <q-btn color="white" text-color="black" label="Next"
                v-if="user.id > 0"
                v-on:click="nextTask"/>

@@ -125,7 +125,7 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    font-size: 1.2em;
+    font-size: 1.0em;
     color: #3b3b3b;
   }
   </style>

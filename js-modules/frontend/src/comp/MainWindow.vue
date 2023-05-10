@@ -11,12 +11,16 @@
         <q-btn color="white" text-color="black" label="User 2"
                v-if="user.id == 0"
                v-on:click="login('user2', '222')"/>
-        <q-btn color="white" text-color="black" label="Logout"
-               v-if="user.id > 0"
-               v-on:click="logout()"/>
+
         <q-btn color="white" text-color="black" label="Full"
                v-if="user.id > 0"
                v-on:click="openFullscreen()"/>
+
+        <div class="menu-fill">&nbsp;</div>
+
+        <q-btn color="white" text-color="black" label="Logout"
+               v-if="user.id > 0"
+               v-on:click="logout()"/>
 
         <UserInfo :user="user"/>
     </div>
@@ -24,6 +28,10 @@
     <UserTaskPanel
         v-if="user.id > 0"
         :usrTask="usrTask" :dataState="dataState"/>
+
+    <div v-if="user.id == 0" class="main-window-img">
+        <img v-bind:src="backgroundImage">
+    </div>
 
 </template>
 
@@ -42,6 +50,13 @@ export default {
 
     components: {
         UserTaskPanel, UserInfo, gameplay
+    },
+
+    computed: {
+        backgroundImage() {
+            //return "url(" + apx.url.ref("run/game/web/cube.png") + ")"
+            return apx.url.ref("run/game/web/cube.png")
+        },
     },
 
     // Состояние игрового мира
@@ -175,6 +190,23 @@ export default {
 .main-window-menu {
     display: flex;
     flex-direction: row;
+}
+
+.menu-fill {
+    flex-grow: 100;
+}
+
+.main-window-img img {
+    padding-top: 10em;
+    width: 10em;
+}
+
+.main-window-img {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
 }
 
 </style>

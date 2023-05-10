@@ -46,19 +46,21 @@ export default {
 .user-info {
     display: flex;
     flex-direction: row;
+    align-items: center;
 
     background-color: #eeeeee;
     border-radius: 5em;
-    padding: 0.5em;
-    margin: 0.2em;
+    padding: 0.3em;
+    margin: 0 0.3em;
 }
 
 .user-name {
+    margin-left: 0.5em;
 }
 
 .user-icon {
-    width: 1.2em;
-    height: 1.2em;
+    width: 2em;
+    height: 2em;
     margin-left: 0.5em;
     border-radius: 5em;
 }

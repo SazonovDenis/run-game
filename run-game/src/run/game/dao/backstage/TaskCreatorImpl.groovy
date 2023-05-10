@@ -8,7 +8,7 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 
-public class TaskCreatorImpl extends BaseMdbUtils implements TaskCreator {
+public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
 
     StoreIndex idxDataType
     Store st_wordRus

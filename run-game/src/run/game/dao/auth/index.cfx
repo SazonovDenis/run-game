@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <bean name="jandcode.core.auth.AuthService">
+        <auth-processor name="default"
+                        class="run.game.dao.auth.DummyAuthProcessor"/>
+    </bean>
+
+    <web>
+        <action name="auth"
+                class="run.game.dao.auth.AuthAction"/>
+    </web>
+
+
+</root>

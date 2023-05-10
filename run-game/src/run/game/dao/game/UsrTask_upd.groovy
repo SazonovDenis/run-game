@@ -2,21 +2,22 @@ package run.game.dao.game
 
 import jandcode.commons.datetime.*
 import jandcode.core.dao.*
-import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
+import run.game.dao.*
 
-class UsrTask_upd extends BaseMdbUtils {
+class UsrTask_upd extends RgMdbUtils {
 
-    long getUsr() {
-        return 1010
-    }
-
+    /**
+     * Записывает, что задание task, было выдано пользователю
+     * @param task Task.id
+     * @return UsrTask.id
+     */
     @DaoMethod
     StoreRecord ins(long task) {
         StoreRecord recUsrTask = mdb.createStoreRecord("UsrTask")
 
         //
-        recUsrTask.setValue("usr", getUsr())
+        recUsrTask.setValue("usr", getCurrentUserId())
         recUsrTask.setValue("task", task)
         recUsrTask.setValue("taskDt", XDateTime.now())
         //

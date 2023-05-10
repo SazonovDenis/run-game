@@ -1,6 +1,6 @@
 import {apx} from './vendor'
 import App from './App'
-import Home from './Home'
+import Home from './HomePage'
 
 import theme from 'theme/default'
 import icons from 'all/icons'
@@ -11,7 +11,7 @@ export function run() {
 
     let routes = [
         {path: '', frame: Home},
-        {path: '/start', frame: import('./Start')},
+        {path: '/start', frame: import('./StartPage')},
     ]
 
     apx.app.onBeforeRun(async () => {

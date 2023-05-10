@@ -25,7 +25,7 @@ export default {
     methods: {
         click() {
             utils.openFullscreen()
-            apx.showFrame({frame: import("./Home")})
+            apx.showFrame({frame: import("./HomePage")})
         },
 
     }

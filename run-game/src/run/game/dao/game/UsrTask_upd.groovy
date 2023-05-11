@@ -8,7 +8,7 @@ import run.game.dao.*
 class UsrTask_upd extends RgMdbUtils {
 
     /**
-     * Записывает, что задание task, было выдано пользователю
+     * Записывает, что задание task, было выдано текущему пользователю
      * @param task Task.id
      * @return UsrTask.id
      */

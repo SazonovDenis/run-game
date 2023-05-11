@@ -1,36 +1,40 @@
 <template>
 
-    <div class="main-window-menu">
-        <q-btn color="white" text-color="black" label="Next"
-               v-if="user.id > 0"
-               v-on:click="nextTask"/>
+    <div style="user-select: none;">
 
-        <q-btn color="white" text-color="black" label="User 1"
-               v-if="user.id == 0"
-               v-on:click="login('user1', '111')"/>
-        <q-btn color="white" text-color="black" label="User 2"
-               v-if="user.id == 0"
-               v-on:click="login('user2', '222')"/>
+        <div class="main-window-menu">
+            <q-btn color="white" text-color="black" label="Next"
+                   v-if="user.id > 0"
+                   v-on:click="nextTask"/>
 
-        <q-btn color="white" text-color="black" label="Full"
-               v-if="user.id > 0"
-               v-on:click="openFullscreen()"/>
+            <q-btn color="white" text-color="black" label="User 1"
+                   v-if="user.id == 0"
+                   v-on:click="login('user1', '111')"/>
+            <q-btn color="white" text-color="black" label="User 2"
+                   v-if="user.id == 0"
+                   v-on:click="login('user2', '222')"/>
 
-        <div class="menu-fill">&nbsp;</div>
+            <q-btn color="white" text-color="black" label="Full"
+                   v-if="user.id > 0"
+                   v-on:click="openFullscreen()"/>
 
-        <q-btn color="white" text-color="black" label="Logout"
-               v-if="user.id > 0"
-               v-on:click="logout()"/>
+            <div class="menu-fill">&nbsp;</div>
 
-        <UserInfo :user="user"/>
-    </div>
+            <q-btn color="white" text-color="black" label="Logout"
+                   v-if="user.id > 0"
+                   v-on:click="logout()"/>
 
-    <UserTaskPanel
-        v-if="user.id > 0"
-        :usrTask="usrTask" :dataState="dataState"/>
+            <UserInfo :user="user"/>
+        </div>
 
-    <div v-if="user.id == 0" class="main-window-img">
-        <img v-bind:src="backgroundImage">
+        <UserTaskPanel
+            v-if="user.id > 0"
+            :usrTask="usrTask" :dataState="dataState"/>
+
+        <div v-if="user.id == 0" class="main-window-img">
+            <img v-bind:src="backgroundImage">
+        </div>
+
     </div>
 
 </template>

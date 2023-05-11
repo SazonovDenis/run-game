@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="PlanTask" parent="tab.id" tag.db="true"
+            title="Состав плана обучения">
+        <!--@
+        Для плана отобран набор заданий, которые надо выучить в рамках плана (на этой карте).
+        -->
+        <field name="plan" parent="Plan/ref"/>
+        <field name="task" parent="Task/ref"/>
+    </domain>
+
+
+</root>

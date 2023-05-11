@@ -5,7 +5,7 @@
     <domain name="FactTag" parent="tab.id" tag.db="true"
             title="Тег факта">
         <!--@
-        Теги для данного факта из общего словаря тегов
+        Теги для факта (из общего словаря тегов)
         -->
         <field name="fact" parent="Fact/ref" title="О каком факте"/>
         <field name="tag" parent="Tag/ref"/>

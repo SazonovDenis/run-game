@@ -5,7 +5,6 @@
     <diagram name="fact" title="Сущности и факты">
         <domain name="Fact"/>
         <domain name="FactTag"/>
-        <domain name="FactTagValue"/>
         <domain name="DataType" showfields="false"/>
         <domain name="Item"/>
         <domain name="ItemTag"/>
@@ -15,7 +14,6 @@
     <diagram name="tag" title="Тэги">
         <domain name="Fact" showfields="false" showrefs="false"/>
         <domain name="FactTag"/>
-        <domain name="FactTagValue"/>
         <domain name="Item" showfields="false"/>
         <domain name="ItemTag"/>
         <domain name="Tag" showfields="false"/>
@@ -25,9 +23,10 @@
 
     <diagram name="plan" title="Планы обучения (уровни, карты)">
         <domain name="Plan"/>
-        <domain name="PlanFact"/>
         <domain name="PlanTag"/>
-        <domain name="Usr" showfields="false"/>
+        <domain name="PlanTask"/>
+        <domain name="Tag" showfields="false"/>
+        <domain name="Task" showfields="false"/>
     </diagram>
 
 

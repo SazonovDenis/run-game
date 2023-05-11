@@ -13,9 +13,12 @@ import run.game.util.*
  */
 class ItemFact_fb extends BaseFixtureBuilder {
 
+    Store stTagNow
+    Store stTagNew
     StoreIndex idxTag
     StoreIndex idxTagType
     StoreIndex idxDataType
+    long genIdTag
 
     String dirBase = "data/web-grab/"
     String badCsv = "temp/bad-db.csv"
@@ -43,18 +46,20 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
 
     protected void onBuild() {
+        FixtureTable fxTag = fx.table("Tag")
         FixtureTable fxItem = fx.table("Item")
         FixtureTable fxFact = fx.table("Fact")
         FixtureTable fxItemTag = fx.table("ItemTag")
         FixtureTable fxFactTag = fx.table("FactTag")
-        FixtureTable fxFactTagValue = fx.table("FactTagValue")
 
         //
         Logger log = UtLog.getLogConsole()
         LogerFiltered logCube = new LogerFiltered(log)
 
         //
-        idxTag = mdb.loadQuery("select TagType.code || '_' || Tag.value as key, Tag.* from Tag join TagType on Tag.tagType = TagType.id").getIndex("key")
+        stTagNew = fxTag.getStore()
+        stTagNow = mdb.loadQuery(sqlTag())
+        idxTag = stTagNow.getIndex("key")
         idxTagType = mdb.loadQuery("select * from TagType").getIndex("code")
         idxDataType = mdb.loadQuery("select * from DataType").getIndex("code")
 
@@ -88,7 +93,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
         long genIdItemTag = 0
         long genIdFact = 0
         long genIdFactTag = 0
-        long genIdFactTagValue = 0
+        genIdTag = mdb.loadQueryRecord(sqlTagMaxId()).getLong("maxId")
 
         //
         long idItem = 0
@@ -119,7 +124,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
                 Store stItemTag = fxItemTag.getStore()
                 Store stFact = fxFact.getStore()
                 Store stFactTag = fxFactTag.getStore()
-                Store stFactTagValue = fxFactTagValue.getStore()
 
                 //
                 for (StoreRecord recCsv : stCsv) {
@@ -265,17 +269,16 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     recFact_1.setValue("dataType", getDataType("word-sound"))
                                     String soundFileValue = soundFile.substring(dirBase.length())
                                     recFact_1.setValue("value", soundFileValue)
-                                    // Добавляем FactTagValue:word-sound-info
-                                    String[] siArr = soundFile.split("/")
-                                    if (!siArr[siArr.length - 2].equals("mp3")) {
-                                        String soundInfo = siArr[siArr.length - 2]
-                                        soundInfo = soundInfo.trim().toLowerCase()
-                                        genIdFactTagValue = genIdFactTagValue + 1
-                                        StoreRecord recFactTagValue = stFactTagValue.add()
-                                        recFactTagValue.setValue("id", genIdFactTagValue)
-                                        recFactTagValue.setValue("fact", recFact_1.getLong("id"))
-                                        recFactTagValue.setValue("tagType", idxTagType.get("word-sound-info").getLong("id"))
-                                        recFactTagValue.setValue("value", soundInfo)
+                                    // Добавляем FactTag:word-sound-info
+                                    String[] soundSourceArr = soundFile.split("/")
+                                    if (!soundSourceArr[soundSourceArr.length - 2].equals("mp3")) {
+                                        String soundSource = soundSourceArr[soundSourceArr.length - 2]
+                                        soundSource = soundSource.trim().toLowerCase()
+                                        genIdFactTag = genIdFactTag + 1
+                                        StoreRecord recFactTag = stFactTag.add()
+                                        recFactTag.setValue("id", genIdFactTag)
+                                        recFactTag.setValue("fact", recFact_1.getLong("id"))
+                                        recFactTag.setValue("tag", getOrCreateTag("word-sound-info", soundSource))
                                     }
                                 }
                             }
@@ -288,6 +291,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         StoreRecord recCsvBad = stCsvBad.add(recCsv.getValues())
                         recCsvBad.setValue("error", e.getMessage())
                         recCsvBad.setValue("file", fileCsv)
+                        if (!e.getMessage().contains("isAlphasEng") && !e.getMessage().contains("isAlphasRus")) {
+                            println(e.message)
+                        }
                     }
                 }
             }
@@ -302,6 +308,25 @@ class ItemFact_fb extends BaseFixtureBuilder {
         saveToCsv(stCsvBad, new File(badCsv))
     }
 
+    String sqlTag() {
+        return """
+select
+    TagType.code || '_' || Tag.value as key, 
+    Tag.* 
+from 
+    Tag 
+    join TagType on Tag.tagType = TagType.id
+"""
+    }
+
+    String sqlTagMaxId() {
+        return """
+select
+    max(Tag.id) maxId 
+from 
+    Tag 
+"""
+    }
 
     void addFromCsv(Store store, String fileName) {
         StoreService svcStore = getModel().getApp().bean(StoreService.class)
@@ -396,18 +421,38 @@ class ItemFact_fb extends BaseFixtureBuilder {
     }
 
 
-/*
-    String getLevelGrade(String eng) {
-        return "A1 (Beginner)"
-    }
-*/
+    long getOrCreateTag(String tagType_code, String value) {
+        String key = tagType_code + '_' + value
+        StoreRecord recTag = this.idxTag.get(key)
+        //
+        if (recTag == null) {
+            genIdTag = genIdTag + 1
+            //
+            recTag = stTagNew.add()
+            recTag.setValue("id", genIdTag)
+            recTag.setValue("tagType", idxTagType.get(tagType_code).getLong("id"))
+            recTag.setValue("value", value)
+            //
+            StoreRecord recTagNow = stTagNow.add()
+            recTagNow.setValue("id", genIdTag)
+            recTagNow.setValue("key", key)
+            recTagNow.setValue("tagType", idxTagType.get(tagType_code).getLong("id"))
+            recTagNow.setValue("value", value)
+            this.idxTag = stTagNow.getIndex("key")
 
+        }
+        //
+        return recTag.getLong("id")
+    }
 
     long getTag(String tagType, String value) {
-        StoreRecord recTag = this.idxTag.get(tagType + "_" + value)
+        String key = tagType + '_' + value
+        StoreRecord recTag = this.idxTag.get(key)
+        //
         if (recTag == null) {
             throw new XError("not found tagType: " + tagType + ", value: " + value)
         }
+        //
         return recTag.getLong("id")
     }
 

@@ -317,11 +317,8 @@ select
 
     FactTag.id factTagId,
     FactTag_TagType.code factTag_code,
-    FactTag_Tag.value factTag,
+    FactTag_Tag.value factTag
 
-    FactTagValue.id factTagValueId,
-    FactTagValue_TagType.code factTagValue_code,
-    FactTagValue.value factTagValue_Value
 from
     Item
 
@@ -332,8 +329,6 @@ from
     left join Tag FactTag_Tag on (FactTag.tag = FactTag_Tag.id)
     left join TagType FactTag_TagType on (FactTag_Tag.tagType = FactTag_TagType.id)
 
-    left join FactTagValue on (FactTagValue.fact = Fact.id)
-    left join TagType FactTagValue_TagType on (FactTagValue.tagType = FactTagValue_TagType.id)
 where
     Item.id = :id and
     Fact_DataType.code = :dataType

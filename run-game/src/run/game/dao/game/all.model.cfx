@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
-    <domain name="usr.Task">
-        <field name="id" parent="long"/>
+    <domain name="Task.Server">
+        <field name="id" parent="UsrTask/ref"/>
         <field name="dataType" parent="long"/>
         <field name="taskDt" parent="UsrTask/taskDt"/>
         <field name="text" parent="string"/>
@@ -10,9 +10,9 @@
         <field name="image" parent="string"/>
     </domain>
 
-    <domain name="usr.TaskOption">
-        <field name="id" parent="long"/>
-        <field name="isTrue" parent="boolean"/>
+    <domain name="TaskOption.Server">
+        <field name="id" parent="Task/ref"/>
+        <field name="isTrue" parent="TaskOption/isTrue"/>
         <field name="text" parent="string"/>
         <field name="sound" parent="string"/>
         <field name="image" parent="string"/>

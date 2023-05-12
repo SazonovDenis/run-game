@@ -247,7 +247,7 @@ export default {
     },
 
     isOptionIsTrueAnswer(taskOption) {
-        if (taskOption.trueFact) {
+        if (taskOption.isTrue) {
             return true
         } else {
             return false

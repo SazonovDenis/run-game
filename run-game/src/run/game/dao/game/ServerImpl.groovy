@@ -14,6 +14,9 @@ public class ServerImpl extends RgMdbUtils implements Server {
 
     @DaoMethod
     public DataBox choiceTask(long idPaln) {
+        StoreRecord resTask = mdb.createStoreRecord("Task.Server")
+        Store resTaskOption = mdb.createStore("TaskOption.Server")
+
         // Выбираем, что спросить
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         // Выбираем факт и задание по этому факту
@@ -26,28 +29,21 @@ public class ServerImpl extends RgMdbUtils implements Server {
 
         // Основной вопрос задания
         StoreRecord recTask = task.get("task")
-        StoreRecord resTask = mdb.createStoreRecord("usr.Task")
-        if (recTask.getLong("dataType") == DbConst.DataType_word_sound) {
-            resTask.setValue("sound", recTask.getValue("value"))
-        } else {
-            resTask.setValue("text", recTask.getValue("value"))
-        }
         resTask.setValue("dataType", recTask.getValue("dataType"))
 
         // Другие типы данных задания. Например, звук, если тип задания - текст
-        Store stTaskValue = task.get("taskValue")
-        for (StoreRecord recTaskValue : stTaskValue) {
-            if (recTaskValue.getLong("dataType") == DbConst.DataType_word_sound) {
-                resTask.setValue("sound", recTaskValue.getValue("value"))
+        Store stTaskQuestion = task.get("taskQuestion")
+        for (StoreRecord recTaskQuestion : stTaskQuestion) {
+            if (recTaskQuestion.getLong("dataType") == DbConst.DataType_word_sound) {
+                resTask.setValue("sound", recTaskQuestion.getValue("value"))
             }
-            if (recTaskValue.getLong("dataType") == DbConst.DataType_word_spelling) {
-                resTask.setValue("text", recTaskValue.getValue("value"))
+            if (recTaskQuestion.getLong("dataType") == DbConst.DataType_word_spelling) {
+                resTask.setValue("text", recTaskQuestion.getValue("value"))
             }
         }
 
         // Варианты ответа
         Store stTaskOption = task.get("taskOption")
-        Store resTaskOption = mdb.createStore("usr.TaskOption")
         for (StoreRecord recTaskOption : stTaskOption) {
             resTaskOption.add([
                     "id"    : recTaskOption.getValue("id"),

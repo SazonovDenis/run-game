@@ -11,7 +11,7 @@ export default {
                 {
                     id: 1039,
                     text: "Радоваться и веселиться",
-                    trueFact: true,
+                    isTrue: true,
                 },
                 {
                     id: 8503,
@@ -56,7 +56,7 @@ export default {
                 {
                     id: 1039,
                     text: "Зеркало",
-                    trueFact: true,
+                    isTrue: true,
                 },
                 {
                     id: 4022,
@@ -81,7 +81,7 @@ export default {
                 {
                     id: 18501,
                     text: "приводить в порядок",
-                    trueFact: true,
+                    isTrue: true,
                 },
                 {
                     id: 18508,
@@ -110,7 +110,7 @@ export default {
                 {
                     id: 203,
                     text: "хвастовство, похвальба",
-                    trueFact: true,
+                    isTrue: true,
                 },
                 {
                     id: 204,
@@ -130,7 +130,7 @@ export default {
                 {
                     id: 18503,
                     text: "радоваться, насыщаться",
-                    trueFact: true,
+                    isTrue: true,
                 },
                 {
                     id: 18503,
@@ -170,7 +170,7 @@ export default {
                 {
                     id: 204,
                     text: "в полоску",
-                    trueFact: true,
+                    isTrue: true,
                 },
             ]
         }

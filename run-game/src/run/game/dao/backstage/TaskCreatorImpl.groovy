@@ -143,13 +143,10 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
 
         // ---
         // Формируем recTask
-        //StoreRecord recTask = mdb.createStoreRecord("Task.question")
         StoreRecord recTask = mdb.createStoreRecord("Task")
         recTask.setValue("item", idItem)
         recTask.setValue("factQuestion", recFactQuestion.getValue("id"))
         recTask.setValue("factAnswer", recFactAnswer.getValue("id"))
-        // recTask.setValue("dataType", recFactQuestion.getValue("factDataType"))
-        // recTask.setValue("value", recFactQuestion.getValue("factValue"))
 
 
         // ---
@@ -253,7 +250,7 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
         DataBox res = new DataBox()
 
         //
-        StoreRecord recTask = mdb.createStoreRecord("Task.question")
+        StoreRecord recTask = mdb.createStoreRecord("Task.TaskCreator")
         Store stTaskOption = mdb.createStore("TaskOption")
         Store stTaskQuestion = mdb.createStore("TaskQuestion")
         mdb.loadQueryRecord(recTask, sqlFactForTask(), [id: idTask])

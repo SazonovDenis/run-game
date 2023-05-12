@@ -21,7 +21,7 @@ export default {
 
     methods: {
         getClassName(taskOption) {
-            if (this.state.game.modeShowOptions == "hint-true" && taskOption.trueFact) {
+            if (this.state.game.modeShowOptions == "hint-true" && taskOption.isTrue) {
                 return "fact-true"
             }
         },

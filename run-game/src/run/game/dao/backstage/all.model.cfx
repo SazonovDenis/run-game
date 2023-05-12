@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
-    <domain name="Task.question" parent="Task">
 
+    <!-- Task.TaskCreator -->
+
+    <domain name="Task.TaskCreator" parent="Task">
+
+        <!--@ Тип данных основного вопроса (Task.factQuestion) -->
         <field name="dataType" parent="Fact/dataType"/>
-        <field name="value" parent="Fact/value"/>
 
     </domain>
 

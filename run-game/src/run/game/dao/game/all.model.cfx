@@ -12,7 +12,7 @@
 
     <domain name="usr.TaskOption">
         <field name="id" parent="long"/>
-        <field name="trueFact" parent="boolean"/>
+        <field name="isTrue" parent="boolean"/>
         <field name="text" parent="string"/>
         <field name="sound" parent="string"/>
         <field name="image" parent="string"/>

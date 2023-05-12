@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+
 import jandcode.commons.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
@@ -7,6 +8,7 @@ import jandcode.core.dbm.mdb.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
+
 
 public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
 
@@ -29,11 +31,14 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
     }
 
     public DataBox createTask(long idItem, String dataTypeQuestion, String dataTypeAnswer) {
-        DataBox res = new DataBox()
+        // ---
+        // Типа запросили пару "word-translate -> word-spelling"
+        // ---
 
-        // Загружаем факты "вопрос" и "ответ"
-        Store stQuestion = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: dataTypeQuestion])
-        Store stAnswer = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: dataTypeAnswer])
+        // Загружаем список фактов для "вопроса" и "ответа"
+        Fact_list list = mdb.create(Fact_list)
+        Store stQuestion = list.loadFactsByDataType(idItem, dataTypeQuestion)
+        Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
 
         //
         if (stQuestion.size() == 0) {
@@ -43,19 +48,28 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
             throw new Exception("Не найден dataTypeAnswer: " + dataTypeAnswer)
         }
 
-        // ---
-        // Типа запросили пару "word-translate -> word-spelling"
-        // ---
-
         // Выбираем "факт вопрос" и "факт ответ"
-        StoreRecord recQuestion = stQuestion.get(rnd.num(0, stQuestion.size() - 1))
-        StoreRecord recAnswer = stAnswer.get(rnd.num(0, stAnswer.size() - 1))
-        StoreIndex idxAnswer = stAnswer.getIndex("factValue")
-        //mdb.outTable(recQuestion)
-        //mdb.outTable(recAnswer)
+        int idxFactQuestion = rnd.num(0, stQuestion.size() - 1)
+        int idxFactAnswer = rnd.num(0, stAnswer.size() - 1)
+        long idFactQuestion = stQuestion.get(idxFactQuestion).getLong("id")
+        long idFactAnswer = stAnswer.get(idxFactAnswer).getLong("id")
+
+        // Формируем задание
+        return createTask(idFactQuestion, idFactAnswer)
+    }
+
+    public DataBox createTask(long idFactQuestion, long idFactAnswer) {
+        DataBox res = new DataBox()
 
         //
-        String valueTrue = recAnswer.getValue("factValue")
+        Fact_list list = mdb.create(Fact_list)
+        StoreRecord recFactQuestion = list.loadFact(idFactQuestion)
+        StoreRecord recFactAnswer = list.loadFact(idFactAnswer)
+        //
+        long idItem = recFactQuestion.getLong("item")
+        long dataTypeQuestion = recFactQuestion.getLong("factDataType")
+        long dataTypeAnswer = recFactAnswer.getLong("factDataType")
+        String valueTrue = recFactAnswer.getValue("factValue")
 
 
         // ---
@@ -123,25 +137,28 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
         // Всё нормально?
         int falseOptionsTotalCount = valuesFalseArr.size()
         if (falseOptionsTotalCount <= optionsCount) {
-            throw new Exception("Не нашлось достаточного количества неправильных ответов, question: '" + recQuestion.getValue("factValue") + "', answer: '" + valueTrue + "'")
+            throw new Exception("Не нашлось достаточного количества неправильных ответов, question: '" + recFactQuestion.getValue("factValue") + "', answer: '" + valueTrue + "'")
         }
 
 
         // ---
         // Формируем recTask
-        StoreRecord recTask = mdb.createStoreRecord("Task.question")
+        //StoreRecord recTask = mdb.createStoreRecord("Task.question")
+        StoreRecord recTask = mdb.createStoreRecord("Task")
         recTask.setValue("item", idItem)
-        recTask.setValue("factQuestion", recQuestion.getValue("fact"))
-        recTask.setValue("factAnswer", recAnswer.getValue("fact"))
-        //
-        recTask.setValue("dataType", recQuestion.getValue("factDataType"))
-        recTask.setValue("value", recQuestion.getValue("factValue"))
+        recTask.setValue("factQuestion", recFactQuestion.getValue("id"))
+        recTask.setValue("factAnswer", recFactAnswer.getValue("id"))
+        // recTask.setValue("dataType", recFactQuestion.getValue("factDataType"))
+        // recTask.setValue("value", recFactQuestion.getValue("factValue"))
 
 
         // ---
         // Формируем stTaskOption: готовим правильный и неправильные ответы
 
         // Выбираем неправильные ответы (и их порядок)
+        Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
+        StoreIndex idxAnswer = stAnswer.getIndex("factValue")
+        //
         int n = 0
         int[] falseOntionsIndexes = new int[optionsCount]
         Set<Integer> falseOptionsIndexesUsed = new HashSet<>()
@@ -169,45 +186,55 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
             StoreRecord recOption = stTaskOption.add()
             if (i == trueValuePos) {
                 // Правильный ответ
-                recOption.setValue("trueFact", recAnswer.getValue("fact"))
-                recOption.setValue("dataType", recAnswer.getValue("factDataType"))
+                recOption.setValue("isTrue", true)
+                recOption.setValue("dataType", recFactAnswer.getValue("factDataType"))
                 recOption.setValue("value", valueTrue)
             } else {
                 // Неправильные варианты
                 int falseOptionIndex = falseOntionsIndexes[i]
                 String valueFalse = valuesFalseArr[falseOptionIndex]
                 //
-                recOption.setValue("dataType", recAnswer.getValue("factDataType"))
+                recOption.setValue("dataType", recFactAnswer.getValue("factDataType"))
                 recOption.setValue("value", valueFalse)
             }
         }
 
 
         // ---
-        // Формируем stTaskValue: звуковое сопровождение
-        Store stTaskValue = mdb.createStore("TaskValue")
-        if (dataTypeQuestion.equals(DbConst.DataType_CODE_word_spelling)) {
+        // Формируем stTaskQuestion: основной вопрос
+        Store stTaskQuestion = mdb.createStore("TaskQuestion")
+
+
+        // Формируем основной вопрос
+        StoreRecord recTaskQuestion = stTaskQuestion.add()
+        recTaskQuestion.setValue("dataType", recFactQuestion.getValue("factDataType"))
+        recTaskQuestion.setValue("value", recFactQuestion.getValue("factValue"))
+
+
+        // Формируем дополнительную информацию
+        if (dataTypeQuestion == DbConst.DataType_word_spelling) {
             // Загружаем факты "звук"
-            Store stQuestionTaskValue = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: DbConst.DataType_CODE_word_sound])
+            Store stFact = list.loadFactsByDataType(idItem, DbConst.DataType_word_sound)
             // Выбираем факт "звук"
-            if (stQuestionTaskValue.size() != 0) {
-                StoreRecord recQuestionTaskValue = stQuestionTaskValue.get(rnd.num(0, stQuestionTaskValue.size() - 1))
-                StoreRecord recTaskValue = stTaskValue.add()
-                recTaskValue.setValue("dataType", recQuestionTaskValue.getValue("factDataType"))
-                recTaskValue.setValue("value", recQuestionTaskValue.getValue("factValue"))
+            if (stFact.size() != 0) {
+                int idx = rnd.num(0, stFact.size() - 1)
+                StoreRecord recFact = stFact.get(idx)
+                recTaskQuestion = stTaskQuestion.add()
+                recTaskQuestion.setValue("dataType", recFact.getValue("factDataType"))
+                recTaskQuestion.setValue("value", recFact.getValue("factValue"))
 
             }
         }
-        if (dataTypeQuestion.equals(DbConst.DataType_CODE_word_sound)) {
+        if (dataTypeQuestion == DbConst.DataType_word_sound) {
             // Загружаем факты "написание"
-            Store stQuestionTaskValue = mdb.loadQuery(sqlFactValue(), [id: idItem, dataType: DbConst.DataType_CODE_word_spelling])
+            Store stFact = list.loadFactsByDataType(idItem, DbConst.DataType_word_spelling)
             // Выбираем факт "написание"
-            if (stQuestionTaskValue.size() != 0) {
-                StoreRecord recQuestionTaskValue = stQuestionTaskValue.get(rnd.num(0, stQuestionTaskValue.size() - 1))
-                StoreRecord recTaskValue = stTaskValue.add()
-                recTaskValue.setValue("dataType", recQuestionTaskValue.getValue("factDataType"))
-                recTaskValue.setValue("value", recQuestionTaskValue.getValue("factValue"))
-
+            if (stFact.size() != 0) {
+                int idx = rnd.num(0, stFact.size() - 1)
+                StoreRecord recFact = stFact.get(idx)
+                recTaskQuestion = stTaskQuestion.add()
+                recTaskQuestion.setValue("dataType", recFact.getValue("factDataType"))
+                recTaskQuestion.setValue("value", recFact.getValue("factValue"))
             }
         }
 
@@ -215,7 +242,7 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
         // ---
         res.put("task", recTask)
         res.put("taskOption", stTaskOption)
-        res.put("taskValue", stTaskValue)
+        res.put("taskQuestion", stTaskQuestion)
 
         //
         return res
@@ -228,15 +255,15 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
         //
         StoreRecord recTask = mdb.createStoreRecord("Task.question")
         Store stTaskOption = mdb.createStore("TaskOption")
-        Store stTaskValue = mdb.createStore("TaskValue")
+        Store stTaskQuestion = mdb.createStore("TaskQuestion")
         mdb.loadQueryRecord(recTask, sqlFactForTask(), [id: idTask])
         mdb.loadQuery(stTaskOption, sqlTaskOption(), [id: idTask])
-        mdb.loadQuery(stTaskValue, sqlTaskValue(), [id: idTask])
+        mdb.loadQuery(stTaskQuestion, sqlTaskQuestion(), [id: idTask])
 
         //
         res.put("task", recTask)
         res.put("taskOption", stTaskOption)
-        res.put("taskValue", stTaskValue)
+        res.put("taskQuestion", stTaskQuestion)
 
         //
         return res
@@ -245,27 +272,28 @@ public class TaskCreatorImpl extends RgMdbUtils implements TaskCreator {
     public long saveTask(DataBox task) {
         StoreRecord recTask = mdb.createStoreRecord("Task", task.get("task"))
         Store stTaskOption = task.get("taskOption")
-        Store stTaskValue = task.get("taskValue")
+        Store stTaskQuestion = task.get("taskQuestion")
 
         //
         long idTask = mdb.insertRec("Task", recTask)
 
         //
         for (StoreRecord rec : stTaskOption) {
-            StoreRecord recTaskOption = mdb.createStoreRecord("TaskOption")
-            recTaskOption.setValues(rec.getValues())
-            recTaskOption.setValue("task", idTask)
-            mdb.insertRec("TaskOption", recTaskOption)
+            StoreRecord recIns = mdb.createStoreRecord("TaskOption")
+            recIns.setValues(rec.getValues())
+            recIns.setValue("task", idTask)
+            mdb.insertRec("TaskOption", recIns)
         }
 
         //
-        for (StoreRecord rec : stTaskValue) {
-            StoreRecord recTaskValue = mdb.createStoreRecord("TaskValue")
-            recTaskValue.setValues(rec.getValues())
-            recTaskValue.setValue("task", idTask)
-            mdb.insertRec("TaskValue", recTaskValue)
+        for (StoreRecord rec : stTaskQuestion) {
+            StoreRecord recIns = mdb.createStoreRecord("TaskQuestion")
+            recIns.setValues(rec.getValues())
+            recIns.setValue("task", idTask)
+            mdb.insertRec("TaskQuestion", recIns)
         }
 
+        //
         return idTask
     }
 
@@ -294,52 +322,16 @@ where
 """
     }
 
-    String sqlTaskValue() {
+    String sqlTaskQuestion() {
         return """
 select 
     *
 from 
-    TaskValue
+    TaskQuestion
 where
-    TaskValue.task = :id 
+    TaskQuestion.task = :id 
 """
     }
 
-    String sqlFactValue() {
-        return """
-select
-    Item.id item,
-    Item.value itemValue,
-    Fact.id fact,
-
-    Fact.dataType factDataType,
-    Fact.value factValue,
-
-    FactTag.id factTagId,
-    FactTag_TagType.code factTag_code,
-    FactTag_Tag.value factTag
-
-from
-    Item
-
-    left join Fact on (Fact.item = Item.id)
-    left join DataType Fact_DataType on (Fact.dataType = Fact_DataType.id)
-
-    left join FactTag on (FactTag.fact = Fact.id)
-    left join Tag FactTag_Tag on (FactTag.tag = FactTag_Tag.id)
-    left join TagType FactTag_TagType on (FactTag_Tag.tagType = FactTag_TagType.id)
-
-where
-    Item.id = :id and
-    Fact_DataType.code = :dataType
-
-order by
-    Item.id,
-    Fact.dataType,
-    Fact.id,
-    FactTag.tag
-"""
-
-    }
 
 }

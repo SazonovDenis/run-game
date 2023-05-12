@@ -7,7 +7,8 @@
         <!--@
         Например: слово
         -->
-        <field name="value" parent="string" size="500" title="Представление сущности (слово и его описание)"/>
+        <field name="value" parent="string" size="200"
+               title="Представление сущности (слово и его описание)"/>
     </domain>
 
 

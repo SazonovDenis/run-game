@@ -3,9 +3,9 @@
 
 
     <domain name="Task" parent="tab.id" tag.db="true"
-            title="Тестовое задание (вопрос)">
+            title="Тестовое задание">
         <!--@
-        К каждому тестовому заданию готовятся варианты ответов (TaskOption)
+        К каждому тестовому заданию готовятся вопрос (TaskQuestion) и варианты ответов (TaskOption)
         -->
         <field name="item" parent="Item/ref" title="Проверяли знание об этой сущности"/>
         <field name="factQuestion" parent="Fact/ref" title="Факт - вопрос">
@@ -13,9 +13,9 @@
             Показывали этот факт
             -->
         </field>
-        <field name="factAnswer" parent="Fact/ref" title="Проверяли знание этого факта">
+        <field name="factAnswer" parent="Fact/ref" title="Факт - ответ на вопрос">
             <!--@
-            Правильный ответ на задание. Показывали среди вариантов ответа
+            Проверяли знание этого факта. Показывали среди вариантов ответа
             -->
         </field>
     </domain>

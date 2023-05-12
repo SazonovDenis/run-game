@@ -8,7 +8,7 @@
 
         -->
         <field name="lang" parent="string" size="50" title="Язык слова"/>
-        <field name="word" parent="string" size="500" title="Слово"/>
+        <field name="word" parent="string" size="200" title="Слово"/>
         <field name="synonyms" parent="blob" title="Синонимы слова"/>
     </domain>
 

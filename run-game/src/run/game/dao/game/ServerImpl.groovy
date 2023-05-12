@@ -1,26 +1,23 @@
 package run.game.dao.game
 
+
 import jandcode.commons.datetime.*
 import jandcode.core.dao.*
-import jandcode.core.dbm.mdb.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 
-/**
- *
- */
-public class ServerImpl extends BaseMdbUtils implements Server {
+
+public class ServerImpl extends RgMdbUtils implements Server {
 
 
     @DaoMethod
     public DataBox choiceTask(long idPaln) {
-        // Выбираем
+        // Выбираем, что спросить
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        // Выбираем факт
+        // Выбираем факт и задание по этому факту
         long idFact = statisticManager.selectFact(idPaln)
-        // Выбираем задание
         long idTask = statisticManager.selectTask(idFact)
 
         // Грузим задание
@@ -36,6 +33,7 @@ public class ServerImpl extends BaseMdbUtils implements Server {
             resTask.setValue("text", recTask.getValue("value"))
         }
         resTask.setValue("dataType", recTask.getValue("dataType"))
+
         // Другие типы данных задания. Например, звук, если тип задания - текст
         Store stTaskValue = task.get("taskValue")
         for (StoreRecord recTaskValue : stTaskValue) {
@@ -46,19 +44,20 @@ public class ServerImpl extends BaseMdbUtils implements Server {
                 resTask.setValue("text", recTaskValue.getValue("value"))
             }
         }
+
         // Варианты ответа
         Store stTaskOption = task.get("taskOption")
         Store resTaskOption = mdb.createStore("usr.TaskOption")
         for (StoreRecord recTaskOption : stTaskOption) {
             resTaskOption.add([
-                    "id"      : recTaskOption.getValue("id"),
-                    "text"    : recTaskOption.getValue("value"),
-                    "trueFact": !recTaskOption.isValueNull("trueFact"),
+                    "id"    : recTaskOption.getValue("id"),
+                    "text"  : recTaskOption.getValue("value"),
+                    "isTrue": recTaskOption.getValue("isTrue"),
             ])
         }
 
 
-        // Формируем задание для пользователя
+        // Записываем факт выдачи задания для пользователя
         UsrTask_upd taskUpd = mdb.create(UsrTask_upd)
         StoreRecord recUsrTask = taskUpd.ins(recTask.getLong("id"))
 
@@ -67,7 +66,7 @@ public class ServerImpl extends BaseMdbUtils implements Server {
         resTask.setValue("taskDt", recUsrTask.getValue("taskDt"))
 
 
-        // Выдаем задание для пользователя
+        // Выдаем задание
         DataBox res = new DataBox()
         res.put("task", resTask)
         res.put("taskOption", resTaskOption)
@@ -80,10 +79,11 @@ public class ServerImpl extends BaseMdbUtils implements Server {
 
     @DaoMethod
     public void postTaskAnswer(long idUsrTask, long idTaskOption) {
-        // Задание для пользователя
-        StoreRecord recUsrTask = mdb.loadQueryRecord(sqlUsrTask(), [id: idUsrTask])
-        // Выбранный вариант ответа.
-        // Если idTaskOption не соответствует idUsrTask, запись загрузится пустой
+        // Загрузим выданное задание. Если задание чужое, то запись
+        // загрузится пустой и будет ошибка, что нормально.
+        StoreRecord recUsrTask = mdb.loadQueryRecord(sqlUsrTask(), [id: idUsrTask, usr: getCurrentUserId()])
+        // Выбранный вариант ответа. Если idTaskOption не соответствует idUsrTask,
+        // запись загрузится пустой и будет ошибка, что нормально.
         StoreRecord recTaskOption = mdb.loadQueryRecord(sqlUsrTaskOption(), [id: idUsrTask, taskOption: idTaskOption])
 
         //
@@ -102,9 +102,13 @@ public class ServerImpl extends BaseMdbUtils implements Server {
 
     String sqlUsrTask() {
         return """
-select * 
-from UsrTask
-where UsrTask.id = :id 
+select 
+    * 
+from 
+    UsrTask
+where
+    UsrTask.id = :id and 
+    UsrTask.usr = :usr 
 """
     }
 

@@ -181,10 +181,12 @@ class TaskCreator_Test extends Apx_Test {
 
     void printTask(DataBox task) {
         mdb.resolveDicts(task)
+        println("task")
         utils.outTable(task.get("task"))
+        println("taskQuestion")
+        utils.outTable(task.get("taskQuestion"))
+        println("taskOption")
         utils.outTable(task.get("taskOption"))
-        println("taskValue")
-        utils.outTable(task.get("taskValue"))
     }
 
     void printTaskOneLine(DataBox task) {

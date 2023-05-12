@@ -7,8 +7,8 @@
         <!--@
         -->
         <field name="task" parent="Task/ref" title="На какое задание"/>
-        <field name="trueFact" parent="Fact/ref"
-               title="Заполняется, если вариант ответа правильный, иначе null"/>
+        <field name="isTrue" parent="boolean"
+               title="Заполняется, если вариант ответа правильный"/>
 
         <field name="dataType" parent="DataType/ref"/>
         <field name="value" parent="string" size="500"

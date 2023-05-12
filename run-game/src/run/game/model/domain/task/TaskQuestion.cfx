@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="TaskQuestion" parent="tab.id" tag.db="true"
+            title="Значения для показа вопроса">
+        <!--@
+        Для заданий, где у факта factQuestion значение dataType == "word-spelling",
+        формируется дополнительная запись на основе факта, где dataType == "word-sound"
+        (если такой факт имеется в базе)
+        -->
+        <field name="task" parent="Task/ref" title="На какое задание"/>
+
+        <field name="dataType" parent="DataType/ref"/>
+        <field name="value" parent="string" size="500"
+               title="Значение"/>
+    </domain>
+
+
+</root>

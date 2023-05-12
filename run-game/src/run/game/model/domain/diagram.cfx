@@ -30,18 +30,23 @@
     </diagram>
 
 
-    <diagram name="tasks" title="Задания, варианты и ответы пользователей">
+    <diagram name="task" title="Задания и варианты ответов">
         <domain name="Task"/>
         <domain name="TaskOption"/>
-        <domain name="TaskValue"/>
+        <domain name="TaskQuestion"/>
         <domain name="Fact" showfields="false"/>
-
-        <domain name="UsrTask"/>
-        <domain name="Usr" showfields="false"/>
     </diagram>
 
 
-    <diagram name="words" title="Информация по словам">
+    <diagram name="usrTask" title="Задания и ответы пользователей">
+        <domain name="UsrTask"/>
+        <domain name="Usr" showfields="false"/>
+        <domain name="Task" showfields="false"/>
+        <domain name="TaskOption" showfields="false" showrefs="false"/>
+    </diagram>
+
+
+    <diagram name="word" title="Информация по словам">
         <domain name="WordDistance"/>
         <domain name="WordSynonym"/>
     </diagram>

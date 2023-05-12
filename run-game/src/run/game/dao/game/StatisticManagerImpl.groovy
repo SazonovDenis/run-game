@@ -1,12 +1,14 @@
 package run.game.dao.game
 
+
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
-import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
+import run.game.dao.*
 
-public class StatisticManagerImpl extends BaseMdbUtils implements StatisticManager {
+
+public class StatisticManagerImpl extends RgMdbUtils implements StatisticManager {
 
 
     //
@@ -15,7 +17,8 @@ public class StatisticManagerImpl extends BaseMdbUtils implements StatisticManag
 
     @DaoMethod
     public Store getFactStatistic(long idFact) {
-        return null
+        Store st = mdb.loadQuery(sqlFactStatistic(), [usr: getCurrentUserId(), fact: idFact])
+        return st
     }
 
 
@@ -26,11 +29,21 @@ public class StatisticManagerImpl extends BaseMdbUtils implements StatisticManag
 
 
     /**
-     * Выбирает подходящий факт
+     * Выбирает подходящий факт.
+     * Факт выбирается с учетом статистики пользователя.
      */
     public long selectFact(long idPlan) {
-        Store stFact = mdb.loadQuery("select id from Fact", [])
-        long idFact = stFact.get(0).getLong("id")
+        long idUsr = getCurrentUserId()
+
+        /////////////////////////
+        /////////////////////////
+        /////////////////////////
+        /////////////////////////
+        return 0
+
+        Store stFact = mdb.loadQuery(sqlFact(), [plan: idPlan])
+        int n = rnd.num(0, stFact.size() - 1)
+        long idFact = stFact.get(n).getLong("id")
         return idFact
     }
 
@@ -39,10 +52,45 @@ public class StatisticManagerImpl extends BaseMdbUtils implements StatisticManag
      * Выбирает подходящее задание
      */
     public long selectTask(long idFact) {
+        long idUsr = getCurrentUserId()
+
+        ////////////////////////////
+        ////////////////////////////
+        ////////////////////////////
+        ////////////////////////////
         //Store stTask = mdb.loadQuery("select id from Task where factQuestion = :fact", [fact: idFact])
         Store stTask = mdb.loadQuery("select id from Task limit 100", [])
-        long idTask = stTask.get(rnd.num(0, stTask.size() - 1)).getLong("id")
+        int n = rnd.num(0, stTask.size() - 1)
+        long idTask = stTask.get(n).getLong("id")
         return idTask
     }
 
+    String sqlFact() {
+        return """
+select
+    * 
+from
+    PlanFact
+where
+    PlanFact.plan = :plan
+"""
+
+    }
+
+    String sqlFactStatistic() {
+        return """
+select
+    Task.*,
+    UsrTask.taskDt,
+    UsrTask.answerDt,
+    TaskOption.isTrue
+from
+    UsrTask
+    join Task on (UsrTask.task = Task.id and Task.factQuestion = :fact) 
+    join TaskOption on (TaskOption.id = UsrTask.answerTaskOption) 
+where
+    UsrTask.usr = :usr
+"""
+
+    }
 }

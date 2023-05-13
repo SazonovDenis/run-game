@@ -1,128 +1,128 @@
-tagType,value
-level-grade,A1 (Beginner)
-level-grade,A2 (Elementary)
-level-grade,B1 (Pre-Intermediate)
-level-grade,B2 (Intermediate)
-level-grade,C1 (Upper-Intermediate)
-level-grade,grade-1
-level-grade,grade-2
-level-grade,grade-3
-level-grade,grade-4
-level-grade,grade-5
-level-grade,grade-6
-level-grade,grade-7
-level-grade,grade-8
-level-grade,grade-9
-level-grade,grade-10
-level-grade,grade-11
-level-grade,grade-12
-top-list,top-100
-top-list,top-200
-top-list,top-500
-top-list,top-1000
-top-list,top-2000
-top-list,top-5000
-word-translate-direction,"en-ru"
-word-translate-direction,"ru-en"
-word-category,местоимения
-word-category,существительные
-word-category,прилагательные
-word-category,глаголы
-word-category,устойчивые сочетания
-word-category,фразовые глаголы
-word-category,вводные фразы
-word-category,выражение согласия или несогласия
-word-category,союзы
-word-category,вопросы
-word-category,наречия
-word-category,местоимения
-word-category,притяжательные
-word-category,личные
-word-category,указательные
-word-category,неопределенные
-word-category,предлоги
-word-category,предлоги времени
-word-category,предлоги места
-word-category,предлоги причины
-word-category,предлоги направления
-word-category,время и числа
-word-category,числительные
-word-category,количественные числительные
-word-category,порядковые числительные
-word-category,от 1 до 12
-word-category,от 13 до 19
-word-category,от 20 до 29
-word-category,"десятки, сотни, тысячи, миллионы"
-word-category,дни недели
-word-category,месяцы
-word-category,времена года
-word-category,время
-word-category,цвета
-word-category,свойства предметов
-word-category,направления
-word-category,животные и природа
-word-category,природа
-word-category,погода
-word-category,пейзаж
-word-category,животные
-word-category,домашние животные
-word-category,дикие животные
-word-category,насекомые
-word-category,птицы
-word-category,растения
-word-category,цветы
-word-category,человек
-word-category,части тела
-word-category,внешность
-word-category,здоровье и болезни
-word-category,характер и эмоции
-word-category,чувства
-word-category,характеристика человека
-word-category,настроение
-word-category,семья и окружение
-word-category,родственники
-word-category,одежда и обувь
-word-category,обувь
-word-category,одежда
-word-category,блюда
-word-category,фрукты
-word-category,овощи
-word-category,ягоды
-word-category,еда и напитки
-word-category,еда
-word-category,вкусы еды
-word-category,характеристики еды
-word-category,напитки
-word-category,овощи и фрукты
-word-category,дом
-word-category,части дома
-word-category,домашние предметы обихода
-word-category,кухня
-word-category,гостиная
-word-category,ванная комната
-word-category,спальня
-word-category,посуда
-word-category,столовые приборы
-word-category,бокалы и стаканы
-word-category,фаянсовая и глиняная посуда
-word-category,мебель
-word-category,офисная мебель
-word-category,виды стульев
-word-category,виды кроватей
-word-category,техника и устройства
-word-category,рабочие инструменты
-word-category,музыкальные инструменты
-word-category,спорт и хобби
-word-category,игры
-word-category,учеба и образование
-word-category,работа и профессии
-word-category,профессии
-word-category,путешествия и отдых
-word-category,город
-word-category,транспорт
-word-category,географические объекты
-word-category,события и места
-word-category,места
-word-category,события
-word-category,день рождения
-word-category,праздники
+tagType	value
+level-grade	A1 (Beginner)
+level-grade	A2 (Elementary)
+level-grade	B1 (Pre-Intermediate)
+level-grade	B2 (Intermediate)
+level-grade	C1 (Upper-Intermediate)
+level-grade	grade-1
+level-grade	grade-2
+level-grade	grade-3
+level-grade	grade-4
+level-grade	grade-5
+level-grade	grade-6
+level-grade	grade-7
+level-grade	grade-8
+level-grade	grade-9
+level-grade	grade-10
+level-grade	grade-11
+level-grade	grade-12
+top-list	top-100
+top-list	top-200
+top-list	top-500
+top-list	top-1000
+top-list	top-2000
+top-list	top-5000
+word-translate-direction	en-ru
+word-translate-direction	ru-en
+word-category	местоимения
+word-category	существительные
+word-category	прилагательные
+word-category	глаголы
+word-category	устойчивые сочетания
+word-category	фразовые глаголы
+word-category	вводные фразы
+word-category	выражение согласия или несогласия
+word-category	союзы
+word-category	вопросы
+word-category	наречия
+word-category	местоимения
+word-category	притяжательные
+word-category	личные
+word-category	указательные
+word-category	неопределенные
+word-category	предлоги
+word-category	предлоги времени
+word-category	предлоги места
+word-category	предлоги причины
+word-category	предлоги направления
+word-category	время и числа
+word-category	числительные
+word-category	количественные числительные
+word-category	порядковые числительные
+word-category	от 1 до 12
+word-category	от 13 до 19
+word-category	от 20 до 29
+word-category	десятки, сотни, тысячи, миллионы
+word-category	дни недели
+word-category	месяцы
+word-category	времена года
+word-category	время
+word-category	цвета
+word-category	свойства предметов
+word-category	направления
+word-category	животные и природа
+word-category	природа
+word-category	погода
+word-category	пейзаж
+word-category	животные
+word-category	домашние животные
+word-category	дикие животные
+word-category	насекомые
+word-category	птицы
+word-category	растения
+word-category	цветы
+word-category	человек
+word-category	части тела
+word-category	внешность
+word-category	здоровье и болезни
+word-category	характер и эмоции
+word-category	чувства
+word-category	характеристика человека
+word-category	настроение
+word-category	семья и окружение
+word-category	родственники
+word-category	одежда и обувь
+word-category	обувь
+word-category	одежда
+word-category	блюда
+word-category	фрукты
+word-category	овощи
+word-category	ягоды
+word-category	еда и напитки
+word-category	еда
+word-category	вкусы еды
+word-category	характеристики еды
+word-category	напитки
+word-category	овощи и фрукты
+word-category	дом
+word-category	части дома
+word-category	домашние предметы обихода
+word-category	кухня
+word-category	гостиная
+word-category	ванная комната
+word-category	спальня
+word-category	посуда
+word-category	столовые приборы
+word-category	бокалы и стаканы
+word-category	фаянсовая и глиняная посуда
+word-category	мебель
+word-category	офисная мебель
+word-category	виды стульев
+word-category	виды кроватей
+word-category	техника и устройства
+word-category	рабочие инструменты
+word-category	музыкальные инструменты
+word-category	спорт и хобби
+word-category	игры
+word-category	учеба и образование
+word-category	работа и профессии
+word-category	профессии
+word-category	путешествия и отдых
+word-category	город
+word-category	транспорт
+word-category	географические объекты
+word-category	события и места
+word-category	места
+word-category	события
+word-category	день рождения
+word-category	праздники

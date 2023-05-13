@@ -2,6 +2,7 @@ package run.game.testdata.fixture
 
 import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
+import run.game.util.*
 
 /**
  *
@@ -13,7 +14,8 @@ class Tag_fb extends BaseFixtureBuilder {
 
         // Заполним из наших csv
         Store stTagCsv = mdb.createStore("Tag.csv")
-        addFromCsv(stTagCsv, "res:run/game/testdata/csv/Tag.csv")
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+        utils.addFromCsv(stTagCsv, "res:run/game/testdata/csv/Tag.csv")
 
         //
         long id = 0
@@ -30,13 +32,6 @@ class Tag_fb extends BaseFixtureBuilder {
             StoreRecord recTagType = idxTagType.get(tagTypeStr)
             recTag.setValue("tagType", recTagType.getLong("id"))
         }
-    }
-
-    void addFromCsv(Store store, String fileName) {
-        StoreService svcStore = getModel().getApp().bean(StoreService.class)
-        StoreLoader ldr = svcStore.createStoreLoader("csv")
-        ldr.setStore(store)
-        ldr.load().fromFileObject(fileName)
     }
 
 }

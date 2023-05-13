@@ -9,9 +9,10 @@ import java.io.*;
 
 
 /**
- * Загрузка из csv нашего формата.
+ * Загрузка из csv нашего формата
+ * Разделитель - tab.
  */
-public class StoreLoader_csv extends BaseStoreLoader {
+public class StoreLoader_rgm extends BaseStoreLoader {
 
     public void doLoad(Reader reader, Store store, boolean createStruct) throws Exception {
 
@@ -21,6 +22,7 @@ public class StoreLoader_csv extends BaseStoreLoader {
         b.setNullString(StoreConsts.NULL_STRING_VALUE);
         b.setTrim(true);
         b.setIgnoreSurroundingSpaces(true);
+        b.setQuote('"');
         CSVFormat fmt = b.build();
 
         try (CSVParser prs = fmt.parse(reader)) {

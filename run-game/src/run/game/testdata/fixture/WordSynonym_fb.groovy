@@ -76,11 +76,5 @@ class WordSynonym_fb extends BaseFixtureBuilder {
 
     }
 
-    void addFromCsv(Store store, String fileName) {
-        StoreService svcStore = getModel().getApp().bean(StoreService.class)
-        StoreLoader ldr = svcStore.createStoreLoader("csv")
-        ldr.setStore(store)
-        ldr.load().fromFileObject(fileName)
-    }
 
 }

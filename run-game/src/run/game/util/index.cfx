@@ -2,8 +2,13 @@
 <root>
 
     <store>
-        <storeloader name="csv.game"
-                     class="run.game.util.StoreLoader_csv"/>
+        <storeloader name="csv.rgm"
+                     class="run.game.util.StoreLoader_rgm"/>
+    </store>
+
+    <store>
+        <storeloader name="csv.comma"
+                     class="run.game.util.StoreLoader_comma"/>
     </store>
 
 </root>

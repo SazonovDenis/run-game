@@ -57,6 +57,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
         LogerFiltered logCube = new LogerFiltered(log)
 
         //
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+
+        //
         stTagNew = fxTag.getStore()
         stTagNow = mdb.loadQuery(sqlTag())
         idxTag = stTagNow.getIndex("key")
@@ -114,7 +117,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
                 // Заполним из наших csv
                 Store stCsv = mdb.createStore("dat.csv")
-                addFromCsv(stCsv, fileCsv)
+                utils.addFromCsv(stCsv, fileCsv)
 
                 //
                 logCube.logStepStart(stCsv.size())
@@ -305,7 +308,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
 
         //
-        saveToCsv(stCsvBad, new File(badCsv))
+        utils.saveToCsv(stCsvBad, new File(badCsv))
     }
 
     String sqlTag() {
@@ -326,49 +329,6 @@ select
 from 
     Tag 
 """
-    }
-
-    void addFromCsv(Store store, String fileName) {
-        StoreService svcStore = getModel().getApp().bean(StoreService.class)
-        StoreLoader ldr = svcStore.createStoreLoader("csv.game")
-        ldr.setStore(store)
-        ldr.load().fromFileObject(fileName)
-    }
-
-
-    void saveToCsv(Store tab, File file) throws Exception {
-        String delim = "\t"
-
-        StringBuilder res = new StringBuilder()
-
-        for (StoreField f : tab.getFields()) {
-            if (f.getIndex() != 0) {
-                res.append(delim)
-            }
-            res.append(f.getName())
-        }
-        res.append("\r\n")
-
-        for (StoreRecord rec : tab) {
-            for (StoreField f : tab.getFields()) {
-                if (f.getIndex() != 0) {
-                    res.append(delim)
-                }
-                if (rec.isValueNull(f.getName())) {
-                } else if (rec.getValue(f.getName()) instanceof String) {
-                    res.append("\"")
-                    res.append(rec.getString(f.getName()).replace("\"", "\\\""))
-                    res.append("\"")
-                } else {
-                    res.append(rec.getString(f.getName()))
-                }
-            }
-            res.append("\r\n")
-
-        }
-
-        //
-        UtFile.saveString(res.toString(), file)
     }
 
 

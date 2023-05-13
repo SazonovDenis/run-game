@@ -38,7 +38,7 @@ class Task_upd_Test extends RgmBase_Test {
                 DataBox task = upd.loadTask(idTask)
 
                 //
-                printTaskOneLine(task)
+                printTask(task)
             } catch (Exception e) {
                 println(e.message)
             }

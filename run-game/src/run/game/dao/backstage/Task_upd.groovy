@@ -11,7 +11,7 @@ class Task_upd extends RgmMdbUtils {
         DataBox res = new DataBox()
 
         //
-        StoreRecord recTask = mdb.createStoreRecord("Task.TaskCreator")
+        StoreRecord recTask = mdb.createStoreRecord("Task.info")
         Store stTaskOption = mdb.createStore("TaskOption")
         Store stTaskQuestion = mdb.createStore("TaskQuestion")
         mdb.loadQueryRecord(recTask, sqlFactForTask(), [id: idTask])
@@ -60,11 +60,14 @@ class Task_upd extends RgmMdbUtils {
         return """
 select 
     Task.*,
-    Fact.dataType, 
-    Fact.value 
+    FactQuestion.dataType dataTypeQuestion, 
+    FactQuestion.value valueQuestion,
+    FactAnswer.dataType dataTypeAnswer, 
+    FactAnswer.value valueAnswer 
 from 
     Task
-    join Fact on (Task.factQuestion = Fact.id)
+    join Fact FactQuestion on (Task.factQuestion = FactQuestion.id)
+    join Fact FactAnswer on (Task.factAnswer = FactAnswer.id)
 where 
     Task.id = :id 
 """

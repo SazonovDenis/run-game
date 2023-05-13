@@ -4,7 +4,7 @@ export default {
         {
             task: {
                 id: 11,
-                dataType: 1001,
+                dataTypeQuestion: 1001,
                 text: "В чем смысл жизни",
             },
             taskOptions: [
@@ -36,7 +36,8 @@ export default {
         {
             task: {
                 id: 1,
-                dataType: 1003,
+                dataTypeQuestion: 1003,
+                dataTypeAnswer: 1002,
                 text: "mirror",
                 sound: "10000-kreekly/mp3/Salli/mirror.mp3",
             },
@@ -69,23 +70,54 @@ export default {
         {
             task: {
                 id: 297,
-                dataType: 1001,
+                dataTypeQuestion: 1003,
+                dataTypeAnswer: 1001,
                 text: "arrange",
                 sound: "1000-puzzle-english/mp3/macmillan_UK/arrange.mp3 ",
             },
             taskOptions: [
                 {
                     id: 18503,
-                    text: "хвастовство, похвальба"
-                },
-                {
-                    id: 18501,
-                    text: "приводить в порядок",
+                    text: "arrange",
                     isTrue: true,
                 },
                 {
+                    id: 18501,
+                    text: "array",
+                },
+                {
                     id: 18508,
-                    text: "плохая погода"
+                    text: "again"
+                },
+            ]
+        },
+
+
+        {
+            task: {
+                id: 2903,
+                dataTypeQuestion: 1001,
+                dataTypeAnswer: 1002,
+                text: "ball",
+                sound: "1000-puzzle-english/mp3/macmillan_UK/ball.mp3 ",
+            },
+            taskOptions: [
+                {
+                    id: 185037,
+                    text: "похвальба"
+                },
+                {
+                    id: 185017,
+                    text: "порядок",
+                },
+                {
+                    id: 185087,
+                    text: "погода"
+                },
+                {
+                    id: 185097,
+                    text: "мячик",
+                    isTrue: true,
                 },
             ]
         },
@@ -94,27 +126,86 @@ export default {
         {
             task: {
                 id: 2,
-                text: "boast",
-                dataType: 1003,
+                text: "хвастовство, похвальба",
+                dataTypeQuestion: 1002,
+                dataTypeAnswer: 1001,
                 sound: "10000-kreekly/mp3/Salli/boast.mp3 ",
             },
             taskOptions: [
                 {
                     id: 201,
-                    text: "карать"
+                    text: "subspace"
                 },
                 {
                     id: 202,
-                    text: "послать мяч за боковую линию"
+                    text: "goal"
                 },
                 {
                     id: 203,
-                    text: "хвастовство, похвальба",
+                    text: "boast",
                     isTrue: true,
                 },
                 {
                     id: 204,
-                    text: "красота, приятность",
+                    text: "load",
+                },
+            ]
+        },
+
+
+        {
+            task: {
+                id: 332,
+                text: "хвастовство б/з",
+                dataTypeQuestion: 1001,
+                dataTypeAnswer: 1002,
+            },
+            taskOptions: [
+                {
+                    id: 201,
+                    text: "subspace"
+                },
+                {
+                    id: 202,
+                    text: "goal"
+                },
+                {
+                    id: 203,
+                    text: "boast",
+                    isTrue: true,
+                },
+                {
+                    id: 204,
+                    text: "load",
+                },
+            ]
+        },
+
+
+        {
+            task: {
+                id: 2903,
+                dataTypeQuestion: 1001,
+                dataTypeAnswer: 1002,
+                text: "ball n/s",
+            },
+            taskOptions: [
+                {
+                    id: 185037,
+                    text: "похвальба"
+                },
+                {
+                    id: 185017,
+                    text: "порядок",
+                },
+                {
+                    id: 185097,
+                    text: "мячик",
+                    isTrue: true,
+                },
+                {
+                    id: 185087,
+                    text: "погода"
                 },
             ]
         },
@@ -123,7 +214,7 @@ export default {
         {
             task: {
                 id: 12,
-                dataType: 1001,
+                dataTypeQuestion: 1001,
                 text: "смысл еды",
             },
             taskOptions: [
@@ -147,7 +238,7 @@ export default {
         {
             task: {
                 id: 13,
-                dataType: 1001,
+                dataTypeQuestion: 1001,
                 text: "цвет нашего кота",
             },
             taskOptions: [

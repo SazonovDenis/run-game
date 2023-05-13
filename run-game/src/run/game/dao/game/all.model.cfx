@@ -3,7 +3,8 @@
 
     <domain name="Task.Server">
         <field name="id" parent="UsrTask/ref"/>
-        <field name="dataType" parent="long"/>
+        <field name="dataTypeQuestion" parent="long"/>
+        <field name="dataTypeAnswer" parent="long"/>
         <field name="taskDt" parent="UsrTask/taskDt"/>
         <field name="text" parent="string"/>
         <field name="sound" parent="string"/>

@@ -1,16 +1,23 @@
 <template>
-    <div class="question" @click="play">
+    <div class="task-bar">
 
-        <div v-if="doShowSound" class="task-sound">
-            <q-icon size="1.5em" name="asterisk"/>
-            <span>&nbsp;</span>
-        </div>
+        <div class="task" @click="play">
 
-        <div v-if="doShowText" class="task-text">
-            {{ task.text }}
-        </div>
-        <div v-else class="task-text">
-            &nbsp;
+            <div v-if="canPlaySound()" class="task-sound">
+                <q-icon size="1.5em" name="asterisk"/>
+            </div>
+
+            <div v-if="doShowText" class="task-text">
+                {{ task.text }}
+            </div>
+            <div v-else class="task-text">
+                ◯◯◯◯◯◯
+            </div>
+
+            <!--
+                        <div>Q: {{ task.dataTypeQuestion }}, A: {{ task.dataTypeAnswer }}</div>
+            -->
+
         </div>
 
         <div class="task-help">
@@ -44,6 +51,9 @@ export default {
 
         onTaskOptionSelected(taskOption) {
             this.alwaysShowText = true
+            if (taskOption.isTrue) {
+                this.play()
+            }
         },
 
         canPlaySound() {
@@ -51,8 +61,8 @@ export default {
                 this.task.sound != null &&
                 (
                     this.alwaysShowText ||
-                    this.task.dataType == dbConst.DataType_word_spelling ||
-                    this.task.dataType == dbConst.DataType_word_sound
+                    this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
+                    this.task.dataTypeQuestion == dbConst.DataType_word_spelling
                 )
             )
         },
@@ -68,9 +78,11 @@ export default {
         },
 
         showHint() {
-            this.play()
-            //
             this.alwaysShowText = true
+
+            //
+            this.play()
+
             //
             ctx.eventBus.emit("showHint", true)
         },
@@ -100,8 +112,7 @@ export default {
                 this.task.text != null &&
                 (
                     this.alwaysShowText ||
-                    this.task.dataType == dbConst.DataType_word_spelling ||
-                    this.task.dataType == dbConst.DataType_word_translate
+                    this.task.dataTypeQuestion != dbConst.DataType_word_sound
                 )
             )
         },
@@ -131,19 +142,27 @@ export default {
 <style>
 
 .task-help, .task-sound, .task-text {
-    height: 1.3em;
 }
 
-.question {
+.task-bar {
     display: flex;
     flex-direction: row;
 
-    user-select: none;
-    _max-width: 20em;
+    height: 2.5em;
     margin: 5px;
-    padding: 5px;
+
+    user-select: none;
     border-radius: 5px;
     background-color: #e6ffda;
+}
+
+.task {
+    display: flex;
+    flex-direction: row;
+
+    flex-grow: 100;
+
+    padding: 5px;
 }
 
 .task-sound {
@@ -151,11 +170,13 @@ export default {
 }
 
 .task-help {
+    padding: 3px;
     color: #474747;
 }
 
 .task-text {
-    width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
     font-size: 1.5em;
 }
 

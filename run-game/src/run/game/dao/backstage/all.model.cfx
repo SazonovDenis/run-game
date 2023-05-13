@@ -2,12 +2,13 @@
 <root>
 
 
-    <!-- Task.TaskCreator -->
+    <!-- run.game.dao.backstage.Task_upd#loadTask -->
 
-    <domain name="Task.TaskCreator" parent="Task">
+    <domain name="Task.info" parent="Task">
+        <!--@ Типы данных вопроса и ответа (Task.factQuestion и Task.factAnswer) -->
 
-        <!--@ Тип данных основного вопроса (Task.factQuestion) -->
-        <field name="dataType" parent="Fact/dataType"/>
+        <field name="dataTypeQuestion" parent="Fact/dataType"/>
+        <field name="dataTypeAnswer" parent="Fact/dataType"/>
 
     </domain>
 

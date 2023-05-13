@@ -29,7 +29,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Основной вопрос задания
         StoreRecord recTask = task.get("task")
-        resTask.setValue("dataType", recTask.getValue("dataType"))
+        long dataTypeQuestion = recTask.getLong("dataTypeQuestion")
+        long dataTypeAnswer = recTask.getLong("dataTypeAnswer")
+        resTask.setValue("dataTypeQuestion", dataTypeQuestion)
+        resTask.setValue("dataTypeAnswer", dataTypeAnswer)
 
         // Заполняем данные задания по типам.
         Store stTaskQuestion = task.get("taskQuestion")
@@ -39,11 +42,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
                 resTask.setValue("sound", recTaskQuestion.getValue("value"))
             }
             // Текст
-            if (recTask.getLong("dataType") == RgmDbConst.DataType_word_spelling &&
+            if (dataTypeAnswer != RgmDbConst.DataType_word_spelling &&
                     recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
                 resTask.setValue("text", recTaskQuestion.getValue("value"))
             }
-            if (recTask.getLong("dataType") == RgmDbConst.DataType_word_translate &&
+            if (dataTypeAnswer != RgmDbConst.DataType_word_translate &&
                     recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_translate) {
                 resTask.setValue("text", recTaskQuestion.getValue("value"))
             }

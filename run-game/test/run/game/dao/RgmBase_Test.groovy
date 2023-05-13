@@ -1,10 +1,23 @@
 package run.game.dao
 
 import jandcode.core.apx.test.*
+import jandcode.core.auth.*
+import jandcode.core.auth.std.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 
 class RgmBase_Test extends Apx_Test {
+
+    AuthService authSvc
+
+    void setUp() throws Exception {
+        super.setUp()
+
+        authSvc = app.bean(AuthService.class)
+        AuthUser user = authSvc.login(new DefaultUserPasswdAuthToken("admin", "111"))
+        authSvc.setCurrentUser(user)
+        println(authSvc.getCurrentUser().attrs)
+    }
 
     void printTasks(Collection<DataBox> tasks) {
         for (DataBox task : tasks) {
@@ -18,14 +31,18 @@ class RgmBase_Test extends Apx_Test {
         println("task")
         utils.outTable(task.get("task"))
         println("taskQuestion")
-        utils.outTable(task.get("taskQuestion"))
+        if (task.containsKey("taskQuestion")) {
+            utils.outTable(task.get("taskQuestion"))
+        } else {
+            println("<null>")
+        }
         println("taskOption")
         utils.outTable(task.get("taskOption"))
     }
 
     void printTaskOneLine(DataBox task) {
         mdb.resolveDicts(task)
-        println(task.get("task").getValue("id") + ", " + task.get("task").getValue("value") + ": " + task.get("taskOption").getUniqueValues("value").join(" | "))
+        println(task.get("task").getValue("id") + ", " + task.get("task").getDictValue("dataType") + ", question: " + task.get("taskQuestion").getUniqueValues("value").join(" | ") + ", option: " + task.get("taskOption").getUniqueValues("value").join(" | "))
     }
 
     void printFact(StoreRecord rec) {

@@ -39,8 +39,6 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         int valuesFalseChoiceCount = 20
 
         // Подберем неправильные варианты
-        //Map valuesFalseMap = UtWordDistance.getJaroWinklerMatch(valueTrue, stWordRus, valuesFalseChoiceCount)
-        //Set valuesFalseSet = valuesFalseMap.keySet()
         Set valuesFalseSet = new HashSet()
         StoreRecord recWordDistance = mdb.loadQueryRecord("select * from WordDistance where word = :word", [word: valueTrue], false)
         if (recWordDistance != null) {
@@ -213,6 +211,11 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         return res
     }
 
+    public Collection<DataBox> createTasks(long idItem, String dataTypeQuestion, String dataTypeAnswer) {
+        return createTasks(idItem, dataTypeQuestion, dataTypeAnswer, 100)
+
+    }
+
     /**
      * Создает задания и неправильные варианты ответа к ним.
      *
@@ -221,7 +224,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
      * @param tagAnswer Факт какого типа пойдет как ответ
      * @return Список {task: rec, options: [rec]}
      */
-    public Collection<DataBox> createTasks(long idItem, String dataTypeQuestion, String dataTypeAnswer) {
+    public Collection<DataBox> createTasks(long idItem, String dataTypeQuestion, String dataTypeAnswer, int limit) {
         Collection<DataBox> res = new ArrayList<>()
 
         // Загружаем список фактов для "вопроса" и "ответа"
@@ -238,6 +241,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         }
 
         // Перебираем факты: "факт вопрос" и "факт ответ", для каждой пары
+        int nQuestion = 0
         for (StoreRecord recQuestion : stQuestion) {
             long idFactQuestion = recQuestion.getLong("id")
 
@@ -245,8 +249,18 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
                 long idFactAnswer = recAnswer.getLong("id")
 
                 // Формируем задание
-                DataBox task = createTask(idFactQuestion, idFactAnswer)
-                res.add(task)
+                try {
+                    DataBox task = createTask(idFactQuestion, idFactAnswer)
+                    res.add(task)
+                } catch (Exception e) {
+                    println(e.message)
+                }
+            }
+
+            //
+            nQuestion = nQuestion + 1
+            if (nQuestion >= limit) {
+                break
             }
         }
 

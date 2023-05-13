@@ -29,7 +29,7 @@ public class RgmCsvUtils extends BaseMdbUtils {
     }
 
 
-    public void saveToCsv(Store store, File file) throws Exception {
+    public static void saveToCsv(Store store, File file) throws Exception {
         String delim = "\t";
 
         StringBuilder res = new StringBuilder();

@@ -36,20 +36,28 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Заполняем данные задания по типам.
         Store stTaskQuestion = task.get("taskQuestion")
+        String valueSound = null
+        String valueTranslate = null
+        String valueSpelling = null
         for (StoreRecord recTaskQuestion : stTaskQuestion) {
-            // Звук попадает всегда
             if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_sound) {
-                resTask.setValue("sound", recTaskQuestion.getValue("value"))
+                valueSound = recTaskQuestion.getValue("value")
             }
             // Текст
-            if (dataTypeAnswer != RgmDbConst.DataType_word_spelling &&
-                    recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
-                resTask.setValue("text", recTaskQuestion.getValue("value"))
+            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
+                valueSpelling = recTaskQuestion.getValue("value")
             }
-            if (dataTypeAnswer != RgmDbConst.DataType_word_translate &&
-                    recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_translate) {
-                resTask.setValue("text", recTaskQuestion.getValue("value"))
+            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_translate) {
+                valueTranslate = recTaskQuestion.getValue("value")
             }
+        }
+        // Звук попадает всегда
+        resTask.setValue("sound", valueSound)
+        // Текст зависит от вопроса
+        if (dataTypeQuestion == RgmDbConst.DataType_word_spelling || dataTypeQuestion == RgmDbConst.DataType_word_sound) {
+            resTask.setValue("text", valueSpelling)
+        } else {
+            resTask.setValue("text", valueTranslate)
         }
 
         // Варианты ответа

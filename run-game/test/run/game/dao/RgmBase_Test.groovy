@@ -26,6 +26,12 @@ class RgmBase_Test extends Apx_Test {
         }
     }
 
+    void printTasksOneLine(Collection<DataBox> tasks) {
+        for (DataBox task : tasks) {
+            printTaskOneLine(task)
+        }
+    }
+
     void printTask(DataBox task) {
         mdb.resolveDicts(task)
         println("task")
@@ -42,7 +48,11 @@ class RgmBase_Test extends Apx_Test {
 
     void printTaskOneLine(DataBox task) {
         mdb.resolveDicts(task)
-        println(task.get("task").getValue("id") + ", " + task.get("task").getDictValue("dataType") + ", question: " + task.get("taskQuestion").getUniqueValues("value").join(" | ") + ", option: " + task.get("taskOption").getUniqueValues("value").join(" | "))
+        String strDataTypeQuestion = ""
+        if (task.get("task").findField("dataTypeQuestion") != null) {
+            strDataTypeQuestion = ", " + task.get("task").getValue("dataTypeQuestion")
+        }
+        println(task.get("task").getValue("id") + strDataTypeQuestion + ", question: " + task.get("taskQuestion").getUniqueValues("value").join(" | ") + ", option: " + task.get("taskOption").getUniqueValues("value").join(" | "))
     }
 
     void printFact(StoreRecord rec) {

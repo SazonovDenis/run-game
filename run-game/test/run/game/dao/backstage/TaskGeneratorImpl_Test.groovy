@@ -84,40 +84,23 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
 
 
     @Test
-    void createTask_spelling1() {
+    void createTask_spelling() {
         String word = "different"
+        //String word = "break in"
+        //
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
         //
         TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        for (int i = 0; i < 5; i++) {
-            DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
-
-            //
-            println()
-            printTask(task)
-        }
-    }
-
-    @Test
-    void createTask_spelling2() {
-        String word = "break in"
-        long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-spelling", "word-translate")
 
         //
-        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
-
-        //
-        for (int i = 0; i < 5; i++) {
-            DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
-
-            //
-            println()
-            printTask(task)
-        }
+        println()
+        printTasks(tasks)
     }
+
 
     @Test
     void createTask_sound() {
@@ -128,13 +111,11 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        for (int i = 0; i < 5; i++) {
-            DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-sound", "word-translate")
 
-            //
-            println()
-            printTask(task)
-        }
+        //
+        println()
+        printTasks(tasks)
     }
 
     @Test
@@ -147,14 +128,16 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         Task_upd upd = mdb.create(Task_upd)
 
         //
-        DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-spelling", "word-translate")
 
         //
         println()
-        printTask(task)
+        printTasks(tasks)
 
         //
-        upd.saveTask(task)
+        for (DataBox task : tasks) {
+            upd.saveTask(task)
+        }
     }
 
     @Test
@@ -167,68 +150,54 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         Task_upd upd = mdb.create(Task_upd)
 
         //
-        DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-sound", "word-translate")
 
         //
         println()
-        printTask(task)
+        printTasks(tasks)
 
         //
-        upd.saveTask(task)
+        for (DataBox task : tasks) {
+            upd.saveTask(task)
+        }
     }
 
     @Test
-    void createSaveTasks_spelling() {
-        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
-        Task_upd upd = mdb.create(Task_upd)
+    void createSaveTasks() {
 
         //
-        long idItem = 1001
-        for (int j = 0; j < 20; j++) {
-            for (int i = 0; i < 5; i++) {
-                try {
-                    //
-                    DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
+        long idItem = 1000
+        for (int i = 0; i < 200; i++) {
+            createSaveTask(idItem, "word-spelling", "word-translate", 100)
+            createSaveTask(idItem, "word-translate", "word-spelling", 100)
+            createSaveTask(idItem, "word-sound", "word-translate", 3)
+            createSaveTask(idItem, "word-sound", "word-spelling", 3)
 
-                    //
-                    upd.saveTask(task)
-
-                    //
-                    printTaskOneLine(task)
-                } catch (Exception e) {
-                    println(e.message)
-                }
-            }
             //
             idItem = idItem + 7
         }
     }
 
-    @Test
-    void createSaveTasks_sound() {
+
+    void createSaveTask(long idItem, String dataTypeQuestion, String dataTypeAnswer, int limit) {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
         Task_upd upd = mdb.create(Task_upd)
 
-        //
-        long idItem = 2001
-        for (int j = 0; j < 20; j++) {
-            for (int i = 0; i < 5; i++) {
-                try {
-                    //
-                    DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
+        try {
+            Collection<DataBox> tasks = taskCreator.createTasks(idItem, dataTypeQuestion, dataTypeAnswer, limit)
 
-                    //
-                    upd.saveTask(task)
-
-                    //
-                    printTaskOneLine(task)
-                } catch (Exception e) {
-                    println(e.message)
-                }
-            }
             //
-            idItem = idItem + 7
+            printTasksOneLine(tasks)
+
+            //
+            for (DataBox task : tasks) {
+                upd.saveTask(task)
+            }
+        } catch (Exception e) {
+            println(e.message)
         }
+
     }
+
 
 }

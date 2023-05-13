@@ -50,10 +50,13 @@ export default {
     methods: {
 
         onTaskOptionSelected(taskOption) {
-            this.alwaysShowText = true
-            if (taskOption.isTrue) {
+            // Играть звук, если была подсказка - значит идет заучивание
+            if (taskOption.isTrue && this.alwaysShowText) {
                 this.play()
             }
+
+            // Показать текст подсказки после первого выбора
+            this.alwaysShowText = true
         },
 
         canPlaySound() {

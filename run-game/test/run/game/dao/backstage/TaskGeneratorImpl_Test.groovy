@@ -174,7 +174,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
             createSaveTask(idItem, "word-sound", "word-spelling", 3)
 
             //
-            idItem = idItem + 7
+            idItem = idItem + 1
         }
     }
 

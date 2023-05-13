@@ -17,7 +17,7 @@ export default {
         minDl: 100,
         maxDl: 1000,
         valueGoalMax: 10,
-        goalHitSizeDefault: 4,
+        goalHitSizeDefault: 5,
         goalHitSizeHint: 2,
         goalHitSizeError: 1,
     },
@@ -119,7 +119,7 @@ export default {
     resetGoal(text) {
         ctx.state.game.goalHitSize = ctx.settings.goalHitSizeDefault
         ctx.state.goal.text = text
-        ctx.state.goal.valueGoal = 4
+        ctx.state.goal.valueGoal = ctx.settings.goalHitSizeDefault
         ctx.state.goal.valueDone = 0
     },
 

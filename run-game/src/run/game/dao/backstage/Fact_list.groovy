@@ -112,4 +112,5 @@ order by
     long getIdByCode(String tableName, String code) {
         return mdb.loadQueryRecord("select id from " + tableName + " where code = :code", [code: code]).getLong("id")
     }
+
 }

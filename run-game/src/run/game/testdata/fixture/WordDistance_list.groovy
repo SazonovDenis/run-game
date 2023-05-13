@@ -23,12 +23,19 @@ class WordDistance_list extends BaseMdbUtils {
     int id = 1
 
     public void fillStore(Store stWordDistance) {
-        Store stWordRus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate)
+        // В запросе distinct учитывает наличие возможных синонимов среди переводимых слов,
+        // например, есть два английских слова: "watermelon" и "water melon",
+        // которые переводятся одинаково "арбуз", из-за чего Fact типа word-translate
+        // имеется в двух записях
+        Store stWordRus = mdb.loadQuery("select distinct value from Fact where dataType = " + RgmDbConst.DataType_word_translate)
         fill_internal(stWordRus, "rus", stWordDistance)
 
         //
-        Store stWordEng = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_spelling)
+        Store stWordEng = mdb.loadQuery("select distinct value from Fact where dataType = " + RgmDbConst.DataType_word_spelling)
         fill_internal(stWordEng, "end", stWordDistance)
+
+        //RgmCsvUtils.saveToCsv(stWordRus, new File("temp/stWordRus.csv"))
+        //RgmCsvUtils.saveToCsv(stWordEng, new File("temp/stWordEng.csv"))
     }
 
     public void toCsvFile(File file) {

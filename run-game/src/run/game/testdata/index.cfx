@@ -17,8 +17,10 @@
                              class="run.game.testdata.fixture.Tag_fb"/>
             <fixture-builder name="itemFact"
                              class="run.game.testdata.fixture.ItemFact_fb"/>
-            <fixture-builder name="word"
+            <fixture-builder name="wordSynonym"
                              class="run.game.testdata.fixture.WordSynonym_fb"/>
+            <fixture-builder name="wordDistance"
+                             class="run.game.testdata.fixture.WordDistance_fb"/>
         </fixture-suite>
 
 

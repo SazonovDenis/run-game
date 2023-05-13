@@ -5,7 +5,7 @@ import jandcode.commons.error.*;
 import jandcode.core.auth.*;
 import jandcode.core.dbm.mdb.*;
 
-public class RgMdbUtils extends BaseMdbUtils {
+public class RgmMdbUtils extends BaseMdbUtils {
 
     AuthService authSvc;
 

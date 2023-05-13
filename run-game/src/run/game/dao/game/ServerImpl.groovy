@@ -9,7 +9,7 @@ import run.game.dao.*
 import run.game.dao.backstage.*
 
 
-public class ServerImpl extends RgMdbUtils implements Server {
+public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
@@ -24,8 +24,8 @@ public class ServerImpl extends RgMdbUtils implements Server {
         long idTask = statisticManager.selectTask(idFact)
 
         // Грузим задание
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
-        DataBox task = taskCreator.loadTask(idTask)
+        Task_upd upd = mdb.create(Task_upd)
+        DataBox task = upd.loadTask(idTask)
 
         // Основной вопрос задания
         StoreRecord recTask = task.get("task")
@@ -34,10 +34,10 @@ public class ServerImpl extends RgMdbUtils implements Server {
         // Другие типы данных задания. Например, звук, если тип задания - текст
         Store stTaskQuestion = task.get("taskQuestion")
         for (StoreRecord recTaskQuestion : stTaskQuestion) {
-            if (recTaskQuestion.getLong("dataType") == DbConst.DataType_word_sound) {
+            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_sound) {
                 resTask.setValue("sound", recTaskQuestion.getValue("value"))
             }
-            if (recTaskQuestion.getLong("dataType") == DbConst.DataType_word_spelling) {
+            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
                 resTask.setValue("text", recTaskQuestion.getValue("value"))
             }
         }

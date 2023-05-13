@@ -8,8 +8,13 @@ import org.junit.jupiter.api.*
 class UtWordDistance_Test extends Apx_Test {
 
 
+    /**
+     * Замер скорости вычисления расстония Джаро-Винклера
+     * для всех слов в базе
+     */
     @Test
-    void jaroWinklerDistanceAll() {
+    @Disabled
+    void jaroWinklerDistance_all() {
         println("=== " + XDateTime.now())
 
         //
@@ -17,14 +22,15 @@ class UtWordDistance_Test extends Apx_Test {
         Map<String, Map<String, Double>> distancesAll = new HashMap<>()
 
         //
-        Store st = mdb.loadQuery("select * from Item --limit 1000")
+        //Store st = mdb.loadQuery("select * from Item limit 1000")
+        Store st = mdb.loadQuery("select * from Item")
 
         //
-        println("=== " + XDateTime.now())
+        println("=== start: " + XDateTime.now())
 
         //
-        for (int i = 0; i < st.size(); i++) {
-            String word = st.get(i).getString("value")
+        for (StoreRecord rec : st) {
+            String word = rec.getString("value")
 
             //
             Map<String, Double> distances = UtWordDistance.getJaroWinklerMatch(word, st, maxMatchSize)
@@ -34,46 +40,36 @@ class UtWordDistance_Test extends Apx_Test {
         }
 
         //
-        println("=== " + XDateTime.now())
+        println("=== done:  " + XDateTime.now())
 
         //
-        for (String word : distancesAll.keySet()) {
-            Map distances = distancesAll.get(word)
-            if (distances.size() < 5) {
-                println(word + ", size: " + distances.size())
-                println("  " + distancesAll.get(word))
-            }
-        }
-
-        //
-        println("===")
-
-
-        //
+        println()
         println("learn")
         println("  " + distancesAll.get("learn"))
 
+        println()
         println("dog")
         println("  " + distancesAll.get("dog"))
 
+        println()
         println("stop")
         println("  " + distancesAll.get("stop"))
 
+        println()
         println("people")
         println("  " + distancesAll.get("people"))
 
+        println()
         println("head")
         println("  " + distancesAll.get("head"))
 
+        println()
         println("carrot")
         println("  " + distancesAll.get("carrot"))
     }
 
     @Test
     void jaroWinklerDistance() {
-        println("=== " + XDateTime.now())
-
-        //
         Store stDataType = mdb.loadQuery("select * from DataType")
         StoreIndex idxDataType = stDataType.getIndex("code")
 
@@ -81,25 +77,29 @@ class UtWordDistance_Test extends Apx_Test {
         Store st_eng = mdb.loadQuery("select * from Fact where dataType = " + idxDataType.get("word-spelling").getLong("id") + " --limit 1000")
 
         //
-        println("=== " + XDateTime.now())
+        println("=== start: " + XDateTime.now())
 
         //
         int maxMatchSize = 15
 
         //
-        String word = "собака"
-        Map<String, Double> distances_1 = UtWordDistance.getJaroWinklerMatch(word, st_rus, maxMatchSize)
+        String word_1 = "собака"
+        Map<String, Double> distances_1 = UtWordDistance.getJaroWinklerMatch(word_1, st_rus, maxMatchSize)
 
         //
-        word = "dog"
-        Map<String, Double> distances_2 = UtWordDistance.getJaroWinklerMatch(word, st_eng, maxMatchSize)
+        String word_2 = "dog"
+        Map<String, Double> distances_2 = UtWordDistance.getJaroWinklerMatch(word_2, st_eng, maxMatchSize)
 
         //
-        println(distances_1)
-        println(distances_2)
+        println("=== done:  " + XDateTime.now())
 
         //
-        println("=== " + XDateTime.now())
+        println()
+        println(word_1)
+        println("  " + distances_1)
+        println()
+        println(word_2)
+        println("  " + distances_2)
     }
 
 

@@ -14,20 +14,15 @@ import run.game.dao.pojo.task.*;
  * Для фактов начального уровня (или для самых популярных) задания готовятся ЗАРАНЕЕ,
  * предназначены для всех пользователей, возможно, выверяются вручную специалистами.
  */
-public interface TaskCreator {
+public interface TaskGenerator {
 
     /**
-     * Создает задание (и неправильные варианты ответа к нему).
+     * Создает задание и неправильные варианты ответа к нему.
      *
-     * @param idItem      Дла какой сущности
-     * @param tagQuestion Факт какого типа пойдет как вопрос
-     * @param tagAnswer   Факт какого типа пойдет как ответ
+     * @param idFactQuestion Факт - вопрос
+     * @param idFactAnswer   Факт - ответ
      * @return {task: rec, options: [rec]}
      */
-    DataBox createTask(long idItem, String tagQuestion, String tagAnswer);
-
-    DataBox loadTask(long idTask);
-
-    long saveTask(DataBox task);
+    public DataBox createTask(long idFactQuestion, long idFactAnswer);
 
 }

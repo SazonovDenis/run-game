@@ -9,7 +9,7 @@
         в виде массива [слово: расстояние, слово1: расстояние1, ...]
         -->
         <field name="word" parent="string" size="200" title="Слово"/>
-        <field name="maches" parent="blob" title="Похожие слова"/>
+        <field name="matches" parent="blob" title="Похожие слова"/>
     </domain>
 
 

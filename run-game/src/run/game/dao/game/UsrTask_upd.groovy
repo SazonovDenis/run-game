@@ -5,7 +5,7 @@ import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
 
-class UsrTask_upd extends RgMdbUtils {
+class UsrTask_upd extends RgmMdbUtils {
 
     /**
      * Записывает, что задание task, было выдано текущему пользователю

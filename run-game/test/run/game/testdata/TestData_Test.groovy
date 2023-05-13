@@ -30,4 +30,13 @@ class TestData_Test extends Apx_Test {
         utils.outTableList(fx.stores, 10)
     }
 
+    @Test
+    public void fill_WordDistance() throws Exception {
+        utils.logOn()
+        WordDistance_fb fb = new WordDistance_fb()
+        fb.maxMatchSize = 10
+        Fixture fx = fb.build(model)
+        utils.outTableList(fx.stores, 10)
+    }
+
 }

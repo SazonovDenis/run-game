@@ -4,6 +4,7 @@ import jandcode.commons.*
 import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
 import org.slf4j.*
+import run.game.dao.*
 import run.game.util.*
 
 /**
@@ -23,10 +24,8 @@ class WordSynonym_fb extends BaseFixtureBuilder {
         logger.logStepStart()
 
         //
-        Store stDataType = mdb.loadQuery("select * from DataType")
-        StoreIndex idxDataType = stDataType.getIndex("code")
-        Store st_rus = mdb.loadQuery("select * from Fact where dataType = " + idxDataType.get("word-translate").getLong("id"))
-        StoreIndex idx_rus = st_rus.getIndex("value")
+        Store stWordRus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate)
+        StoreIndex idxWordRus = stWordRus.getIndex("value")
 
 
         // Заполним из csv
@@ -44,7 +43,7 @@ class WordSynonym_fb extends BaseFixtureBuilder {
             String word = ss[0]
 
             //
-            if (idx_rus.get(word) != null) {
+            if (idxWordRus.get(word) != null) {
                 Set set = mapSynonyms.get(word)
                 if (set == null) {
 
@@ -68,11 +67,11 @@ class WordSynonym_fb extends BaseFixtureBuilder {
 
         //
         Store stWordSynonym = fxWordSynonym.getStore()
-        int row = 1
+        int id = 1
         for (String word : mapSynonyms.keySet()) {
             Set set = mapSynonyms.get(word)
-            stWordSynonym.add([id: row, lang: "rus", word: word, synonyms: UtJson.toJson(set)])
-            row = row + 1
+            stWordSynonym.add([id: id, lang: "rus", word: word, synonyms: UtJson.toJson(set)])
+            id = id + 1
         }
 
     }

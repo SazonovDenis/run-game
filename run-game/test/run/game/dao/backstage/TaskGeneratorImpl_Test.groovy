@@ -1,58 +1,67 @@
 package run.game.dao.backstage
 
 
-import jandcode.core.apx.test.*
 import jandcode.core.dbm.std.*
 import org.junit.jupiter.api.*
+import run.game.dao.*
 
-class TaskCreator_Test extends Apx_Test {
+class TaskGeneratorImpl_Test extends RgmBase_Test {
 
+    long idItem2 = 1030
 
     @Test
-    void loadTask() {
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+    void createTask_forItem() {
+        TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        long idTask = 1001
-        DataBox task = taskCreator.loadTask(idTask)
+        Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, "word-spelling", "word-translate")
+        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, "word-translate", "word-spelling")
+        Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, "word-sound", "word-translate")
+        Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, "word-sound", "word-spelling")
 
         //
         println()
-        printTask(task)
+        println("word-spelling -> word-translate")
+        printTasks(tasks1)
+        //
+        println()
+        println("word-translate -> word-spelling")
+        printTasks(tasks2)
+        //
+        println()
+        println("word-sound -> word-translate")
+        printTasks(tasks3)
+        //
+        println()
+        println("word-sound -> word-spelling")
+        printTasks(tasks4)
     }
 
     @Test
-    void loadTasks() {
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+    void createSaveTask_forItem() {
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
+        Task_upd upd = mdb.create(Task_upd)
 
         //
-        for (long idTask = 1001; idTask < 1200; idTask = idTask + 3) {
-            try {
-                DataBox task = taskCreator.loadTask(idTask)
+        Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, "word-spelling", "word-translate")
+        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, "word-translate", "word-spelling")
+        Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, "word-sound", "word-translate")
+        Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, "word-sound", "word-spelling")
 
-                //
-                printTaskOneLine(task)
-            } catch (Exception e) {
-                println(e.message)
-            }
+        for (DataBox task : tasks1) {
+            upd.saveTask(task)
+        }
+        for (DataBox task : tasks2) {
+            upd.saveTask(task)
+        }
+        for (DataBox task : tasks3) {
+            upd.saveTask(task)
+        }
+        for (DataBox task : tasks4) {
+            upd.saveTask(task)
         }
     }
 
-    @Test
-    void createTaskForItem() {
-        long idItem = 1078
-
-        //
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
-
-        //
-        for (int i = 0; i < 10; i++) {
-            DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
-
-            println()
-            printTask(task)
-        }
-    }
 
     @Test
     void createTask_spelling1() {
@@ -60,7 +69,7 @@ class TaskCreator_Test extends Apx_Test {
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
         //
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
         for (int i = 0; i < 5; i++) {
@@ -78,7 +87,7 @@ class TaskCreator_Test extends Apx_Test {
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
         //
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
         for (int i = 0; i < 5; i++) {
@@ -96,7 +105,7 @@ class TaskCreator_Test extends Apx_Test {
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
         //
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
         for (int i = 0; i < 5; i++) {
@@ -114,7 +123,8 @@ class TaskCreator_Test extends Apx_Test {
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
         //
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
+        Task_upd upd = mdb.create(Task_upd)
 
         //
         DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
@@ -124,7 +134,7 @@ class TaskCreator_Test extends Apx_Test {
         printTask(task)
 
         //
-        taskCreator.saveTask(task)
+        upd.saveTask(task)
     }
 
     @Test
@@ -133,7 +143,8 @@ class TaskCreator_Test extends Apx_Test {
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
 
         //
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
+        Task_upd upd = mdb.create(Task_upd)
 
         //
         DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
@@ -143,12 +154,13 @@ class TaskCreator_Test extends Apx_Test {
         printTask(task)
 
         //
-        taskCreator.saveTask(task)
+        upd.saveTask(task)
     }
 
     @Test
     void createSaveTasks_spelling() {
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
+        Task_upd upd = mdb.create(Task_upd)
 
         //
         long idItem = 1001
@@ -159,7 +171,7 @@ class TaskCreator_Test extends Apx_Test {
                     DataBox task = taskCreator.createTask(idItem, "word-spelling", "word-translate")
 
                     //
-                    taskCreator.saveTask(task)
+                    upd.saveTask(task)
 
                     //
                     printTaskOneLine(task)
@@ -174,7 +186,8 @@ class TaskCreator_Test extends Apx_Test {
 
     @Test
     void createSaveTasks_sound() {
-        TaskCreator taskCreator = mdb.create(TaskCreatorImpl)
+        TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
+        Task_upd upd = mdb.create(Task_upd)
 
         //
         long idItem = 2001
@@ -185,7 +198,7 @@ class TaskCreator_Test extends Apx_Test {
                     DataBox task = taskCreator.createTask(idItem, "word-sound", "word-translate")
 
                     //
-                    taskCreator.saveTask(task)
+                    upd.saveTask(task)
 
                     //
                     printTaskOneLine(task)
@@ -196,20 +209,6 @@ class TaskCreator_Test extends Apx_Test {
             //
             idItem = idItem + 7
         }
-    }
-
-    void printTask(DataBox task) {
-        mdb.resolveDicts(task)
-        println("task")
-        utils.outTable(task.get("task"))
-        println("taskQuestion")
-        utils.outTable(task.get("taskQuestion"))
-        println("taskOption")
-        utils.outTable(task.get("taskOption"))
-    }
-
-    void printTaskOneLine(DataBox task) {
-        println(task.get("task").getValue("id") + ", " + task.get("task").getValue("value") + ": " + task.get("taskOption").getUniqueValues("value").join(" | "))
     }
 
 }

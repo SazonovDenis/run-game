@@ -8,7 +8,7 @@ import jandcode.core.store.*
 import run.game.dao.*
 
 
-public class StatisticManagerImpl extends RgMdbUtils implements StatisticManager {
+public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManager {
 
 
     //

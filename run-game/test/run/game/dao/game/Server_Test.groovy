@@ -3,12 +3,12 @@ package run.game.dao.game
 import jandcode.commons.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
-import jandcode.core.apx.test.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
+import run.game.dao.*
 
-class Server_Test extends Apx_Test {
+class Server_Test extends RgmBase_Test {
 
 
     @Test
@@ -19,10 +19,7 @@ class Server_Test extends Apx_Test {
 
         //
         println()
-        println("task")
-        mdb.outTable(task.get("task"))
-        mdb.outTable(task.get("taskOption"))
-        mdb.outTable(task.get("usrTask"))
+        printTask(task)
 
         //
         println()
@@ -43,9 +40,7 @@ class Server_Test extends Apx_Test {
 
         //
         println()
-        println("task")
-        mdb.outTable(task.get("task"))
-        mdb.outTable(task.get("taskOption"))
+        printTask(task)
     }
 
     @Test
@@ -62,9 +57,7 @@ class Server_Test extends Apx_Test {
 
 
         // Печатаем задание
-        mdb.outTable(task.get("task"))
-        mdb.outTable(task.get("taskOption"))
-        mdb.outTable(task.get("usrTask"))
+        printTask(task)
 
 
         // Пользователь отвечает

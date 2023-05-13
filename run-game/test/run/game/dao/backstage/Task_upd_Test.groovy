@@ -33,7 +33,7 @@ class Task_upd_Test extends RgmBase_Test {
         Task_upd upd = mdb.create(Task_upd)
 
         //
-        for (long idTask = 1001; idTask < 1200; idTask = idTask + 3) {
+        for (long idTask = 1000; idTask < 1010; idTask = idTask + 1) {
             try {
                 DataBox task = upd.loadTask(idTask)
 

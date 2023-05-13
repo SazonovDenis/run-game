@@ -31,13 +31,20 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recTask = task.get("task")
         resTask.setValue("dataType", recTask.getValue("dataType"))
 
-        // Другие типы данных задания. Например, звук, если тип задания - текст
+        // Заполняем данные задания по типам.
         Store stTaskQuestion = task.get("taskQuestion")
         for (StoreRecord recTaskQuestion : stTaskQuestion) {
+            // Звук попадает всегда
             if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_sound) {
                 resTask.setValue("sound", recTaskQuestion.getValue("value"))
             }
-            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
+            // Текст
+            if (recTask.getLong("dataType") == RgmDbConst.DataType_word_spelling &&
+                    recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
+                resTask.setValue("text", recTaskQuestion.getValue("value"))
+            }
+            if (recTask.getLong("dataType") == RgmDbConst.DataType_word_translate &&
+                    recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_translate) {
                 resTask.setValue("text", recTaskQuestion.getValue("value"))
             }
         }

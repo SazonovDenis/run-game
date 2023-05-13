@@ -14,7 +14,6 @@ public class RgmMdbUtils extends BaseMdbUtils {
 
         // получаем сервис auth
         authSvc = getApp().bean(AuthService.class);
-
     }
 
     public AuthUser getCurrentUser() {

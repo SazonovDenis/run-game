@@ -46,8 +46,19 @@ export default {
             this.alwaysShowText = true
         },
 
+        canPlaySound() {
+            return (
+                this.task.sound != null &&
+                (
+                    this.alwaysShowText ||
+                    this.task.dataType == dbConst.DataType_word_spelling ||
+                    this.task.dataType == dbConst.DataType_word_sound
+                )
+            )
+        },
+
         play() {
-            if (this.task.sound) {
+            if (this.canPlaySound()) {
                 try {
                     this.audio.play()
                 } catch(e) {
@@ -69,7 +80,6 @@ export default {
     watch: {
         task: {
             handler(newValue, oldValue) {
-                //
                 this.alwaysShowText = false
 
                 // Новый звук
@@ -90,7 +100,8 @@ export default {
                 this.task.text != null &&
                 (
                     this.alwaysShowText ||
-                    this.task.dataType == dbConst.DataType_word_spelling
+                    this.task.dataType == dbConst.DataType_word_spelling ||
+                    this.task.dataType == dbConst.DataType_word_translate
                 )
             )
         },
@@ -105,8 +116,9 @@ export default {
 
     mounted() {
         let audio = this.audio = new Audio()
+        let th = this
         audio.addEventListener('loadeddata', function() {
-            this.play()
+            th.play()
         }, false)
 
         //

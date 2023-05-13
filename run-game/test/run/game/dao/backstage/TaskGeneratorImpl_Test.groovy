@@ -10,6 +10,25 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
     long idItem2 = 1030
 
     @Test
+    void createTask_forItem_rus_eng() {
+        TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
+
+        //
+        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, "word-translate", "word-spelling")
+
+        //
+        println()
+        println("word-translate -> word-spelling")
+        printTasks(tasks2)
+
+        //
+        Task_upd upd = mdb.create(Task_upd)
+        for (DataBox task : tasks2) {
+            upd.saveTask(task)
+        }
+    }
+
+    @Test
     void createTask_forItem() {
         TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
@@ -40,7 +59,6 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
     @Test
     void createSaveTask_forItem() {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
-        Task_upd upd = mdb.create(Task_upd)
 
         //
         Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, "word-spelling", "word-translate")
@@ -48,6 +66,8 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, "word-sound", "word-translate")
         Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, "word-sound", "word-spelling")
 
+        //
+        Task_upd upd = mdb.create(Task_upd)
         for (DataBox task : tasks1) {
             upd.saveTask(task)
         }

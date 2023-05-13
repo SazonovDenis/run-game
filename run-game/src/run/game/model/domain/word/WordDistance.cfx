@@ -8,6 +8,7 @@
         К каждому слову подготовлен набор похожих слов с наилучшим соответствием Джаро-Винклера,
         в виде массива [слово: расстояние, слово1: расстояние1, ...]
         -->
+        <field name="lang" parent="string" size="50" title="Язык слова"/>
         <field name="word" parent="string" size="200" title="Слово"/>
         <field name="matches" parent="blob" title="Похожие слова"/>
     </domain>

@@ -1,11 +1,7 @@
 package run.game.testdata.fixture
 
-import jandcode.commons.*
 import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
-import org.slf4j.*
-import run.game.dao.*
-import run.game.dao.backstage.*
 import run.game.util.*
 
 /**
@@ -16,43 +12,34 @@ class WordDistance_fb extends BaseFixtureBuilder {
     //
     int maxMatchSize = 20
 
-    Logger log = UtLog.getLogConsole()
-
-    LogerFiltered logger = new LogerFiltered(log)
-
-    int id = 1
-
     //
     protected void onBuild() {
         FixtureTable fxWordDistance = fx.table("WordDistance")
-        Store stWordSynonym = fxWordDistance.getStore()
+        Store stWordDistance = fxWordDistance.getStore()
+
+        // Заполним из наших csv
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+        utils.addFromCsv(stWordDistance, "res:run/game/testdata/csv/WordDistance.csv")
 
         //
-        Store stWordRus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate)
-        doBuild(stWordRus, "rus", stWordSynonym)
-
-        //
-        Store stWordEng = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_spelling)
-        doBuild(stWordEng, "eng", stWordSynonym)
+        long id = 0
+        for (StoreRecord rec : stWordDistance) {
+            id = id + 1
+            //rec.setValue("id", id)
+        }
     }
 
-    void doBuild(Store stWords, String lang, Store stWordSynonym) {
-        logger.logStepStart(stWords.size())
+    //
+    protected void onBuild1() {
+        FixtureTable fxWordDistance = fx.table("WordDistance")
+        Store stWordDistance = fxWordDistance.getStore()
 
         //
-        for (StoreRecord rec : stWords) {
-            String word = rec.getString("value")
+        WordDistance_list list = mdb.create(WordDistance_list)
+        list.maxMatchSize = maxMatchSize
 
-            //
-            Map<String, Double> distances = UtWordDistance.getJaroWinklerMatch(word, stWords, maxMatchSize)
-
-            //
-            stWordSynonym.add([id: id, word: word, lang: lang, matches: UtJson.toJson(distances)])
-            id = id + 1
-
-            //
-            logger.logStepStep()
-        }
+        //
+        list.fillStore(stWordDistance)
     }
 
 }

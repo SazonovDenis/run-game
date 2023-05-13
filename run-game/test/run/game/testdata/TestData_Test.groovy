@@ -39,4 +39,12 @@ class TestData_Test extends Apx_Test {
         utils.outTableList(fx.stores, 10)
     }
 
+    @Test
+    public void fill_WordDistance_toCsvFile() throws Exception {
+        utils.logOn()
+        WordDistance_list list = mdb.create(WordDistance_list)
+        list.maxMatchSize = 25
+        list.toCsvFile(new File("temp/WordDistance.csv"))
+    }
+
 }

@@ -239,6 +239,9 @@ export default {
         // Перемешаем ответы
         ctx.usrTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.usrTask.taskOptions)
 
+        // Показать текст подсказки после первого выбора
+        ctx.state.alwaysShowText = true
+
         //
         ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)
 

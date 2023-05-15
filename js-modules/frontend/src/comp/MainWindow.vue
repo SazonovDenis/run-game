@@ -93,7 +93,9 @@ export default {
                 game: {
                     modeShowOptions: null,
                     goalHitSize: null,
-                }
+                },
+
+                alwaysShowText: false,
             },
 
             user: {

@@ -41,29 +41,20 @@ export default {
         state: {},
     },
 
-    data() {
-        return {
-            alwaysShowText: null
-        }
-    },
-
     methods: {
 
         onTaskOptionSelected(taskOption) {
             // Играть звук, если была подсказка - значит идет заучивание
-            if (taskOption.isTrue && this.alwaysShowText) {
+            if (taskOption.isTrue && this.state.alwaysShowText) {
                 this.play()
             }
-
-            // Показать текст подсказки после первого выбора
-            this.alwaysShowText = true
         },
 
         canPlaySound() {
             return (
                 this.task.sound != null &&
                 (
-                    this.alwaysShowText ||
+                    this.state.alwaysShowText ||
                     this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
                     this.task.dataTypeQuestion == dbConst.DataType_word_spelling
                 )
@@ -81,7 +72,7 @@ export default {
         },
 
         showHint() {
-            this.alwaysShowText = true
+            this.state.alwaysShowText = true
 
             //
             this.play()
@@ -95,7 +86,7 @@ export default {
     watch: {
         task: {
             handler(newValue, oldValue) {
-                this.alwaysShowText = false
+                this.state.alwaysShowText = false
 
                 // Новый звук
                 if (this.task.sound) {
@@ -114,7 +105,7 @@ export default {
             return (
                 this.task.text != null &&
                 (
-                    this.alwaysShowText ||
+                    this.state.alwaysShowText ||
                     this.task.dataTypeQuestion != dbConst.DataType_word_sound
                 )
             )

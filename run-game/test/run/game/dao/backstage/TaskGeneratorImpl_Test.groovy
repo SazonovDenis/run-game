@@ -164,6 +164,8 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
 
     @Test
     void createSaveTasks() {
+        sw.start("total")
+
 
         //
         long idItem = 1000
@@ -176,6 +178,11 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
             //
             idItem = idItem + 1
         }
+
+
+        //
+        sw.stop("total")
+        sw.printItems()
     }
 
 
@@ -184,15 +191,27 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         Task_upd upd = mdb.create(Task_upd)
 
         try {
+            sw.start("create")
+
             Collection<DataBox> tasks = taskCreator.createTasks(idItem, dataTypeQuestion, dataTypeAnswer, limit)
+
+            sw.setValuePlus("create", "count", 1)
+            sw.stop("create")
 
             //
             printTasksOneLine(tasks)
 
             //
+            sw.start("write")
+
+            //
             for (DataBox task : tasks) {
                 upd.saveTask(task)
+                sw.setValuePlus("write", "count", 1)
             }
+
+            sw.stop("write")
+
         } catch (Exception e) {
             println(e.message)
         }

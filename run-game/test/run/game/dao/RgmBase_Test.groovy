@@ -10,6 +10,8 @@ class RgmBase_Test extends Apx_Test {
 
     AuthService authSvc
 
+    RngStopWatch sw = new RngStopWatch()
+
     void setUp() throws Exception {
         super.setUp()
 

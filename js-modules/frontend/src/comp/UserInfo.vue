@@ -1,6 +1,6 @@
 <template>
     <div class="user-info">
-        <div class="user-name">{{ name }}</div>
+        <div class="user-name">{{ text }}</div>
         <div class="user-icon" v-bind:style="{backgroundColor: color}">&nbsp;</div>
     </div>
 </template>
@@ -16,9 +16,9 @@ export default {
     },
 
     computed: {
-        name() {
+        text() {
             if (this.user.id > 0) {
-                return this.user.name
+                return this.user.text
             } else {
                 return "Гость"
             }

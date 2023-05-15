@@ -1,6 +1,8 @@
 package run.game.testdata.fixture
 
 import jandcode.core.dbm.fixture.*
+import jandcode.core.store.*
+import run.game.util.*
 
 /**
  *
@@ -10,16 +12,10 @@ class Usr_fb extends BaseFixtureBuilder {
     protected void onBuild() {
         FixtureTable fxUsr = fx.table("Usr")
 
-        //
-        long id = 1000
-        for (int n = 0; n < 100; n++) {
-            fxUsr.add([
-                    id  : id,
-                    text: "Usr #" + id
-            ])
-            //
-            id = id + 1
-        }
+        // Заполним из наших csv
+        Store stTagCsv = fxUsr.getStore()
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+        utils.addFromCsv(stTagCsv, "res:run/game/testdata/csv/Usr.csv")
     }
 
 }

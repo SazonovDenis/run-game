@@ -23,6 +23,13 @@ class TestData_Test extends Apx_Test {
     }
 
     @Test
+    public void fill_Usr() throws Exception {
+        Usr_fb fb = new Usr_fb()
+        Fixture fx = fb.build(model)
+        utils.outTableList(fx.stores, 10)
+    }
+
+    @Test
     public void fill_WordSynonym() throws Exception {
         WordSynonym_fb fb = new WordSynonym_fb()
         fb.dirBase = "../data/web-grab/"

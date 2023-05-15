@@ -20,10 +20,10 @@ public class AuthAction extends BaseAction {
         AuthService authSvc = getApp().bean(AuthService.class);
         ActionRequestUtils requestUtils = getReq();
         //
-        String name = requestUtils.getParams().getString("name");
+        String login = requestUtils.getParams().getString("login");
         String password = requestUtils.getParams().getString("password");
         //
-        AuthUser authUser = authSvc.login(new DefaultUserPasswdAuthToken(name, password));
+        AuthUser authUser = authSvc.login(new DefaultUserPasswdAuthToken(login, password));
         //
         requestUtils.getSession().put(AuthConsts.SESSION_KEY_USER, authUser);
         //

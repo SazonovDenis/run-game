@@ -3,7 +3,7 @@
 
     <bean name="jandcode.core.auth.AuthService">
         <auth-processor name="default"
-                        class="run.game.dao.auth.DummyAuthProcessor"/>
+                        class="run.game.dao.auth.RgmAuthProcessor"/>
     </bean>
 
     <web>

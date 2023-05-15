@@ -7,12 +7,12 @@
                    v-if="user.id > 0"
                    v-on:click="nextTask"/>
 
-            <q-btn color="white" text-color="black" label="User 1"
+            <q-btn color="white" text-color="black" label="Денис"
                    v-if="user.id == 0"
-                   v-on:click="login('user1', '111')"/>
-            <q-btn color="white" text-color="black" label="User 2"
+                   v-on:click="login('user1010', '')"/>
+            <q-btn color="white" text-color="black" label="Паша"
                    v-if="user.id == 0"
-                   v-on:click="login('user2', '222')"/>
+                   v-on:click="login('user1012', '')"/>
 
             <q-btn color="white" text-color="black" label="Full"
                    v-if="user.id > 0"
@@ -98,7 +98,8 @@ export default {
 
             user: {
                 id: 0,
-                name: null,
+                login: null,
+                text: null,
                 color: null,
             },
 
@@ -108,14 +109,15 @@ export default {
 
     methods: {
 
-        async login(user, password) {
+        async login(login, password) {
             let res = await apx.jcBase.ajax.request({
                 url: "auth/login",
-                params: {name: user, password: password},
+                params: {login: login, password: password},
             })
 
             this.user.id = res.data.id
-            this.user.name = res.data.name
+            this.user.login = res.data.login
+            this.user.text = res.data.text
             this.user.color = res.data.color
 
             //
@@ -133,7 +135,8 @@ export default {
             })
 
             this.user.id = res.data.id
-            this.user.name = res.data.name
+            this.user.login = res.data.login
+            this.user.text = res.data.text
             this.user.color = res.data.color
             //
             if (!this.user.id) {
@@ -147,7 +150,8 @@ export default {
             })
 
             this.user.id = res.data.id
-            this.user.name = res.data.name
+            this.user.login = res.data.login
+            this.user.text = res.data.text
             this.user.color = res.data.color
             //
             if (!this.user.id) {

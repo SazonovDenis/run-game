@@ -50,11 +50,16 @@ class RgmBase_Test extends Apx_Test {
 
     void printTaskOneLine(DataBox task) {
         mdb.resolveDicts(task)
-        String strDataTypeQuestion = ""
-        if (task.get("task").findField("dataTypeQuestion") != null) {
-            strDataTypeQuestion = ", " + task.get("task").getValue("dataTypeQuestion")
+
+        if (!task.containsKey("taskQuestion")) {
+            printTaskOneLine_choiced(task)
+        } else {
+            if (task.get("task").findField("dataTypeQuestion")) {
+                printTaskOneLine_loaded(task)
+            } else {
+                printTaskOneLine_created(task)
+            }
         }
-        println(task.get("task").getValue("id") + strDataTypeQuestion + ", question: " + task.get("taskQuestion").getUniqueValues("value").join(" | ") + ", option: " + task.get("taskOption").getUniqueValues("value").join(" | "))
     }
 
     void printFact(StoreRecord rec) {
@@ -65,6 +70,27 @@ class RgmBase_Test extends Apx_Test {
     void printFacts(Store st) {
         mdb.resolveDicts(st)
         utils.outTable(st)
+    }
+
+    void printTaskOneLine_loaded(DataBox task) {
+        String strTaskDataType = task.get("task").getValue("dataTypeQuestion") + " -> " + task.get("task").getValue("dataTypeAnswer")
+        String strTaskQuestion = task.get("taskQuestion").getUniqueValues("value").join(" | ")
+        String strTaskOption = task.get("taskOption").getUniqueValues("value").join(" | ")
+        println(strTaskDataType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
+    }
+
+    void printTaskOneLine_choiced(DataBox task) {
+        String strTaskDataType = task.get("task").getValue("dataTypeQuestion") + " -> " + task.get("task").getValue("dataTypeAnswer")
+        String strTaskQuestion = task.get("task").getValue("text") + " | " + task.get("task").getValue("sound")
+        String strTaskOption = task.get("taskOption").getUniqueValues("text").join(" | ")
+        println(strTaskDataType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
+    }
+
+    void printTaskOneLine_created(DataBox task) {
+        String strTaskDataType = task.get("taskQuestion").get(0).getValue("dataType") + " -> " + task.get("taskOption").get(0).getValue("dataType")
+        String strTaskQuestion = task.get("taskQuestion").getUniqueValues("value").join(" | ")
+        String strTaskOption = task.get("taskOption").getUniqueValues("value").join(" | ")
+        println(strTaskDataType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
     }
 
 

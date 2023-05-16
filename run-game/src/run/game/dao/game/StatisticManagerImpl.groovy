@@ -59,11 +59,39 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         ////////////////////////////
         ////////////////////////////
         //Store stTask = mdb.loadQuery("select id from Task where factQuestion = :fact", [fact: idFact])
-        Store stTask = mdb.loadQuery("select id from Task limit 100", [])
+        Store stTask = mdb.loadQuery("select id from Task --limit 100", [])
         int n = rnd.num(0, stTask.size() - 1)
         long idTask = stTask.get(n).getLong("id")
+
+        //idTask = 3116
         return idTask
     }
+
+
+/*
+
+более полная генерация заданий
+(теперь нет встрокенного рандома, можно выбрать все комбинации фактов исчерпывающим образм)
+использование тегов
+
+подгрузка TagValue к списку фактов, рефакторинг sqlFactByTagValue
+
+запись и использование статистики
+
+создать планы, нагенерить задания в рамках плана
+
+показывать продвижение внутри плана
+
+связь плана, статистики и тегов
+
+
+подозрительный вариант ответов
+
+q: spread
+распространенный - НЕ ok
+распространение - ok
+*/
+
 
     String sqlFact() {
         return """

@@ -168,8 +168,8 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
 
 
         //
-        long idItem = 1000
-        for (int i = 0; i < 200; i++) {
+        long idItem = 1010
+        for (int i = 0; i < 3; i++) {
             createSaveTask(idItem, "word-spelling", "word-translate", 100)
             createSaveTask(idItem, "word-translate", "word-spelling", 100)
             createSaveTask(idItem, "word-sound", "word-translate", 3)
@@ -199,6 +199,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
             sw.stop("create")
 
             //
+            printTasks(tasks)
             printTasksOneLine(tasks)
 
             //

@@ -1,8 +1,6 @@
 package run.game.dao.game
 
 import jandcode.commons.*
-import jandcode.commons.rnd.*
-import jandcode.commons.rnd.impl.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
@@ -65,8 +63,7 @@ class Server_Test extends RgmBase_Test {
         long idUsrTask = recUsrTask.getLong("id")
         //
         Store stTaskOption = task.get("taskOption")
-        Rnd rnd = new RndImpl()
-        long idTaskOption = stTaskOption.get(rnd.num(0, stTaskOption.size() - 1)).getLong("id")
+        long idTaskOption = stTaskOption.get(0).getLong("id")
 
 
         // Отправляем ответ пользователя

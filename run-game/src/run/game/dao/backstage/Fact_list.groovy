@@ -8,13 +8,14 @@ class Fact_list extends BaseMdbUtils {
 
     public Store loadFactsByDataType(long idItem, long dataType) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlFactByDataType(), [id: idItem, dataType: dataType])
+        mdb.loadQuery(st, sqlItemFactByDataType(), [id: idItem, dataType: dataType])
         return st
     }
 
-    public Store loadFactsByDataType(long idItem, String dataTypeCode) {
-        long dataType = getIdByCode("DataType", dataTypeCode)
-        return loadFactsByDataType(idItem, dataType)
+    public Store loadFactsByDataType(long dataType) {
+        Store st = mdb.createStore("Fact.list")
+        mdb.loadQuery(st, sqlFactByDataType(), [dataType: dataType])
+        return st
     }
 
     public Store loadFactsByTagValue(long idItem, String tagType, String tagValue) {
@@ -25,6 +26,12 @@ class Fact_list extends BaseMdbUtils {
     StoreRecord loadFact(long idFact) {
         StoreRecord rec = mdb.createStoreRecord("Fact.list")
         mdb.loadQueryRecord(rec, sqlFact(), [id: idFact])
+        return rec
+    }
+
+    StoreRecord loadItem(long idItem) {
+        StoreRecord rec = mdb.createStoreRecord("Item")
+        mdb.loadQueryRecord(rec, sqlItem(), [id: idItem])
         return rec
     }
 
@@ -50,7 +57,20 @@ order by
 """
     }
 
-    String sqlFactByDataType() {
+    String sqlItem() {
+        return """
+select
+    Item.*
+
+from
+    Item
+
+where
+    Item.id = :id
+"""
+    }
+
+    String sqlItemFactByDataType() {
         return """
 select
     Item.id item,
@@ -66,6 +86,28 @@ from
 
 where
     Item.id = :id and
+    Fact.dataType = :dataType
+
+order by
+    Fact.id
+"""
+    }
+
+    String sqlFactByDataType() {
+        return """
+select
+    Item.id item,
+    Item.value itemValue,
+    
+    Fact.id,
+    Fact.dataType factDataType,
+    Fact.value factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+
+where
     Fact.dataType = :dataType
 
 order by
@@ -103,8 +145,5 @@ order by
 """
     }
 
-    long getIdByCode(String tableName, String code) {
-        return mdb.loadQueryRecord("select id from " + tableName + " where code = :code", [code: code]).getLong("id")
-    }
 
 }

@@ -1,6 +1,7 @@
 package run.game.dao.backstage
 
 import jandcode.commons.*
+import jandcode.commons.error.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dbm.mdb.*
@@ -103,7 +104,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Всё нормально?
         int falseOptionsTotalCount = valuesFalseArr.size()
         if (falseOptionsTotalCount <= optionsCount) {
-            throw new Exception("Не нашлось достаточного количества неправильных ответов, question: '" + recFactQuestion.getValue("factValue") + "', answer: '" + valueTrue + "'")
+            throw new XError("Не нашлось достаточного количества неправильных ответов, question: '" + recFactQuestion.getValue("factValue") + "', answer: '" + valueTrue + "'")
         }
 
 
@@ -211,9 +212,8 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         return res
     }
 
-    public Collection<DataBox> createTasks(long idItem, String dataTypeQuestion, String dataTypeAnswer) {
+    public Collection<DataBox> createTasks(long idItem, long dataTypeQuestion, long dataTypeAnswer) {
         return createTasks(idItem, dataTypeQuestion, dataTypeAnswer, 100)
-
     }
 
     /**
@@ -224,7 +224,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
      * @param tagAnswer Факт какого типа пойдет как ответ
      * @return Список {task: rec, options: [rec]}
      */
-    public Collection<DataBox> createTasks(long idItem, String dataTypeQuestion, String dataTypeAnswer, int limit) {
+    public Collection<DataBox> createTasks(long idItem, long dataTypeQuestion, long dataTypeAnswer, int limit) {
         Collection<DataBox> res = new ArrayList<>()
 
         // Загружаем список фактов для "вопроса" и "ответа"
@@ -234,10 +234,10 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
         //
         if (stQuestion.size() == 0) {
-            throw new Exception("Не найден dataTypeQuestion: " + dataTypeQuestion)
+            throw new XError("Не найден dataTypeQuestion: " + dataTypeQuestion + ", item: " + list.loadItem(idItem).getString("value"))
         }
         if (stAnswer.size() == 0) {
-            throw new Exception("Не найден dataTypeAnswer: " + dataTypeAnswer)
+            throw new XError("Не найден dataTypeAnswer: " + dataTypeAnswer + ", item: " + list.loadItem(idItem).getString("value"))
         }
 
         // Перебираем факты: "факт вопрос" и "факт ответ", для каждой пары
@@ -263,6 +263,11 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
                 break
             }
         }
+
+        if (res.size() == 0) {
+            throw new XError("Не удалось сформировать ни одного задания, item: " + list.loadItem(idItem).getString("value"))
+        }
+
 
         //
         return res

@@ -17,11 +17,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord resTask = mdb.createStoreRecord("Task.Server")
         Store resTaskOption = mdb.createStore("TaskOption.Server")
 
-        // Выбираем, что спросить
+        // Выбираем, что спросить по плану
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        // Выбираем факт и задание по этому факту
-        long idFact = statisticManager.selectFact(idPaln)
-        long idTask = statisticManager.selectTask(idFact)
+        long idTask = statisticManager.selectTask(idPaln)
 
         // Грузим задание
         Task_upd upd = mdb.create(Task_upd)

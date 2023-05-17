@@ -14,7 +14,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, "word-translate", "word-spelling")
+        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_translate, RgmDbConst.DataType_word_spelling)
 
         //
         println()
@@ -33,10 +33,10 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, "word-spelling", "word-translate")
-        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, "word-translate", "word-spelling")
-        Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, "word-sound", "word-translate")
-        Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, "word-sound", "word-spelling")
+        Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate)
+        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_translate, RgmDbConst.DataType_word_spelling)
+        Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate)
+        Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_spelling)
 
         //
         println()
@@ -61,10 +61,10 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, "word-spelling", "word-translate")
-        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, "word-translate", "word-spelling")
-        Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, "word-sound", "word-translate")
-        Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, "word-sound", "word-spelling")
+        Collection<DataBox> tasks1 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate)
+        Collection<DataBox> tasks2 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_translate, RgmDbConst.DataType_word_spelling)
+        Collection<DataBox> tasks3 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate)
+        Collection<DataBox> tasks4 = taskCreator.createTasks(idItem2, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_spelling)
 
         //
         Task_upd upd = mdb.create(Task_upd)
@@ -85,7 +85,8 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
 
     @Test
     void createTask_spelling() {
-        String word = "different"
+        //String word = "different"
+        String word = "ship"
         //String word = "break in"
         //
         long idItem = mdb.loadQueryRecord("select * from Item where Item.value = :value", [value: word]).getLong("id")
@@ -94,7 +95,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         TaskGeneratorImpl taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-spelling", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate)
 
         //
         println()
@@ -111,7 +112,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
 
         //
-        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-sound", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate)
 
         //
         println()
@@ -128,7 +129,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         Task_upd upd = mdb.create(Task_upd)
 
         //
-        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-spelling", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate)
 
         //
         println()
@@ -150,7 +151,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         Task_upd upd = mdb.create(Task_upd)
 
         //
-        Collection<DataBox> tasks = taskCreator.createTasks(idItem, "word-sound", "word-translate")
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate)
 
         //
         println()
@@ -170,10 +171,10 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
         //
         long idItem = 1010
         for (int i = 0; i < 3; i++) {
-            createSaveTask(idItem, "word-spelling", "word-translate", 100)
-            createSaveTask(idItem, "word-translate", "word-spelling", 100)
-            createSaveTask(idItem, "word-sound", "word-translate", 3)
-            createSaveTask(idItem, "word-sound", "word-spelling", 3)
+            createSaveTask(idItem, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 100)
+            createSaveTask(idItem, RgmDbConst.DataType_word_translate, RgmDbConst.DataType_word_spelling, 100)
+            createSaveTask(idItem, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate, 3)
+            createSaveTask(idItem, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_spelling, 3)
 
             //
             idItem = idItem + 1
@@ -186,7 +187,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
     }
 
 
-    void createSaveTask(long idItem, String dataTypeQuestion, String dataTypeAnswer, int limit) {
+    void createSaveTask(long idItem, long dataTypeQuestion, long dataTypeAnswer, int limit) {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
         Task_upd upd = mdb.create(Task_upd)
 

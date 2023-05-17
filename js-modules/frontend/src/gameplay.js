@@ -90,7 +90,7 @@ export default {
 
 
         //
-        let resApi = await daoApi.loadStore('m/Game/choiceTask', [9999])
+        let resApi = await daoApi.loadStore('m/Game/choiceTask', [1000])
 
         //
         let res = {

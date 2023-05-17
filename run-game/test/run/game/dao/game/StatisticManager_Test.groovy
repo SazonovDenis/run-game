@@ -99,9 +99,33 @@ class StatisticManager_Test extends RgmBase_Test {
      * Статистика по пользователям
      */
     @Test
+    void getUsrStatisticByPlan() {
+        long idPlan = 1000
+
+        //
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+
+        //
+        mdb.outTable(statisticManager.getUsrStatisticByPlan(1010, idPlan))
+        mdb.outTable(statisticManager.getUsrStatisticByPlan(1011, idPlan))
+        mdb.outTable(statisticManager.getUsrStatisticByPlan(1012, idPlan))
+
+        //
+        sw.start()
+        mdb.outTable(statisticManager.getUsrStatisticByPlan(1000, idPlan))
+        sw.stop()
+        sw.printItems()
+    }
+
+
+    /**
+     * Статистика по пользователям
+     */
+    @Test
     void loadUsrStatistic() {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
 
+        //
         mdb.outTable(statisticManager.getUsrStatistic(1010))
         mdb.outTable(statisticManager.getUsrStatistic(1011))
         mdb.outTable(statisticManager.getUsrStatistic(1012))

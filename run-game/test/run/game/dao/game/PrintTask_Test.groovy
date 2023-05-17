@@ -29,7 +29,7 @@ class PrintTask_Test extends RgmBase_Test {
 
         long idItem = 1001
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
-        Collection<DataBox> tasks = taskCreator.createTasks(idItem, RgmDbConst.DataType_CODE_word_spelling, RgmDbConst.DataType_CODE_word_translate, 1)
+        Collection<DataBox> tasks = taskCreator.createTasks(idItem, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 1)
         println()
         println("---")
         printTasks(tasks)

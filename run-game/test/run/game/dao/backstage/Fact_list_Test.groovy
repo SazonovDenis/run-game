@@ -36,9 +36,9 @@ class Fact_list_Test extends RgmBase_Test {
         Fact_list list = mdb.create(Fact_list)
 
         //
-        Store st1 = list.loadFactsByDataType(idItem2, "word-spelling")
-        Store st2 = list.loadFactsByDataType(idItem2, "word-translate")
-        Store st3 = list.loadFactsByDataType(idItem2, "word-sound")
+        Store st1 = list.loadFactsByDataType(idItem2, RgmDbConst.DataType_word_spelling)
+        Store st2 = list.loadFactsByDataType(idItem2, RgmDbConst.DataType_word_translate)
+        Store st3 = list.loadFactsByDataType(idItem2, RgmDbConst.DataType_word_sound)
 
         //
         println()

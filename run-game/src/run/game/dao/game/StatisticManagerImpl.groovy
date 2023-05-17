@@ -19,10 +19,17 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         return null
     }
 
-    @DaoMethod
     public Store getUsrStatistic(long idUsr) {
         XDateTime dt = XDateTime.now().addDays(-5)
         return mdb.loadQuery(sqlUsrStatistic(), [usr: idUsr, dt: dt])
+    }
+
+    public Store getUsrStatisticByPlan(long idUsr, long idPlan) {
+        XDateTime dt = XDateTime.now().addDays(-5)
+
+        Map params = [usr: idUsr, plan: idPlan, dt: dt]
+
+        return mdb.loadQuery(sqlUsrStatisticByPlan(), params)
     }
 
     String sqlUsrStatistic() {
@@ -74,41 +81,75 @@ order by
 """
     }
 
+    String sqlUsrStatisticByPlan() {
+        return """
+with
 
-    /**
-     * Выбирает подходящий факт.
-     * Факт выбирается с учетом статистики пользователя.
-     */
-    public long selectFact(long idPlan) {
-        long idUsr = getCurrentUserId()
+s1 as (
+select
+    PlanTask.plan,
+    UsrTask.usr,
+    PlanTask.task,
+    Task.factQuestion,
+    Task.factAnswer,
+    avg(UsrTask.answerDt - UsrTask.taskDt) answerTime,
+    count(*) as cnt,
+    sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
+    sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
+    sum(case when wasHint = 1 then 1.0 else 0.0 end) as cntHint,
+    sum(case when wasSkip = 1 then 1.0 else 0.0 end) as cntSkip
 
-        /////////////////////////
-        /////////////////////////
-        /////////////////////////
-        /////////////////////////
-        return 0
+from
+    PlanTask
+    left join UsrTask on (UsrTask.task = PlanTask.task and UsrTask.taskDt > :dt and UsrTask.usr = :usr)
+    left join Task on (Task.id = UsrTask.task)
 
-        Store stFact = mdb.loadQuery(sqlFact(), [plan: idPlan])
-        int n = rnd.num(0, stFact.size() - 1)
-        long idFact = stFact.get(n).getLong("id")
-        return idFact
+where
+    PlanTask.plan = :plan
+    
+group by
+    PlanTask.plan,
+    UsrTask.usr,
+    PlanTask.task,
+    Task.factQuestion,
+    Task.factAnswer
+),
+
+s2 as (
+select 
+    s1.*,
+    (cntTrue) / (cnt) * 100 as kfcTrue,
+    (cntFalse) / (cnt) * 100 as kfcFalse,
+    (cntHint) / (cnt) * 100 as kfcHint,
+    (cntSkip) / (cnt) * 100 as kfcSkip
+from
+    s1
+)
+
+select 
+    s2.* 
+from
+    s2     
+order by
+    kfcTrue asc
+
+limit 10    
+"""
     }
 
 
     /**
-     * Выбирает подходящее задание
+     * Выбирает подходящее задание.
+     * Задание выбирается с учетом статистики пользователя.
      */
-    public long selectTask(long idFact) {
+    public long selectTask(long idPlan) {
         long idUsr = getCurrentUserId()
 
-        ////////////////////////////
-        ////////////////////////////
-        ////////////////////////////
-        ////////////////////////////
-        //Store stTask = mdb.loadQuery("select id from Task where factQuestion = :fact", [fact: idFact])
-        Store stTask = mdb.loadQuery("select id from Task --limit 100", [])
-        int n = rnd.num(0, stTask.size() - 1)
-        long idTask = stTask.get(n).getLong("id")
+        //
+        //Store stTaskStaistic = getUsrStatistic(idUsr)
+        Store stTaskStaistic = getUsrStatisticByPlan(idUsr, idPlan)
+        int n = rnd.num(0, stTaskStaistic.size() - 1)
+        long idTask = stTaskStaistic.get(n).getLong("task")
 
         //idTask = 3116
         return idTask

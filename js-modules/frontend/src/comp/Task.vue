@@ -50,6 +50,15 @@ export default {
             }
         },
 
+        // Останавливаем текущий звук
+        onLoadedUsrTask(usrTask) {
+            try {
+                this.audio.pause()
+            } catch(e) {
+                console.error(e)
+            }
+        },
+
         canPlaySound() {
             return (
                 this.task.sound != null &&
@@ -128,6 +137,7 @@ export default {
 
         //
         ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
+        ctx.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
     },
 }
 </script>

@@ -9,7 +9,7 @@ class PrintTask_Test extends RgmBase_Test {
 
 
     @Test
-    void choiceTask() {
+    void print() {
         Server upd1 = mdb.create(ServerImpl)
         DataBox task1 = upd1.choiceTask(9999)
         println()

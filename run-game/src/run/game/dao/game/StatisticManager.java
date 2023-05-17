@@ -14,8 +14,17 @@ public interface StatisticManager {
      * Выдает статистику и успехи заучивания факта.
      *
      * @param idFact id факта
+     * @param idUsr пользователь
      */
-    Store getFactStatistic(long idFact);
+    //Store getFactStatistic(long idFact, long idUsr);
+
+
+    /**
+     * Выдает статистику и успехи пользователя.
+     *
+     * @param idUsr пользователь
+     */
+    Store getUsrStatistic(long idUsr);
 
 
     /**

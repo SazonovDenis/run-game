@@ -2,6 +2,8 @@ package run.game.dao.game;
 
 import jandcode.core.dbm.std.*;
 
+import java.util.*;
+
 /**
  * Основное Api игрового процесса
  */
@@ -21,10 +23,10 @@ public interface Server {
     /**
      * Принять ответ пользователя на задание.
      *
-     * @param idUsrTask    id ранее выданного задания UsrTask.id)
-     * @param idTaskOption ответ на задание TaskOption.id
+     * @param idUsrTask  id ранее выданного задания UsrTask.id)
+     * @param taskResult состояние ответа на задание (wasTrue, wasFalse, wasHint, wasSkip)
      */
-    void postTaskAnswer(long idUsrTask, long idTaskOption);
+    void postTaskAnswer(long idUsrTask, Map taskResult);
 
 
 }

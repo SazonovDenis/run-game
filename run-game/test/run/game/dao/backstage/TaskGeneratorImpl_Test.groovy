@@ -199,7 +199,6 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
             sw.stop("create")
 
             //
-            printTasks(tasks)
             printTasksOneLine(tasks)
 
             //

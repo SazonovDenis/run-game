@@ -47,6 +47,11 @@ export default {
 
     // Новое задание
     async nextTask() {
+        // Если не отправляли ответ - отправим
+        if (ctx.usrTask.task && !ctx.state.game.postTaskAnswerDone) {
+            ctx.th.api_postTaskAnswer(ctx.usrTask.task.id, {wasSkip: true})
+        }
+
         // Грузим новое задание с сервера
         let dataUsrTask = await ctx.th.api_choiceUstTask()
 
@@ -97,7 +102,7 @@ export default {
         return res
     },
 
-    api_postTaskAnswer(idUsrTask, idTaskOption) {
+    api_postTaskAnswer(idUsrTask, taskResult) {
         if (ctx.state.testData) {
             return
         }
@@ -109,7 +114,7 @@ export default {
         ctx.state.game.postTaskAnswerDone = true
 
         //
-        let res = daoApi.loadStore('m/Game/postTaskAnswer', [idUsrTask, idTaskOption])
+        let res = daoApi.loadStore('m/Game/postTaskAnswer', [idUsrTask, taskResult])
 
         //
         return res
@@ -185,7 +190,10 @@ export default {
 
 
         // Уведомим сервер
-        ctx.th.api_postTaskAnswer(eventDrag.taskOption.task, eventDrag.taskOption.id)
+        ctx.th.api_postTaskAnswer(eventDrag.taskOption.task, {
+            wasTrue: eventDrag.taskOption.isTrue,
+            wasFalse: !eventDrag.taskOption.isTrue
+        })
 
         //
         let elBall = document.getElementById("ball")
@@ -364,12 +372,14 @@ export default {
             // Показывать подсказки
             ctx.state.game.modeShowOptions = "hint-true"
 
-            // Ответ с подсказкой не отправлять
-            ctx.state.game.postTaskAnswerDone = true
-
             // Уменьшим силу удара
             if (ctx.state.game.goalHitSize > ctx.settings.goalHitSizeHint) {
                 ctx.state.game.goalHitSize = ctx.settings.goalHitSizeHint
+            }
+
+            // Если не отправляли ответ - отправим
+            if (!ctx.state.game.postTaskAnswerDone) {
+                ctx.th.api_postTaskAnswer(ctx.usrTask.task.id, {wasHint: true})
             }
         }
     },

@@ -1,5 +1,7 @@
 package run.game.dao
 
+import jandcode.commons.*
+import jandcode.commons.error.*
 import jandcode.core.apx.test.*
 import jandcode.core.auth.*
 import jandcode.core.auth.std.*
@@ -15,10 +17,26 @@ class RgmBase_Test extends Apx_Test {
     void setUp() throws Exception {
         super.setUp()
 
+        //
         authSvc = app.bean(AuthService.class)
-        AuthUser user = authSvc.login(new DefaultUserPasswdAuthToken("admin", "111"))
-        authSvc.setCurrentUser(user)
+
+        //
+        setCurrentUser(new DefaultUserPasswdAuthToken("admin", "111"))
         println(authSvc.getCurrentUser().attrs)
+    }
+
+    void setCurrentUser(UserPasswdAuthToken authToken) {
+        AuthUser user = authSvc.login(authToken)
+        authSvc.setCurrentUser(user)
+    }
+
+    long getCurrentUserId() {
+        AuthUser user = authSvc.getCurrentUser()
+        long id = UtCnv.toLong(user.getAttrs().getLong("id"))
+        if (id == 0) {
+            throw new XError("Пользователь не указан")
+        }
+        return id
     }
 
     void printTasks(Collection<DataBox> tasks) {

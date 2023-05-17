@@ -35,14 +35,12 @@ select
     Item.value itemValue,
     
     Fact.id,
-    DataType.id factDataType,
-    DataType.code factDataTypeCode,
+    Fact.dataType factDataType,
     Fact.value factValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
-    join DataType on (Fact.dataType = DataType.id)
 
 where
     Fact.id = :id
@@ -59,14 +57,12 @@ select
     Item.value itemValue,
     
     Fact.id,
-    DataType.id factDataType,
-    DataType.code factDataTypeCode,
+    Fact.dataType factDataType,
     Fact.value factValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
-    join DataType on (Fact.dataType = DataType.id)
 
 where
     Item.id = :id and
@@ -84,14 +80,12 @@ select
     Item.value itemValue,
     
     Fact.id,
-    DataType.id factDataType,
-    DataType.code factDataTypeCode,
+    Fact.dataType factDataType,
     Fact.value factValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
-    join DataType Fact_DataType on (Fact.dataType = Fact_DataType.id)
 
     join FactTag on (FactTag.fact = Fact.id)
     left join Tag FactTag_Tag on (FactTag.tag = FactTag_Tag.id)

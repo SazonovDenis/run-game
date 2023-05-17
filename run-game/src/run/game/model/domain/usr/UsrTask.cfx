@@ -13,8 +13,10 @@
         <field name="taskDt" parent="datetime" title="Дата выдачи задания"/>
 
         <field name="answerDt" parent="datetime" title="Дата ответа"/>
-        <field name="answerTaskOption" parent="TaskOption/ref"
-               title="Вариант ответа, выбранный пользователем"/>
+        <field name="wasTrue" parent="boolean" title="Пользователь ответил верно"/>
+        <field name="wasFalse" parent="boolean" title="Пользователь ответил неправильно"/>
+        <field name="wasHint" parent="boolean" title="Пользователь просил подсказку"/>
+        <field name="wasSkip" parent="boolean" title="Пользователь пропустил задание"/>
     </domain>
 
 

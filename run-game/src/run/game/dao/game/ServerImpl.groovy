@@ -92,24 +92,36 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    public void postTaskAnswer(long idUsrTask, long idTaskOption) {
+    public void postTaskAnswer(long idUsrTask, Map taskResult) {
         // Загрузим выданное задание. Если задание чужое, то запись
         // загрузится пустой и будет ошибка, что нормально.
         StoreRecord recUsrTask = mdb.loadQueryRecord(sqlUsrTask(), [id: idUsrTask, usr: getCurrentUserId()])
-        // Выбранный вариант ответа. Если idTaskOption не соответствует idUsrTask,
-        // запись загрузится пустой и будет ошибка, что нормально.
-        StoreRecord recTaskOption = mdb.loadQueryRecord(sqlUsrTaskOption(), [id: idUsrTask, taskOption: idTaskOption])
+
+
+        // Валидация
+        if (taskResult.get("wasTrue") == false &&
+                taskResult.get("wasFalse") == false &&
+                taskResult.get("wasHint") == false &&
+                taskResult.get("wasSkip") == false
+        ) {
+            mdb.validateErrors.addError("Не указано состояние ответа на задание")
+        }
 
         //
-        if (!recUsrTask.isValueNull("answerTaskOption")) {
+        if (!recUsrTask.isValueNull("answerDt")) {
             mdb.validateErrors.addError("Ответ на задание уже дан")
         }
+
         //
         mdb.validateErrors.checkErrors()
 
+
         // Обновляем
-        recUsrTask.setValue("answerTaskOption", recTaskOption.getValue("id"))
         recUsrTask.setValue("answerDt", XDateTime.now())
+        recUsrTask.setValue("wasTrue", taskResult.get("wasTrue"))
+        recUsrTask.setValue("wasFalse", taskResult.get("wasFalse"))
+        recUsrTask.setValue("wasHint", taskResult.get("wasHint"))
+        recUsrTask.setValue("wasSkip", taskResult.get("wasSkip"))
         mdb.updateRec("UsrTask", recUsrTask)
     }
 

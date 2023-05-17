@@ -1,12 +1,11 @@
 package run.game.dao.game
 
-
+import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
-
 
 public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManager {
 
@@ -16,15 +15,63 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
 
 
     @DaoMethod
-    public Store getFactStatistic(long idFact) {
-        Store st = mdb.loadQuery(sqlFactStatistic(), [usr: getCurrentUserId(), fact: idFact])
-        return st
-    }
-
-
-    @DaoMethod
     public Map<Long, Store> getPlanStatistic(long idPaln) {
         return null
+    }
+
+    @DaoMethod
+    public Store getUsrStatistic(long idUsr) {
+        XDateTime dt = XDateTime.now().addDays(-5)
+        return mdb.loadQuery(sqlUsrStatistic(), [usr: idUsr, dt: dt])
+    }
+
+    String sqlUsrStatistic() {
+        return """
+with
+
+s1 as (
+select
+    UsrTask.usr,
+    UsrTask.task,
+    Task.factQuestion,
+    Task.factAnswer,
+    avg(UsrTask.answerDt - UsrTask.taskDt) answerTime,
+    count(*) as cnt,
+    sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
+    sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
+    sum(case when wasHint = 1 then 1.0 else 0.0 end) as cntHint,
+    sum(case when wasSkip = 1 then 1.0 else 0.0 end) as cntSkip
+from
+    UsrTask
+    join Task on (UsrTask.task = Task.id)
+where
+    UsrTask.usr = :usr and
+    UsrTask.taskDt > :dt
+group by
+    UsrTask.usr,
+    UsrTask.task,
+    Task.factQuestion,
+    Task.factAnswer
+),
+
+s2 as (
+select 
+    s1.*,
+    (cntTrue) / (cnt) * 100 as kfcTrue,
+    (cntFalse) / (cnt) * 100 as kfcFalse,
+    (cntHint) / (cnt) * 100 as kfcHint,
+    (cntSkip) / (cnt) * 100 as kfcSkip
+from
+    s1
+)
+
+select 
+    s2.* 
+from
+    s2     
+order by
+    kfcTrue asc
+"""
     }
 
 

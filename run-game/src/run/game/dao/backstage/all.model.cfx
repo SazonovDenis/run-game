@@ -20,7 +20,6 @@
         <field name="item" parent="Item/id"/>
         <field name="itemValue" parent="Item/value"/>
         <field name="factDataType" parent="Fact/dataType"/>
-        <field name="factDataTypeCode" parent="DataType/code"/>
         <field name="factValue" parent="Fact/value"/>
 
         <field name="factAttrs" parent="object"/>

@@ -188,7 +188,12 @@ export default {
 
         //
         this.nextTask()
-    }
+    },
+
+    unmounted() {
+        ctx.eventBus.off("loadedUsrTask", this.onLoadedUsrTask)
+        gameplay.shutdown()
+    },
 
 }
 

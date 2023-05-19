@@ -45,6 +45,17 @@ export default {
         }
     },
 
+    shutdown() {
+        // Подписка на события
+        ctx.eventBus.off("dragstart", this.on_dragstart)
+        ctx.eventBus.off("drag", this.on_drag)
+        ctx.eventBus.off("dragend", this.on_dragend)
+        ctx.eventBus.off("change:goal.value", this.onChange_goalValue)
+        ctx.eventBus.off("showHint", this.onShowHint)
+        //
+        ctx.eventBus.off("*", this.onEvent)
+    },
+
     // Новое задание
     async nextTask() {
         // Если не отправляли ответ - отправим

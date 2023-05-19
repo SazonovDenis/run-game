@@ -139,6 +139,12 @@ export default {
         ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
         ctx.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
     },
+
+    unmounted() {
+        ctx.eventBus.off("taskOptionSelected", this.onTaskOptionSelected)
+        ctx.eventBus.off("loadedUsrTask", this.onLoadedUsrTask)
+    },
+
 }
 </script>
 

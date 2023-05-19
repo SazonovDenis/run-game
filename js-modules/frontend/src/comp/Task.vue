@@ -4,14 +4,22 @@
         <div class="task" @click="play">
 
             <div v-if="canPlaySound()" class="task-sound">
-                <q-icon size="1.5em" name="asterisk"/>
+                <template v-if="doShowText">
+                    <q-icon size="1.8em" name="speaker-on"/>
+                </template>
+                <template v-else>
+                    <q-icon size="1.8em" name="speaker"/>
+                </template>
+            </div>
+            <div v-else class="task-sound">
+                <q-icon size="1.8em" name="speaker-off"/>
             </div>
 
             <div v-if="doShowText" class="task-text">
                 {{ task.text }}
             </div>
-            <div v-else class="task-text">
-                ◯◯◯◯◯◯
+            <div v-else class="task-text-image">
+                <img :src="wave">
             </div>
 
             <!--
@@ -110,6 +118,10 @@ export default {
 
     computed: {
 
+        wave() {
+            return apx.url.ref("run/game/web/wave.png")
+        },
+
         doShowText() {
             return (
                 this.task.text != null &&
@@ -188,6 +200,11 @@ export default {
     padding-left: 5px;
     padding-right: 5px;
     font-size: 1.5em;
+}
+
+.task-text-image img {
+    height: 1.6em;
+    opacity: 0.8;
 }
 
 </style>

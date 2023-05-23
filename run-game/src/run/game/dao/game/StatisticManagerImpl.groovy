@@ -1,5 +1,6 @@
 package run.game.dao.game
 
+import groovy.transform.*
 import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
@@ -7,6 +8,7 @@ import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
 
+@TypeChecked
 public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManager {
 
 
@@ -42,7 +44,7 @@ select
     UsrTask.task,
     Task.factQuestion,
     Task.factAnswer,
-    avg(UsrTask.answerDt - UsrTask.taskDt) answerTime,
+    avg(UsrTask.dtAnswer - UsrTask.dtTask) answerTime,
     count(*) as cnt,
     sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
     sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
@@ -53,7 +55,7 @@ from
     join Task on (UsrTask.task = Task.id)
 where
     UsrTask.usr = :usr and
-    UsrTask.taskDt > :dt
+    UsrTask.dtTask > :dt
 group by
     UsrTask.usr,
     UsrTask.task,
@@ -92,7 +94,7 @@ select
     PlanTask.task,
     Task.factQuestion,
     Task.factAnswer,
-    avg(UsrTask.answerDt - UsrTask.taskDt) answerTime,
+    avg(UsrTask.dtAnswer - UsrTask.dtTask) answerTime,
     count(*) as cnt,
     sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
     sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
@@ -101,7 +103,7 @@ select
 
 from
     PlanTask
-    left join UsrTask on (UsrTask.task = PlanTask.task and UsrTask.taskDt > :dt and UsrTask.usr = :usr)
+    left join UsrTask on (UsrTask.task = PlanTask.task and UsrTask.dtTask > :dt and UsrTask.usr = :usr)
     left join Task on (Task.id = UsrTask.task)
 
 where
@@ -137,50 +139,6 @@ limit 10
 """
     }
 
-
-    /**
-     * Выбирает подходящее задание.
-     * Задание выбирается с учетом статистики пользователя.
-     */
-    public long selectTask(long idPlan) {
-        long idUsr = getCurrentUserId()
-
-        //
-        //Store stTaskStaistic = getUsrStatistic(idUsr)
-        Store stTaskStaistic = getUsrStatisticByPlan(idUsr, idPlan)
-        int n = rnd.num(0, stTaskStaistic.size() - 1)
-        long idTask = stTaskStaistic.get(n).getLong("task")
-
-        //idTask = 3116
-        return idTask
-    }
-
-
-/*
-
-более полная генерация заданий
-(теперь нет встрокенного рандома, можно выбрать все комбинации фактов исчерпывающим образм)
-использование тегов
-
-подгрузка TagValue к списку фактов, рефакторинг sqlFactByTagValue
-
-запись и использование статистики
-
-создать планы, нагенерить задания в рамках плана
-
-показывать продвижение внутри плана
-
-связь плана, статистики и тегов
-
-
-подозрительный вариант ответов
-
-q: spread
-распространенный - НЕ ok
-распространение - ok
-*/
-
-
     String sqlFact() {
         return """
 select
@@ -197,8 +155,8 @@ where
         return """
 select
     Task.*,
-    UsrTask.taskDt,
-    UsrTask.answerDt,
+    UsrTask.dtTask,
+    UsrTask.dtAnswer,
     TaskOption.isTrue
 from
     UsrTask

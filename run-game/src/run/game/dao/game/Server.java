@@ -11,11 +11,20 @@ public interface Server {
 
 
     /**
+     * Начать раунд по плану
+     *
+     * @param idPaln план
+     * @return игра
+     */
+    long gameStart(long idPaln);
+
+
+    /**
      * Выдать очередное задание из готового списка, подготовленного для пользователя.
      * Выбирает те задания, которые еще не выполнялись.
      *
-     * @param idPaln id плана
-     * @return Задание
+     * @param idPaln план
+     * @return задание
      */
     DataBox choiceTask(long idPaln);
 

@@ -67,6 +67,13 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         return idPlan
     }
 
+    StoreRecord loadPlan(long idPlan) {
+        StoreRecord recPlan = mdb.loadQueryRecord("select * from Plan where id = :id", [id: idPlan])
+
+        //
+        return recPlan
+    }
+
 
     void deletePlan(long idPaln) {
         mdb.execQuery("delete from PlanFact where plan = :plan", [plan: idPaln])

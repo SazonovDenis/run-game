@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="GameUsr" parent="tab.id" tag.db="true"
+            title="Участник раунда">
+        <!--@
+        -->
+        <field name="usr" parent="Usr/ref"/>
+        <field name="game" parent="Game/ref"/>
+    </domain>
+
+
+</root>

@@ -54,16 +54,26 @@ class RgmBase_Test extends Apx_Test {
 
     void printTask(DataBox task) {
         mdb.resolveDicts(task)
+        //
         println("task")
         utils.outTable(task.get("task"))
+        //
         println("taskQuestion")
         if (task.containsKey("taskQuestion")) {
             utils.outTable(task.get("taskQuestion"))
         } else {
             println("<null>")
         }
+        //
         println("taskOption")
         utils.outTable(task.get("taskOption"))
+        //
+        println("game")
+        if (task.containsKey("game")) {
+            utils.outTable(task.get("game"))
+        } else {
+            println("<null>")
+        }
     }
 
     void printTaskOneLine(DataBox task) {

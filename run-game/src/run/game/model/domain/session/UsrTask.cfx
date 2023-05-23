@@ -7,12 +7,13 @@
         <!--@
         Задание, выданные пользователю.
         -->
+        <field name="game" parent="Game/ref"/>
         <field name="usr" parent="Usr/ref"/>
         <field name="task" parent="Task/ref"/>
 
-        <field name="taskDt" parent="datetime" title="Дата выдачи задания"/>
+        <field name="dtTask" parent="datetime" title="Дата/время выдачи задания"/>
+        <field name="dtAnswer" parent="datetime" title="Дата/время реакции пользователя"/>
 
-        <field name="answerDt" parent="datetime" title="Дата ответа"/>
         <field name="wasTrue" parent="boolean" title="Пользователь ответил верно"/>
         <field name="wasFalse" parent="boolean" title="Пользователь ответил неправильно"/>
         <field name="wasHint" parent="boolean" title="Пользователь просил подсказку"/>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Game" parent="tab.id" tag.db="true"
+            title="Раунд игры">
+        <!--@
+        -->
+        <field name="plan" parent="Plan/ref" title="По какому плану"/>
+        <field name="dbeg" parent="datetime" title="Дата начала"/>
+        <field name="dend" parent="datetime" title="Дата окончания"/>
+
+    </domain>
+
+
+</root>

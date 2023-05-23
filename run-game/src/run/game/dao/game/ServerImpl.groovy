@@ -2,28 +2,157 @@ package run.game.dao.game
 
 
 import jandcode.commons.datetime.*
+import jandcode.commons.error.*
+import jandcode.commons.rnd.*
+import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 
-
 public class ServerImpl extends RgmMdbUtils implements Server {
 
 
+    Rnd rnd = new RndImpl()
+
     @DaoMethod
-    public DataBox choiceTask(long idPaln) {
-        StoreRecord resTask = mdb.createStoreRecord("Task.Server")
-        Store resTaskOption = mdb.createStore("TaskOption.Server")
+    public long gameStart(long idPlan) {
+        PlanCreator planCreator = mdb.create(PlanCreatorImpl)
+        StoreRecord recPlan = planCreator.loadPlan(idPlan)
 
-        // Выбираем, что спросить по плану
+
+        // Добавляем Game
+        StoreRecord recGame = mdb.createStoreRecord("Game")
+        //
+        XDateTime dt = XDateTime.now()
+        recGame.setValue("dbeg", dt)
+        //
+        recGame.setValue("plan", idPlan)
+
+        //
+        long idGame = mdb.insertRec("Game", recGame)
+
+
+        // Добавим участника игры
+        long idUsr = getCurrentUserId()
+        mdb.insertRec("GameUsr", [usr: idUsr, game: idGame])
+
+
+        // Отберем подходящие задания на игру.
+        // Задание выбирается с учетом статистики пользователя.
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        long idTask = statisticManager.selectTask(idPaln)
+        Store stTask = statisticManager.getUsrStatisticByPlan(idUsr, idPlan)
 
-        // Грузим задание
+
+        // Добавляем задания на игру
+        for (StoreRecord recTask : stTask) {
+            mdb.insertRec("UsrTask", [
+                    game: idGame,
+                    usr : idUsr,
+                    task: recTask.getLong("task"),
+            ])
+        }
+
+
+        //
+        return idGame
+    }
+
+
+    @DaoMethod
+    public DataBox choiceTask(long idGame) {
+        // --- Выбираем, что осталось спросить по плану
+        StoreRecord recUsrTask = choiceUsrTask(idGame)
+        //
+        if (recUsrTask == null) {
+            throw new XError("Все задания уже выполнены")
+        }
+        //
+        long idTask = recUsrTask.getLong("task")
+        long idUsrTask = recUsrTask.getLong("id")
+
+
+        // --- Грузим задание
         Task_upd upd = mdb.create(Task_upd)
         DataBox task = upd.loadTask(idTask)
+
+
+        // --- Преобразуем задание по требованиям frontend-api
+        DataBox res = prepareTask(task)
+
+
+        // --- Записываем факт выдачи задания для пользователя
+        UsrTask_upd taskUpd = mdb.create(UsrTask_upd)
+        XDateTime dt = XDateTime.now()
+        taskUpd.markDt(idUsrTask, dt)
+
+
+        // --- Дополняем задание технической информацией
+        StoreRecord resTask = res.get("task")
+        resTask.setValue("id", idUsrTask)
+        resTask.setValue("dtTask", dt)
+
+        //
+        StoreRecord resGame = loadGame(idGame)
+        res.put("game", resGame)
+
+
+        //
+        return res
+    }
+
+
+    @DaoMethod
+    public void gameFinish(long idGame) {
+        StoreRecord recGame = mdb.loadQueryRecord("select * from Game where id = :id", [id: idGame])
+
+        XDateTime dt = XDateTime.now()
+        recGame.setValue("dend", dt)
+
+        mdb.updateRec("Game", recGame)
+    }
+
+
+    @DaoMethod
+    public void postTaskAnswer(long idUsrTask, Map taskResult) {
+        // Загрузим выданное задание. Если задание чужое, то запись
+        // загрузится пустой и будет ошибка, что нормально.
+        long idUsr = getCurrentUserId()
+        StoreRecord recUsrTask = mdb.loadQueryRecord(sqlUsrTask(), [id: idUsrTask, usr: idUsr])
+
+
+        // Валидация
+        if (taskResult.get("wasTrue") == false &&
+                taskResult.get("wasFalse") == false &&
+                taskResult.get("wasHint") == false &&
+                taskResult.get("wasSkip") == false
+        ) {
+            mdb.validateErrors.addError("Не указано состояние ответа на задание")
+        }
+
+        //
+        if (!recUsrTask.isValueNull("dtAnswer")) {
+            mdb.validateErrors.addError("Ответ на задание уже дан")
+        }
+
+        //
+        mdb.validateErrors.checkErrors()
+
+
+        // Обновляем
+        recUsrTask.setValue("dtAnswer", XDateTime.now())
+        recUsrTask.setValue("wasTrue", taskResult.get("wasTrue"))
+        recUsrTask.setValue("wasFalse", taskResult.get("wasFalse"))
+        recUsrTask.setValue("wasHint", taskResult.get("wasHint"))
+        recUsrTask.setValue("wasSkip", taskResult.get("wasSkip"))
+        mdb.updateRec("UsrTask", recUsrTask)
+    }
+
+
+    DataBox prepareTask(DataBox task) {
+        StoreRecord resTask = mdb.createStoreRecord("Task.Server")
+        Store resTaskOption = mdb.createStore("TaskOption.Server")
 
         // Основной вопрос задания
         StoreRecord recTask = task.get("task")
@@ -69,16 +198,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         }
 
 
-        // Записываем факт выдачи задания для пользователя
-        UsrTask_upd taskUpd = mdb.create(UsrTask_upd)
-        StoreRecord recUsrTask = taskUpd.ins(recTask.getLong("id"))
-
         //
-        resTask.setValue("id", recUsrTask.getValue("id"))
-        resTask.setValue("taskDt", recUsrTask.getValue("taskDt"))
-
-
-        // Выдаем задание
         DataBox res = new DataBox()
         res.put("task", resTask)
         res.put("taskOption", resTaskOption)
@@ -90,37 +210,49 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    public void postTaskAnswer(long idUsrTask, Map taskResult) {
-        // Загрузим выданное задание. Если задание чужое, то запись
-        // загрузится пустой и будет ошибка, что нормально.
-        StoreRecord recUsrTask = mdb.loadQueryRecord(sqlUsrTask(), [id: idUsrTask, usr: getCurrentUserId()])
+    Store getPlans() {
+        //^c Загрузка и выбор планов
+
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+        Store st = statisticManager.getUsrStatistic(getCurrentUserId())
+        return st
+    }
 
 
-        // Валидация
-        if (taskResult.get("wasTrue") == false &&
-                taskResult.get("wasFalse") == false &&
-                taskResult.get("wasHint") == false &&
-                taskResult.get("wasSkip") == false
-        ) {
-            mdb.validateErrors.addError("Не указано состояние ответа на задание")
+    StoreRecord choiceUsrTask(long idGame) {
+        long idUsr = getCurrentUserId()
+
+        // Извлечем неотвеченные задания
+        Store stUsrTask = mdb.loadQuery(sqlSelectTask(), [
+                game: idGame,
+                usr : idUsr,
+        ])
+
+        if (stUsrTask.size() == 0) {
+            return null
         }
 
-        //
-        if (!recUsrTask.isValueNull("answerDt")) {
-            mdb.validateErrors.addError("Ответ на задание уже дан")
-        }
+        // Выберем случайное
+        int n = rnd.num(0, stUsrTask.size() - 1)
+        StoreRecord rec = stUsrTask.get(n)
 
         //
-        mdb.validateErrors.checkErrors()
+        return rec
+    }
 
 
-        // Обновляем
-        recUsrTask.setValue("answerDt", XDateTime.now())
-        recUsrTask.setValue("wasTrue", taskResult.get("wasTrue"))
-        recUsrTask.setValue("wasFalse", taskResult.get("wasFalse"))
-        recUsrTask.setValue("wasHint", taskResult.get("wasHint"))
-        recUsrTask.setValue("wasSkip", taskResult.get("wasSkip"))
-        mdb.updateRec("UsrTask", recUsrTask)
+    String sqlSelectTask() {
+        return """
+select
+    UsrTask.*
+from
+    UsrTask 
+where
+    game = :game and
+    usr = :usr and
+    -- неотвеченные
+    dtAnswer is null 
+"""
     }
 
 
@@ -151,5 +283,34 @@ where
 """
     }
 
+    String sqlGame() {
+        return """
+select
+    Plan.text,
+    Game.id,
+    count(*) as countTotal,
+    sum(case when UsrTask.dtTask is null then 0 else 1 end) as countDone
+from
+    Game
+    join Plan on (Game.plan = Plan.id)
+    join UsrTask on (Game.id = UsrTask.game)
+where
+    Game.id = :game
+group by    
+    Plan.text,
+    Game.id
+"""
+    }
 
+
+    StoreRecord loadGame(long idGame) {
+        StoreRecord resGame = mdb.createStoreRecord("Game.Server")
+
+        //
+        StoreRecord recGame = mdb.loadQueryRecord(sqlGame(), [game: idGame])
+        resGame.setValues(recGame)
+
+        //
+        return resGame
+    }
 }

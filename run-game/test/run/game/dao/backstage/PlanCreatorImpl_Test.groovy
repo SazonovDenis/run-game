@@ -44,7 +44,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         // Ищем слова из файла среди словарных слов
         Collection<Long> items = new ArrayList<>()
         Collection<String> wordsNotFound = new ArrayList<>()
-        loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_3.txt", items, wordsNotFound)
+        loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_4.txt", items, wordsNotFound)
 
         //
         println("found: " + items.size())
@@ -53,7 +53,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         println(wordsNotFound)
 
         //
-        long idPlan = planCreator.createPlan("Robinson", items, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 3)
+        long idPlan = planCreator.createPlan("Robinson 2", items, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 3)
 
         //
         println("idPlan: " + idPlan)

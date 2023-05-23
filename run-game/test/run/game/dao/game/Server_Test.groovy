@@ -13,7 +13,7 @@ class Server_Test extends RgmBase_Test {
     void serializeTask() {
         // Грузим задание
         Server upd = mdb.create(ServerImpl)
-        DataBox task = upd.choiceTask(9999)
+        DataBox task = upd.choiceTask(1000)
 
         //
         println()
@@ -21,65 +21,99 @@ class Server_Test extends RgmBase_Test {
 
         //
         println()
-        println("task.jsonStr")
-        String taskJson = UtJson.toJson(task)
-        println(taskJson)
+        println("task to jsonStr")
+        String strTask = UtJson.toJson(task)
+        println(strTask)
 
         //
         println()
-        println("task.json")
-        utils.outMap(UtJson.fromJson(taskJson))
-    }
-
-    @Test
-    void choiceTask() {
-        Server upd = mdb.create(ServerImpl)
-        DataBox task = upd.choiceTask(9999)
-
-        //
-        println()
-        printTask(task)
-    }
-
-    @Test
-    void postTaskAnswer() {
-        //
-        println("UsrTask")
-        mdb.outTable(mdb.loadQuery("select * from UsrTask order by taskDt"))
-        println()
-
-
-        // Получаем задание
-        Server upd = mdb.create(ServerImpl)
-        DataBox task = upd.choiceTask(9999)
-
-
-        // Печатаем задание
-        printTask(task)
-
-
-        // Пользователь отвечает
-        StoreRecord recUsrTask = task.get("usrTask")
-        long idUsrTask = recUsrTask.getLong("id")
-        //
-        Store stTaskOption = task.get("taskOption")
-        long idTaskOption = stTaskOption.get(0).getLong("id")
-
-
-        // Отправляем ответ пользователя
-        upd.postTaskAnswer(idUsrTask, idTaskOption)
-
-
-        //
-        println()
-        mdb.outTable(mdb.loadQuery("select * from UsrTask order by taskDt"))
+        println("task from jsonStr")
+        Map jsonTask = UtJson.fromJson(strTask)
+        utils.outMap(jsonTask)
     }
 
 
     @Test
     void getTask_rpc() throws Exception {
-        Map res = apx.execJsonRpc("api", "m/Game/choiceTask", [1001])
+        Map res = apx.execJsonRpc("api", "m/Game/choiceTask", [1000])
         utils.outMap(res)
+    }
+
+
+    @Test
+    void choiceTask() {
+        Server upd = mdb.create(ServerImpl)
+        DataBox task = upd.choiceTask(1000)
+
+        //
+        println()
+        printTask(task)
+    }
+
+
+    @Test
+    void testLoadGame() {
+        long idGame = 1001
+
+        //
+        Server upd = mdb.create(ServerImpl)
+        StoreRecord rec = upd.loadGame(idGame)
+
+        //
+        mdb.outTable(rec)
+    }
+
+    @Test
+    void testGameProcess() {
+        Server upd = mdb.create(ServerImpl)
+
+        // Стартуем игру
+        long idPaln = 1000
+        //long idGame = upd.gameStart(idPaln)
+        long idGame = 1002
+
+
+        // Печатаем состав заданий
+        println()
+        mdb.outTable(mdb.loadQuery("select * from UsrTask where game = :game order by dtTask", [game: idGame]))
+
+
+        // --- Получаем задание #1
+        DataBox task = upd.choiceTask(idGame)
+
+        // Печатаем задание
+        println()
+        printTask(task)
+
+
+        // Пользователь отвечает
+        StoreRecord recTask = task.get("task")
+        long idUsrTask = recTask.getLong("id")
+        upd.postTaskAnswer(idUsrTask, [wasTrue: true])
+
+
+        // Печатаем состав заданий
+        println()
+        mdb.outTable(mdb.loadQuery("select * from UsrTask where game = :game order by dtTask", [game: idGame]))
+
+
+        // --- Получаем задание #2
+        task = upd.choiceTask(idGame)
+
+        // Печатаем задание
+        println()
+        printTask(task)
+
+
+        // Пользователь отвечает
+        recTask = task.get("task")
+        idUsrTask = recTask.getLong("id")
+        upd.postTaskAnswer(idUsrTask, [wasTrue: false])
+
+
+        // Печатаем состав заданий
+        println()
+        mdb.outTable(mdb.loadQuery("select * from UsrTask where game = :game order by dtTask", [game: idGame]))
     }
 
 

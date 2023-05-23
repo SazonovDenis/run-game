@@ -8,24 +8,32 @@ import run.game.dao.*
 class UsrTask_upd extends RgmMdbUtils {
 
     /**
-     * Записывает, что задание task, было выдано текущему пользователю
+     * Записывает, что задание idTask, было выдано текущему пользователю
      * @param task Task.id
      * @return UsrTask.id
      */
     @DaoMethod
-    StoreRecord ins(long task) {
-        StoreRecord recUsrTask = mdb.createStoreRecord("UsrTask")
+    StoreRecord ins(long idGame, long idTask) {
+        long idUsr = getCurrentUserId()
+        XDateTime dt = XDateTime.now()
 
         //
-        recUsrTask.setValue("usr", getCurrentUserId())
-        recUsrTask.setValue("task", task)
-        recUsrTask.setValue("taskDt", XDateTime.now())
+        StoreRecord recUsrTask = mdb.createStoreRecord("UsrTask")
+        recUsrTask.setValue("task", idGame)
+        recUsrTask.setValue("usr", idUsr)
+        recUsrTask.setValue("task", idTask)
+        recUsrTask.setValue("dtTask", dt)
+
         //
         long idUsrTask = mdb.insertRec("UsrTask", recUsrTask)
         recUsrTask.setValue("id", idUsrTask)
 
         //
         return recUsrTask
+    }
+
+    void markDt(long idUsrTask, XDateTime dt) {
+        mdb.updateRec("UsrTask", [id: idUsrTask, dtTask: dt])
     }
 
 }

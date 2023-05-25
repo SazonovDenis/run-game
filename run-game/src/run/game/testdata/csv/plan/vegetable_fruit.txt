@@ -1,0 +1,9 @@
+vegetable
+pea
+cabbage
+potato
+
+fruit
+apricot
+pineapple
+banana

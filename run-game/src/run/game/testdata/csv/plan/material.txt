@@ -1,0 +1,17 @@
+material
+stone
+concrete
+brick
+metal
+rubber
+glass
+wood
+plastic
+paper
+carton
+gypsum
+clay
+leather
+cloth
+wool
+silk

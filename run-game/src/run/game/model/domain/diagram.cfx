@@ -38,10 +38,10 @@
     </diagram>
 
 
-    <diagram name="usrTask" title="Раунды игры, задания и ответы">
+    <diagram name="gameTask" title="Раунды игры, задания и ответы">
         <domain name="Game"/>
         <domain name="GameUsr"/>
-        <domain name="UsrTask"/>
+        <domain name="GameTask"/>
         <domain name="Plan" showfields="false"/>
         <domain name="Usr" showfields="false"/>
         <domain name="Task" showfields="false"/>

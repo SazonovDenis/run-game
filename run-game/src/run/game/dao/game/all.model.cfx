@@ -2,10 +2,10 @@
 <root>
 
     <domain name="Task.Server">
-        <field name="id" parent="UsrTask/ref"/>
+        <field name="id" parent="GameTask/ref"/>
         <field name="dataTypeQuestion" parent="long"/>
         <field name="dataTypeAnswer" parent="long"/>
-        <field name="dtTask" parent="UsrTask/dtTask"/>
+        <field name="dtTask" parent="GameTask/dtTask"/>
         <field name="text" parent="string"/>
         <field name="sound" parent="string"/>
         <field name="image" parent="string"/>
@@ -24,6 +24,45 @@
         <field name="text" parent="string"/>
         <field name="countTotal" parent="long"/>
         <field name="countDone" parent="long"/>
+    </domain>
+
+    <domain name="Plan.Statistic" parent="Plan">
+        <field name="usr" parent="Usr/ref"/>
+
+        <field name="xxx" parent="long"/>
+
+        <field name="answerTime" parent="double"/>
+
+        <field name="cnt" parent="long"/>
+        <field name="cntTrue" parent="long"/>
+        <field name="cntFalse" parent="long"/>
+        <field name="cntHint" parent="long"/>
+        <field name="cntSkip" parent="long"/>
+
+        <field name="kfcTrue" parent="double"/>
+        <field name="kfcFalse" parent="double"/>
+        <field name="kfcHint" parent="double"/>
+        <field name="kfcSkip" parent="double"/>
+    </domain>
+
+    <domain name="Task.Statistic">
+        <field name="usr" parent="Usr/ref"/>
+        <field name="task" parent="Task/ref"/>
+        <field name="factQuestion" parent="Fact/ref"/>
+        <field name="factAnswer" parent="Fact/ref"/>
+
+        <field name="answerTime" parent="double"/>
+
+        <field name="cnt" parent="long"/>
+        <field name="cntTrue" parent="long"/>
+        <field name="cntFalse" parent="long"/>
+        <field name="cntHint" parent="long"/>
+        <field name="cntSkip" parent="long"/>
+
+        <field name="kfcTrue" parent="double"/>
+        <field name="kfcFalse" parent="double"/>
+        <field name="kfcHint" parent="double"/>
+        <field name="kfcSkip" parent="double"/>
     </domain>
 
 </root>

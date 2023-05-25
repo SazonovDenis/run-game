@@ -12,6 +12,7 @@ export function run() {
     let routes = [
         {path: '', frame: Home},
         {path: '/start', frame: import('./StartPage')},
+        {path: '/levels', frame: import('./LevelsPage')},
     ]
 
     apx.app.onBeforeRun(async () => {

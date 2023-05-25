@@ -24,6 +24,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
     String badCsv = "temp/bad-db.csv"
 
     def dirs = [
+            "1000-all",
             "1000-englishdom",
             "1000-preply",
             "1000-puzzle-english",
@@ -309,6 +310,10 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
         //
         utils.saveToCsv(stCsvBad, new File(badCsv))
+
+        //
+        println()
+        println("stCsvBad.size: " + stCsvBad.size())
     }
 
     String sqlTag() {

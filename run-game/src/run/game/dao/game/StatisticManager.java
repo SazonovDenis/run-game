@@ -2,17 +2,14 @@ package run.game.dao.game;
 
 import jandcode.core.store.*;
 
-import java.util.*;
-
 /*
- * Мониторинг результатов
+ * Мониторинг результатов, учет статистики пользователя.
  */
 public interface StatisticManager {
 
 
     /**
-     * Выдает статистику и успехи заучивания факта.
-     *
+     * Выдает статистику и успехи для каждого факта.
      * @param idFact id факта
      * @param idUsr пользователь
      */
@@ -20,19 +17,23 @@ public interface StatisticManager {
 
 
     /**
-     * Выдает статистику и успехи пользователя.
-     *
-     * @param idUsr пользователь
+     * Выдает статистику и успехи каждого Paln.
      */
-    Store getUsrStatistic(long idUsr);
+    Store getPlanStatistic();
 
 
     /**
-     * Выдает статистику и успехи выполнения каждого факта в плане.
-     *
-     * @param idPaln id плана
+     * Выдает статистику и успехи для каждого Task.
      */
-    Map<Long, Store> getPlanStatistic(long idPaln);
+    Store getTaskStatistic();
+
+
+    /**
+     * Выдает статистику и успехи для каждого Task в плане idPlan.
+     *
+     * @param idPlan id плана
+     */
+    Store getTaskStatisticByPlan(long idPlan);
 
 
 }

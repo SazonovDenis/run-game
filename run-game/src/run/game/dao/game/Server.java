@@ -23,19 +23,19 @@ public interface Server {
      * Выдать очередное задание из готового списка, подготовленного для пользователя.
      * Выбирает те задания, которые еще не выполнялись.
      *
-     * @param idPaln план
+     * @param idGame игра
      * @return задание
      */
-    DataBox choiceTask(long idPaln);
+    DataBox choiceTask(long idGame);
 
 
     /**
      * Принять ответ пользователя на задание.
      *
-     * @param idUsrTask  id ранее выданного задания UsrTask.id)
+     * @param idGameTask id ранее выданного задания GameTask.id)
      * @param taskResult состояние ответа на задание (wasTrue, wasFalse, wasHint, wasSkip)
      */
-    void postTaskAnswer(long idUsrTask, Map taskResult);
+    void postTaskAnswer(long idGameTask, Map taskResult);
 
 
 }

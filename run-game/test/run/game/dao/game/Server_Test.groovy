@@ -69,13 +69,13 @@ class Server_Test extends RgmBase_Test {
 
         // Стартуем игру
         long idPaln = 1000
-        //long idGame = upd.gameStart(idPaln)
-        long idGame = 1002
+        long idGame = upd.gameStart(idPaln)
+        //long idGame = 1002
 
 
         // Печатаем состав заданий
         println()
-        mdb.outTable(mdb.loadQuery("select * from UsrTask where game = :game order by dtTask", [game: idGame]))
+        mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
 
 
         // --- Получаем задание #1
@@ -88,13 +88,13 @@ class Server_Test extends RgmBase_Test {
 
         // Пользователь отвечает
         StoreRecord recTask = task.get("task")
-        long idUsrTask = recTask.getLong("id")
-        upd.postTaskAnswer(idUsrTask, [wasTrue: true])
+        long idGameTask = recTask.getLong("id")
+        upd.postTaskAnswer(idGameTask, [wasTrue: true])
 
 
         // Печатаем состав заданий
         println()
-        mdb.outTable(mdb.loadQuery("select * from UsrTask where game = :game order by dtTask", [game: idGame]))
+        mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
 
 
         // --- Получаем задание #2
@@ -107,13 +107,13 @@ class Server_Test extends RgmBase_Test {
 
         // Пользователь отвечает
         recTask = task.get("task")
-        idUsrTask = recTask.getLong("id")
-        upd.postTaskAnswer(idUsrTask, [wasTrue: false])
+        idGameTask = recTask.getLong("id")
+        upd.postTaskAnswer(idGameTask, [wasTrue: false])
 
 
         // Печатаем состав заданий
         println()
-        mdb.outTable(mdb.loadQuery("select * from UsrTask where game = :game order by dtTask", [game: idGame]))
+        mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
     }
 
 

@@ -14,6 +14,10 @@
                    v-if="user.id == 0"
                    v-on:click="login('user1012', '')"/>
 
+            <q-btn color="white" text-color="black" label="Уровень"
+                   v-if="user.id > 0"
+                   v-on:click="levels()"/>
+
             <q-btn color="white" text-color="black" label="Full"
                    v-if="user.id > 0"
                    v-on:click="openFullscreen()"/>
@@ -29,10 +33,11 @@
 
         <UserTaskPanel
             v-if="user.id > 0"
-            :usrTask="usrTask" :dataState="dataState"/>
+            :gameTask="gameTask" :dataState="dataState"/>
 
-        <div v-if="user.id == 0" class="main-window-img">
+        <div v-else class="main-window-img">
             <img v-bind:src="backgroundImage">
+            <div class="main-window-info">Вы не вошли в игру</div>
         </div>
 
     </div>
@@ -66,7 +71,7 @@ export default {
     // Состояние игрового мира
     data() {
         return {
-            usrTask: {
+            gameTask: {
                 task: {},
                 taskOptions: {}
             },
@@ -103,6 +108,12 @@ export default {
                 login: null,
                 text: null,
                 color: null,
+            },
+
+            game: {
+                name: null,
+                countTotal: 0,
+                countDone: 0,
             },
 
             testData_taskIdx: 1,
@@ -161,18 +172,26 @@ export default {
             }
         },
 
+        levels() {
+            apx.showFrame({
+                frame: '/levels', props: {prop1: 1}
+            })
+        },
+
         openFullscreen() {
             utils.openFullscreen()
         },
 
         nextTask() {
-            gameplay.nextTask()
+            if (this.user.id > 0) {
+                gameplay.nextTask()
+            }
         },
 
         // Присваиваем данные задания в глобальный контекст
-        onLoadedUsrTask(usrTask) {
-            this.usrTask = usrTask
-            ctx.usrTask = this.usrTask
+        onLoadedGameTask(gameTask) {
+            this.gameTask = gameTask
+            ctx.gameTask = this.gameTask
         },
     },
 
@@ -181,7 +200,7 @@ export default {
     },
 
     mounted() {
-        ctx.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
+        ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
 
         //
         this.getUserInfo()
@@ -191,7 +210,7 @@ export default {
     },
 
     unmounted() {
-        ctx.eventBus.off("loadedUsrTask", this.onLoadedUsrTask)
+        ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
         gameplay.shutdown()
     },
 
@@ -222,6 +241,12 @@ export default {
     align-items: center;
 
     width: 100%;
+}
+
+.main-window-info {
+    padding: 1em;
+    font-size: 1.5em;
+    color: #7a7a7a;
 }
 
 </style>

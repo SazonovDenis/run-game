@@ -2,7 +2,7 @@
     <div class="user-task">
 
         <div>
-            <Task :task="usrTask.task" :state="dataState"/>
+            <Task :task="gameTask.task" :state="dataState"/>
         </div>
 
 
@@ -13,7 +13,7 @@
 
 
         <div class="task-options">
-            <TaskOptions :taskOptions="usrTask.taskOptions" :state="dataState"/>
+            <TaskOptions :taskOptions="gameTask.taskOptions" :state="dataState"/>
         </div>
 
 
@@ -35,7 +35,7 @@ export default {
     components: {Ball, Goal, Task, TaskOptions},
 
     props: {
-        usrTask: {},
+        gameTask: {},
         dataState: {},
     },
 

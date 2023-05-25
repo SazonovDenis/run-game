@@ -59,7 +59,7 @@ export default {
         },
 
         // Останавливаем текущий звук
-        onLoadedUsrTask(usrTask) {
+        onLoadedGameTask(gameTask) {
             try {
                 this.audio.pause()
             } catch(e) {
@@ -149,12 +149,12 @@ export default {
 
         //
         ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
-        ctx.eventBus.on("loadedUsrTask", this.onLoadedUsrTask)
+        ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
     },
 
     unmounted() {
         ctx.eventBus.off("taskOptionSelected", this.onTaskOptionSelected)
-        ctx.eventBus.off("loadedUsrTask", this.onLoadedUsrTask)
+        ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
     },
 
 }

@@ -1,8 +1,7 @@
 package run.game.dao.backstage
 
-import jandcode.commons.*
+
 import jandcode.core.dbm.std.*
-import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 import run.game.testdata.fixture.*
@@ -13,11 +12,12 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
     @Test
     void createTasks() {
         PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        RgmTools rgmTools = mdb.create(RgmTools)
 
         // Ищем слова из файла среди словарных слов
         Collection<Long> items = new ArrayList<>()
         Collection<String> wordsNotFound = new ArrayList<>()
-        loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_3.txt", items, wordsNotFound)
+        rgmTools.loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_3.txt", items, wordsNotFound)
 
         //
         println("found: " + items.size())
@@ -36,15 +36,25 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         }
     }
 
+    @Test
+    void createPlans() {
+        Plan_fb fb = new Plan_fb()
+
+        fb.createPlanFromFile_spelling("vegetable", "test/run/game/dao/backstage/vegetable.txt")
+        fb.createPlanFromFile_spelling("fruit", "test/run/game/dao/backstage/fruit.txt")
+        fb.createPlanFromFile_spelling("material", "test/run/game/dao/backstage/material.txt")
+        fb.createPlanFromFile_spelling("fruit&vegetable", "test/run/game/dao/backstage/vegetable_fruit.txt")
+    }
 
     @Test
-    void createPlan() {
+    void createPlan_1() {
         PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        RgmTools rgmTools = mdb.create(RgmTools)
 
         // Ищем слова из файла среди словарных слов
         Collection<Long> items = new ArrayList<>()
         Collection<String> wordsNotFound = new ArrayList<>()
-        loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_4.txt", items, wordsNotFound)
+        rgmTools.loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_2.txt", items, wordsNotFound)
 
         //
         println("found: " + items.size())
@@ -53,73 +63,34 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         println(wordsNotFound)
 
         //
-        long idPlan = planCreator.createPlan("Robinson 2", items, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 3)
+        long idPlan = planCreator.createPlan("Alise 1", items, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 3)
 
         //
         println("idPlan: " + idPlan)
     }
 
 
-    /**
-     * Ищем слова из файла fileName среди наших словарных слов
-     */
-    void loadItemsFromTextFile(String fileName, Collection<Long> items, Collection<String> wordsNotFound) {
-        // Грузим все слова из БД
-        Fact_list list = mdb.create(Fact_list)
-        Store stFacts = list.loadFactsByDataType(RgmDbConst.DataType_word_spelling)
-        StoreIndex idxFacts = stFacts.getIndex("factValue")
+    @Test
+    void createPlan_4() {
+        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        RgmTools rgmTools = mdb.create(RgmTools)
 
-        // Грузим слова из файла
-        String strFile = UtFile.loadString(fileName)
-        String[] arrWords = strFile.split()
-
-        // Повторы не нужны
-        Set<String> setWords = new HashSet<>()
-        for (String word : arrWords) {
-            word = filterWord(word)
-            if (word != null) {
-                setWords.add(word)
-            }
-        }
+        // Ищем слова из файла среди словарных слов
+        Collection<Long> items = new ArrayList<>()
+        Collection<String> wordsNotFound = new ArrayList<>()
+        rgmTools.loadItemsFromTextFile("test/run/game/dao/backstage/PlanCreatorImpl_4.txt", items, wordsNotFound)
 
         //
-        for (String word : setWords) {
-            StoreRecord rec = idxFacts.get(word)
-            if (rec != null) {
-                items.add(rec.getLong("item"))
-            } else {
-                String word1 = tranformWord(word)
-                if (word1 != null) {
-                    rec = idxFacts.get(word1)
-                    if (rec != null) {
-                        items.add(rec.getLong("item"))
-                    } else {
-                        wordsNotFound.add(word)
-                    }
-                } else {
-                    wordsNotFound.add(word)
-                }
-            }
-        }
-    }
+        println("found: " + items.size())
+        println(items)
+        println("notFound: " + wordsNotFound.size())
+        println(wordsNotFound)
 
-    String filterWord(String wordEng) {
-        wordEng = wordEng.replace("(", "")
-        wordEng = wordEng.replace(")", "")
-        wordEng = wordEng.replace("!", "")
-        if (ItemFact_fb.isAlphasEng(wordEng) && wordEng.length() > 1) {
-            return wordEng.toLowerCase()
-        }
-        return null
-    }
+        //
+        long idPlan = planCreator.createPlan("Robinson 4", items, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 3)
 
-    String tranformWord(String wordEng) {
-        if (wordEng.endsWith("s")) {
-            wordEng = wordEng.substring(0, wordEng.length() - 1)
-            wordEng = filterWord(wordEng)
-            return wordEng
-        }
-        return null
+        //
+        println("idPlan: " + idPlan)
     }
 
 

@@ -42,12 +42,12 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Отберем подходящие задания на игру.
         // Задание выбирается с учетом статистики пользователя.
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store stTask = statisticManager.getUsrStatisticByPlan(idUsr, idPlan)
+        Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
 
 
         // Добавляем задания на игру
         for (StoreRecord recTask : stTask) {
-            mdb.insertRec("UsrTask", [
+            mdb.insertRec("GameTask", [
                     game: idGame,
                     usr : idUsr,
                     task: recTask.getLong("task"),
@@ -63,14 +63,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     @DaoMethod
     public DataBox choiceTask(long idGame) {
         // --- Выбираем, что осталось спросить по плану
-        StoreRecord recUsrTask = choiceUsrTask(idGame)
+        StoreRecord recGameTask = choiceGameTask(idGame)
         //
-        if (recUsrTask == null) {
+        if (recGameTask == null) {
             throw new XError("Все задания уже выполнены")
         }
         //
-        long idTask = recUsrTask.getLong("task")
-        long idUsrTask = recUsrTask.getLong("id")
+        long idTask = recGameTask.getLong("task")
+        long idGameTask = recGameTask.getLong("id")
 
 
         // --- Грузим задание
@@ -83,14 +83,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Записываем факт выдачи задания для пользователя
-        UsrTask_upd taskUpd = mdb.create(UsrTask_upd)
         XDateTime dt = XDateTime.now()
-        taskUpd.markDt(idUsrTask, dt)
+        mdb.updateRec("GameTask", [id: idGameTask, dtTask: dt])
 
 
         // --- Дополняем задание технической информацией
         StoreRecord resTask = res.get("task")
-        resTask.setValue("id", idUsrTask)
+        resTask.setValue("id", idGameTask)
         resTask.setValue("dtTask", dt)
 
         //
@@ -114,12 +113,18 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
+    /**
+     * Записываем результат выполнения задания
+     *
+     * @param idGameTask id ранее выданного задания GameTask.id)
+     * @param taskResult состояние ответа на задание (wasTrue, wasFalse, wasHint, wasSkip)
+     */
     @DaoMethod
-    public void postTaskAnswer(long idUsrTask, Map taskResult) {
+    public void postTaskAnswer(long idGameTask, Map taskResult) {
         // Загрузим выданное задание. Если задание чужое, то запись
         // загрузится пустой и будет ошибка, что нормально.
         long idUsr = getCurrentUserId()
-        StoreRecord recUsrTask = mdb.loadQueryRecord(sqlUsrTask(), [id: idUsrTask, usr: idUsr])
+        StoreRecord recGameTask = mdb.loadQueryRecord(sqlGameTask(), [id: idGameTask, usr: idUsr])
 
 
         // Валидация
@@ -128,11 +133,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
                 taskResult.get("wasHint") == false &&
                 taskResult.get("wasSkip") == false
         ) {
-            mdb.validateErrors.addError("Не указано состояние ответа на задание")
+            mdb.validateErrors.addError("Не указан выбранный ответ на задание")
         }
 
         //
-        if (!recUsrTask.isValueNull("dtAnswer")) {
+        if (!recGameTask.isValueNull("dtAnswer")) {
             mdb.validateErrors.addError("Ответ на задание уже дан")
         }
 
@@ -140,13 +145,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         mdb.validateErrors.checkErrors()
 
 
-        // Обновляем
-        recUsrTask.setValue("dtAnswer", XDateTime.now())
-        recUsrTask.setValue("wasTrue", taskResult.get("wasTrue"))
-        recUsrTask.setValue("wasFalse", taskResult.get("wasFalse"))
-        recUsrTask.setValue("wasHint", taskResult.get("wasHint"))
-        recUsrTask.setValue("wasSkip", taskResult.get("wasSkip"))
-        mdb.updateRec("UsrTask", recUsrTask)
+        // Обновляем задание
+        recGameTask.setValue("dtAnswer", XDateTime.now())
+        recGameTask.setValue("wasTrue", taskResult.get("wasTrue"))
+        recGameTask.setValue("wasFalse", taskResult.get("wasFalse"))
+        recGameTask.setValue("wasHint", taskResult.get("wasHint"))
+        recGameTask.setValue("wasSkip", taskResult.get("wasSkip"))
+        mdb.updateRec("GameTask", recGameTask)
     }
 
 
@@ -214,27 +219,29 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //^c Загрузка и выбор планов
 
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store st = statisticManager.getUsrStatistic(getCurrentUserId())
+        Store st = statisticManager.getTaskStatistic(getCurrentUserId())
+
+        //
         return st
     }
 
 
-    StoreRecord choiceUsrTask(long idGame) {
+    StoreRecord choiceGameTask(long idGame) {
         long idUsr = getCurrentUserId()
 
         // Извлечем неотвеченные задания
-        Store stUsrTask = mdb.loadQuery(sqlSelectTask(), [
+        Store stGameTask = mdb.loadQuery(sqlSelectTask(), [
                 game: idGame,
                 usr : idUsr,
         ])
 
-        if (stUsrTask.size() == 0) {
+        if (stGameTask.size() == 0) {
             return null
         }
 
         // Выберем случайное
-        int n = rnd.num(0, stUsrTask.size() - 1)
-        StoreRecord rec = stUsrTask.get(n)
+        int n = rnd.num(0, stGameTask.size() - 1)
+        StoreRecord rec = stGameTask.get(n)
 
         //
         return rec
@@ -244,9 +251,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     String sqlSelectTask() {
         return """
 select
-    UsrTask.*
+    GameTask.*
 from
-    UsrTask 
+    GameTask 
 where
     game = :game and
     usr = :usr and
@@ -256,29 +263,29 @@ where
     }
 
 
-    String sqlUsrTask() {
+    String sqlGameTask() {
         return """
 select 
     * 
 from 
-    UsrTask
+    GameTask
 where
-    UsrTask.id = :id and 
-    UsrTask.usr = :usr 
+    GameTask.id = :id and 
+    GameTask.usr = :usr 
 """
     }
 
 
-    String sqlUsrTaskOption() {
+    String sqlGameTaskOption() {
         return """
 select
     TaskOption.*
 from
-    UsrTask
-    join Task on (UsrTask.task = Task.id)
+    GameTask
+    join Task on (GameTask.task = Task.id)
     join TaskOption on (Task.id = TaskOption.task)
 where
-    UsrTask.id = :id and
+    GameTask.id = :id and
     TaskOption.id = :taskOption
 """
     }
@@ -289,11 +296,11 @@ select
     Plan.text,
     Game.id,
     count(*) as countTotal,
-    sum(case when UsrTask.dtTask is null then 0 else 1 end) as countDone
+    sum(case when GameTask.dtTask is null then 0 else 1 end) as countDone
 from
     Game
     join Plan on (Game.plan = Plan.id)
-    join UsrTask on (Game.id = UsrTask.game)
+    join GameTask on (Game.id = GameTask.game)
 where
     Game.id = :game
 group by    

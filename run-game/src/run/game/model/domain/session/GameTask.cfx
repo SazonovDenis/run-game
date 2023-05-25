@@ -2,10 +2,10 @@
 <root>
 
 
-    <domain name="UsrTask" parent="tab.id" tag.db="true"
+    <domain name="GameTask" parent="tab.id" tag.db="true"
             title="Задание для пользователя">
         <!--@
-        Задание, выданные пользователю.
+        Задание, выданные пользователю в рамках раунда (игры).
         -->
         <field name="game" parent="Game/ref"/>
         <field name="usr" parent="Usr/ref"/>

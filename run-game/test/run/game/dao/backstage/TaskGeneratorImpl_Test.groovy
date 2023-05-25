@@ -170,7 +170,7 @@ class TaskGeneratorImpl_Test extends RgmBase_Test {
 
         //
         long idItem = 1010
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             createSaveTask(idItem, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 100)
             createSaveTask(idItem, RgmDbConst.DataType_word_translate, RgmDbConst.DataType_word_spelling, 100)
             createSaveTask(idItem, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate, 3)

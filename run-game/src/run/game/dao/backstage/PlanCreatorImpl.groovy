@@ -40,7 +40,7 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
         for (long idItem : idItems) {
             try {
-                Collection<DataBox> tasksForItem = taskCreator.createTasks(idItem, dataTypeQuestion, dataTypeAnswer)
+                Collection<DataBox> tasksForItem = taskCreator.createTasks(idItem, dataTypeQuestion, dataTypeAnswer, limit)
                 tasks.addAll(tasksForItem)
             } catch (Exception e) {
                 println("Task: " + idItem + ", error: " + e.message)

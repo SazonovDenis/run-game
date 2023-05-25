@@ -19,7 +19,7 @@ class StatisticManager_Test extends RgmBase_Test {
     @Test
     void postTaskAnswer() {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        mdb.outTable(statisticManager.getUsrStatistic(getCurrentUserId()))
+        mdb.outTable(statisticManager.getTaskStatistic(getCurrentUserId()))
 
         //
         Rnd rnd = new RndImpl()
@@ -47,8 +47,8 @@ class StatisticManager_Test extends RgmBase_Test {
 
 
             // Пользователь отвечает
-            StoreRecord recUsrTask = task.get("task")
-            long idUsrTask = recUsrTask.getLong("id")
+            StoreRecord recGameTask = task.get("task")
+            long idGameTask = recGameTask.getLong("id")
 
             //
             boolean wasTrue = false
@@ -64,15 +64,15 @@ class StatisticManager_Test extends RgmBase_Test {
             } else {
                 // Выбираем правильный ответ с некоторой вероятностью
                 if (getCurrentUserId() == 1000) {
-                    if (recUsrTask.getString("text") == "cranberry" && rnd.bool(10, 1)) {
+                    if (recGameTask.getString("text") == "cranberry" && rnd.bool(10, 1)) {
                         wasTrue = true
-                    } else if (recUsrTask.getString("text") == "клюква" && rnd.bool(1, 1)) {
+                    } else if (recGameTask.getString("text") == "клюква" && rnd.bool(1, 1)) {
                         wasTrue = true
                     } else {
                         wasFalse = true
                     }
                 } else {
-                    if (recUsrTask.getString("text") == "овощи" && rnd.bool(1, 2)) {
+                    if (recGameTask.getString("text") == "овощи" && rnd.bool(1, 2)) {
                         wasTrue = true
                     } else {
                         wasFalse = true
@@ -87,11 +87,11 @@ class StatisticManager_Test extends RgmBase_Test {
 
 
             // Отправляем ответ пользователя
-            server.postTaskAnswer(idUsrTask, [wasTrue: wasTrue, wasFalse: wasFalse, wasHint: wasHint, wasSkip: wasSkip])
+            server.postTaskAnswer(idGameTask, [wasTrue: wasTrue, wasFalse: wasFalse, wasHint: wasHint, wasSkip: wasSkip])
         }
 
         //
-        mdb.outTable(statisticManager.getUsrStatistic(getCurrentUserId()))
+        mdb.outTable(statisticManager.getTaskStatistic(getCurrentUserId()))
     }
 
 
@@ -106,13 +106,13 @@ class StatisticManager_Test extends RgmBase_Test {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
 
         //
-        mdb.outTable(statisticManager.getUsrStatisticByPlan(1010, idPlan))
-        mdb.outTable(statisticManager.getUsrStatisticByPlan(1011, idPlan))
-        mdb.outTable(statisticManager.getUsrStatisticByPlan(1012, idPlan))
+        mdb.outTable(statisticManager.getTaskStatisticByPlan(1010, idPlan))
+        mdb.outTable(statisticManager.getTaskStatisticByPlan(1011, idPlan))
+        mdb.outTable(statisticManager.getTaskStatisticByPlan(1012, idPlan))
 
         //
         sw.start()
-        mdb.outTable(statisticManager.getUsrStatisticByPlan(1000, idPlan))
+        mdb.outTable(statisticManager.getTaskStatisticByPlan(1000, idPlan))
         sw.stop()
         sw.printItems()
     }
@@ -126,15 +126,26 @@ class StatisticManager_Test extends RgmBase_Test {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
 
         //
-        mdb.outTable(statisticManager.getUsrStatistic(1010))
-        mdb.outTable(statisticManager.getUsrStatistic(1011))
-        mdb.outTable(statisticManager.getUsrStatistic(1012))
+        mdb.outTable(statisticManager.getTaskStatistic(1010))
+        mdb.outTable(statisticManager.getTaskStatistic(1011))
+        mdb.outTable(statisticManager.getTaskStatistic(1012))
 
         //
         sw.start()
-        mdb.outTable(statisticManager.getUsrStatistic(1000))
+        mdb.outTable(statisticManager.getTaskStatistic(1000))
         sw.stop()
         sw.printItems()
+    }
+
+    /**
+     * Статистика по планам
+     */
+    @Test
+    void loadPlanStatistic() {
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+
+        //
+        mdb.outTable(statisticManager.getPlanStatistic())
     }
 
 

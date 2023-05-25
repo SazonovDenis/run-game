@@ -59,34 +59,34 @@ export default {
     // Новое задание
     async nextTask() {
         // Если не отправляли ответ - отправим
-        if (ctx.usrTask.task && !ctx.state.game.postTaskAnswerDone) {
-            ctx.th.api_postTaskAnswer(ctx.usrTask.task.id, {wasSkip: true})
+        if (ctx.gameTask.task && !ctx.state.game.postTaskAnswerDone) {
+            ctx.th.api_postTaskAnswer(ctx.gameTask.task.id, {wasSkip: true})
         }
 
         // Грузим новое задание с сервера
-        let dataUsrTask = await ctx.th.api_choiceUstTask()
+        let dataGameTask = await ctx.th.api_choiceTask()
 
         // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
-        for (let i = 0; i < dataUsrTask.taskOptions.length; i++) {
-            let taskOption = dataUsrTask.taskOptions[i]
-            taskOption.task = dataUsrTask.task.id
+        for (let i = 0; i < dataGameTask.taskOptions.length; i++) {
+            let taskOption = dataGameTask.taskOptions[i]
+            taskOption.task = dataGameTask.task.id
         }
 
         // Перемешаем ответы
-        dataUsrTask.taskOptions = ctx.th.shuffleTaskOptions(dataUsrTask.taskOptions)
+        dataGameTask.taskOptions = ctx.th.shuffleTaskOptions(dataGameTask.taskOptions)
 
         // Уведомим об изменении задания
-        ctx.eventBus.emit("loadedUsrTask", dataUsrTask)
+        ctx.eventBus.emit("loadedGameTask", dataGameTask)
 
         // Разные умолчания
         ctx.state.game.modeShowOptions = null
         ctx.state.game.postTaskAnswerDone = false
 
         // Состояние цели
-        ctx.th.resetGoal(dataUsrTask.task.text)
+        ctx.th.resetGoal(dataGameTask.task.text)
     },
 
-    async api_choiceUstTask() {
+    async api_choiceTask() {
         if (ctx.state.testData) {
             ctx.state.testData_taskIdx = ctx.state.testData_taskIdx + 1;
             if (ctx.state.testData_taskIdx >= testData.tasks.length) {
@@ -96,24 +96,32 @@ export default {
             let res = testData.tasks[ctx.state.testData_taskIdx]
 
             //
+            res.game = {}
+            res.game.name = "test"
+            res.game.countTotal = testData.tasks.length
+            res.game.countDone = ctx.state.testData_taskIdx
+
+            //
             return res
         }
 
 
         //
-        let resApi = await daoApi.loadStore('m/Game/choiceTask', [1000])
+        let plan = 1000
+        let resApi = await daoApi.loadStore('m/Game/choiceTask', [plan])
 
         //
         let res = {
             task: resApi.task.records[0],
             taskOptions: resApi.taskOption.records,
+            game: resApi.game.records[0],
         }
 
         //
         return res
     },
 
-    api_postTaskAnswer(idUsrTask, taskResult) {
+    api_postTaskAnswer(idGameTask, taskResult) {
         if (ctx.state.testData) {
             return
         }
@@ -125,7 +133,7 @@ export default {
         ctx.state.game.postTaskAnswerDone = true
 
         //
-        let res = daoApi.loadStore('m/Game/postTaskAnswer', [idUsrTask, taskResult])
+        let res = daoApi.loadStore('m/Game/postTaskAnswer', [idGameTask, taskResult])
 
         //
         return res
@@ -256,7 +264,7 @@ export default {
         stateBall.value = 1
 
         // Перемешаем ответы
-        ctx.usrTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.usrTask.taskOptions)
+        ctx.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.gameTask.taskOptions)
 
         // Показать текст подсказки после первого выбора
         ctx.state.alwaysShowText = true
@@ -390,7 +398,7 @@ export default {
 
             // Если не отправляли ответ - отправим
             if (!ctx.state.game.postTaskAnswerDone) {
-                ctx.th.api_postTaskAnswer(ctx.usrTask.task.id, {wasHint: true})
+                ctx.th.api_postTaskAnswer(ctx.gameTask.task.id, {wasHint: true})
             }
         }
     },

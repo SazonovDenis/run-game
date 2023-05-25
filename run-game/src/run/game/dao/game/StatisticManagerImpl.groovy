@@ -4,6 +4,7 @@ import groovy.transform.*
 import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
+import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
@@ -17,127 +18,155 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
 
 
     @DaoMethod
-    public Map<Long, Store> getPlanStatistic(long idPaln) {
-        return null
-    }
-
-    public Store getUsrStatistic(long idUsr) {
+    public Store getTaskStatistic() {
+        long idUsr = getCurrentUserId()
         XDateTime dt = XDateTime.now().addDays(-5)
-        return mdb.loadQuery(sqlUsrStatistic(), [usr: idUsr, dt: dt])
+        Map params = [usr: idUsr, dt: dt]
+
+        //
+        Store res = mdb.createStore("Task.Statistic")
+        mdb.loadQuery(res, sqlTaskStatistic(), params)
+
+        //
+        return res
     }
 
-    public Store getUsrStatisticByPlan(long idUsr, long idPlan) {
+    @DaoMethod
+    public Store getPlanStatistic() {
+        long idUsr = getCurrentUserId()
         XDateTime dt = XDateTime.now().addDays(-5)
+        Map params = [usr: idUsr, dt: dt]
 
-        Map params = [usr: idUsr, plan: idPlan, dt: dt]
+        //
+        Store res = mdb.createStore("Plan.Statistic")
+        mdb.loadQuery(res, sqlPlanStatistic(), params)
 
-        return mdb.loadQuery(sqlUsrStatisticByPlan(), params)
+        //
+        return res
     }
 
-    String sqlUsrStatistic() {
-        return """
-with
+    @DaoMethod
+    public Store getTaskStatisticByPlan(long idPlan) {
+        long idUsr = getCurrentUserId()
+        XDateTime dt = XDateTime.now().addDays(-5)
+        Map params = [plan: idPlan, usr: idUsr, dt: dt]
 
-s1 as (
-select
-    UsrTask.usr,
-    UsrTask.task,
-    Task.factQuestion,
-    Task.factAnswer,
-    avg(UsrTask.dtAnswer - UsrTask.dtTask) answerTime,
-    count(*) as cnt,
-    sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
-    sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
-    sum(case when wasHint = 1 then 1.0 else 0.0 end) as cntHint,
-    sum(case when wasSkip = 1 then 1.0 else 0.0 end) as cntSkip
-from
-    UsrTask
-    join Task on (UsrTask.task = Task.id)
-where
-    UsrTask.usr = :usr and
-    UsrTask.dtTask > :dt
-group by
-    UsrTask.usr,
-    UsrTask.task,
-    Task.factQuestion,
-    Task.factAnswer
-),
+        //
+        SqlFilter f = SqlFilter.create(mdb, sqlPlanStatistic(), params)
+        //f.addWhere("usr", "equal")
+        f.addWhere("plan", "equal")
 
-s2 as (
-select 
-    s1.*,
-    (cntTrue) / (cnt) * 100 as kfcTrue,
-    (cntFalse) / (cnt) * 100 as kfcFalse,
-    (cntHint) / (cnt) * 100 as kfcHint,
-    (cntSkip) / (cnt) * 100 as kfcSkip
-from
-    s1
-)
+        //
+        Store res = mdb.createStore("Task.Statistic")
+        f.load(res)
 
-select 
-    s2.* 
-from
-    s2     
-order by
-    kfcTrue asc
-"""
+        //
+        return res
     }
 
-    String sqlUsrStatisticByPlan() {
-        return """
-with
-
-s1 as (
-select
-    PlanTask.plan,
-    UsrTask.usr,
-    PlanTask.task,
-    Task.factQuestion,
-    Task.factAnswer,
-    avg(UsrTask.dtAnswer - UsrTask.dtTask) answerTime,
-    count(*) as cnt,
-    sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
-    sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
-    sum(case when wasHint = 1 then 1.0 else 0.0 end) as cntHint,
-    sum(case when wasSkip = 1 then 1.0 else 0.0 end) as cntSkip
-
-from
-    PlanTask
-    left join UsrTask on (UsrTask.task = PlanTask.task and UsrTask.dtTask > :dt and UsrTask.usr = :usr)
-    left join Task on (Task.id = UsrTask.task)
-
-where
-    PlanTask.plan = :plan
-    
-group by
-    PlanTask.plan,
-    UsrTask.usr,
-    PlanTask.task,
-    Task.factQuestion,
-    Task.factAnswer
-),
-
-s2 as (
-select 
-    s1.*,
-    (cntTrue) / (cnt) * 100 as kfcTrue,
-    (cntFalse) / (cnt) * 100 as kfcFalse,
-    (cntHint) / (cnt) * 100 as kfcHint,
-    (cntSkip) / (cnt) * 100 as kfcSkip
-from
-    s1
-)
+    String sqlTaskStatistic() {
+        """
+${sqlStatistic()}
 
 select 
-    s2.* 
+    TaskStatistic.* 
+
 from
-    s2     
+    TaskStatistic     
+
 order by
     kfcTrue asc
 
 limit 10    
 """
     }
+
+    String sqlPlanStatistic() {
+        """
+${sqlStatistic()}
+
+select 
+    Plan.id,
+    Plan.text,
+    TaskStatistic.usr,          
+              
+    --PlanTask.id as xxx,
+
+    avg(TaskStatistic.answerTime) as answerTime,
+    
+    sum(TaskStatistic.cnt) as cnt,
+    
+    sum(TaskStatistic.cntTrue) as cntTrue,
+    sum(TaskStatistic.cntFalse) as cntFalse,
+    sum(TaskStatistic.cntHint) as cntHint,
+    sum(TaskStatistic.cntSkip) as cntSkip,
+    sum(TaskStatistic.kfcTrue) as kfcTrue,
+    sum(TaskStatistic.kfcFalse) as kfcFalse,
+    sum(TaskStatistic.kfcHint) as kfcHint,
+    sum(TaskStatistic.kfcSkip) as kfcSkip
+
+from
+    Plan
+    join PlanTask on (Plan.id = PlanTask.plan)
+    --PlanTask
+    left join TaskStatistic on (PlanTask.task = TaskStatistic.task)     
+
+group by
+    Plan.id,
+    Plan.text,
+    --PlanTask.id,
+    TaskStatistic.usr 
+
+order by
+    Plan.text, 
+    --PlanTask.id,
+    kfcTrue asc  
+"""
+    }
+
+    String sqlStatistic() {
+        return """
+with
+
+TaskStatisticBase as (
+select
+    GameTask.usr,
+    GameTask.task,
+    Task.factQuestion,
+    Task.factAnswer,
+    avg(GameTask.dtAnswer - GameTask.dtTask) answerTime,
+    count(*) as cnt,
+    sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
+    sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
+    sum(case when wasHint = 1 then 1.0 else 0.0 end) as cntHint,
+    sum(case when wasSkip = 1 then 1.0 else 0.0 end) as cntSkip
+from
+    GameTask
+    join Task on (GameTask.task = Task.id)
+where
+    GameTask.usr = :usr and
+    GameTask.dtTask > :dt
+group by
+    GameTask.usr,
+    GameTask.task,
+    Task.factQuestion,
+    Task.factAnswer
+),
+
+TaskStatistic as (
+select 
+    TaskStatisticBase.*,
+    (cntTrue) / (cnt) * 100 as kfcTrue,
+    (cntFalse) / (cnt) * 100 as kfcFalse,
+    (cntHint) / (cnt) * 100 as kfcHint,
+    (cntSkip) / (cnt) * 100 as kfcSkip
+from
+    TaskStatisticBase
+)
+
+"""
+    }
+
 
     String sqlFact() {
         return """
@@ -155,15 +184,15 @@ where
         return """
 select
     Task.*,
-    UsrTask.dtTask,
-    UsrTask.dtAnswer,
+    GameTask.dtTask,
+    GameTask.dtAnswer,
     TaskOption.isTrue
 from
-    UsrTask
-    join Task on (UsrTask.task = Task.id and Task.factQuestion = :fact) 
-    join TaskOption on (TaskOption.id = UsrTask.answerTaskOption) 
+    GameTask
+    join Task on (GameTask.task = Task.id and Task.factQuestion = :fact) 
+    join TaskOption on (TaskOption.id = GameTask.answerTaskOption) 
 where
-    UsrTask.usr = :usr
+    GameTask.usr = :usr
 """
 
     }

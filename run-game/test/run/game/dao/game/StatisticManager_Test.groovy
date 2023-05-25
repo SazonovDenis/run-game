@@ -96,6 +96,21 @@ class StatisticManager_Test extends RgmBase_Test {
 
 
     /**
+     * Статистика
+     */
+    @Test
+    void getStatisticByPlan() {
+        long idPlan = 1000
+
+        //
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+
+        //
+        mdb.outTable(statisticManager.getTaskStatisticByPlan(idPlan))
+    }
+
+
+    /**
      * Статистика по пользователям
      */
     @Test

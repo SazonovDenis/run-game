@@ -22,11 +22,14 @@ export default {
         goalHitSizeError: 1,
     },
 
-    init(state) {
+    init(gameTask, state, user, game) {
         // Инициализация контекста
         ctx.th = this
         ctx.settings = this.settings
+        ctx.gameTask = gameTask
         ctx.state = state
+        ctx.user = user
+        ctx.game = game
         ctx.eventBus = apx.app.eventBus
 
         // Подписка на события
@@ -75,6 +78,9 @@ export default {
         // Перемешаем ответы
         dataGameTask.taskOptions = ctx.th.shuffleTaskOptions(dataGameTask.taskOptions)
 
+        // Задание в глобальный контекст
+        //ctx.gameTask = dataGameTask
+
         // Уведомим об изменении задания
         ctx.eventBus.emit("loadedGameTask", dataGameTask)
 
@@ -82,8 +88,40 @@ export default {
         ctx.state.game.modeShowOptions = null
         ctx.state.game.postTaskAnswerDone = false
 
+        // Состояние раунда
+        ctx.game.id = dataGameTask.game.id
+        ctx.game.plan = dataGameTask.game.plan
+        ctx.game.text = dataGameTask.game.text
+        ctx.game.countTotal = dataGameTask.game.countTotal
+        ctx.game.countDone = dataGameTask.game.countDone
+
         // Состояние цели
         ctx.th.resetGoal(dataGameTask.task.text)
+    },
+
+    async gameStart(idPlan) {
+        let recGame = await ctx.th.api_gameStart(idPlan)
+
+        // Задиние в глобальном контексте очистим
+        ctx.gameTask = {}
+
+        //
+        ctx.game.id = recGame.id
+        ctx.game.plan = recGame.plan
+        ctx.game.text = recGame.text
+        ctx.game.countTotal = recGame.countTotal
+        ctx.game.countDone = recGame.countDone
+
+        //
+        ctx.th.nextTask()
+    },
+
+    async api_gameStart(idPlan) {
+        let resApi = await daoApi.loadStore('m/Game/gameStart', [idPlan])
+
+        let res = resApi.records[0]
+
+        return res
     },
 
     async api_choiceTask() {
@@ -97,7 +135,7 @@ export default {
 
             //
             res.game = {}
-            res.game.name = "test"
+            res.game.text = "test"
             res.game.countTotal = testData.tasks.length
             res.game.countDone = ctx.state.testData_taskIdx
 
@@ -107,8 +145,7 @@ export default {
 
 
         //
-        let plan = 1000
-        let resApi = await daoApi.loadStore('m/Game/choiceTask', [plan])
+        let resApi = await daoApi.loadStore('m/Game/choiceTask', [ctx.game.id])
 
         //
         let res = {

@@ -4,7 +4,6 @@ import groovy.transform.*
 import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
-import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
@@ -52,13 +51,8 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         Map params = [plan: idPlan, usr: idUsr, dt: dt]
 
         //
-        SqlFilter f = SqlFilter.create(mdb, sqlPlanStatistic(), params)
-        //f.addWhere("usr", "equal")
-        f.addWhere("plan", "equal")
-
-        //
         Store res = mdb.createStore("Task.Statistic")
-        f.load(res)
+        mdb.loadQuery(res, sqlTaskStatisticByPlan(), params)
 
         //
         return res
@@ -120,6 +114,51 @@ group by
 order by
     Plan.text, 
     --PlanTask.id,
+    kfcTrue asc  
+"""
+    }
+
+    String sqlTaskStatisticByPlan() {
+        """
+${sqlStatistic()}
+,   
+
+TaskForPlan as (
+select
+    PlanTask.task
+from
+    PlanTask
+where
+    PlanTask.plan = :plan
+)
+
+select 
+    TaskForPlan.task,
+    
+    TaskStatistic.usr,          
+
+    avg(TaskStatistic.answerTime) as answerTime,
+    
+    sum(TaskStatistic.cnt) as cnt,
+    
+    sum(TaskStatistic.cntTrue) as cntTrue,
+    sum(TaskStatistic.cntFalse) as cntFalse,
+    sum(TaskStatistic.cntHint) as cntHint,
+    sum(TaskStatistic.cntSkip) as cntSkip,
+    sum(TaskStatistic.kfcTrue) as kfcTrue,
+    sum(TaskStatistic.kfcFalse) as kfcFalse,
+    sum(TaskStatistic.kfcHint) as kfcHint,
+    sum(TaskStatistic.kfcSkip) as kfcSkip
+
+from
+    TaskForPlan
+    left join TaskStatistic on (TaskForPlan.task = TaskStatistic.task)     
+
+group by
+    TaskForPlan.task,
+    TaskStatistic.usr 
+
+order by
     kfcTrue asc  
 """
     }

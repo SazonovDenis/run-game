@@ -1,6 +1,7 @@
 package run.game.dao.game;
 
 import jandcode.core.dbm.std.*;
+import jandcode.core.store.*;
 
 import java.util.*;
 
@@ -16,7 +17,7 @@ public interface Server {
      * @param idPaln план
      * @return игра
      */
-    long gameStart(long idPaln);
+    StoreRecord gameStart(long idPaln);
 
 
     /**

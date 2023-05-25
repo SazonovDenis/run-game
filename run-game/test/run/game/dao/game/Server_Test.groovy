@@ -69,7 +69,7 @@ class Server_Test extends RgmBase_Test {
 
         // Стартуем игру
         long idPaln = 1000
-        long idGame = upd.gameStart(idPaln)
+        long idGame = upd.gameStart(idPaln).getLong("id")
         //long idGame = 1002
 
 
@@ -108,7 +108,7 @@ class Server_Test extends RgmBase_Test {
         // Пользователь отвечает
         recTask = task.get("task")
         idGameTask = recTask.getLong("id")
-        upd.postTaskAnswer(idGameTask, [wasTrue: false])
+        upd.postTaskAnswer(idGameTask, [wasFalse: true])
 
 
         // Печатаем состав заданий

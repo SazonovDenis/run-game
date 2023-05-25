@@ -17,7 +17,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     Rnd rnd = new RndImpl()
 
     @DaoMethod
-    public long gameStart(long idPlan) {
+    public StoreRecord gameStart(long idPlan) {
         PlanCreator planCreator = mdb.create(PlanCreatorImpl)
         StoreRecord recPlan = planCreator.loadPlan(idPlan)
 
@@ -56,7 +56,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         //
-        return idGame
+        return loadGame(idGame)
     }
 
 
@@ -128,10 +128,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // Валидация
-        if (taskResult.get("wasTrue") == false &&
-                taskResult.get("wasFalse") == false &&
-                taskResult.get("wasHint") == false &&
-                taskResult.get("wasSkip") == false
+        if (taskResult.get("wasTrue") != true &&
+                taskResult.get("wasFalse") != true &&
+                taskResult.get("wasHint") != true &&
+                taskResult.get("wasSkip") != true
         ) {
             mdb.validateErrors.addError("Не указан выбранный ответ на задание")
         }
@@ -216,10 +216,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     Store getPlans() {
-        //^c Загрузка и выбор планов
-
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store st = statisticManager.getTaskStatistic(getCurrentUserId())
+        Store st = statisticManager.getPlanStatistic()
 
         //
         return st
@@ -290,11 +288,24 @@ where
 """
     }
 
+    StoreRecord loadGame(long idGame) {
+        StoreRecord resGame = mdb.createStoreRecord("Game.Server")
+
+        //
+        StoreRecord recGame = mdb.loadQueryRecord(sqlGame(), [game: idGame])
+        resGame.setValues(recGame)
+
+        //
+        return resGame
+    }
+
+
     String sqlGame() {
         return """
 select
-    Plan.text,
     Game.id,
+    Game.plan,
+    Plan.text,
     count(*) as countTotal,
     sum(case when GameTask.dtTask is null then 0 else 1 end) as countDone
 from
@@ -307,17 +318,5 @@ group by
     Plan.text,
     Game.id
 """
-    }
-
-
-    StoreRecord loadGame(long idGame) {
-        StoreRecord resGame = mdb.createStoreRecord("Game.Server")
-
-        //
-        StoreRecord recGame = mdb.loadQueryRecord(sqlGame(), [game: idGame])
-        resGame.setValues(recGame)
-
-        //
-        return resGame
     }
 }

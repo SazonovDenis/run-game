@@ -18,11 +18,14 @@
                    v-if="user.id > 0"
                    v-on:click="levels()"/>
 
-            <q-btn color="white" text-color="black" label="Full"
+            <q-btn color="white" text-color="black" label="F"
                    v-if="user.id > 0"
                    v-on:click="openFullscreen()"/>
 
-            <div class="menu-fill">&nbsp;</div>
+            <div class="menu-fill">{{ game.text }}, {{
+                    game.countDone
+                }}/{{ game.countTotal }}
+            </div>
 
             <q-btn color="white" text-color="black" label="Logout"
                    v-if="user.id > 0"
@@ -111,7 +114,9 @@ export default {
             },
 
             game: {
-                name: null,
+                id: null,
+                plan: null,
+                text: "не загружена",
                 countTotal: 0,
                 countDone: 0,
             },
@@ -191,12 +196,13 @@ export default {
         // Присваиваем данные задания в глобальный контекст
         onLoadedGameTask(gameTask) {
             this.gameTask = gameTask
-            ctx.gameTask = this.gameTask
+            //ctx.gameTask = this.gameTask
+            //ctx.gameTask = gameTask
         },
     },
 
     created() {
-        gameplay.init(this.dataState)
+        gameplay.init(this.gameTask, this.dataState, this.user, this.game)
     },
 
     mounted() {

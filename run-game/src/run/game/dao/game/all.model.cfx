@@ -21,7 +21,8 @@
 
     <domain name="Game.Server">
         <field name="id" parent="Game/ref"/>
-        <field name="text" parent="string"/>
+        <field name="plan" parent="Plan/ref"/>
+        <field name="text" parent="Plan/text"/>
         <field name="countTotal" parent="long"/>
         <field name="countDone" parent="long"/>
     </domain>
@@ -46,8 +47,8 @@
     </domain>
 
     <domain name="Task.Statistic">
-        <field name="usr" parent="Usr/ref"/>
         <field name="task" parent="Task/ref"/>
+        <field name="usr" parent="Usr/ref"/>
         <field name="factQuestion" parent="Fact/ref"/>
         <field name="factAnswer" parent="Fact/ref"/>
 

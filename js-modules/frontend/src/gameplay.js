@@ -58,8 +58,10 @@ export default {
 
     // Новое задание
     async nextTask() {
-        console.info("ctx", ctx)
-        console.info("ctx.ttt", ctx.ttt)
+        if (!ctx.globalState.user.id ||
+            !ctx.globalState.game.id) {
+            return
+        }
 
         // Если не отправляли ответ - отправим
         if (ctx.globalState.gameTask.task && !ctx.globalState.dataState.mode.postTaskAnswerDone) {
@@ -81,6 +83,7 @@ export default {
         // Задание в глобальный контекст
         ctx.globalState.gameTask.task = dataGameTask.task
         ctx.globalState.gameTask.taskOptions = dataGameTask.taskOptions
+
         // Состояние раунда в глобальный контекст
         ctx.globalState.game = dataGameTask.game
 
@@ -105,18 +108,9 @@ export default {
     async gameStart(idPlan) {
         let recGame = await ctx.th.api_gameStart(idPlan)
 
-        // Задиние в глобальном контексте очистим
-        ctx.globalState.gameTask = {}
-        //ctx.globalState.gameTask.task = {}
-        //ctx.globalState.gameTask.taskOptions = {}
-
-        //
+        // Задание и раунд в глобальном контексте
         ctx.globalState.game = recGame
-        //ctx.globalState.game.id = recGame.id
-        //ctx.globalState.game.plan = recGame.plan
-        //ctx.globalState.game.text = recGame.text
-        //ctx.globalState.game.countTotal = recGame.countTotal
-        //ctx.globalState.game.countDone = recGame.countDone
+        ctx.globalState.gameTask = {}
 
         //
         ctx.th.nextTask()
@@ -244,9 +238,6 @@ export default {
 
     on_dragend(eventDrag) {
         //console.info("doDragEnd", eventDrag)
-
-        console.info("ctx", ctx)
-        console.info("ctx.ttt", ctx.ttt)
 
         let stateDrag = ctx.globalState.dataState.drag
         let stateGoal = ctx.globalState.dataState.goal

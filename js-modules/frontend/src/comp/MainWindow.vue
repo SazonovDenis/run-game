@@ -164,10 +164,12 @@ export default {
             this.globalState.user.login = res.data.login
             this.globalState.user.text = res.data.text
             this.globalState.user.color = res.data.color
-            //
             if (!this.globalState.user.id) {
                 this.globalState.user.id = 0
             }
+            // Задание и раунд в глобальном контексте
+            this.globalState.game = {}
+            this.globalState.gameTask = {}
         },
 
         async getUserInfo() {

@@ -62,7 +62,7 @@ export default {
         console.info("ctx.ttt", ctx.ttt)
 
         // Если не отправляли ответ - отправим
-        if (ctx.globalState.gameTask.task && !ctx.globalState.dataState.game.postTaskAnswerDone) {
+        if (ctx.globalState.gameTask.task && !ctx.globalState.dataState.mode.postTaskAnswerDone) {
             ctx.th.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
         }
 
@@ -88,8 +88,8 @@ export default {
         ctx.eventBus.emit("loadedGameTask", dataGameTask)
 
         // Разные умолчания
-        ctx.globalState.dataState.game.modeShowOptions = null
-        ctx.globalState.dataState.game.postTaskAnswerDone = false
+        ctx.globalState.dataState.mode.modeShowOptions = null
+        ctx.globalState.dataState.mode.postTaskAnswerDone = false
 
         // Состояние раунда
         //ctx.globalState.game.id = dataGameTask.game.id
@@ -170,10 +170,10 @@ export default {
         }
 
         //
-        if (ctx.globalState.dataState.game.postTaskAnswerDone) {
+        if (ctx.globalState.dataState.mode.postTaskAnswerDone) {
             return
         }
-        ctx.globalState.dataState.game.postTaskAnswerDone = true
+        ctx.globalState.dataState.mode.postTaskAnswerDone = true
 
         //
         let res = daoApi.loadStore('m/Game/postTaskAnswer', [idGameTask, taskResult])
@@ -184,7 +184,7 @@ export default {
 
     // Сбрасываем состояние результата (цели)
     resetGoal(text) {
-        ctx.globalState.dataState.game.goalHitSize = ctx.settings.goalHitSizeDefault
+        ctx.globalState.dataState.mode.goalHitSize = ctx.settings.goalHitSizeDefault
         ctx.globalState.dataState.goal.text = text
         ctx.globalState.dataState.goal.valueGoal = ctx.settings.goalHitSizeDefault
         ctx.globalState.dataState.goal.valueDone = 0
@@ -251,7 +251,7 @@ export default {
         let stateDrag = ctx.globalState.dataState.drag
         let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
-        let stateGame = ctx.globalState.dataState.game
+        let stateMode = ctx.globalState.dataState.mode
 
 
         // Уведомим сервер
@@ -296,7 +296,7 @@ export default {
         // Выбрали правильный ответ - отреагируем
         if (ctx.th.isOptionIsTrueAnswer(eventDrag.taskOption)) {
             ctx.globalState.dataState.ball.ballIsTrue = true
-            stateGame.modeShowOptions = null
+            stateMode.modeShowOptions = null
         } else {
             ctx.globalState.dataState.ball.ballIsTrue = false
             stateBall.text = ""
@@ -304,8 +304,8 @@ export default {
             if (stateGoal.valueGoal > ctx.settings.valueGoalMax) {
                 stateGoal.valueGoal = ctx.settings.valueGoalMax
             }
-            stateGame.modeShowOptions = "hint-true"
-            stateGame.goalHitSize = ctx.settings.goalHitSizeError
+            stateMode.modeShowOptions = "hint-true"
+            stateMode.goalHitSize = ctx.settings.goalHitSizeError
         }
         stateBall.value = 1
 
@@ -362,7 +362,7 @@ export default {
         let stateDrag = ctx.globalState.dataState.drag
         let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
-        let stateGame = ctx.globalState.dataState.game
+        let stateMode = ctx.globalState.dataState.mode
 
         // Шаг
         stateDrag.x = stateDrag.x + stateDrag.dx
@@ -382,7 +382,7 @@ export default {
         //
         if (utilsCore.intersectRect(rectTrace, rectGoal)) {
             if (ctx.globalState.dataState.ball.ballIsTrue) {
-                stateGoal.valueDone = stateGoal.valueDone + stateGame.goalHitSize
+                stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
             }
 
             //
@@ -435,15 +435,15 @@ export default {
     onShowHint(v) {
         if (v) {
             // Показывать подсказки
-            ctx.globalState.dataState.game.modeShowOptions = "hint-true"
+            ctx.globalState.dataState.mode.modeShowOptions = "hint-true"
 
             // Уменьшим силу удара
-            if (ctx.globalState.dataState.game.goalHitSize > ctx.settings.goalHitSizeHint) {
-                ctx.globalState.dataState.game.goalHitSize = ctx.settings.goalHitSizeHint
+            if (ctx.globalState.dataState.mode.goalHitSize > ctx.settings.goalHitSizeHint) {
+                ctx.globalState.dataState.mode.goalHitSize = ctx.settings.goalHitSizeHint
             }
 
             // Если не отправляли ответ - отправим
-            if (!ctx.globalState.dataState.game.postTaskAnswerDone) {
+            if (!ctx.globalState.dataState.mode.postTaskAnswerDone) {
                 ctx.th.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasHint: true})
             }
         }

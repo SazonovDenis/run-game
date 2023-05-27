@@ -69,6 +69,7 @@ export default {
 
         canPlaySound() {
             return (
+                this.task != null &&
                 this.task.sound != null &&
                 (
                     this.state.alwaysShowText ||
@@ -106,7 +107,7 @@ export default {
                 this.state.alwaysShowText = false
 
                 // Новый звук
-                if (this.task.sound) {
+                if (this.task != null && this.task.sound != null) {
                     this.audio.src = apx.url.ref("sound/" + this.task.sound)
                 } else {
                     this.audio.src = ""
@@ -124,6 +125,7 @@ export default {
 
         doShowText() {
             return (
+                this.task != null &&
                 this.task.text != null &&
                 (
                     this.state.alwaysShowText ||
@@ -134,6 +136,7 @@ export default {
 
         doShowSound() {
             return (
+                this.task != null &&
                 this.task.sound != null
             )
         },

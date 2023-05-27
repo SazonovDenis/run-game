@@ -75,7 +75,7 @@ export default {
         return {
             // Состояние игрового мира
             globalState: {
-                // Авторизованный пользователь
+                // Иноформация об авторизованном пользователе
                 user: {
                     id: 0,
                     login: null,
@@ -83,7 +83,7 @@ export default {
                     color: null,
                 },
 
-                // Раунд
+                // Иноформация о раунде
                 game: {
                     id: null,
                     plan: null,
@@ -118,7 +118,7 @@ export default {
                         value: 0,
                         ballIsTrue: null,
                     },
-                    game: {
+                    mode: {
                         modeShowOptions: null,
                         goalHitSize: null,
                     },

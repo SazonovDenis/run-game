@@ -94,13 +94,6 @@ export default {
         ctx.globalState.dataState.mode.modeShowOptions = null
         ctx.globalState.dataState.mode.postTaskAnswerDone = false
 
-        // Состояние раунда
-        //ctx.globalState.game.id = dataGameTask.game.id
-        //ctx.globalState.game.plan = dataGameTask.game.plan
-        //ctx.globalState.game.text = dataGameTask.game.text
-        //ctx.globalState.game.countTotal = dataGameTask.game.countTotal
-        //ctx.globalState.game.countDone = dataGameTask.game.countDone
-
         // Состояние цели
         ctx.th.resetGoal(dataGameTask.task.text)
     },

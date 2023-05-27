@@ -40,7 +40,6 @@
 
         <div v-else class="main-window-img">
             <img v-bind:src="backgroundImage">
-            <div class="main-window-info">Вы не вошли в игру</div>
         </div>
 
     </div>

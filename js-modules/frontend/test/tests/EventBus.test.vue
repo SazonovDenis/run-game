@@ -22,13 +22,6 @@ export default {
     },
 
     created() {
-        /*
-                console.info("apx: " + apx)
-                console.info("apx.eventBus: " + apx.EventBusService)
-                console.info("apx.eventBus: " + apx.app)
-                console.info("apx.eventBus: " + apx.app.eventBus)
-        */
-
         apx.app.eventBus.on("xxx", (ev) => {
             console.info("xxx!!!")
             console.info("ev:", ev)

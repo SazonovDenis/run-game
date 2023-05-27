@@ -6,7 +6,7 @@
 
 <script>
 
-import {apx} from './vendor'
+import {apx, jcBase} from './vendor'
 import utils from './utils'
 
 export default {
@@ -24,7 +24,9 @@ export default {
 
     methods: {
         click() {
-            utils.openFullscreen()
+            if (!jcBase.cfg.envDev) {
+                utils.openFullscreen()
+            }
             apx.showFrame({frame: import("./HomePage")})
         },
 

@@ -1,18 +1,18 @@
 <template>
     <div class="user-task">
 
-        <div>
+        <div v-if="doShowTask">
             <Task :task="gameTask.task" :state="dataState"/>
         </div>
 
 
-        <Goal class="goal" id="goal" :goal="dataState.goal"/>
+        <Goal v-if="doShowTask" class="goal" id="goal" :goal="dataState.goal"/>
 
 
         <div class="game-field">&nbsp;</div>
 
 
-        <div class="task-options">
+        <div v-if="doShowTask" class="task-options">
             <TaskOptions :taskOptions="gameTask.taskOptions" :state="dataState"/>
         </div>
 
@@ -41,7 +41,16 @@ export default {
 
     methods: {},
 
-    computed: {}
+    computed: {
+
+        doShowTask() {
+            return (
+                this.gameTask.task &&
+                this.gameTask.task.id
+            )
+        },
+
+    }
 }
 </script>
 

@@ -22,10 +22,6 @@
                 <img :src="wave">
             </div>
 
-            <!--
-                        <div>Q: {{ task.dataTypeQuestion }}, A: {{ task.dataTypeAnswer }}</div>
-            -->
-
         </div>
 
         <div class="task-help">

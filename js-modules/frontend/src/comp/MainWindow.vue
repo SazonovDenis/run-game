@@ -22,9 +22,9 @@
                    v-if="globalState.user.id > 0"
                    v-on:click="openFullscreen()"/>
 
-            <div class="menu-fill">{{ globalState.game.text }}, {{
-                    globalState.game.countDone
-                }}/{{ globalState.game.countTotal }}
+            <GameInfo :game="globalState.game"/>
+
+            <div class="menu-fill">
             </div>
 
             <q-btn color="white" text-color="black" label="Logout"
@@ -51,6 +51,7 @@
 
 import UserTaskPanel from "./UserTaskPanel"
 import UserInfo from "./UserInfo"
+import GameInfo from "./GameInfo"
 import gameplay from "../gameplay"
 import ctx from "../gameplayCtx"
 import utils from '../utils'
@@ -60,7 +61,7 @@ export default {
     name: "MainWindow",
 
     components: {
-        UserTaskPanel, UserInfo, gameplay
+        UserTaskPanel, UserInfo, GameInfo, gameplay
     },
 
     computed: {

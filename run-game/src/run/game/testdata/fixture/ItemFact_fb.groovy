@@ -23,7 +23,12 @@ class ItemFact_fb extends BaseFixtureBuilder {
     String dirBase = "data/web-grab/"
     String badCsv = "temp/bad-db.csv"
 
+
+    Set<String> notFoundThing = new HashSet<>()
+
     def dirs = [
+            "kz.kaz-tili.kz",
+            "kz.sozdik.soyle.kz",
             "1000-all",
             "1000-englishdom",
             "1000-preply",
@@ -42,7 +47,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
             "1000-puzzle-english": 1000,
             "1000-skyeng"        : 1000,
             "200-puzzle-english" : 200,
-            //"5000-studynow"      : 5000,
     ]
 
 
@@ -70,10 +74,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
         //
         Store stCsvBad = mdb.createStore("dat.csv.bad")
 
-        // Частота встречаемости
-        Map<String, Integer> wordFrequencyMap = new HashMap<>()
-        File fileFr = new File(dirBase + "eng_top-50000.txt")
-        BufferedReader br = new BufferedReader(new FileReader(fileFr))
+        // Частота встречаемости eng
+        Map<String, Integer> wordFrequencyMap_eng = new HashMap<>()
+        BufferedReader br = new BufferedReader(new FileReader(new File(dirBase + "eng_top-50000.txt")))
         String s
         int pos = 0
         while ((s = br.readLine()) != null) {
@@ -81,7 +84,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
             String eng = ss[0]
             if (isAlphasEng(eng)) {
                 long frVal = Long.valueOf(ss[1])
-                wordFrequencyMap.put(eng, pos)
+                wordFrequencyMap_eng.put(eng, pos)
                 pos = pos + 1
             }
         }
@@ -113,6 +116,14 @@ class ItemFact_fb extends BaseFixtureBuilder {
                 String fileCsv = dirBase + dir + "/" + file
 
                 //
+                String wordLang_1 = "eng"
+                String wordLang_2 = "rus"
+                if (dir.equals("kz.kaz-tili.kz") ||
+                        dir.equals("kz.sozdik.soyle.kz")) {
+                    wordLang_1 = "kaz"
+                }
+
+                //
                 println()
                 println("fileCsv: " + fileCsv)
 
@@ -133,43 +144,61 @@ class ItemFact_fb extends BaseFixtureBuilder {
                 for (StoreRecord recCsv : stCsv) {
 
                     try {
-                        String eng = recCsv.getString("eng")
-                        eng = clearEng(eng)
+                        String word_1 = recCsv.getString(wordLang_1)
+                        word_1 = getWord(wordLang_1, word_1)
                         //
-                        String rus = recCsv.getString("rus")
-                        String[] rusArr = clearRus(dir, rus)
+                        String word_2 = recCsv.getString(wordLang_2)
+                        String[] word_2_arr = getWord_arr(wordLang_2, dir, word_2)
 
                         // Отсеиваем ошибки и мусор
-                        validateEng(eng)
-                        validateRus(rusArr)
+                        validateWord(wordLang_1, word_1)
+                        validateWord(wordLang_2, word_2_arr)
 
                         //
-                        List<String> soundFilesArr = getSoundFiles(dirBase + dir + "/mp3/", dirsSound, eng)
+                        List<String> soundFilesArr = getSoundFiles(dirBase + dir + "/mp3/", dirsSound, word_1)
 
                         // Первый раз встретили слово?
-                        StoreRecord recItem = itemsMap.get(eng)
+                        StoreRecord recItem = itemsMap.get(word_1)
                         if (recItem == null) {
                             // Добавляем Item
                             recItem = stItem.add()
-                            itemsMap.put(eng, recItem)
+                            itemsMap.put(word_1, recItem)
                             //
                             genIdItem = genIdItem + 1
                             recItem.setValue("id", genIdItem)
-                            recItem.setValue("value", eng)
+                            recItem.setValue("value", word_1)
                             //
                             idItem = recItem.getLong("id")
 
-                            // Добавляем ItemTag:top-list
-                            String topList = getTopList(wordFrequencyMap, dir, eng)
+                            // Добавляем ItemTag:top-list (пробуем вычислить его автоматически)
+                            String topList = getTopList(wordFrequencyMap_eng, dir, word_1)
                             if (!UtCnv.isEmpty(topList)) {
+                                key = idItem + "_top-list_" + topList
+                                tagValueSet.add(key)
                                 genIdItemTag = genIdItemTag + 1
-                                StoreRecord recItemTag_2 = stItemTag.add()
-                                recItemTag_2.setValue("id", genIdItemTag)
-                                recItemTag_2.setValue("item", idItem)
-                                recItemTag_2.setValue("tag", getTag("top-list", topList))
+                                StoreRecord recItemTag = stItemTag.add()
+                                recItemTag.setValue("id", genIdItemTag)
+                                recItemTag.setValue("item", idItem)
+                                recItemTag.setValue("tag", getTag("top-list", topList))
                             }
                         } else {
                             idItem = recItem.getLong("id")
+                        }
+
+                        // Добавляем или обновляем ItemTag:top-list
+                        String topList = recCsv.getString("top-list")
+                        topList = topList.trim().toLowerCase()
+                        if (!UtCnv.isEmpty(topList)) {
+                            // С обеспечением уникальности
+                            key = idItem + "_top-list_" + topList
+                            if (!tagValueSet.contains(key)) {
+                                tagValueSet.add(key)
+                                genIdItemTag = genIdItemTag + 1
+                                StoreRecord recItemTag = stItemTag.add()
+                                recItemTag.setValue("id", genIdItemTag)
+                                recItemTag.setValue("item", idItem)
+                                recItemTag.setValue("tag", getTag("top-list", topList))
+                            }
                         }
 
                         // Добавляем ItemTag:word-category
@@ -207,7 +236,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         }
 
                         // Добавляем Fact:word-spelling
-                        key = idItem + "_word-spelling_" + eng
+                        key = idItem + "_word-spelling_" + word_1
                         if (!tagValueSet.contains(key)) {
                             tagValueSet.add(key)
                             //
@@ -216,7 +245,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             recFact.setValue("id", genIdFact)
                             recFact.setValue("item", idItem)
                             recFact.setValue("dataType", getDataType("word-spelling"))
-                            recFact.setValue("value", eng)
+                            recFact.setValue("value", word_1)
                         }
 
                         // Добавляем Fact:word-transcribtion
@@ -237,9 +266,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         }
 
                         // Добавляем Fact:word-translate
-                        for (String translateRus : rusArr) {
-                            if (!UtCnv.isEmpty(translateRus)) {
-                                key = idItem + "_word-translate_" + translateRus
+                        for (String translate : word_2_arr) {
+                            if (!UtCnv.isEmpty(translate)) {
+                                key = idItem + "_word-translate_" + translate
                                 if (!tagValueSet.contains(key)) {
                                     tagValueSet.add(key)
                                     // Добавляем Fact
@@ -248,7 +277,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     recFact_1.setValue("id", genIdFact)
                                     recFact_1.setValue("item", idItem)
                                     recFact_1.setValue("dataType", getDataType("word-translate"))
-                                    recFact_1.setValue("value", translateRus)
+                                    recFact_1.setValue("value", translate)
                                     // Добавляем FactTag
                                     genIdFactTag = genIdFactTag + 1
                                     StoreRecord recFactTag = stFactTag.add()
@@ -295,7 +324,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         StoreRecord recCsvBad = stCsvBad.add(recCsv.getValues())
                         recCsvBad.setValue("error", e.getMessage())
                         recCsvBad.setValue("file", fileCsv)
-                        if (!e.getMessage().contains("isAlphasEng") && !e.getMessage().contains("isAlphasRus")) {
+                        if (!e.getMessage().contains("isAlphasEng") && !e.getMessage().contains("isAlphasKaz") && !e.getMessage().contains("isAlphasRus")) {
                             println(e.message)
                         }
                     }
@@ -342,7 +371,11 @@ from
     }
 
     public static boolean isAlphasRus(String s) {
-        return s != null && s.matches("^[а-яА-Я .,)(/ё-]*\$")
+        return s != null && s.matches("^[а-яА-Я .,)(/ё-]*[?!]?\$")
+    }
+
+    public static boolean isAlphasKaz(String s) {
+        return s != null && s.matches("^[а-яА-Я .,ӘҒҚҢӨҰҮҺІIәғқңөұүһіi)(/ё-]*[?!]?\$")
     }
 
 
@@ -362,6 +395,15 @@ from
         }
         if (!isAlphasRus(rus)) {
             throw new XError("validate rus, isAlphasRus: " + rus)
+        }
+    }
+
+    void validateKaz(String kaz) {
+        if (UtCnv.isEmpty(kaz)) {
+            //throw new XError("validate rus, isEmpty")
+        }
+        if (!isAlphasKaz(kaz)) {
+            throw new XError("validate kaz, isAlphasKaz: " + kaz)
         }
     }
 
@@ -415,12 +457,37 @@ from
         StoreRecord recTag = this.idxTag.get(key)
         //
         if (recTag == null) {
+            notFoundThing.add(tagType + "\t" + value)
             throw new XError("not found tagType: " + tagType + ", value: " + value)
         }
         //
         return recTag.getLong("id")
     }
 
+
+    String[] getRus_arr(String dir, String rus) {
+        rus = rus.trim().toLowerCase()
+
+        if (dir.equals("1000-puzzle-english")) {
+            String[] sArr = rus.split("/")
+            for (int i = 0; i < sArr.length; i++) {
+                String ss = sArr[i]
+                sArr[i] = clearRus(ss)
+            }
+            return sArr
+
+        } else if (dir.equals("1000-englishdom")) {
+            String[] sArr = rus.split("/")
+            for (int i = 0; i < sArr.length; i++) {
+                String ss = sArr[i]
+                sArr[i] = clearRus(ss)
+            }
+            return sArr
+
+        } else {
+            return [clearRus(rus)]
+        }
+    }
 
     String clearRus(String s) {
         s = s.trim().toLowerCase()
@@ -433,37 +500,60 @@ from
         s = s.replace("(tr!)", "")
         s = s.replace("( ", "(")
         s = s.replace(" )", ")")
+        s = s.replace("; ", ", ")
+        s = s.replace("\u2013", "-") // &ndash;
+        s = s.replace("\u2014", "-") // &dash;
+        s = s.replace("\u00A0", " ") // &nbsp;
+        s = s.replace("\u00A0", " ")
+        s = s.replace("\u00A0", " ")
+        s = s.replace("  ", " ")
+        s = s.replace("  ", " ")
+        s = s.replace("  ", " ")
+        s = s.replace(" ...", "...")
         // рус "с" -> англ "с"
         s = s.replace("c", "с")
         s = s.replace("c", "с")
-        //
+        // привет. -> привет
         if (s.endsWith(".") && !(s.contains("т.д.") || s.contains("т. д."))) {
             s = s.substring(0, s.length() - 1)
         }
+        // привет; -> привет
+        if (s.endsWith(";")) {
+            s = s.substring(0, s.length() - 1)
+        }
+        // наивный /простак/ -> наивный (простак)
+        //s="наивный /простак/"
+        if (s.endsWith("/") && s.indexOf("/") != s.length()) {
+            s = s.substring(0, s.length() - 1).replace("/", "(") + ")"
+        }
+
 
         return s
     }
 
-    String[] clearRus(String dir, String rus) {
-        rus = rus.trim().toLowerCase()
+    String clearKaz(String s) {
+        s = s.trim().toLowerCase()
 
-        if (dir.equals("1000-puzzle-english")) {
-            String[] sArr = rus.split("/")
-            for (int i = 0; i < sArr.length; i++) {
-                String ss = sArr[i]
-                sArr[i] = clearRus(ss)
-            }
-            return sArr
-        } else if (dir.equals("1000-englishdom")) {
-            String[] sArr = rus.split("/")
-            for (int i = 0; i < sArr.length; i++) {
-                String ss = sArr[i]
-                sArr[i] = clearRus(ss)
-            }
-            return sArr
-        } else {
-            return [clearRus(rus)]
+        //
+        s = s.replace("( ", "(")
+        s = s.replace(" )", ")")
+        s = s.replace("; ", ", ")
+        s = s.replace("\u2013", "-") // &ndash;
+        s = s.replace("\u2014", "-") // &dash;
+        s = s.replace("\u00A0", " ") // &nbsp;
+        s = s.replace("\u00A0", " ")
+        s = s.replace("\u00A0", " ")
+        s = s.replace("  ", " ")
+        s = s.replace("  ", " ")
+        s = s.replace("  ", " ")
+        s = s.replace(" ...", "...")
+
+        //
+        if (s.endsWith(".") && !(s.endsWith("...") || s.contains("т.д.") || s.contains("т. д."))) {
+            s = s.substring(0, s.length() - 1)
         }
+
+        return s
     }
 
 
@@ -554,4 +644,58 @@ from
 
         return res
     }
+
+    String[] getWord_arr(String lang, String dir, String word) {
+        switch (lang) {
+            case "rus": {
+                return getRus_arr(dir, word)
+            }
+            default: {
+                throw new XError("clearWord, invalid lang: " + lang)
+            }
+        }
+    }
+
+    String getWord(String lang, String word) {
+        switch (lang) {
+            case "eng": {
+                return clearEng(word)
+            }
+            case "kaz": {
+                return clearKaz(word)
+            }
+            default: {
+                throw new XError("clearWord, invalid lang: " + lang)
+            }
+        }
+    }
+
+    void validateWord(String lang, String word) {
+        switch (lang) {
+            case "eng": {
+                validateEng(word)
+                break
+            }
+            case "kaz": {
+                validateKaz(word)
+                break
+            }
+            default: {
+                throw new XError("validateWord, invalid lang: " + lang)
+            }
+        }
+    }
+
+    void validateWord(String lang, String[] wordArr) {
+        switch (lang) {
+            case "rus": {
+                validateRus(wordArr)
+                break
+            }
+            default: {
+                throw new XError("validateWord, invalid lang: " + lang)
+            }
+        }
+    }
+
 }

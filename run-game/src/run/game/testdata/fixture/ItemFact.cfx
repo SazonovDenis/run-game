@@ -3,9 +3,11 @@
 
 
     <domain name="dat.csv">
+        <field name="kaz" parent="string"/>
         <field name="eng" parent="string"/>
         <field name="rus" parent="string"/>
         <field name="trans" parent="string"/>
+        <field name="top-list" parent="string"/>
         <field name="category1" parent="string"/>
         <field name="category2" parent="string"/>
         <field name="category3" parent="string"/>

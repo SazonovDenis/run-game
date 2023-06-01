@@ -24,6 +24,8 @@ top-list	top-2000
 top-list	top-5000
 word-translate-direction	en-ru
 word-translate-direction	ru-en
+word-translate-direction	ru-kz
+word-translate-direction	kz-ru
 word-category	местоимения
 word-category	существительные
 word-category	прилагательные
@@ -126,3 +128,100 @@ word-category	места
 word-category	события
 word-category	день рождения
 word-category	праздники
+word-category	абстрактные прилагательные / абстракт сын есімдер
+word-category	имя числительное /
+word-category	вопросы / сұрақтар
+word-category	прощание / қоштасу
+word-category	неудача / сәтсіздік
+word-category	глаголы действия / қозғалыс етістіктері
+word-category	знакомство / танысу
+word-category	любовь / махаббат
+word-category	работа / жұмыс
+word-category	наречия усиления / күшейту үстеулері
+word-category	поздравления, пожелания / құттықтау, тілек айту
+word-category	отрицательное местоимение / болымсыздық есімдігі
+word-category	вопросительное местоимение / сұрау есімдігі
+word-category	приглашение / шақыру
+word-category	вводные слова / қыстырма сөздер
+word-category	город / қала
+word-category	служебные слова / көмекші сөздер
+word-category	наречия количества и меры / мөлшер үстеулері
+word-category	способности человека / адам қабілеті
+word-category	просьба / өтініш
+word-category	признаки, воспринимаемые органами чувств / сезім органдары арқылы қабылданатын сын белгілер
+word-category	время по часам / сағат бойынша уақыты
+word-category	неопределенное местоимение / белгісіздік есімдігі
+word-category	наречия цели / мақсат мәнді үстеу
+word-category	удивление / таңдану
+word-category	модальные слова / модаль сөздер
+word-category	радость / қуаныш
+word-category	наречия времени / мезгіл үстеу
+word-category	благодарность / алғыс
+word-category	растение / өсімдік
+word-category	погода / ауа райы
+word-category	возвратное местоимение / өздік есімдігі
+word-category	жилье / баспана
+word-category	извинение / кешірім сұрау
+word-category	внешний вид человека / адамның сыртқы келбеті
+word-category	наречия причины / себеп-салдар үстеу
+word-category	отказ, несогласие / қабылдамау, келіспеу
+word-category	образование / білім
+word-category	глаголы восприятия и мышления / ойлау етістіктері
+word-category	наречия места / мекен үстеу
+word-category	бытовые глаголы / тұрмыс мәнді етістіктер
+word-category	послелоги / септеуліктер
+word-category	глаголы наличия / болу/болмауды білдіру етістіктері
+word-category	наречия образа действия / қимыл-сын үстеу
+word-category	понимание/согласие / түсінісу. келісу
+word-category	глаголы общения / қатысым етістіктері
+word-category	встреча / кездесу
+word-category	глаголы чувств / сезім етістіктері
+word-category	топ-250 глаголов казахского языка / таңдаулы 250 етістік
+word-category	культура / мәдениет
+word-category	спорт / спорт
+word-category	совет / ақыл-кеңес
+word-category	время / уақыт
+word-category	питание / тамақ
+word-category	в городе / қалада
+word-category	разговор по телефону / телефонмен сөйлесу
+word-category	состояние/ статус / қалып-күй
+word-category	указательное местоимение / сілтеу есімдігі
+word-category	одежда / киім
+word-category	животные / жануарлар
+word-category	союзы / жалғаулықтар
+word-category	семья / отбасы
+word-category	неопределенность / белгісіздік
+word-category	удача / сәттілік
+word-category	обращение / тіл қату
+word-category	понимание языка / тілді түсіну
+word-category	приветствие / сәлемдесу
+word-category	погода / ауа-райы
+word-category	характеристика, описание / сипаттама
+word-category	вещество, материал / зат, материал
+word-category	характер и поведение / мінез-құлық
+word-category	глаголы стадии / кезеңді білдіру етістіктері
+word-category	личное местоимение / жіктеу есімдігі
+word-category	глаголы рабочих операций / жұмыс операцияларын білдіру етістіктер
+word-category	человек / адам
+word-category	в такси / таксиде
+word-category	электроприборы, мебель, канцтовары и другие предметы
+word-category	места, здания
+word-category	части зданий
+word-category	дни недели / апта күндерi
+word-category	природа / табиғат
+word-category	продукты / азық-түлік
+word-category	птицы / құстар
+word-category	родственники / туыстар
+word-category	рыбы / балықтар
+word-category	месяцы / айлар
+word-category	овощи, фрукты, ягоды / көкөністер, жемістер, жидектер
+word-category	насекомые / жәндіктер
+word-category	части тела / дене мүшелерi
+word-category	время. период
+word-category	животные / жануарлар
+word-category	части телаживотных и птиц
+word-category	люди / адамдар
+word-category	времена года / жыл маусымдары (жыл мезгiлдерi)
+word-category	одежда, украшения
+word-category	растение / өсімдік
+word-category	профессии, занятия / мамандықтар, кәсiптер

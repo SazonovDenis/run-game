@@ -33,11 +33,21 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         //return res
     }
 
+
+    /**
+     * При генерации плана по списку слов idItems
+     * неправильные варианты берутся не из всего корпуса слов, а из этого списка.
+     */
     Collection<DataBox> createTasks(Collection<Long> idItems, long dataTypeQuestion, long dataTypeAnswer, int limit) {
         Collection<DataBox> tasks = new ArrayList<>()
 
         //
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
+
+        // Значения факта типа dataTypeAnswer у элементов из idItems дадут варианты выбора
+        taskCreator.setItemsForChoiceFalse(idItems, dataTypeAnswer)
+
+        //
         for (long idItem : idItems) {
             try {
                 Collection<DataBox> tasksForItem = taskCreator.createTasks(idItem, dataTypeQuestion, dataTypeAnswer, limit)

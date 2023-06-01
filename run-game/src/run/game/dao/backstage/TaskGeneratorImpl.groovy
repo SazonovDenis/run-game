@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.rnd.*
@@ -12,6 +13,8 @@ import run.game.dao.*
 public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
     Rnd rnd
+
+    Set<String> valuesForChoiceFalse = new HashSet<>()
 
     void setMdb(Mdb mdb) {
         super.setMdb(mdb)
@@ -40,13 +43,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         int valuesFalseChoiceCount = 20
 
         // Подберем неправильные варианты
-        Set valuesFalseSet = new HashSet()
-        StoreRecord recWordDistance = mdb.loadQueryRecord("select * from WordDistance where word = :word", [word: valueTrue], false)
-        if (recWordDistance != null) {
-            String strJson = new String(recWordDistance.getValue("matches"), "utf-8")
-            Map map = UtJson.fromJson(strJson)
-            valuesFalseSet.addAll(map.keySet())
-        }
+        Set valuesFalseSet = prepareValuesFalse(valueTrue)
 
 
         // ---
@@ -271,6 +268,46 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
         //
         return res
+    }
+
+
+    Set<Object> prepareValuesFalse(String valueTrue) {
+        // Передали снаружи
+        if (valuesForChoiceFalse.size() > 0) {
+            return valuesForChoiceFalse
+        }
+
+        // Выберем сами
+        Set<Object> valuesFalseSet = new HashSet<>()
+
+        //
+        StoreRecord recWordDistance = mdb.loadQueryRecord(
+                "select * from WordDistance where word = :word",
+                [word: valueTrue],
+                false)
+        if (recWordDistance != null) {
+            String strJson = new String(recWordDistance.getValue("matches"), "utf-8")
+            Map map = UtJson.fromJson(strJson)
+            valuesFalseSet.addAll(map.keySet())
+        }
+
+        //
+        return valuesFalseSet
+    }
+
+    void setItemsForChoiceFalse(Collection<Long> idItems, long dataTypeAnswer) {
+        for (long idItem : idItems) {
+            // Загружаем список фактов для "ответа"
+            Fact_list list = mdb.create(Fact_list)
+            Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
+
+            // Каждое значение факта указанного типа будет вариантом выбора
+            for (StoreRecord recAnswer : stAnswer) {
+                String recAnswerValue = recAnswer.getValue("factValue")
+                valuesForChoiceFalse.add(recAnswerValue)
+            }
+        }
+
     }
 
 

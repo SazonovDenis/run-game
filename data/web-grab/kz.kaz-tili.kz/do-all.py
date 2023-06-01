@@ -25,10 +25,10 @@ if not exists(path):
 
 #
 html_list = [
-    "глаголы.html",
-    "наречия.html",
-    "прилагательные.html",
-    "существительные.html",
+    "01.html",
+    "02.html",
+    "03.html",
+    "04.html",
 ]
 
 #

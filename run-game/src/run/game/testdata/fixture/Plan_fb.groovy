@@ -23,6 +23,11 @@ class Plan_fb extends BaseFixtureBuilder {
         createPlanFromFile_sound("Материалы (аудио)", "res:run/game/testdata/csv/plan/material.txt")
         createPlanFromFile_sound("Овощи и фрукты (аудио)", "res:run/game/testdata/csv/plan/vegetable_fruit.txt")
         createPlanFromFile_sound("Цвета (аудио)", "res:run/game/testdata/csv/plan/color.txt")
+
+        createPlanFromFile_spelling("Числительные / Саны", "res:run/game/testdata/csv/plan/kz.numbers.txt")
+        createPlanFromFile_spelling("Продкуты / Азық-түлік", "res:run/game/testdata/csv/plan/kz.products.txt")
+        createPlanFromFile_sound("Числительные / Саны (аудио)", "res:run/game/testdata/csv/plan/kz.numbers.txt")
+        createPlanFromFile_sound("Продкуты / Азық-түлік (аудио)", "res:run/game/testdata/csv/plan/kz.products.txt")
     }
 
     void createPlanFromFile_spelling(String planName, String fileName) {

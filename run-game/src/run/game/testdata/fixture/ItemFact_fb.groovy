@@ -108,12 +108,21 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
         //
         for (String dir : dirs) {
-            String[] files = new File(dirBase + dir).list(new WildcardFileFilter("dat*.csv"))
-            String[] dirsSound = new File(dirBase + dir + "/mp3").list(new DirectoryFileFilter())
+            // csv
+            String[] filesCsvName = new File(dirBase + dir).list(new WildcardFileFilter("dat*.csv"))
+
+            // mp3
+            String[] dirsSoundArr = new File(dirBase + dir + "/mp3").list(new DirectoryFileFilter())
+            // Ищем также и напрямую в каталоге dirBase + dir + "/mp3"
+            List<String> dirsSound = null
+            if (dirsSoundArr != null) {
+                dirsSound = dirsSoundArr.toList()
+                dirsSound.add("")
+            }
 
 
-            for (String file : files) {
-                String fileCsv = dirBase + dir + "/" + file
+            for (String fileCsvName : filesCsvName) {
+                String fileCsv = dirBase + dir + "/" + fileCsvName
 
                 //
                 String wordLang_1 = "eng"
@@ -628,7 +637,7 @@ from
         }
     }
 
-    List<String> getSoundFiles(String dirBase, String[] dirsSound, String eng) {
+    List<String> getSoundFiles(String dirBase, Collection<String> dirsSound, String word) {
         List res = new ArrayList()
 
         if (dirsSound == null) {
@@ -636,9 +645,22 @@ from
         }
 
         for (String dirSound : dirsSound) {
-            String soundFileName = dirBase + dirSound + "/" + eng + ".mp3"
+            String soundDirName = dirBase + dirSound + "/"
+            String soundFileName = soundDirName + word + ".mp3"
+            soundFileName = soundFileName.replace("//", "/")
+
+            String md5 = UtString.md5Str(word).toLowerCase().substring(0, 16)
+            String soundFileNameMd5 = soundDirName + md5 + ".mp3"
+            soundFileNameMd5 = soundFileNameMd5.replace("//", "/")
+
+            // Если есть файл без проблем с кодировкой
             if (new File(soundFileName).exists()) {
                 res.add(soundFileName)
+            }
+
+            // Если есть файл с преобразованным именем из-за проблем с кодировкой
+            if (new File(soundFileNameMd5).exists()) {
+                res.add(soundFileNameMd5)
             }
         }
 

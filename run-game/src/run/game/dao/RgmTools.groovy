@@ -57,12 +57,15 @@ public class RgmTools implements IMdbLinkSet {
         }
     }
 
-    private String filterWord(String wordEng) {
-        wordEng = wordEng.replace("(", "")
-        wordEng = wordEng.replace(")", "")
-        wordEng = wordEng.replace("!", "")
-        if (ItemFact_fb.isAlphasEng(wordEng) && wordEng.length() > 1) {
-            return wordEng.toLowerCase()
+    private String filterWord(String word) {
+        // Так можно нащупать Item из нескольких слов (для словосочетаний, напимер: "go_on", "он_екі")
+        word = word.replace("_", " ")
+        //
+        word = word.replace("(", "")
+        word = word.replace(")", "")
+        word = word.replace("!", "")
+        if ((ItemFact_fb.isAlphasEng(word) || ItemFact_fb.isAlphasKaz(word)) && word.length() > 1) {
+            return word.toLowerCase()
         }
         return null
     }

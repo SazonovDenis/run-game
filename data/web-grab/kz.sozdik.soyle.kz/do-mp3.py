@@ -18,16 +18,19 @@ def clean_word(word_kz):
 
 
 #
+url_mp3 = "https://sozdik.soyle.kz/"
+
+#
 dir_base = "./"
 
 #
-path = dir_base + "mp3/"
-if not exists(path):
-    mkdir(path)
+path_mp3 = dir_base + "mp3_grab/"
+if not exists(path_mp3):
+    mkdir(path_mp3)
 #
-path = dir_base + "tmp/"
-if not exists(path):
-    mkdir(path)
+path_tmp = dir_base + "tmp/"
+if not exists(path_tmp):
+    mkdir(path_tmp)
 
 #
 file = open(dir_base + "content.html", "r")
@@ -140,14 +143,7 @@ for element_category in soup_category.find_all('li'):
             file_csv.flush()
 
             # Читаем mp3
-            url_mp3 = "https://sozdik.soyle.kz/"
-
-            #
-            mp3_file_dir = dir_base + "mp3/"
-            mp3_file_name = mp3_file_dir + word_kz + '.mp3'
-
-            if not exists(mp3_file_dir):
-                mkdir(mp3_file_dir)
+            mp3_file_name = path_mp3 + word_kz + '.mp3'
 
             # пропустим ранее прочитанное
             if exists(mp3_file_name):

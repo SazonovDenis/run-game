@@ -14,7 +14,7 @@ export default {
         ballWidth: 32,
         ballHeihth: 32,
         goalSize: 16,
-        minDl: 100,
+        minDl: 200,
         maxDl: 1000,
         valueGoalMax: 10,
         goalHitSizeDefault: 5,
@@ -258,6 +258,11 @@ export default {
         let dx = 1000 * (stateDrag.x - stateDrag.sx) / stateDrag.duration
         let dy = 1000 * (stateDrag.y - stateDrag.sy) / stateDrag.duration
 
+
+        // Просто клик - пусть летит вверх
+        if (dx === 0 && dy === 0) {
+            dy = -1
+        }
         // Чтобы  летело не слишком...
         let dl = Math.sqrt(dx * dx + dy * dy)
         // ... не слишком медленно...

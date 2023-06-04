@@ -45,32 +45,31 @@ export default {
 
             //
             let stateDrag = this.state.drag
-            let stateGoal = this.state.goal
 
             //
-            stateDrag.drag = true
+            if (!stateDrag.drag) {
+                stateDrag.drag = true
 
-            //
-            document.addEventListener('mousemove', this.onMouseMove)
-            document.addEventListener('mouseup', this.onMouseUp)
+                //
+                document.addEventListener('mousemove', this.onMouseMove)
+                document.addEventListener('mouseup', this.onMouseUp)
 
-            //
-            let eventDrag = {}
-            eventDrag.x = event.pageX
-            eventDrag.y = event.pageY
-            eventDrag.srcElement = event.srcElement
-            eventDrag.taskOption = this.taskOption
+                //
+                let eventDrag = {}
+                eventDrag.x = event.pageX
+                eventDrag.y = event.pageY
+                eventDrag.srcElement = event.srcElement
+                eventDrag.taskOption = this.taskOption
 
-            //
-            ctx.eventBus.emit("dragstart", eventDrag)
-            //this.doDragStart(eventDrag)
+                //
+                ctx.eventBus.emit("dragstart", eventDrag)
+            }
         },
 
         onMouseMove(event) {
             //console.info("onMouseMove", event)
 
             let stateDrag = this.state.drag
-            let stateGoal = this.state.goal
 
             //
             if (stateDrag.drag) {
@@ -83,7 +82,6 @@ export default {
 
                 //
                 ctx.eventBus.emit("drag", eventDrag)
-                //this.doDragMove(eventDrag)
             }
         },
 
@@ -93,7 +91,6 @@ export default {
 
             //
             let stateDrag = this.state.drag
-            let stateGoal = this.state.goal
 
             //
             if (stateDrag.drag) {
@@ -108,31 +105,29 @@ export default {
 
                 //
                 ctx.eventBus.emit("dragend", eventDrag)
-                //this.doDragEnd(eventDrag)
             }
         },
-
 
         onTouchStart(event) {
             let touch = event.touches[event.touches.length - 1]
 
             //
             let stateDrag = this.state.drag
-            let stateGoal = this.state.goal
 
-            //
-            stateDrag.drag = true
+            // Чтобы от второго нажатия не началось параллельное событие
+            if (!stateDrag.drag) {
+                stateDrag.drag = true
 
-            //
-            let eventDrag = {}
-            eventDrag.x = touch.pageX
-            eventDrag.y = touch.pageY
-            eventDrag.srcElement = event.srcElement
-            eventDrag.taskOption = this.taskOption
+                //
+                let eventDrag = {}
+                eventDrag.x = touch.pageX
+                eventDrag.y = touch.pageY
+                eventDrag.srcElement = event.srcElement
+                eventDrag.taskOption = this.taskOption
 
-            //
-            ctx.eventBus.emit("dragstart", eventDrag)
-            //this.doDragStart(eventDrag)
+                //
+                ctx.eventBus.emit("dragstart", eventDrag)
+            }
         },
 
         onTouchMove(event) {
@@ -147,7 +142,6 @@ export default {
 
             //
             ctx.eventBus.emit("drag", eventDrag)
-            //this.doDragMove(eventDrag)
         },
 
         onTouchEnd(event) {
@@ -155,24 +149,27 @@ export default {
 
             //
             let stateDrag = this.state.drag
-            let stateGoal = this.state.goal
 
             //
-            let eventDrag = {}
-            if (event.touches.length > 0) {
-                let touch = event.touches[event.touches.length - 1]
-                eventDrag.x = touch.pageX
-                eventDrag.y = touch.pageY
-            } else {
-                eventDrag.x = stateDrag.x
-                eventDrag.y = stateDrag.y
+            if (stateDrag.drag) {
+                stateDrag.drag = false
+
+                //
+                let eventDrag = {}
+                if (event.touches.length > 0) {
+                    let touch = event.touches[event.touches.length - 1]
+                    eventDrag.x = touch.pageX
+                    eventDrag.y = touch.pageY
+                } else {
+                    eventDrag.x = stateDrag.x
+                    eventDrag.y = stateDrag.y
+                }
+                eventDrag.srcElement = event.srcElement
+                eventDrag.taskOption = this.taskOption
+
+                //
+                ctx.eventBus.emit("dragend", eventDrag)
             }
-            eventDrag.srcElement = event.srcElement
-            eventDrag.taskOption = this.taskOption
-
-            //
-            ctx.eventBus.emit("dragend", eventDrag)
-            //this.doDragEnd(eventDrag)
         },
 
         onTouchCancel(event) {

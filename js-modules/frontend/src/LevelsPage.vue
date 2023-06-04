@@ -11,6 +11,7 @@
 import {apx} from './vendor'
 import {daoApi} from "./dao"
 import gameplay from "./gameplay"
+import ctx from "./gameplayCtx"
 
 export default {
 
@@ -57,6 +58,12 @@ export default {
     },
 
     mounted() {
+        if (!ctx.globalState.user || !(ctx.globalState.user.id > 0)) {
+            apx.showFrame({frame: import("./HomePage")})
+            return
+        }
+
+        //
         this.loadLevels()
     },
 

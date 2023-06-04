@@ -297,7 +297,7 @@ export default {
         ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
 
         // Показать текст подсказки после первого выбора
-        ctx.globalState.dataState.alwaysShowText = true
+        ctx.globalState.dataState.showTaskHint = true
 
         //
         ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)

@@ -123,7 +123,7 @@ export default {
                         goalHitSize: null,
                     },
 
-                    alwaysShowText: false,
+                    showTaskHint: false,
                 },
 
                 testData_taskIdx: 1,

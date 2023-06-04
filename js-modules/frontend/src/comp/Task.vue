@@ -49,17 +49,27 @@ export default {
 
         onTaskOptionSelected(taskOption) {
             // Играть звук, если была подсказка - значит идет заучивание
-            if (taskOption.isTrue && this.state.alwaysShowText) {
+            if (taskOption.isTrue && this.state.showTaskHint) {
                 this.play()
             }
         },
 
-        // Останавливаем текущий звук
-        onLoadedGameTask(gameTask) {
+        useAudioTask() {
+            // Останавливаем текущий звук
             try {
                 this.audio.pause()
             } catch(e) {
                 console.error(e)
+            }
+
+            //
+            this.state.showTaskHint = false
+
+            // Новый звук
+            if (this.task != null && this.task.sound != null) {
+                this.audio.src = apx.url.ref("sound/" + this.task.sound)
+            } else {
+                this.audio.src = ""
             }
         },
 
@@ -68,7 +78,7 @@ export default {
                 this.task != null &&
                 this.task.sound != null &&
                 (
-                    this.state.alwaysShowText ||
+                    this.state.showTaskHint ||
                     this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
                     this.task.dataTypeQuestion == dbConst.DataType_word_spelling
                 )
@@ -86,7 +96,7 @@ export default {
         },
 
         showHint() {
-            this.state.alwaysShowText = true
+            this.state.showTaskHint = true
 
             //
             this.play()
@@ -100,15 +110,7 @@ export default {
     watch: {
         task: {
             handler(newValue, oldValue) {
-                this.state.alwaysShowText = false
-
-                // Новый звук
-                if (this.task != null && this.task.sound != null) {
-                    this.audio.src = apx.url.ref("sound/" + this.task.sound)
-                } else {
-                    this.audio.src = ""
-                }
-                //this.audio.src = apx.url.ref("sound/1000-puzzle-english/mp3/campbridge_UK/able.mp3")
+                this.useAudioTask()
             }, deep: true
         }
     },
@@ -124,7 +126,7 @@ export default {
                 this.task != null &&
                 this.task.text != null &&
                 (
-                    this.state.alwaysShowText ||
+                    this.state.showTaskHint ||
                     this.task.dataTypeQuestion != dbConst.DataType_word_sound
                 )
             )
@@ -148,12 +150,13 @@ export default {
 
         //
         ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
-        ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
+
+        //
+        th.useAudioTask()
     },
 
     unmounted() {
         ctx.eventBus.off("taskOptionSelected", this.onTaskOptionSelected)
-        ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
     },
 
 }

@@ -25,7 +25,4 @@ public class Task {
      */
     public Collection<TaskElement> options;
 
-
-    // todo помечать верные ответы
-
 }

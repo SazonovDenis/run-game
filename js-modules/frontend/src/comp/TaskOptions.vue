@@ -1,6 +1,6 @@
 <template>
     <div class="options" id="options">
-        <div v-for="taskOption in taskOptions" v-bind:class="getClassName(taskOption)">
+        <div v-for="taskOption in taskOptions">
             <TaskOption :taskOption="taskOption" :state="state"/>
         </div>
 
@@ -21,8 +21,12 @@ export default {
 
     methods: {
         getClassName(taskOption) {
-            if (this.state.mode.modeShowOptions == "hint-true" && taskOption.isTrue) {
-                return "fact-true"
+            if (this.state.mode.modeShowOptions == "hint-true") {
+                if (taskOption.isTrue) {
+                    return "fact-true"
+                } else {
+                    return "fact-false"
+                }
             }
         },
     },
@@ -38,10 +42,9 @@ export default {
 .options {
     user-select: none;
     touch-action: none;
-}
 
-.fact-true {
-    border: 2px solid green;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 </style>

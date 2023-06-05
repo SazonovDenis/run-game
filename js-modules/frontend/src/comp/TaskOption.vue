@@ -1,7 +1,10 @@
 <template>
-    <div class="option" v-bind:id="'taskOption-'+taskOption.id">
+    <div
+        v-bind:id="'taskOption-'+taskOption.id"
+        v-bind:class="'option ' + getClassName(taskOption)"
+    >
 
-        <div v-if="this.taskOption.sound">
+        <div v-if="taskOption.sound">
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
 
@@ -14,7 +17,7 @@
              v-on:touchcancel="onTouchCancel"
              v-on:click="no-click"
         >
-            {{ taskOption.text }}
+            <span>{{ taskOption.text }}</span>
         </div>
     </div>
 </template>
@@ -40,6 +43,18 @@ export default {
     },
 
     methods: {
+        getClassName(taskOption) {
+            if (this.state.mode.modeShowOptions == "hint-true") {
+                if (taskOption.isTrue) {
+                    return "fact-true"
+                } else {
+                    return "fact-false"
+                }
+            } else {
+                return "fact"
+            }
+        },
+
         onMouseDown(event) {
             //console.info("onMouseDown", event)
 
@@ -215,13 +230,25 @@ export default {
     user-select: none;
     max-width: 20em;
     margin: 5px;
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 5px;
-    background-color: #ecf9ff;
+    min-width: 10em;
 }
 
 .option-text {
     font-size: 1.5em;
+}
+
+.fact {
+    background-color: #ecf9ff;
+}
+
+.fact-true {
+    background-color: #e6ffda;
+}
+
+.fact-false {
+    color: silver;
 }
 
 

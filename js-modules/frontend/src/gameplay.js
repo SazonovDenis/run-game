@@ -198,7 +198,7 @@ export default {
         stateDrag.y = eventDrag.y
 
         //
-        clearInterval(stateDrag.interval)
+        ctx.th.stopMoveAnimation()
 
         //
         stateBall.value = 1
@@ -285,7 +285,8 @@ export default {
         // Выбрали правильный ответ - отреагируем
         if (ctx.th.isOptionIsTrueAnswer(eventDrag.taskOption)) {
             ctx.globalState.dataState.ball.ballIsTrue = true
-            stateMode.modeShowOptions = null
+            //stateMode.modeShowOptions = null
+            stateMode.modeShowOptions = "hint-true"
         } else {
             ctx.globalState.dataState.ball.ballIsTrue = false
             stateBall.text = ""
@@ -298,8 +299,8 @@ export default {
         }
         stateBall.value = 1
 
-        // Перемешаем ответы
-        ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+        // Показать текст подсказки после первого выбора
+        ctx.globalState.dataState.showTaskHint = true
 
         // Показать текст подсказки после первого выбора
         ctx.globalState.dataState.showTaskHint = true
@@ -336,11 +337,18 @@ export default {
         return taskOptionsRes
     },
 
-    startMoveAnimation(el) {
+    startMoveAnimation() {
         let stateDrag = ctx.globalState.dataState.drag
 
         //
         stateDrag.interval = setInterval(ctx.th.animationStep, ctx.settings.animationInterval)
+    },
+
+    stopMoveAnimation() {
+        let stateDrag = ctx.globalState.dataState.drag
+
+        //
+        clearInterval(stateDrag.interval)
     },
 
     animationStep() {
@@ -375,7 +383,7 @@ export default {
             }
 
             //
-            clearInterval(stateDrag.interval)
+            ctx.th.stopMoveAnimation()
 
             //
             stateBall.value = 0
@@ -383,14 +391,33 @@ export default {
             //
             ctx.eventBus.emit("change:goal.value", stateGoal.value)
 
+            // Перемешаем ответы, если цель не поражена
+            if (!ctx.th.goalDone()) {
+                ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+                // Снова выбираем
+                stateMode.modeShowOptions = null
+            }
+
             //
             return
         }
 
         // Выход шарика за границы экрана
         if (stateDrag.x + ctx.settings.ballWidth > innerWidth || stateDrag.x < 0 || stateDrag.y + ctx.settings.ballHeihth > innerHeight || stateDrag.y < 0) {
-            clearInterval(stateDrag.interval)
+            //
+            ctx.th.stopMoveAnimation()
+
+            //
             stateBall.value = 0
+
+            // Перемешаем ответы
+            ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+            // Снова выбираем
+            stateMode.modeShowOptions = null
+
+            //
             return
         }
 
@@ -404,9 +431,17 @@ export default {
 
         // Выход размера шарика за ограничение размера
         if (stateBall.value > 5 || stateBall.value < 0) {
-            clearInterval(stateDrag.interval)
+            //
+            ctx.th.stopMoveAnimation()
+
+            //
             stateBall.value = 0
 
+            // Перемешаем ответы
+            ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+            // Снова выбираем
+            stateMode.modeShowOptions = null
         }
 
         // Продолжение движения
@@ -415,8 +450,12 @@ export default {
     },
 
 
+    goalDone() {
+        return ctx.globalState.dataState.goal.valueDone >= ctx.globalState.dataState.goal.valueGoal
+    },
+
     onChange_goalValue(v) {
-        if (ctx.globalState.dataState.goal.valueDone >= ctx.globalState.dataState.goal.valueGoal) {
+        if (ctx.th.goalDone()) {
             ctx.th.nextTask()
         }
     },

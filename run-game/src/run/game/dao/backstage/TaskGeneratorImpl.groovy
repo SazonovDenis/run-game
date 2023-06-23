@@ -296,6 +296,10 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
     }
 
     void setItemsForChoiceFalse(Collection<Long> idItems, long dataTypeAnswer) {
+        if (idItems == null) {
+            return
+        }
+
         for (long idItem : idItems) {
             // Загружаем список фактов для "ответа"
             Fact_list list = mdb.create(Fact_list)

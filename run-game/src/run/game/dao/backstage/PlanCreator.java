@@ -19,7 +19,7 @@ public interface PlanCreator {
     /**
      * Создает план обучения для набора слов по типам фактов
      */
-    long createPlan(String planName, Collection<Long> idItems, long dataTypeQuestion, long dataTypeAnswer, int limit);
+    long createPlan(String planName, Collection<Long> idItems, Collection<Long> idItemsFalse, long dataTypeQuestion, long dataTypeAnswer, int limit);
 
 
     /**

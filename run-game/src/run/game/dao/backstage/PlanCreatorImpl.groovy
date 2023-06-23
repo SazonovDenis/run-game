@@ -8,7 +8,7 @@ import run.game.dao.*
 class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
 
-    long createPlan(String planName, Collection<Long> idItems, long dataTypeQuestion, long dataTypeAnswer, int limit) {
+    long createPlan(String planName, Collection<Long> idItems, Collection<Long> idItemsFalse, long dataTypeQuestion, long dataTypeAnswer, int limit) {
         //DataBox res = new DataBox()
 
 
@@ -20,7 +20,7 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
 
         //
-        Collection<DataBox> tasks = createTasks(idItems, dataTypeQuestion, dataTypeAnswer, limit)
+        Collection<DataBox> tasks = createTasks(idItems, idItemsFalse, dataTypeQuestion, dataTypeAnswer, limit)
         //
         //res.put("planTask", tasks)
 
@@ -38,14 +38,14 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
      * При генерации плана по списку слов idItems
      * неправильные варианты берутся не из всего корпуса слов, а из этого списка.
      */
-    Collection<DataBox> createTasks(Collection<Long> idItems, long dataTypeQuestion, long dataTypeAnswer, int limit) {
+    Collection<DataBox> createTasks(Collection<Long> idItems, Collection<Long> idItemsFalse, long dataTypeQuestion, long dataTypeAnswer, int limit) {
         Collection<DataBox> tasks = new ArrayList<>()
 
         //
         TaskGenerator taskCreator = mdb.create(TaskGeneratorImpl)
 
-        // Значения факта типа dataTypeAnswer у элементов из idItems дадут варианты выбора
-        taskCreator.setItemsForChoiceFalse(idItems, dataTypeAnswer)
+        // Значения факта типа dataTypeAnswer у элементов из idItemsFalse дадут варианты выбора
+        taskCreator.setItemsForChoiceFalse(idItemsFalse, dataTypeAnswer)
 
         //
         for (long idItem : idItems) {

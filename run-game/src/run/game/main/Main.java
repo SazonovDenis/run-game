@@ -16,6 +16,7 @@ public class Main {
         z.addExtension(new AppCliExtension());
         z.addCmd("serve", new ServeCliCmd());
         z.addCmd("db-check", new DbCheckCliCmd());
+        z.addCmd("db-create", new DbCreateCliCmd());
         z.exec();
     }
 

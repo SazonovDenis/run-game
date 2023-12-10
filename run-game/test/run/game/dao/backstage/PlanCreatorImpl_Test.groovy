@@ -39,11 +39,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
     @Test
     void createPlans_fb() {
         Plan_fb fb = new Plan_fb()
-
-        fb.createPlanFromFile_spelling("vegetable", "test/run/game/dao/backstage/vegetable.txt")
-        fb.createPlanFromFile_spelling("fruit", "test/run/game/dao/backstage/fruit.txt")
-        fb.createPlanFromFile_spelling("material", "test/run/game/dao/backstage/material.txt")
-        fb.createPlanFromFile_spelling("fruit&vegetable", "test/run/game/dao/backstage/vegetable_fruit.txt")
+        fb.build(model)
     }
 
     @Test

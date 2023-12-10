@@ -3,7 +3,7 @@
 
 
     <domain name="TagType" parent="tab.dict" tag.db="true"
-            title="Тип тега">
+            title="Тип тега (логический)">
         <!--@
         Например: category, level и т.п.
         -->

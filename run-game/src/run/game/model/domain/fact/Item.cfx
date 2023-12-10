@@ -5,7 +5,7 @@
     <domain name="Item" parent="tab.id" tag.db="true"
             title="Сущность">
         <!--@
-        Например: слово
+        Каждое слово представлено отдельной сущностью
         -->
         <field name="value" parent="string" size="200"
                title="Представление сущности (слово и его описание)"/>

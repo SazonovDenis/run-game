@@ -12,6 +12,19 @@
 
 
     <diagram name="tag" title="Тэги">
+        <!--@
+        Тэги представляют собой пару: "тип тега" + "значение тега".
+
+        Существуют типовые значения тэгов, общие для всех,
+        например: тег уровня обучения: tagType="level-grade", value="base".
+        На такие теги будут множество ссылок из таблиц FactTag и ItemTag.
+
+        Некоторые сущности могут иметь собственные, уникальные тэги,
+        например для слова "run" FactTag может содержать тег примера словоупотребления,
+        т.е. у этого тега будет: tagType="word-use-sample", value="at a run - бегом".
+        На такие теги будут единственная ссылка из FactTag или ItemTag.
+        -->
+
         <domain name="Fact" showfields="false" showrefs="false"/>
         <domain name="FactTag"/>
         <domain name="Item" showfields="false"/>

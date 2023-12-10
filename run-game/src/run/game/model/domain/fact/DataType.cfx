@@ -3,7 +3,7 @@
 
 
     <domain name="DataType" parent="tab.dict" tag.db="true"
-            title="Тип данных">
+            title="Тип данных (логический)">
         <ref name="default" dict="DataType"/>
         <!--@
         Логический тип данных: перевод, написание, звучание и т.п.

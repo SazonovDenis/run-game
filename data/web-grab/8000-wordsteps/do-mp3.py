@@ -1,11 +1,19 @@
 import requests
 from os.path import exists
+from os import mkdir
 
 #
 url_base = ''
 
 #
 dir_base = "./"
+
+#
+mp3_file_dir = dir_base + "mp3/"
+if not exists(mp3_file_dir):
+    mkdir(mp3_file_dir)
+
+#
 f = open(dir_base + '1.html', 'r')
 
 #
@@ -31,7 +39,7 @@ while True:
     word = urls[len(urls) - 1]
 
     #
-    mp3_file_name = dir_base + "mp3/" + word
+    mp3_file_name = mp3_file_dir + word
 
     # пропустим ранее прочитанное
     if exists(mp3_file_name):

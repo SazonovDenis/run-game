@@ -18,6 +18,8 @@ url = 'https://kreekly.com/lists/10000-samyh-populyarnyh-angliyskih-slov/'
 r = requests.get(url, allow_redirects=True)
 open("./page.html", 'wb').write(r.content)
 
+print("url: " + url + " - ok")
+
 #
 file_csv = open("./dat.csv", 'wt')
 file_csv.write("eng\trus\ttrans\n")

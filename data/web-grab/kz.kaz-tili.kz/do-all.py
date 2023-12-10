@@ -19,11 +19,6 @@ def clean_word(word_kz):
 dir_base = "./"
 
 #
-path = dir_base + "mp3/"
-if not exists(path):
-    mkdir(path)
-
-#
 html_list = [
     "01.html",
     "02.html",

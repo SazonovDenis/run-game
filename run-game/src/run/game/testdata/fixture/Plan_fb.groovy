@@ -31,6 +31,13 @@ class Plan_fb extends BaseFixtureBuilder {
         createPlanFromFile_sound("Продкуты / Азық-түлік (аудио)", "res:run/game/testdata/csv/plan/kz.products.txt", true)
     }
 
+    /**
+     *
+     * @param planName
+     * @param fileName
+     * @param useSameItemsAsFalse =true - использовать слова из плана в качестве вариантов
+     * неправильного ответа; =false - варианты неправильного ответа будут подобраны из похожих слов
+     */
     void createPlanFromFile_spelling(String planName, String fileName, boolean useSameItemsAsFalse) {
         PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
         RgmTools rgmTools = mdb.create(RgmTools)
@@ -68,6 +75,5 @@ class Plan_fb extends BaseFixtureBuilder {
         //
         planCreator.createPlan(planName, items, itemsFalse, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate, 5)
     }
-
 
 }

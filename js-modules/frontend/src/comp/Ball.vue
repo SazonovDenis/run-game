@@ -1,5 +1,5 @@
 <template>
-    <div class="ball-panel"
+    <div v-bind:class="'ball-panel ' + getClass"
          v-bind:style="{ display: display, width: width,  height: height , left: left,  top: top }">
         {{ ball.text }}
     </div>
@@ -44,11 +44,25 @@ export default {
         },
 
         left() {
+            // это написано исключительно чтобы заставить
+            // перерисоваться при при изменении размера this.ball.value
+            this.ball.value
             return this.ball.x - this.getSize() / 2 + "px"
         },
 
         top() {
+            // это написано исключительно чтобы заставить
+            // перерисоваться при при изменении размера this.ball.value
+            this.ball.value
             return this.ball.y - this.getSize() / 2 + "px"
+        },
+
+        getClass() {
+            if (this.ball.ballIsTrue) {
+                return "ball-panel-true"
+            } else {
+                return "ball-panel-false"
+            }
         },
 
         display() {
@@ -68,13 +82,21 @@ export default {
 <style>
 
 .ball-panel {
-    border: 1px solid green;
     user-select: none;
     width: 1em;
     height: 1em;
     border-radius: 10em;
-    background-color: rgba(100, 200, 0, 0.3);
     z-index: 2000;
+}
+
+.ball-panel-true {
+    border: 1px solid green;
+    background-color: rgba(100, 200, 0, 0.3);
+}
+
+.ball-panel-false {
+    border: 1px solid #c8c8c8;
+    background-color: rgba(103, 115, 89, 0.3);
 }
 
 </style>

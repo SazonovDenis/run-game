@@ -230,7 +230,7 @@ export default {
     },
 
     on_dragend(eventDrag) {
-        //console.info("doDragEnd", eventDrag)
+        console.info("doDragEnd", eventDrag)
 
         let stateDrag = ctx.globalState.dataState.drag
         let stateGoal = ctx.globalState.dataState.goal
@@ -282,18 +282,24 @@ export default {
         stateDrag.dx = dx / framePerSec
         stateDrag.dy = dy / framePerSec
 
-        // Выбрали правильный ответ - отреагируем
+        // Выбрали ответ - отреагируем
         if (ctx.th.isOptionIsTrueAnswer(eventDrag.taskOption)) {
+            // Выбрали правильный ответ
             ctx.globalState.dataState.ball.ballIsTrue = true
             //stateMode.modeShowOptions = null
             stateMode.modeShowOptions = "hint-true"
         } else {
+            // Выбрали не правильный ответ
             ctx.globalState.dataState.ball.ballIsTrue = false
             stateBall.text = ""
             stateGoal.valueGoal = stateGoal.valueGoal + 1
             if (stateGoal.valueGoal > ctx.settings.valueGoalMax) {
                 stateGoal.valueGoal = ctx.settings.valueGoalMax
             }
+            // Шарик никуда не летит
+            stateDrag.dx = 0
+            stateDrag.dy = 0
+            // Покажем подсказки
             stateMode.modeShowOptions = "hint-true"
             stateMode.goalHitSize = ctx.settings.goalHitSizeError
         }
@@ -351,6 +357,11 @@ export default {
         clearInterval(stateDrag.interval)
     },
 
+    /**
+     * Глобальный менеджер анимации.
+     * Меняет данные в ctx.globalState.dataState так, чтобы рисовалась нужная анимация.
+     * Отрисовка идет в компонентах на основе этого состояния.
+     */
     animationStep() {
         let elBall = document.getElementById("ball")
         let elGoal = document.getElementById("goal")
@@ -424,7 +435,7 @@ export default {
         // Рост или уменьшение по ходу движения
         let framePerSec = 1000 / ctx.settings.animationInterval
         if (!ctx.globalState.dataState.ball.ballIsTrue) {
-            stateBall.value = stateBall.value - 1.9 / framePerSec
+            stateBall.value = stateBall.value - 1.5 / framePerSec
         } else {
             stateBall.value = stateBall.value + 1.1 / framePerSec
         }
@@ -434,7 +445,7 @@ export default {
             //
             ctx.th.stopMoveAnimation()
 
-            //
+            // Прекращаем полет шарика
             stateBall.value = 0
 
             // Перемешаем ответы

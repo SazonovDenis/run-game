@@ -98,7 +98,7 @@ export default {
                     taskOptions: {}
                 },
 
-                // Взаимодействие с пользователем
+                // Взаимодействие с пользователем и соответствующие анимации
                 dataState: {
                     drag: {
                         dtStart: null,
@@ -115,7 +115,9 @@ export default {
                     },
                     ball: {
                         text: null,
+                        // Размер мяча
                         value: 0,
+                        // Мяч в режиме "правильный ответ"
                         ballIsTrue: null,
                     },
                     mode: {

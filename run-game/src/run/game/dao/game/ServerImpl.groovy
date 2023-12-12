@@ -16,6 +16,29 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     Rnd rnd = new RndImpl()
 
+
+    @DaoMethod
+    public StoreRecord getActiveGame() {
+        long idUsr = getCurrentUserId()
+        Store storeGames = mdb.loadQuery(sqlActiveGame(), [usr: idUsr])
+
+        if (storeGames.size() != 0) {
+            long idGame = storeGames.get(0).getLong("id")
+            return loadGame(idGame)
+        } else {
+            return null
+        }
+    }
+
+
+    @DaoMethod
+    public void closeActiveGame() {
+        long idUsr = getCurrentUserId()
+        XDateTime dt = XDateTime.now()
+        mdb.execQuery(sqlCloseActiveGame(), [usr: idUsr, dt: dt])
+    }
+
+
     @DaoMethod
     public StoreRecord gameStart(long idPlan) {
         PlanCreator planCreator = mdb.create(PlanCreatorImpl)
@@ -300,6 +323,35 @@ where
     }
 
 
+    String sqlActiveGame() {
+        return """
+select
+    Game.*
+from
+    Game
+    join GameUsr on (Game.id = GameUsr.game)
+where
+    Game.dend is null and
+    GameUsr.usr = :usr
+order by    
+    Game.dbeg,
+    Game.id
+"""
+    }
+
+    String sqlCloseActiveGame() {
+        return """
+update
+    Game
+set 
+    dend = :dt
+where
+    Game.id in (
+        select GameUsr.game from GameUsr where GameUsr.usr = :usr
+    )
+"""
+    }
+
     String sqlGame() {
         return """
 select
@@ -319,4 +371,6 @@ group by
     Game.id
 """
     }
+
+
 }

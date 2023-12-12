@@ -53,15 +53,42 @@ class Server_Test extends RgmBase_Test {
 
     @Test
     void testLoadGame() {
-        long idGame = 1001
-
-        //
         Server upd = mdb.create(ServerImpl)
-        StoreRecord rec = upd.loadGame(idGame)
 
         //
-        mdb.outTable(rec)
+        println()
+        println("CurrentUserId: " + upd.getCurrentUserId())
+
+        // Есть текущая игра?
+        getAndPrintActiveGame()
+
+        // Закроем
+        upd.closeActiveGame()
+        //
+        println()
+        println("ActiveGame closed")
+
+        // Текущая игра
+        getAndPrintActiveGame()
+
+        // Новая игра
+        long idPaln = 1000
+        StoreRecord recActiveGame = upd.gameStart(idPaln)
+        //
+        println()
+        println("New ActiveGame created")
+        mdb.outTable(recActiveGame)
+
+        // Текущая игра
+        getAndPrintActiveGame()
+
+        // Закроем
+        upd.closeActiveGame()
+        //
+        println()
+        println("ActiveGame closed")
     }
+
 
     @Test
     void testGameProcess() {
@@ -116,5 +143,24 @@ class Server_Test extends RgmBase_Test {
         mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
     }
 
+
+    void getAndPrintActiveGame() {
+        Server upd = mdb.create(ServerImpl)
+
+        // Есть текущая игра?
+        StoreRecord recActiveGame = upd.getActiveGame()
+        if (recActiveGame != null) {
+            long idGame = recActiveGame.getLong("id")
+            StoreRecord rec = upd.loadGame(idGame)
+
+            // Текущая игра
+            println()
+            println("Current ActiveGame")
+            mdb.outTable(rec)
+        } else {
+            println()
+            println("No current ActiveGame")
+        }
+    }
 
 }

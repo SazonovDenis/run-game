@@ -12,6 +12,20 @@ public interface Server {
 
 
     /**
+     * Выдать текущую (незаконченную) игру
+     *
+     * @return игра
+     */
+    StoreRecord getActiveGame();
+
+
+    /**
+     * Завершить текущую (незаконченную) игру
+     */
+    void closeActiveGame();
+
+
+    /**
      * Начать раунд по плану
      *
      * @param idPaln план

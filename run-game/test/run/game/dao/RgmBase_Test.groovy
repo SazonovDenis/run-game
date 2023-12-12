@@ -2,6 +2,7 @@ package run.game.dao
 
 import jandcode.commons.*
 import jandcode.commons.error.*
+import jandcode.commons.rnd.*
 import jandcode.core.apx.test.*
 import jandcode.core.auth.*
 import jandcode.core.auth.std.*
@@ -14,6 +15,8 @@ class RgmBase_Test extends Apx_Test {
 
     RngStopWatch sw = new RngStopWatch()
 
+    Rnd rnd = Rnd.create(123456789)
+
     void setUp() throws Exception {
         super.setUp()
 
@@ -22,7 +25,7 @@ class RgmBase_Test extends Apx_Test {
 
         //
         setCurrentUser(new DefaultUserPasswdAuthToken("admin", "111"))
-        println(authSvc.getCurrentUser().attrs)
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
     }
 
     void setCurrentUser(UserPasswdAuthToken authToken) {

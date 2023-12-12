@@ -39,6 +39,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
+    long MAX_TASK_FOR_GAME = 10
+
     @DaoMethod
     public StoreRecord gameStart(long idPlan) {
         PlanCreator planCreator = mdb.create(PlanCreatorImpl)
@@ -66,15 +68,24 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Задание выбирается с учетом статистики пользователя.
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
-
+        //mdb.outTable(stTask)
 
         // Добавляем задания на игру
+        long taskForGameCount = 0
         for (StoreRecord recTask : stTask) {
             mdb.insertRec("GameTask", [
                     game: idGame,
                     usr : idUsr,
                     task: recTask.getLong("task"),
             ])
+
+            //
+            taskForGameCount = taskForGameCount + 1
+
+            //
+            if (taskForGameCount >= MAX_TASK_FOR_GAME) {
+                break
+            }
         }
 
 
@@ -186,6 +197,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recTask = task.get("task")
         long dataTypeQuestion = recTask.getLong("dataTypeQuestion")
         long dataTypeAnswer = recTask.getLong("dataTypeAnswer")
+        resTask.setValue("task", recTask.getLong("id"))
         resTask.setValue("dataTypeQuestion", dataTypeQuestion)
         resTask.setValue("dataTypeAnswer", dataTypeAnswer)
 

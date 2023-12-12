@@ -63,10 +63,10 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
 ${sqlStatistic()}
 
 select 
-    TaskStatistic.* 
+    Tab_TaskStatistic.* 
 
 from
-    TaskStatistic     
+    Tab_TaskStatistic     
 
 order by
     kfcTrue asc
@@ -82,34 +82,32 @@ ${sqlStatistic()}
 select 
     Plan.id,
     Plan.text,
-    TaskStatistic.usr,          
+    Tab_TaskStatistic.usr,          
               
     --PlanTask.id as xxx,
 
-    avg(TaskStatistic.answerTime) as answerTime,
-    
-    sum(TaskStatistic.cnt) as cnt,
-    
-    sum(TaskStatistic.cntTrue) as cntTrue,
-    sum(TaskStatistic.cntFalse) as cntFalse,
-    sum(TaskStatistic.cntHint) as cntHint,
-    sum(TaskStatistic.cntSkip) as cntSkip,
-    sum(TaskStatistic.kfcTrue) as kfcTrue,
-    sum(TaskStatistic.kfcFalse) as kfcFalse,
-    sum(TaskStatistic.kfcHint) as kfcHint,
-    sum(TaskStatistic.kfcSkip) as kfcSkip
+    coalesce(avg(Tab_TaskStatistic.answerTime), 0) as answerTime,
+    coalesce(sum(Tab_TaskStatistic.cnt), 0) as cnt,
+    coalesce(sum(Tab_TaskStatistic.cntTrue), 0) as cntTrue,
+    coalesce(sum(Tab_TaskStatistic.cntFalse), 0) as cntFalse,
+    coalesce(sum(Tab_TaskStatistic.cntHint), 0) as cntHint,
+    coalesce(sum(Tab_TaskStatistic.cntSkip), 0) as cntSkip,
+    coalesce(sum(Tab_TaskStatistic.kfcTrue), 0) as kfcTrue,
+    coalesce(sum(Tab_TaskStatistic.kfcFalse), 0) as kfcFalse,
+    coalesce(sum(Tab_TaskStatistic.kfcHint), 0) as kfcHint,
+    coalesce(sum(Tab_TaskStatistic.kfcSkip), 0) as kfcSkip
 
 from
     Plan
     join PlanTask on (Plan.id = PlanTask.plan)
     --PlanTask
-    left join TaskStatistic on (PlanTask.task = TaskStatistic.task)     
+    left join Tab_TaskStatistic on (PlanTask.task = Tab_TaskStatistic.task)     
 
 group by
     Plan.id,
     Plan.text,
     --PlanTask.id,
-    TaskStatistic.usr 
+    Tab_TaskStatistic.usr 
 
 order by
     Plan.text, 
@@ -123,7 +121,7 @@ order by
 ${sqlStatistic()}
 ,   
 
-TaskForPlan as (
+Tab_TaskForPlan as (
 select
     PlanTask.task
 from
@@ -133,30 +131,28 @@ where
 )
 
 select 
-    TaskForPlan.task,
+    Tab_TaskForPlan.task,
     
-    TaskStatistic.usr,          
-
-    avg(TaskStatistic.answerTime) as answerTime,
-    
-    sum(TaskStatistic.cnt) as cnt,
-    
-    sum(TaskStatistic.cntTrue) as cntTrue,
-    sum(TaskStatistic.cntFalse) as cntFalse,
-    sum(TaskStatistic.cntHint) as cntHint,
-    sum(TaskStatistic.cntSkip) as cntSkip,
-    sum(TaskStatistic.kfcTrue) as kfcTrue,
-    sum(TaskStatistic.kfcFalse) as kfcFalse,
-    sum(TaskStatistic.kfcHint) as kfcHint,
-    sum(TaskStatistic.kfcSkip) as kfcSkip
+    Tab_TaskStatistic.usr,          
+                 
+    coalesce(avg(Tab_TaskStatistic.answerTime), 0) as answerTime,
+    coalesce(sum(Tab_TaskStatistic.cnt), 0) as cnt,
+    coalesce(sum(Tab_TaskStatistic.cntTrue), 0) as cntTrue,
+    coalesce(sum(Tab_TaskStatistic.cntFalse), 0) as cntFalse,
+    coalesce(sum(Tab_TaskStatistic.cntHint), 0) as cntHint,
+    coalesce(sum(Tab_TaskStatistic.cntSkip), 0) as cntSkip,
+    coalesce(sum(Tab_TaskStatistic.kfcTrue), 0) as kfcTrue,
+    coalesce(sum(Tab_TaskStatistic.kfcFalse), 0) as kfcFalse,
+    coalesce(sum(Tab_TaskStatistic.kfcHint), 0) as kfcHint,
+    coalesce(sum(Tab_TaskStatistic.kfcSkip), 0) as kfcSkip
 
 from
-    TaskForPlan
-    left join TaskStatistic on (TaskForPlan.task = TaskStatistic.task)     
+    Tab_TaskForPlan
+    left join Tab_TaskStatistic on (Tab_TaskForPlan.task = Tab_TaskStatistic.task)     
 
 group by
-    TaskForPlan.task,
-    TaskStatistic.usr 
+    Tab_TaskForPlan.task,
+    Tab_TaskStatistic.usr 
 
 order by
     kfcTrue asc  
@@ -167,13 +163,13 @@ order by
         return """
 with
 
-TaskStatisticBase as (
+Tab_TaskStatisticBase as (
 select
     GameTask.usr,
     GameTask.task,
     Task.factQuestion,
     Task.factAnswer,
-    avg(GameTask.dtAnswer - GameTask.dtTask) answerTime,
+    avg(extract('epoch' from GameTask.dtAnswer) - extract('epoch' from GameTask.dtTask)) as answerTime,
     count(*) as cnt,
     sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
     sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
@@ -192,15 +188,15 @@ group by
     Task.factAnswer
 ),
 
-TaskStatistic as (
+Tab_TaskStatistic as (
 select 
-    TaskStatisticBase.*,
+    Tab_TaskStatisticBase.*,
     (cntTrue) / (cnt) * 100 as kfcTrue,
     (cntFalse) / (cnt) * 100 as kfcFalse,
     (cntHint) / (cnt) * 100 as kfcHint,
     (cntSkip) / (cnt) * 100 as kfcSkip
 from
-    TaskStatisticBase
+    Tab_TaskStatisticBase
 )
 
 """

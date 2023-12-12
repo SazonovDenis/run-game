@@ -71,9 +71,9 @@ class Server_Test extends RgmBase_Test {
         // Текущая игра
         getAndPrintActiveGame()
 
-        // Новая игра
-        long idPaln = 1000
-        StoreRecord recActiveGame = upd.gameStart(idPaln)
+        // Стартуем новую игру
+        long idPlan = 1000
+        StoreRecord recActiveGame = upd.gameStart(idPlan)
         //
         println()
         println("New ActiveGame created")
@@ -89,58 +89,48 @@ class Server_Test extends RgmBase_Test {
         println("ActiveGame closed")
     }
 
+    @Test
+    void printPlanStatistic() {
+        long idPlan = 1000
+
+        // Статистика по уровню
+        printPlanStatistic(idPlan)
+    }
+
+    @Test
+    void testGameProcess_100() {
+        long idPlan = 1000
+
+        // Статистика по уровню
+        printPlanStatistic(idPlan)
+
+        // Много игр
+        for (int i = 0; i < 100; i++) {
+            // Игра
+            doGameProcess(idPlan)
+
+            // Текущая статистика по уровню
+            if (i % 10 == 0) {
+                printPlanStatistic(idPlan)
+            }
+        }
+
+        // Итоговая статистика по уровню
+        printPlanStatistic(idPlan)
+    }
 
     @Test
     void testGameProcess() {
-        Server upd = mdb.create(ServerImpl)
+        long idPlan = 1000
 
-        // Стартуем игру
-        long idPaln = 1000
-        long idGame = upd.gameStart(idPaln).getLong("id")
-        //long idGame = 1002
+        // Статистика по уровню
+        printPlanStatistic(idPlan)
 
+        // Игра
+        doGameProcess(idPlan)
 
-        // Печатаем состав заданий
-        println()
-        mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
-
-
-        // --- Получаем задание #1
-        DataBox task = upd.choiceTask(idGame)
-
-        // Печатаем задание
-        println()
-        printTask(task)
-
-
-        // Пользователь отвечает
-        StoreRecord recTask = task.get("task")
-        long idGameTask = recTask.getLong("id")
-        upd.postTaskAnswer(idGameTask, [wasTrue: true])
-
-
-        // Печатаем состав заданий
-        println()
-        mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
-
-
-        // --- Получаем задание #2
-        task = upd.choiceTask(idGame)
-
-        // Печатаем задание
-        println()
-        printTask(task)
-
-
-        // Пользователь отвечает
-        recTask = task.get("task")
-        idGameTask = recTask.getLong("id")
-        upd.postTaskAnswer(idGameTask, [wasFalse: true])
-
-
-        // Печатаем состав заданий
-        println()
-        mdb.outTable(mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame]))
+        // Обновленная статистика по уровню
+        printPlanStatistic(idPlan)
     }
 
 
@@ -162,5 +152,79 @@ class Server_Test extends RgmBase_Test {
             println("No current ActiveGame")
         }
     }
+
+    void printGameTask(long idGame) {
+        println("GameTask, game: " + idGame)
+        Store st = mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame])
+        mdb.outTable(st, 10)
+    }
+
+    void printPlanStatistic(long idPlan) {
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+        Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
+        mdb.outTable(stTask)
+    }
+
+
+    void doGameProcess(long idPlan) {
+        Server upd = mdb.create(ServerImpl)
+
+        // Стартуем новую игру
+        StoreRecord recActiveGame = upd.gameStart(idPlan)
+        long idGame = recActiveGame.getLong("id")
+        //
+        println()
+        println("New ActiveGame created")
+
+        // Текущая игра
+        getAndPrintActiveGame()
+
+        //
+        int taskUserToDoCount = 8
+        for (int n = 1; n <= taskUserToDoCount; n++) {
+            // --- Получаем задание
+            DataBox task = upd.choiceTask(idGame)
+            // printTask(task)
+            // mdb.outTable(task.get("task"))
+
+            //
+            //Thread.sleep(rnd.num(25, 250))
+
+            // Пользователь отвечает
+            StoreRecord recTask = task.get("task")
+            long idGameTask = recTask.getLong("id")
+            boolean wasTrue
+            boolean wasFalse
+            boolean wasSkip
+            boolean wasHint = rnd.bool(1, 3)
+            if (recTask.getLong("task") % 10 == 0) {
+                wasTrue = true
+                wasFalse = !wasTrue
+                wasSkip = false
+            } else if (recTask.getLong("task") % 5 == 0) {
+                wasTrue = false
+                wasFalse = !wasTrue
+                wasSkip = false
+            } else {
+                wasTrue = false
+                wasFalse = false
+                wasSkip = rnd.bool(1, 5)
+                if (!wasSkip) {
+                    wasTrue = rnd.bool(2, 1)
+                    wasFalse = !wasTrue
+                }
+            }
+            upd.postTaskAnswer(idGameTask, [
+                    wasTrue : wasTrue,
+                    wasFalse: wasFalse,
+                    wasSkip : wasSkip,
+                    wasHint : wasHint,
+            ])
+
+            //println()
+            println("task " + n + "/" + taskUserToDoCount + ", [" + recTask.getLong("task") + "]")
+        }
+    }
+
 
 }

@@ -3,6 +3,7 @@
 
     <domain name="Task.Server">
         <field name="id" parent="GameTask/ref"/>
+        <field name="task" parent="Task/ref"/>
         <field name="dataTypeQuestion" parent="long"/>
         <field name="dataTypeAnswer" parent="long"/>
         <field name="dtTask" parent="GameTask/dtTask"/>
@@ -32,7 +33,7 @@
 
         <field name="xxx" parent="long"/>
 
-        <field name="answerTime" parent="double"/>
+        <field name="answerTime" parent="double" scale="3"/>
 
         <field name="cnt" parent="long"/>
         <field name="cntTrue" parent="long"/>
@@ -40,10 +41,10 @@
         <field name="cntHint" parent="long"/>
         <field name="cntSkip" parent="long"/>
 
-        <field name="kfcTrue" parent="double"/>
-        <field name="kfcFalse" parent="double"/>
-        <field name="kfcHint" parent="double"/>
-        <field name="kfcSkip" parent="double"/>
+        <field name="kfcTrue" parent="double" scale="2"/>
+        <field name="kfcFalse" parent="double" scale="2"/>
+        <field name="kfcHint" parent="double" scale="2"/>
+        <field name="kfcSkip" parent="double" scale="2"/>
     </domain>
 
     <domain name="Task.Statistic">
@@ -52,7 +53,7 @@
         <field name="factQuestion" parent="Fact/ref"/>
         <field name="factAnswer" parent="Fact/ref"/>
 
-        <field name="answerTime" parent="double"/>
+        <field name="answerTime" parent="double" scale="3"/>
 
         <field name="cnt" parent="long"/>
         <field name="cntTrue" parent="long"/>
@@ -60,10 +61,10 @@
         <field name="cntHint" parent="long"/>
         <field name="cntSkip" parent="long"/>
 
-        <field name="kfcTrue" parent="double"/>
-        <field name="kfcFalse" parent="double"/>
-        <field name="kfcHint" parent="double"/>
-        <field name="kfcSkip" parent="double"/>
+        <field name="kfcTrue" parent="double" scale="2"/>
+        <field name="kfcFalse" parent="double" scale="2"/>
+        <field name="kfcHint" parent="double" scale="2"/>
+        <field name="kfcSkip" parent="double" scale="2"/>
     </domain>
 
 </root>

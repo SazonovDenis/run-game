@@ -27,11 +27,15 @@
             <div class="menu-fill">
             </div>
 
+<!--
             <q-btn color="white" text-color="black" label="Logout"
                    v-if="globalState.user.id > 0"
                    v-on:click="logout()"/>
+-->
 
-            <UserInfo :user="globalState.user"/>
+            <UserInfo :user="globalState.user"
+                      v-on:click="logout()"
+            />
         </div>
 
         <UserTaskPanel

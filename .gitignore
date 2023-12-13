@@ -22,3 +22,4 @@ node_modules
 /dataSources
 .ideaDataSources
 *.mp3
+*.drawio.bkp

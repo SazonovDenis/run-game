@@ -13,6 +13,9 @@
             <q-btn color="white" text-color="black" label="Паша"
                    v-if="globalState.user.id == 0"
                    v-on:click="login('user1012', '')"/>
+            <q-btn color="white" text-color="black" label="Admin"
+                   v-if="globalState.user.id == 0"
+                   v-on:click="login('admin', '111')"/>
 
             <q-btn color="white" text-color="black" label="Уровень"
                    v-if="globalState.user.id > 0"

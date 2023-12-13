@@ -13,6 +13,7 @@ import run.game.dao.backstage.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
 
+    long MAX_TASK_FOR_GAME = 10
 
     Rnd rnd = new RndImpl()
 
@@ -39,14 +40,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    long MAX_TASK_FOR_GAME = 10
-
     @DaoMethod
     public StoreRecord gameStart(long idPlan) {
-        PlanCreator planCreator = mdb.create(PlanCreatorImpl)
-        StoreRecord recPlan = planCreator.loadPlan(idPlan)
-
-
         // Добавляем Game
         StoreRecord recGame = mdb.createStoreRecord("Game")
         //
@@ -136,17 +131,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    @DaoMethod
-    public void gameFinish(long idGame) {
-        StoreRecord recGame = mdb.loadQueryRecord("select * from Game where id = :id", [id: idGame])
-
-        XDateTime dt = XDateTime.now()
-        recGame.setValue("dend", dt)
-
-        mdb.updateRec("Game", recGame)
-    }
-
-
     /**
      * Записываем результат выполнения задания
      *
@@ -186,6 +170,44 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         recGameTask.setValue("wasHint", taskResult.get("wasHint"))
         recGameTask.setValue("wasSkip", taskResult.get("wasSkip"))
         mdb.updateRec("GameTask", recGameTask)
+    }
+
+
+    /**
+     * Список уровней, со статистикой по словам,
+     * сортированный по некоторому критерию, например по самому отстающему
+     * или по запланированному учителем.
+     */
+    @DaoMethod
+    Store getPlans() {
+        Store res = mdb.createStore("Plan.Server")
+
+        //
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+        Store st = statisticManager.getPlanStatistic()
+
+        for (StoreRecord rec : st) {
+            StoreRecord recRes = res.add()
+            recRes.setValue("id", rec.getValue("id"))
+            recRes.setValue("text", rec.getValue("text"))
+            //
+            recRes.setValue("cnt", rec.getLong("cnt"))
+            recRes.setValue("cntDone", rec.getLong("cntTrue"))
+            recRes.setValue("cntInProgress", rec.getLong("cntHint"))
+            recRes.setValue("cntToDo", rec.getLong("cnt") - rec.getLong("cntTrue"))
+            // Вычислим "качество изучения" уровня
+            double order = 0 +
+                    5 * recRes.getDouble("cntDone") / rec.getDouble("cnt") +
+                    -2 * recRes.getDouble("cntToDo") / rec.getDouble("cnt") +
+                    -10 * recRes.getDouble("cntInProgress") / rec.getDouble("cnt")
+            recRes.setValue("order", order)
+        }
+
+        //
+        res.sort("order")
+
+        //
+        return res
     }
 
 
@@ -246,16 +268,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         return res
-    }
-
-
-    @DaoMethod
-    Store getPlans() {
-        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store st = statisticManager.getPlanStatistic()
-
-        //
-        return st
     }
 
 

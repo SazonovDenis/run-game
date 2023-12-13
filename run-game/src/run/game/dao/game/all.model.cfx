@@ -28,6 +28,18 @@
         <field name="countDone" parent="long"/>
     </domain>
 
+    <!-- Список уровней со статистикой по словам -->
+    <domain name="Plan.Server" parent="Plan">
+        <field name="usr" parent="Usr/ref"/>
+
+        <field name="cnt" parent="long" title="Общее количество слов"/>
+        <field name="cntDone" parent="long" title="Количество выученных слов"/>
+        <field name="cntInProgress" parent="long" title="Слов на повторение"/>
+        <field name="cntToDo" parent="long" title="Количество не выученных слов"/>
+
+        <field name="order" parent="double" title="Сортировка" scale="2"/>
+    </domain>
+
     <domain name="Plan.Statistic" parent="Plan">
         <field name="usr" parent="Usr/ref"/>
 

@@ -6,7 +6,7 @@ import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 
-class Server_Test extends RgmBase_Test {
+class Server_Game_Test extends RgmBase_Test {
 
 
     @Test

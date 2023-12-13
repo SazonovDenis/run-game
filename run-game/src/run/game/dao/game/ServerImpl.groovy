@@ -262,7 +262,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     StoreRecord choiceGameTask(long idGame) {
         long idUsr = getCurrentUserId()
 
-        // Извлечем неотвеченные задания
+        // Извлечем не выданные задания
         Store stGameTask = mdb.loadQuery(sqlSelectTask(), [
                 game: idGame,
                 usr : idUsr,
@@ -291,7 +291,7 @@ where
     game = :game and
     usr = :usr and
     -- неотвеченные
-    dtAnswer is null 
+    dtTask is null 
 """
     }
 

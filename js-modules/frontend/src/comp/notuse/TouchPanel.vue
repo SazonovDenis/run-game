@@ -59,7 +59,7 @@ export default {
 .custom-area {
     width: 100%;
     height: 350px;
-    border-radius: 3px;
+    border-radius: 0.5rem;
     padding: 8px;
 }
 

@@ -231,7 +231,7 @@ export default {
     max-width: 20em;
     margin: 5px;
     padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: 0.5rem;
     min-width: 10em;
 }
 

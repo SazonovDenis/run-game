@@ -176,7 +176,7 @@ export default {
     margin: 5px;
 
     user-select: none;
-    border-radius: 5px;
+    border-radius: 0.5rem;
     background-color: #e6ffda;
 }
 

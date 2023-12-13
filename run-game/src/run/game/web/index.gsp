@@ -101,7 +101,7 @@
   .jc-progress-bar {
     width: 8em;
     border: 1px silver solid;
-    border-radius: 4px;
+    border-radius: 0.5rem;
     display: none;
     opacity: 0;
     animation-name: progress-bar;

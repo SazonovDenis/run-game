@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <bean name="kis.molap.model.service.CubeService"
+          class="kis.molap.model.service.impl.CubeServiceImpl">
+    </bean>
+
+</root>

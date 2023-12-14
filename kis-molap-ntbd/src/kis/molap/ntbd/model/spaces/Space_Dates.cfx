@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!-- Пространство dt -->
+    <space name="Space_Dates"
+           title="Пространство: день (целые даты)"
+           table="Cube_Dates"
+           class="kis.molap.ntbd.model.spaces.Space_Dates">
+
+        <!-- Координаты -->
+        <coord name="dt"/>
+
+    </space>
+
+
+    <!-- Физическая таблица пространства -->
+    <domain name="Cube_Dates" parent="base" tag.db="true">
+
+        <!-- Координаты -->
+        <field name="dt" parent="date"/>
+
+        <!-- Индекс для координат -->
+        <dbindex name="main" fields="dt" unique="true"/>
+
+    </domain>
+
+
+</root>

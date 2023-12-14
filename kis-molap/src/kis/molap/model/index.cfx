@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <dbm>
+
+        <!-- Модель данных кубов -->
+        <model name="kis.molap.model">
+            <include name="apx.base"/>
+            <x-include path="service/index-model.cfx"/>
+            <x-include path="worker/*.cfx"/>
+            <x-include path="worker/impl/*.cfx"/>
+        </model>
+
+        <!-- Модель для записи результата расчета кубов.
+             Нужна для конкретной имплементации kis.molap.model.worker.impl.WorkerImpl,
+             которая хочет две базы -->
+        <model name="write" instance="kis.molap.model">
+            <dbsource name="default"/>
+        </model>
+
+    </dbm>
+
+</root>

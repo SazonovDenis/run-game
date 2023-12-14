@@ -1,0 +1,26 @@
+import jandcode.jc.*
+import jandcode.jc.std.*
+
+class P extends ProjectScript {
+
+    static beforeLoad = {
+    }
+
+    void onInclude() {
+        //
+        project.name = "kis-molap-ntbd"
+        //
+        include(JavaProject).with {
+            moduleDef("kis.molap.ntbd").with {
+                depends.prod(
+                        "kis.molap",
+                        "jandcode.core.apx",
+                        "jandcode.core.db.postgresql",
+                )
+                depends.dev(
+                )
+            }
+        }
+    }
+
+}

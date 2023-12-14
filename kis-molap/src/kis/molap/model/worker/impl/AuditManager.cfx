@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Molap_audit" tag.db="true" parent="base"
+            title="Журнал изменений в таблицах (табличный аудит)">
+        <field name="id" parent="long" title="Возраст аудита"/>
+        <field name="dt" parent="datetime" title="Дата операции"/>
+        <!--@
+        1 = ins, 2 = upd, 3 = del.
+        -->
+        <field name="opr" parent="int" title="Операция"/>
+        <field name="tableName" parent="string" size="50" title="Таблица"/>
+        <field name="tableId" parent="long" title="Запись в таблице"/>
+        <field name="dat" parent="string" size="2000" title="Данные (json)"/>
+    </domain>
+
+
+</root>

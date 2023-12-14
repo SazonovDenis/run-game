@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <cube name="Cube_Dates"
+          title="Даты"
+          space="Space_Dates"
+          class="kis.molap.ntbd.model.cubes.Cube_Dates">
+
+        <!-- Поля -->
+        <field name="dt"/>
+    </cube>
+
+
+    <!-- Дополнение физической таблицы для space -->
+    <domain name="Cube_Dates">
+
+        <field name="dt" parent="date" title="Дата, без времени"/>
+
+    </domain>
+
+
+</root>

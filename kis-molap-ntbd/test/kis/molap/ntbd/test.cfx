@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <x-depends module="kis.molap.ntbd"/>
+    <x-include path="#{appdir}/test-cfg.cfx"/>
+
+    <test>
+        <dbm model-default="default"/>
+    </test>
+
+
+    <dbm>
+
+        <!-- Модель основной базы данных ntbd -->
+        <model name="kis.molap.model.test">
+            <include name="apx.base"/>
+            <include name="kis.molap.model"/>
+        </model>
+
+        <model name="default" instance="kis.molap.model.test"/>
+
+
+        <model name="write">
+
+            <!-- Пока в проекте только одна база, вторая база кубов (write) будет смотреть на первую (default) -->
+            <dbsource name="default" cfg="cfg/dbsource/default"/>
+
+        </model>
+
+    </dbm>
+
+
+</root>

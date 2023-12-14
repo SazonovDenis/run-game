@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Molap_status" parent="base" tag.db="true"
+            title="molap: Состояние каждого куба">
+        <field name="id" parent="long"/>
+
+        <field name="cube_name" parent="string" size="100" title="Куб"/>
+
+        <field name="done_id" parent="long" title="До какой id обработан журнал"/>
+        <field name="done_dt" parent="datetime" title="Какой дате соответствует id обработаного журнала"/>
+
+        <field name="dt_min" parent="date"
+               title="Минимальное значение координаты 'Дата'"/>
+        <field name="dt_max" parent="date"
+               title="Максимальное значение координаты 'Дата'"/>
+    </domain>
+
+
+</root>

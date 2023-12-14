@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <!-- Структуры в базе данных, необходимые для kis.molap.model.worker.impl.WorkerImpl -->
+
+    <domain name="Molap_statistic" parent="base" tag.db="true"
+            title="molap: разная статистика и счетчиики по кубам">
+        <field name="id" parent="long"/>
+
+        <field name="cube_name" parent="string" size="100" title="Куб"/>
+
+        <field name="rec_rate" parent="double"
+               title="Аудит: среднее количество обработанных записей (шт/день)"/>
+        <field name="one_rec_cost" parent="double"
+               title="Аудит: среднее время обработки одной записи, общее, миллисекунд"/>
+        <field name="one_rec_durationDirty" parent="double"
+               title="Аудит: среднее время поиска загрязненной записи, миллисекунд"/>
+        <field name="one_rec_durationCalc" parent="double"
+               title="Аудит: среднее время расчета, миллисекунд"/>
+        <field name="one_rec_durationWrite" parent="double"
+               title="Аудит: среднее время записи результатов, миллисекунд"/>
+
+        <field name="interval_rec_cost" parent="double"
+               title="Интервалы: среднее время обработки одной записи, общее, миллисекунд"/>
+    </domain>
+
+
+    <domain name="Molap_log" parent="base" tag.db="true"
+            title="molap: журнал запусков кубов">
+        <field name="id" parent="long"/>
+
+        <field name="cube_name" parent="string" size="100" title="Куб"/>
+        <field name="calc_type" parent="int"
+               title="Тип расчета (интервальный=1, инкрементальный=2)"/>
+        <field name="calc_start" parent="datetime"
+               title="Время начала расчета"/>
+        <field name="calc_stop" parent="datetime"
+               title="Время завершения расчета"/>
+        <field name="calc_error" parent="memo"
+               title="Текст ошибки, если завершился с ошибкой"/>
+
+        <!-- Данные по интервальному расчету -->
+        <field name="interval_dbeg" parent="datetime"
+               title="Интервал: начало периода расчета"/>
+        <field name="interval_dend" parent="datetime"
+               title="Интервал: конец периода расчета"/>
+
+        <field name="interval_count" parent="long"
+               title="Интервал: количество координат"/>
+        <field name="interval_count_write" parent="long"
+               title="Интервал: итоговое количество записей"/>
+
+        <field name="interval_duration_dirty" parent="long"
+               title="Интервал: время поиска координат для расчета, миллисекунд"/>
+        <field name="interval_duration_calc" parent="long"
+               title="Интервал: время расчета, миллисекунд"/>
+        <field name="interval_duration_write" parent="long"
+               title="Интервал: время записи результатов, миллисекунд"/>
+
+        <!-- Данные по расчету по аудиту -->
+        <field name="audit_age_from" parent="long"
+               title="Аудит: начальный возраст расчета"/>
+        <field name="audit_age_to" parent="long"
+               title="Аудит: конечный возраст расчета"/>
+
+        <field name="audit_count_own" parent="long"
+               title="Аудит: количество загрязненных координат (собственных)"/>
+        <field name="audit_count_depends" parent="long"
+               title="Аудит: количество загрязненных координат (по зависимостям)"/>
+        <field name="audit_count_write" parent="long"
+               title="Аудит: итоговое количество записей"/>
+
+        <field name="audit_duration_dirty" parent="long"
+               title="Аудит: время поиска загрязненных координат (собственных), миллисекунд"/>
+        <field name="audit_duration_dirty_depends" parent="long"
+               title="Аудит: время поиска загрязненных координат (по зависимостям), миллисекунд"/>
+        <field name="audit_duration_convert" parent="long"
+               title="Аудит: время конвертации загрязненных координат (по зависимостям), миллисекунд"/>
+        <field name="audit_duration_calc" parent="long"
+               title="Аудит: время расчета, миллисекунд"/>
+        <field name="audit_duration_write" parent="long"
+               title="Аудит: время записи результатов, миллисекунд"/>
+
+    </domain>
+
+
+</root>

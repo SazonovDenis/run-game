@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <bean name="kis.molap.model.worker.WorkerService"
+          class="kis.molap.model.worker.impl.WorkerServiceImpl">
+
+        <worker name="default"
+                class="kis.molap.model.worker.impl.WorkerImpl"/>
+
+        <ageManager name="default"
+                    class="kis.molap.model.worker.impl.AgeManagerImpl"/>
+
+        <auditManager name="default"
+                      class="kis.molap.model.worker.impl.AuditManagerImpl"/>
+
+    </bean>
+
+
+</root>

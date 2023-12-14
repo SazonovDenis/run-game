@@ -8,6 +8,8 @@
             <include name="apx.base"/>
             <include name="jandcode.core.dbm.genid"/>
 
+            <include name="kis.molap.model"/>
+
             <x-include path="domain/index.cfx"/>
             <x-include path="dict/index-model.cfx"/>
 
@@ -23,6 +25,20 @@
 
 
         <model name="default" instance="run.game.model"/>
+
+
+        <!-- Задаём dbsource для модели кубов (kis.molap.model) -->
+        <model name="kis.molap.model">
+            <dbsource name="default"
+                      dbdriver="postgresql"
+            />
+        </model>
+
+
+        <!-- Пока в проекте только одна база, вторая база кубов (write) будет смотреть на первую (default) -->
+        <model name="write">
+            <dbsource name="default" cfg="cfg/dbsource/default"/>
+        </model>
 
 
     </dbm>

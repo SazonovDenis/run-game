@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <x-depends module="kis.molap"/>
+    <x-include path="#{appdir}/test-cfg.cfx"/>
+
+
+    <dbm>
+
+        <model name="default" instance="kis.molap.model"/>
+
+        <model name="write">
+
+            <!-- Пока в проекте только одна база, вторая база кубов (write) будет смотреть на первую (default) -->
+            <dbsource name="default" cfg="cfg/dbsource/default"/>
+
+        </model>
+    </dbm>
+
+
+    <test>
+        <dbm model-default="default"/>
+    </test>
+
+</root>

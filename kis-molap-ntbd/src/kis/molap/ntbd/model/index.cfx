@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <dbm>
+
+        <!-- Расширения для основной базы данных кубов -->
+        <model name="kis.molap.model">
+            <include name="apx.base"/>
+            <include name="jandcode.core.dbm.genid"/>
+
+            <x-include path="cubes/Cube_*.cfx"/>
+            <x-include path="cubes/*.model.cfx" required="false"/>
+            <x-include path="spaces/Space_*.cfx"/>
+            <x-include path="spaces/*.model.cfx" required="false"/>
+            <x-include path="ddl/index.cfx"/>
+        </model>
+
+    </dbm>
+
+</root>

@@ -21,6 +21,8 @@ class P extends ProjectScript {
         }
         include(RootProject).with {
             modules(
+                    "kis-molap",
+                    "kis-molap-ntbd",
                     "run-game",
             )
         }

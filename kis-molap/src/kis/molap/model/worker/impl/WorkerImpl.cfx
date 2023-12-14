@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Molap.info" parent="base">
+        <field name="cube_name" parent="Molap_status/cube_name"/>
+        <field name="dt_min" parent="Molap_status/dt_min"/>
+        <field name="dt_max" parent="Molap_status/dt_max"/>
+        <field name="done_id" parent="Molap_status/done_id"/>
+        <field name="done_dt" parent="Molap_status/done_dt"/>
+        <field name="rec_rate" parent="Molap_statistic/rec_rate"/>
+        <field name="one_rec_cost" parent="Molap_statistic/one_rec_cost"/>
+        <field name="one_rec_durationDirty" parent="Molap_statistic/one_rec_durationDirty"/>
+        <field name="one_rec_durationCalc" parent="Molap_statistic/one_rec_durationCalc"/>
+        <field name="one_rec_durationWrite" parent="Molap_statistic/one_rec_durationWrite"/>
+        <field name="interval_rec_cost" parent="Molap_statistic/interval_rec_cost"/>
+    </domain>
+
+
+</root>

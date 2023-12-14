@@ -15,6 +15,7 @@ class P extends ProjectScript {
                 depends.prod(
                     "jandcode.core.apx",
                     "jandcode.core.db.postgresql",
+                    "kis.molap.ntbd",
                 )
                 depends.dev(
                 )

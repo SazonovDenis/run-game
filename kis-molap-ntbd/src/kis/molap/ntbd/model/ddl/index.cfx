@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-
-    <!-- Должна будет вызвана не на шаге create.sql, а после fixture -->
-    <ddl-script name="cube-audit"
-                 file="#{path}/Molap_audit_trigger.sql.gsp"/>
-
-</root>

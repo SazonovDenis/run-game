@@ -12,7 +12,6 @@
             <x-include path="cubes/*.model.cfx" required="false"/>
             <x-include path="spaces/Space_*.cfx"/>
             <x-include path="spaces/*.model.cfx" required="false"/>
-            <x-include path="ddl/index.cfx"/>
         </model>
 
     </dbm>

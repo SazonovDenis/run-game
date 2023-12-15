@@ -9,6 +9,7 @@
             <x-include path="service/index-model.cfx"/>
             <x-include path="worker/*.cfx"/>
             <x-include path="worker/impl/*.cfx"/>
+            <x-include path="ddl/index.cfx"/>
         </model>
 
         <!-- Модель для записи результата расчета кубов.

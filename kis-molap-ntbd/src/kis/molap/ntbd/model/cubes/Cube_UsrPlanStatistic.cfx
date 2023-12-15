@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <cube name="Cube_UsrPlanStatistic"
+          title="Статистика прохождения уровней пользователем"
+          space="Cube_UsrPlan"
+          class="kis.molap.ntbd.model.cubes.Cube_UsrPlanStatistic">
+
+        <!-- Поля -->
+        <field name="progress"/>
+        <field name="taskInfo"/>
+
+        <!-- Зависит от кубов -->
+        <dependCube name="Cube_UsrTaskStatistic"/>
+
+    </cube>
+
+    <!-- Дополнение физической таблицы для space -->
+    <domain name="Cube_UsrPlan">
+
+        <field name="progress" parent="double" title="Степень выученности слов средняя"/>
+        <field name="taskInfo" parent="memo" title="Степень выученности слов по процентилям"/>
+
+    </domain>
+
+</root>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!-- Пространство usr, Plan -->
+    <space name="Space_UsrPlan"
+           title="Пространство: пользователь + план"
+           table="Cube_UsrPlan"
+           class="kis.molap.ntbd.model.spaces.Space_UsrPlan">
+
+        <!-- Координаты -->
+        <coord name="usr"/>
+        <coord name="plan"/>
+
+    </space>
+
+
+    <!-- Физическая таблица пространства -->
+    <domain name="Cube_UsrPlan" parent="base" tag.db="true">
+
+        <!-- Координаты -->
+        <field name="usr" parent="long" title="Пользователь"/>
+        <field name="plan" parent="long" title="План (уровень)"/>
+
+        <!-- Индекс для координат -->
+        <dbindex name="main" fields="usr,plan" unique="true"/>
+
+    </domain>
+
+
+</root>

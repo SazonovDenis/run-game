@@ -9,10 +9,10 @@ import org.junit.jupiter.api.*
 
 import static org.junit.jupiter.api.Assertions.*
 
-public class Space_WellDt_Test extends MolapBase_Test {
+public class Space_UsrTask_Test extends MolapBase_Test {
 
 
-    String spaceName = "Space_WellDt"
+    String spaceName = "Space_UsrTask"
 
 
     @Test

@@ -7,7 +7,7 @@ import kis.molap.model.worker.*;
 import kis.molap.model.worker.impl.*;
 import org.junit.jupiter.api.*;
 
-public class Service_Test extends Dbm_Test {
+public class CubeService_Test extends Dbm_Test {
 
     @Override
     public void setUp() throws Exception {

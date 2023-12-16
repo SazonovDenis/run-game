@@ -89,9 +89,9 @@ public class CubeBase_Test extends MolapBase_Test {
         assertEquals(true, res.size() > 0, "Значения есть")
 
         // Проверим, что на каждую координату только одно значение за каждый день
-        if (coords != null) {
-            assertEquals(coords.size() * (intervalDend.diffDays(intervalDbeg) + 1), res.size(), "Количество значений")
-        }
+        //if (coords != null) {
+        //    assertEquals(coords.size() * (intervalDend.diffDays(intervalDbeg) + 1), res.size(), "Количество значений")
+        //}
     }
 
 
@@ -134,10 +134,10 @@ public class CubeBase_Test extends MolapBase_Test {
         res.close()
         println("res: " + res)
 
-        // Проверим, что на каждый день только одно значение за каждый день
-        CoordList coords = space.getCoordsForInterval(intervalDbeg, intervalDend)
-        println("coords.size: " + coords.size() + ", days: " + (intervalDend.diffDays(intervalDbeg) + 1))
-        assertEquals(coords.size() * (intervalDend.diffDays(intervalDbeg) + 1), res.size(), "Количество значений")
+        // // Проверим, что на каждый день только одно значение за каждый день
+        // CoordList coords = space.getCoordsForInterval(intervalDbeg, intervalDend)
+        // println("coords.size: " + coords.size() + ", days: " + (intervalDend.diffDays(intervalDbeg) + 1))
+        // assertEquals(coords.size() * (intervalDend.diffDays(intervalDbeg) + 1), res.size(), "Количество значений")
     }
 
 

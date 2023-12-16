@@ -7,7 +7,7 @@ import kis.molap.model.coord.*;
 import kis.molap.model.cube.*;
 import kis.molap.model.cube.impl.*;
 
-public class Space_UsrPlan extends SpaceCustom implements Space {
+public class Space_Plan extends SpaceCustom implements Space {
 
 
     // ---
@@ -27,16 +27,15 @@ public class Space_UsrPlan extends SpaceCustom implements Space {
     private CoordList calcExpandCoordForInterval_internal(XDate intervalDbeg, XDate intervalDend) throws Exception {
         CoordList list = CoordList.create();
 
-        // Создадим список usr,plan
+        // Создадим список plan
         DbQuery query = mdb.openQuery(
-                "select distinct GameUsr.usr, Game.plan from GameUsr join Game on (GameUsr.game = Game.id) order by GameUsr.usr, Game.plan",
+                "select id plan from Plan",
                 UtCnv.toMap("dbeg", intervalDbeg, "dend", intervalDend)
         );
         try {
             while (!query.eof()) {
                 Coord coord = Coord.create();
                 //
-                coord.put("usr", query.getLong("usr"));
                 coord.put("plan", query.getLong("plan"));
                 //
                 list.add(coord);

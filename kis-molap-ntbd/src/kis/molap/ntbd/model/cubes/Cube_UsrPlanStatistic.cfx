@@ -2,7 +2,7 @@
 <root>
     <cube name="Cube_UsrPlanStatistic"
           title="Статистика прохождения уровней пользователем"
-          space="Cube_UsrPlan"
+          space="Space_UsrPlan"
           class="kis.molap.ntbd.model.cubes.Cube_UsrPlanStatistic">
 
         <!-- Поля -->
@@ -17,8 +17,8 @@
     <!-- Дополнение физической таблицы для space -->
     <domain name="Cube_UsrPlan">
 
-        <field name="progress" parent="double" title="Степень выученности слов средняя"/>
-        <field name="taskInfo" parent="memo" title="Степень выученности слов по процентилям"/>
+        <field name="progress" parent="double" title="Степень выученности слов, средняя"/>
+        <field name="taskInfo" parent="memo" title="Степень выученности, по процентилям"/>
 
     </domain>
 

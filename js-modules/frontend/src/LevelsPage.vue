@@ -4,19 +4,12 @@
         <div v-for="plan in plans"
              class="game-plan-item"
              @click="click(plan.id)">
-            {{ plan.text }} ({{ plan.cnt }})
+            {{ plan.text }} ({{ plan.count }})
             <div class="game-plan-item-progress">
-                <div class="game-plan-done"
-                     :style="{flexGrow: plan.cntDone}">
-                    {{ plan.cntDone }}
-                </div>
-                <div class="game-plan-inprogress"
-                     :style="{flexGrow: plan.cntInProgress}">
-                    {{ plan.cntInProgress }}
-                </div>
-                <div class="game-plan-todo"
-                     :style="{flexGrow: plan.cntToDo}">
-                    {{ plan.cntToDo }}
+                <div v-for="item in plan.taskInfo"
+                     :class="getClass(item)"
+                     :style="{height: getHeight(plan, item)}">
+                    {{ getItemCount(item) }}
                 </div>
             </div>
         </div>
@@ -47,6 +40,26 @@ export default {
     },
 
     methods: {
+        getClass(item) {
+            return "game-plan-item-progress-el game-plan-inprogress"
+        },
+
+        getHeight(plan, item) {
+            if (plan.count == 0) {
+                return "0em"
+            }
+            let perc = 100 * item.count / plan.count
+            let em = perc / 50
+            return em + 'em'
+        },
+
+        getItemCount(item) {
+            if (item.count > 0) {
+                return item.count
+            } else {
+                return ""
+            }
+        },
 
         click(idPlan) {
             apx.showFrame({
@@ -98,9 +111,12 @@ export default {
     flex-direction: row;
 }
 
-.game-plan-item-progress div {
+.game-plan-item-progress-el {
     margin: 0.1em;
-    padding: 0.5em;
+    _padding: 0.5em;
+    width: 2em;
+    border: 1px solid silver;
+    border-radius: 5px;
 }
 
 .game-plan-done {

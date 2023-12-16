@@ -10,6 +10,19 @@ class Server_Game_Test extends RgmBase_Test {
 
 
     @Test
+    void getPlans() {
+        //
+        Server srv = mdb.create(ServerImpl)
+        Store st = srv.getPlans()
+
+        //
+        println()
+        println("Plans")
+        mdb.outTable(st)
+    }
+
+
+    @Test
     void serializeTask() {
         // Грузим задание
         Server upd = mdb.create(ServerImpl)
@@ -94,15 +107,15 @@ class Server_Game_Test extends RgmBase_Test {
         long idPlan = 1000
 
         // Статистика по уровню
-        printPlanStatistic(idPlan)
+        printTaskStatisticByPlan(idPlan)
     }
 
     @Test
-    void testGameProcess_100() {
+    void testGameProcess_x100() {
         long idPlan = 1000
 
         // Статистика по уровню
-        printPlanStatistic(idPlan)
+        printTaskStatisticByPlan(idPlan)
 
         // Много игр
         for (int i = 0; i < 100; i++) {
@@ -111,12 +124,12 @@ class Server_Game_Test extends RgmBase_Test {
 
             // Текущая статистика по уровню
             if (i % 10 == 0) {
-                printPlanStatistic(idPlan)
+                printTaskStatisticByPlan(idPlan)
             }
         }
 
         // Итоговая статистика по уровню
-        printPlanStatistic(idPlan)
+        printTaskStatisticByPlan(idPlan)
     }
 
     @Test
@@ -124,13 +137,36 @@ class Server_Game_Test extends RgmBase_Test {
         long idPlan = 1000
 
         // Статистика по уровню
-        printPlanStatistic(idPlan)
+        printTaskStatisticByPlan(idPlan)
 
         // Игра
         doGameProcess(idPlan)
 
         // Обновленная статистика по уровню
-        printPlanStatistic(idPlan)
+        printTaskStatisticByPlan(idPlan)
+    }
+
+    @Test
+    void testGameProcess_3() {
+        //
+        doGameProcess(1000)
+
+        doGameProcess(1001)
+        doGameProcess(1001)
+        doGameProcess(1001)
+
+        doGameProcess(1002)
+        doGameProcess(1002)
+        doGameProcess(1002)
+
+        doGameProcess(1003, true)
+    }
+
+    @Test
+    void testGameProcess_1003() {
+        for (int i = 1; i <= 50; i++) {
+            doGameProcess(1003, true)
+        }
     }
 
 
@@ -159,7 +195,7 @@ class Server_Game_Test extends RgmBase_Test {
         mdb.outTable(st, 10)
     }
 
-    void printPlanStatistic(long idPlan) {
+    void printTaskStatisticByPlan(long idPlan) {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
         mdb.outTable(stTask)
@@ -167,7 +203,14 @@ class Server_Game_Test extends RgmBase_Test {
 
 
     void doGameProcess(long idPlan) {
+        doGameProcess(idPlan, false)
+    }
+
+    void doGameProcess(long idPlan, boolean allTaskOk) {
         Server upd = mdb.create(ServerImpl)
+
+        // Закроем все игры
+        upd.closeActiveGame()
 
         // Стартуем новую игру
         StoreRecord recActiveGame = upd.gameStart(idPlan)
@@ -197,7 +240,12 @@ class Server_Game_Test extends RgmBase_Test {
             boolean wasFalse
             boolean wasSkip
             boolean wasHint = rnd.bool(1, 3)
-            if (recTask.getLong("task") % 10 == 0) {
+            if (allTaskOk && rnd.bool(10, 1)) {
+                wasTrue = true
+                wasFalse = !wasTrue
+                wasSkip = false
+                wasHint = rnd.bool(1, 10)
+            } else if (recTask.getLong("task") % 10 == 0) {
                 wasTrue = true
                 wasFalse = !wasTrue
                 wasSkip = false

@@ -27,17 +27,17 @@ public class Space_UsrTask extends SpaceCustom implements Space {
     private CoordList calcExpandCoordForInterval_internal(XDate intervalDbeg, XDate intervalDend) throws Exception {
         CoordList list = CoordList.create();
 
-        // Создадим список well для интервала intervalDbeg..intervalDend (только скважины, которые работают на интервале)
+        // Создадим список usr,task
         DbQuery query = mdb.openQuery(
-                "select distinct well from WellStatus where dbeg <= :dend and dend >= :dbeg order by well",
-                UtCnv.toMap("dbeg", intervalDbeg, "dend", intervalDend)
+                "select distinct GameTask.usr, GameTask.task from GameTask order by GameTask.usr, GameTask.task",
+                UtCnv.toMap()
         );
         try {
             while (!query.eof()) {
                 Coord coord = Coord.create();
                 //
-                long well = query.getLong("well");
-                coord.put("well", well);
+                coord.put("usr", query.getLong("usr"));
+                coord.put("task", query.getLong("task"));
                 //
                 list.add(coord);
 

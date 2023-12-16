@@ -1,6 +1,6 @@
 package run.game.dao.game
 
-
+import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
 import jandcode.commons.rnd.*
@@ -180,7 +180,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
      */
     @DaoMethod
     Store getPlans() {
-        Store res = mdb.createStore("Plan.Server")
+        Store res = mdb.createStore("Plan.list.statistic")
 
         //
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
@@ -190,21 +190,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             StoreRecord recRes = res.add()
             recRes.setValue("id", rec.getValue("id"))
             recRes.setValue("text", rec.getValue("text"))
-            //
-            recRes.setValue("cnt", rec.getLong("cnt"))
-            recRes.setValue("cntDone", rec.getLong("cntTrue"))
-            recRes.setValue("cntInProgress", rec.getLong("cntHint"))
-            recRes.setValue("cntToDo", rec.getLong("cnt") - rec.getLong("cntTrue"))
-            // Вычислим "качество изучения" уровня
-            double order = 0 +
-                    5 * recRes.getDouble("cntDone") / rec.getDouble("cnt") +
-                    -2 * recRes.getDouble("cntToDo") / rec.getDouble("cnt") +
-                    -10 * recRes.getDouble("cntInProgress") / rec.getDouble("cnt")
-            recRes.setValue("order", order)
+            recRes.setValue("count", rec.getValue("count"))
+            recRes.setValue("progress", rec.getValue("progress"))
+            recRes.setValue("taskInfo", UtJson.fromJson(rec.getString("taskInfo")))
         }
 
         //
-        res.sort("order")
+        //res.sort("*progress")
 
         //
         return res

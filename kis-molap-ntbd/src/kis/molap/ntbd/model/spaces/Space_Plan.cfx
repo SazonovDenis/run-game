@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!-- Пространство plan -->
+    <space name="Space_Plan"
+           title="Пространство: план"
+           table="Cube_Plan"
+           class="kis.molap.ntbd.model.spaces.Space_Plan">
+
+        <!-- Координаты -->
+        <coord name="plan"/>
+
+    </space>
+
+
+    <!-- Физическая таблица пространства -->
+    <domain name="Cube_Plan" parent="base" tag.db="true">
+
+        <!-- Координаты -->
+        <field name="plan" parent="long" title="План (уровень)"/>
+
+        <!-- Индекс для координат -->
+        <dbindex name="main" fields="plan" unique="true"/>
+
+    </domain>
+
+
+</root>

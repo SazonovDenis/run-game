@@ -9,9 +9,6 @@
         <field name="progress"/>
 
         <!-- Зависит от кубов -->
-<!--
-        <dependCube name="Cube_Dates"/>
--->
 
     </cube>
 

@@ -7,15 +7,6 @@ import jandcode.core.store.*;
  */
 public interface StatisticManager {
 
-
-    /**
-     * Выдает статистику и успехи для каждого факта.
-     * @param idFact id факта
-     * @param idUsr пользователь
-     */
-    //Store getFactStatistic(long idFact, long idUsr);
-
-
     /**
      * Выдает статистику и успехи каждого Paln.
      */

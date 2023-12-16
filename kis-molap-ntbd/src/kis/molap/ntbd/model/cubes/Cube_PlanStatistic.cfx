@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <cube name="Cube_PlanStatistic"
+          title="Статистика уровней"
+          space="Space_Plan"
+          class="kis.molap.ntbd.model.cubes.Cube_PlanStatistic">
+
+        <!-- Поля -->
+        <field name="cnt"/>
+
+        <!-- Зависит от кубов -->
+
+    </cube>
+
+    <!-- Дополнение физической таблицы для space -->
+    <domain name="Cube_Plan">
+
+        <field name="cnt" parent="long" title=""/>
+
+    </domain>
+
+</root>

@@ -32,7 +32,7 @@
     <domain name="Plan.Server" parent="Plan">
         <field name="usr" parent="Usr/ref"/>
 
-        <field name="cnt" parent="long" title="Общее количество слов"/>
+        <field name="count" parent="long" title="Общее количество слов"/>
         <field name="cntDone" parent="long" title="Количество выученных слов"/>
         <field name="cntInProgress" parent="long" title="Слов на повторение"/>
         <field name="cntToDo" parent="long" title="Количество не выученных слов"/>
@@ -40,31 +40,18 @@
         <field name="order" parent="double" title="Сортировка" scale="2"/>
     </domain>
 
-    <domain name="Plan.Statistic" parent="Plan">
-        <field name="usr" parent="Usr/ref"/>
-
-        <field name="xxx" parent="long"/>
-
-        <field name="answerTime" parent="double" scale="3"/>
-
-        <field name="cnt" parent="long"/>
-        <field name="cntTrue" parent="long"/>
-        <field name="cntFalse" parent="long"/>
-        <field name="cntHint" parent="long"/>
-        <field name="cntSkip" parent="long"/>
-
-        <field name="kfcTrue" parent="double" scale="2"/>
-        <field name="kfcFalse" parent="double" scale="2"/>
-        <field name="kfcHint" parent="double" scale="2"/>
-        <field name="kfcSkip" parent="double" scale="2"/>
+    <domain name="Plan.list.statistic" parent="Plan">
+        <field name="count" parent="long" title="Общее количество слов"/>
+        <field name="progress" parent="double" title="Степень выученности слов, средняя"/>
+        <field name="taskInfo" parent="object" title="Степень выученности слов, по процентилям"/>
     </domain>
 
-    <domain name="Task.Statistic">
+    <domain name="Task.list.statistic">
         <field name="task" parent="Task/ref"/>
-        <field name="usr" parent="Usr/ref"/>
-        <field name="factQuestion" parent="Fact/ref"/>
-        <field name="factAnswer" parent="Fact/ref"/>
 
+        <field name="progress" parent="double" title="Степень выученности слова"/>
+
+<!--
         <field name="answerTime" parent="double" scale="3"/>
 
         <field name="cnt" parent="long"/>
@@ -77,6 +64,7 @@
         <field name="kfcFalse" parent="double" scale="2"/>
         <field name="kfcHint" parent="double" scale="2"/>
         <field name="kfcSkip" parent="double" scale="2"/>
+-->
     </domain>
 
 </root>

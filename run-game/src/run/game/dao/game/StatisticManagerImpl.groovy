@@ -6,6 +6,7 @@ import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
+import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 
 @TypeChecked
@@ -17,28 +18,31 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
 
 
     @DaoMethod
-    public Store getTaskStatistic() {
-        long idUsr = getCurrentUserId()
-        XDateTime dt = XDateTime.now().addDays(-5)
-        Map params = [usr: idUsr, dt: dt]
-
-        //
-        Store res = mdb.createStore("Task.Statistic")
-        mdb.loadQuery(res, sqlTaskStatistic(), params)
-
-        //
-        return res
-    }
-
-    @DaoMethod
     public Store getPlanStatistic() {
         long idUsr = getCurrentUserId()
         XDateTime dt = XDateTime.now().addDays(-5)
         Map params = [usr: idUsr, dt: dt]
 
         //
-        Store res = mdb.createStore("Plan.Statistic")
+        Store res = mdb.createStore("Plan.list.statistic")
         mdb.loadQuery(res, sqlPlanStatistic(), params)
+
+        // Если статистики нет - заполнить пессимистичный вариант
+        fillDummyTaskInfo(res)
+
+        //
+        return res
+    }
+
+    @DaoMethod
+    public Store getTaskStatistic() {
+        long idUsr = getCurrentUserId()
+        XDateTime dt = XDateTime.now().addDays(-5)
+        Map params = [usr: idUsr, dt: dt]
+
+        //
+        Store res = mdb.createStore("Task.list.statistic")
+        mdb.loadQuery(res, sqlTaskStatistic(), params)
 
         //
         return res
@@ -51,7 +55,7 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         Map params = [plan: idPlan, usr: idUsr, dt: dt]
 
         //
-        Store res = mdb.createStore("Task.Statistic")
+        Store res = mdb.createStore("Task.list.statistic")
         mdb.loadQuery(res, sqlTaskStatisticByPlan(), params)
 
         //
@@ -76,86 +80,64 @@ limit 10
     }
 
     String sqlPlanStatistic() {
-        """
-${sqlStatistic()}
-
+        """           
+with Tab_UsrPlanStatistic as (
+ 
 select 
     Plan.id,
     Plan.text,
-    Tab_TaskStatistic.usr,          
-              
-    --PlanTask.id as xxx,
-
-    coalesce(avg(Tab_TaskStatistic.answerTime), 0) as answerTime,
-    coalesce(sum(Tab_TaskStatistic.cnt), 0) as cnt,
-    coalesce(sum(Tab_TaskStatistic.cntTrue), 0) as cntTrue,
-    coalesce(sum(Tab_TaskStatistic.cntFalse), 0) as cntFalse,
-    coalesce(sum(Tab_TaskStatistic.cntHint), 0) as cntHint,
-    coalesce(sum(Tab_TaskStatistic.cntSkip), 0) as cntSkip,
-    coalesce(sum(Tab_TaskStatistic.kfcTrue), 0) as kfcTrue,
-    coalesce(sum(Tab_TaskStatistic.kfcFalse), 0) as kfcFalse,
-    coalesce(sum(Tab_TaskStatistic.kfcHint), 0) as kfcHint,
-    coalesce(sum(Tab_TaskStatistic.kfcSkip), 0) as kfcSkip
+    Cube_UsrPlan.usr,          
+                         
+    Cube_Plan.cnt count,
+    
+    coalesce(Cube_UsrPlan.progress, 0) progress,
+    Cube_UsrPlan.taskInfo
 
 from
     Plan
-    join PlanTask on (Plan.id = PlanTask.plan)
-    --PlanTask
-    left join Tab_TaskStatistic on (PlanTask.task = Tab_TaskStatistic.task)     
+    left join Cube_Plan on (
+        Plan.id = Cube_Plan.plan 
+    )     
+    left join Cube_UsrPlan on (
+        Plan.id = Cube_UsrPlan.plan and 
+        Cube_UsrPlan.usr = :usr  
+    )     
+)
 
-group by
-    Plan.id,
-    Plan.text,
-    --PlanTask.id,
-    Tab_TaskStatistic.usr 
-
+select 
+    * 
+from 
+    Tab_UsrPlanStatistic 
 order by
-    Plan.text, 
-    --PlanTask.id,
-    kfcTrue asc  
+    progress asc,
+    text 
 """
     }
 
     String sqlTaskStatisticByPlan() {
         """
-${sqlStatistic()}
-,   
-
-Tab_TaskForPlan as (
-select
-    PlanTask.task
-from
-    PlanTask
-where
-    PlanTask.plan = :plan
-)
+with Tab_UsrTaskStatistic as (
 
 select 
-    Tab_TaskForPlan.task,
-    
-    Tab_TaskStatistic.usr,          
-                 
-    coalesce(avg(Tab_TaskStatistic.answerTime), 0) as answerTime,
-    coalesce(sum(Tab_TaskStatistic.cnt), 0) as cnt,
-    coalesce(sum(Tab_TaskStatistic.cntTrue), 0) as cntTrue,
-    coalesce(sum(Tab_TaskStatistic.cntFalse), 0) as cntFalse,
-    coalesce(sum(Tab_TaskStatistic.cntHint), 0) as cntHint,
-    coalesce(sum(Tab_TaskStatistic.cntSkip), 0) as cntSkip,
-    coalesce(sum(Tab_TaskStatistic.kfcTrue), 0) as kfcTrue,
-    coalesce(sum(Tab_TaskStatistic.kfcFalse), 0) as kfcFalse,
-    coalesce(sum(Tab_TaskStatistic.kfcHint), 0) as kfcHint,
-    coalesce(sum(Tab_TaskStatistic.kfcSkip), 0) as kfcSkip
+    PlanTask.task,
+    Cube_UsrTask.usr,          
+    coalesce(Cube_UsrTask.progress, 0) as progress
 
 from
-    Tab_TaskForPlan
-    left join Tab_TaskStatistic on (Tab_TaskForPlan.task = Tab_TaskStatistic.task)     
+    PlanTask
+    left join Cube_UsrTask on (PlanTask.task = Cube_UsrTask.task and Cube_UsrTask.usr = :usr)     
 
-group by
-    Tab_TaskForPlan.task,
-    Tab_TaskStatistic.usr 
-
+where
+    PlanTask.plan = :plan
+)                
+          
+select 
+    * 
+from 
+    Tab_UsrTaskStatistic      
 order by
-    kfcTrue asc  
+    progress asc,
+    task 
 """
     }
 
@@ -231,4 +213,17 @@ where
 """
 
     }
+
+
+    void fillDummyTaskInfo(Store st) {
+        for (StoreRecord rec : st) {
+            if (rec.isValueNull("taskInfo")) {
+                List<Map> taskInfoDummy = Cube_UsrPlanStatistic.getTaskInfoDummy()
+                Map last = taskInfoDummy.get(taskInfoDummy.size() - 1)
+                last.put("count", rec.getLong("count"))
+                rec.setValue("taskInfo", taskInfoDummy)
+            }
+        }
+    }
+
 }

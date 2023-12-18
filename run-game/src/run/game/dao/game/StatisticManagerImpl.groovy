@@ -31,6 +31,9 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         fillDummyTaskInfo(res)
 
         //
+        res.sort("progress")
+
+        //
         return res
     }
 
@@ -222,8 +225,8 @@ where
             }
             if (rec.isValueNull("taskInfo")) {
                 List<Map> taskInfoDummy = Cube_UsrPlanStatistic.getTaskInfoDummy()
-                Map last = taskInfoDummy.get(taskInfoDummy.size() - 1)
-                last.put("count", rec.getLong("count"))
+                Map first = taskInfoDummy.get(0)
+                first.put("count", rec.getLong("count"))
                 rec.setValue("taskInfo", taskInfoDummy)
             }
         }

@@ -3,4 +3,6 @@
 
     <x-include path="model/index.cfx"/>
 
+    <x-include path="model/recalc/index.cfx"/>
+
 </root>

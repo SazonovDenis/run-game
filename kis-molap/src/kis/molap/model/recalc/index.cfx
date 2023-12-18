@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <cfg>
+
+        <cube>
+            <!-- настройка запуска процесса пересчета кубов  -->
+            <recalc-cube
+                    enabled="false"
+                    exe="recalc-cube.sh"
+                    interval="1000"/>
+        </cube>
+
+    </cfg>
+
+    <bean name="kis.molap.model.recalc.RecalcCubeService"
+          class="kis.molap.model.recalc.impl.RecalcCubeServiceImpl"/>
+
+</root>

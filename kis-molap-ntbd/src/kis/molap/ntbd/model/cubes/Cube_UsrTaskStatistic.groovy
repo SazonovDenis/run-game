@@ -5,7 +5,6 @@ import jandcode.commons.datetime.*
 import jandcode.commons.variant.*
 import jandcode.core.store.*
 import kis.molap.model.coord.*
-import kis.molap.model.coord.impl.*
 import kis.molap.model.cube.*
 import kis.molap.model.cube.impl.*
 import kis.molap.model.service.*
@@ -15,36 +14,26 @@ import kis.molap.ntbd.model.*
 public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
 
 
-    int RECOMENDED_REPEAT_COUNT = 5
+    int RECOMENDED_REPEAT_COUNT = 3
 
     public CoordList getDirtyCoords(long auditAgeFrom, long auditAgeTo) throws Exception {
         CoordList coords = CoordList.create()
 
         List<String> tables = UtCnv.toList(
-                ""
+                "GameTask",
         )
-
-        Period cubeRange = ageManager.getMinMaxDt(cubeInfo)
 
         for (String table : tables) {
             List<IVariantMap> audit = auditManager.loadAudit(table, auditAgeFrom, auditAgeTo)
 
-/*          todo
             for (Map<String, Object> dataMap : audit) {
-                Long org = UtCnv.toLong(dataMap.get("org"))
-                XDate dbeg = UtCnv.toDate(dataMap.get("dbeg"))
-                XDate dend = UtCnv.toDate(dataMap.get("dend"))
-                Period period = new Period(dbeg, dend)
-                if (!cubeRange.isCross(period)) {
-                    continue
-                }
-                cubeRange.truncPeriod(period)
+                Long usr = UtCnv.toLong(dataMap.get("usr"))
+                Long task = UtCnv.toLong(dataMap.get("task"))
                 Coord coord = Coord.create()
-                coord.put("org", org)
-                coord.put("dt", period)
+                coord.put("usr", usr)
+                coord.put("task", task)
                 coords.add(coord)
             }
-*/
         }
 
         return coords
@@ -85,10 +74,10 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
             //
             double progress = 0
             progress = progress + 1 * (rec.getDouble("cntTrue") - RECOMENDED_REPEAT_COUNT) / rec.getDouble("cnt")
-            progress = progress + 2 * rec.getDouble("cntTrue") / rec.getDouble("cnt")
+            progress = progress + 3 * rec.getDouble("cntTrue") / rec.getDouble("cnt")
             progress = progress - 3 * rec.getDouble("cntFalse") / rec.getDouble("cnt")
             progress = progress - 1 * rec.getDouble("cntHint") / rec.getDouble("cnt")
-            progress = progress - 2 * rec.getDouble("cntSkip") / rec.getDouble("cnt")
+            progress = progress - 1 * rec.getDouble("cntSkip") / rec.getDouble("cnt")
             progress = CubeUtils.discardExtraDigits(progress, 3)
 
             //
@@ -114,13 +103,12 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
     }
 
     String sql_GameTaskList = """                                       
-            -- Список заданий в планах со всей историей их выдачи пользователю
+            -- Список заданий (в любых планах) со всей историей их выдачи пользователю
             with Tab_GameTaskList as (
              
             select
-                PlanTask.id,
-                PlanTask.plan,
-                PlanTask.task,
+                GameTask.id,
+                GameTask.task,
                 GameTask.id gameTask,
                 GameTask.game,
                 GameTask.usr,
@@ -133,16 +121,15 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
                 GameTask.wasFalse,
                 GameTask.wasHint,
                 GameTask.wasSkip
+            
             from
-                PlanTask
-                left join GameTask on (
-                     PlanTask.task = GameTask.task and
-                     GameTask.usr = :usr
-                )
+                GameTask
+            
+            where
+                GameTask.usr = :usr
              
             order by
-                PlanTask.plan,
-                PlanTask.task,
+                GameTask.task,
                 GameTask.game
             )
             """
@@ -150,9 +137,9 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
     String sql_TaskStatistic = """
             ${sql_GameTaskList}
               
-            -- Статистика по каждому заданию в плане
+            -- Статистика по каждому заданию 
             select
-                Tab_GameTaskList.plan,
+                Tab_GameTaskList.usr,
                 Tab_GameTaskList.task,
                 count(Tab_GameTaskList.id) cnt,
                 sum(Tab_GameTaskList.wasAsked) cntAsked,
@@ -170,7 +157,7 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
                 Tab_GameTaskList.task = :task
 
             group by
-                Tab_GameTaskList.plan,
+                Tab_GameTaskList.usr,
                 Tab_GameTaskList.task
                 
             """

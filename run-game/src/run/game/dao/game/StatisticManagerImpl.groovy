@@ -27,7 +27,7 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         Store res = mdb.createStore("Plan.list.statistic")
         mdb.loadQuery(res, sqlPlanStatistic(), params)
 
-        // Если статистики нет - заполнить пессимистичный вариант
+        // Если статистики по плану еще нет - заполнить пессимистичный вариант
         fillDummyTaskInfo(res)
 
         //
@@ -90,7 +90,7 @@ select
                          
     Cube_Plan.cnt count,
     
-    coalesce(Cube_UsrPlan.progress, 0) progress,
+    Cube_UsrPlan.progress,
     Cube_UsrPlan.taskInfo
 
 from
@@ -121,7 +121,7 @@ with Tab_UsrTaskStatistic as (
 select 
     PlanTask.task,
     Cube_UsrTask.usr,          
-    coalesce(Cube_UsrTask.progress, 0) as progress
+    Cube_UsrTask.progress
 
 from
     PlanTask
@@ -217,6 +217,9 @@ where
 
     void fillDummyTaskInfo(Store st) {
         for (StoreRecord rec : st) {
+            if (rec.isValueNull("progress")) {
+                rec.setValue("progress", Cube_UsrPlanStatistic.PROGRESS_MIN)
+            }
             if (rec.isValueNull("taskInfo")) {
                 List<Map> taskInfoDummy = Cube_UsrPlanStatistic.getTaskInfoDummy()
                 Map last = taskInfoDummy.get(taskInfoDummy.size() - 1)

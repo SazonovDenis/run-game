@@ -103,14 +103,6 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     @Test
-    void printPlanStatistic() {
-        long idPlan = 1000
-
-        // Статистика по уровню
-        printTaskStatisticByPlan(idPlan)
-    }
-
-    @Test
     void testGameProcess_x100() {
         long idPlan = 1000
 

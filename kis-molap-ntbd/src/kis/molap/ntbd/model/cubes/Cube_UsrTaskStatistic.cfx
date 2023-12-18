@@ -8,6 +8,9 @@
         <!-- Поля -->
         <field name="progress"/>
 
+        <!-- Зависит от таблиц -->
+        <depend name="GameTask"/>
+
         <!-- Зависит от кубов -->
 
     </cube>

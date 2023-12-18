@@ -186,6 +186,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         Store st = statisticManager.getPlanStatistic()
 
+        //
         for (StoreRecord rec : st) {
             StoreRecord recRes = res.add()
             recRes.setValue("id", rec.getValue("id"))

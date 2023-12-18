@@ -9,6 +9,9 @@
         <field name="progress"/>
         <field name="taskInfo"/>
 
+        <!-- Зависит от таблиц -->
+        <depend name="GameTask"/>
+
         <!-- Зависит от кубов -->
         <dependCube name="Cube_UsrTaskStatistic"/>
 

@@ -40,4 +40,11 @@ public class CubeService_Test extends Dbm_Test {
         worker.connect();
     }
 
+    @Test
+    public void calcAuditAll() throws Exception {
+        WorkerService workerService = getModel().bean(WorkerService.class);
+        WorkerImpl worker = (WorkerImpl) workerService.createWorker();
+        worker.calcAuditAll(0, 0);
+    }
+
 }

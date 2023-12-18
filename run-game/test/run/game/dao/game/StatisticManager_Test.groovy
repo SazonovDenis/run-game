@@ -29,28 +29,11 @@ class StatisticManager_Test extends RgmBase_Test {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
 
         //
-        idPlan = 1000
-        println()
-        println("idPlan: " + idPlan)
-        mdb.outTable(statisticManager.getTaskStatisticByPlan(idPlan))
-
-        //
-        idPlan = 1001
-        println()
-        println("idPlan: " + idPlan)
-        mdb.outTable(statisticManager.getTaskStatisticByPlan(idPlan))
-
-        //
-        idPlan = 1002
-        println()
-        println("idPlan: " + idPlan)
-        mdb.outTable(statisticManager.getTaskStatisticByPlan(idPlan))
-
-        //
-        idPlan = 1003
-        println()
-        println("idPlan: " + idPlan)
-        mdb.outTable(statisticManager.getTaskStatisticByPlan(idPlan))
+        for (idPlan = 1000; idPlan <= 1010; idPlan++) {
+            println()
+            println("idPlan: " + idPlan)
+            mdb.outTable(statisticManager.getTaskStatisticByPlan(idPlan))
+        }
     }
 
 

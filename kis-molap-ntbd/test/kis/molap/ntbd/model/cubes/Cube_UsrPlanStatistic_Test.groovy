@@ -18,7 +18,7 @@ public class Cube_UsrPlanStatistic_Test extends CubeBase_Test {
         CoordList res = new CoordListImpl()
         Coord coord = new CoordImpl()
         coord.put("usr", 1000)
-        coord.put("plan", 1003)
+        coord.put("plan", 1002)
         res.add(coord)
         return res
     }

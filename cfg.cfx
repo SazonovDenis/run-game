@@ -11,6 +11,17 @@
                   password="password"
         />
 
+
+        <cube>
+            <!-- настройка пересчета кубов  -->
+            <recalc-cube
+                    _enabled="true"
+                    enabled="false"
+                    exe="./data/product/cube-audit.sh"
+                    interval="1000"/>
+        </cube>
+
     </cfg>
+
 
 </root>

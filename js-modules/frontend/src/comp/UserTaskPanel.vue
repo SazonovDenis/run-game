@@ -1,5 +1,7 @@
 <template>
     <div class="user-task">
+        <q-btn color="white" text-color="black" label="Skip task"
+               v-on:click="nextTask"/>
 
         <div v-if="doShowTask">
             <Task :task="gameTask.task" :state="dataState"/>
@@ -30,16 +32,21 @@ import Ball from "./Ball"
 import Goal from "./Goal"
 import Task from "./Task"
 import TaskOptions from "./TaskOptions"
+import gameplay from "../../src/gameplay"
 
 export default {
-    components: {Ball, Goal, Task, TaskOptions},
+    components: {gameplay, Ball, Goal, Task, TaskOptions},
 
     props: {
         gameTask: {},
         dataState: {},
     },
 
-    methods: {},
+    methods: {
+        nextTask() {
+            gameplay.nextTask()
+        },
+    },
 
     computed: {
 

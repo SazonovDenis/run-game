@@ -1,32 +1,21 @@
-import {apx} from "./vendor"
+import {apx, jcBase} from "./vendor"
 import ctx from "./gameplayCtx"
 import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
 import testData from "./gameplayTestData"
+import utils from "run-game-frontend/src/utils"
 
 export default {
 
-    //useTestData: true,
-
-    settings: {
-        animationInterval: 10,
-        ballWidth: 32,
-        ballHeihth: 32,
-        goalSize: 16,
-        minDl: 200,
-        maxDl: 1000,
-        valueGoalMax: 10,
-        goalHitSizeDefault: 5,
-        goalHitSizeHint: 2,
-        goalHitSizeError: 1,
-    },
 
     init(globalState) {
+        if (this.gameplay) {
+            return
+        }
+
         // Инициализация контекста
-        ctx.th = this
-        ctx.settings = this.settings
-        ctx.globalState = globalState
+        ctx.gameplay = this
         ctx.eventBus = apx.app.eventBus
 
         // Подписка на события
@@ -39,7 +28,7 @@ export default {
         ctx.eventBus.on("*", this.onEvent)
 
         // Инициализация состояния тестовых данных
-        if (this.useTestData) {
+        if (ctx.useTestData) {
             ctx.useTestData = this.useTestData;
             ctx.testData_taskIdx = -1;
         }
@@ -65,11 +54,11 @@ export default {
 
         // Если не отправляли ответ - отправим
         if (ctx.globalState.gameTask.task && !ctx.globalState.dataState.mode.postTaskAnswerDone) {
-            ctx.th.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
+            ctx.gameplay.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
         }
 
         // Грузим новое задание с сервера
-        let dataGameTask = await ctx.th.api_choiceTask()
+        let dataGameTask = await ctx.gameplay.api_choiceTask()
 
         // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
         for (let i = 0; i < dataGameTask.taskOptions.length; i++) {
@@ -78,7 +67,7 @@ export default {
         }
 
         // Перемешаем ответы
-        dataGameTask.taskOptions = ctx.th.shuffleTaskOptions(dataGameTask.taskOptions)
+        dataGameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(dataGameTask.taskOptions)
 
         // Задание в глобальный контекст
         ctx.globalState.gameTask.task = dataGameTask.task
@@ -95,18 +84,18 @@ export default {
         ctx.globalState.dataState.mode.postTaskAnswerDone = false
 
         // Состояние цели
-        ctx.th.resetGoal(dataGameTask.task.text)
+        ctx.gameplay.resetGoal(dataGameTask.task.text)
     },
 
     async gameStart(idPlan) {
-        let recGame = await ctx.th.api_gameStart(idPlan)
+        let recGame = await ctx.gameplay.api_gameStart(idPlan)
 
         // Задание и раунд в глобальном контексте
         ctx.globalState.game = recGame
         ctx.globalState.gameTask = {}
 
         //
-        ctx.th.nextTask()
+        ctx.gameplay.nextTask()
     },
 
     async api_gameStart(idPlan) {
@@ -169,6 +158,41 @@ export default {
         return res
     },
 
+    async login(login, password) {
+        let res = await apx.jcBase.ajax.request({
+            url: "auth/login",
+            params: {login: login, password: password},
+        })
+
+        ctx.globalState.user.id = res.data.id
+        ctx.globalState.user.login = res.data.login
+        ctx.globalState.user.text = res.data.text
+        ctx.globalState.user.color = res.data.color
+
+        //
+        if (!jcBase.cfg.envDev) {
+            utils.openFullscreen()
+        }
+    },
+
+    async logout() {
+        let res = await apx.jcBase.ajax.request({
+            url: "auth/logout",
+        })
+
+        ctx.globalState.user.id = res.data.id
+        ctx.globalState.user.login = res.data.login
+        ctx.globalState.user.text = res.data.text
+        ctx.globalState.user.color = res.data.color
+        if (!ctx.globalState.user.id) {
+            ctx.globalState.user.id = 0
+        }
+        // Задание и раунд в глобальном контексте
+        ctx.globalState.game = {}
+        ctx.globalState.gameTask = {}
+    },
+
+
     // Сбрасываем состояние результата (цели)
     resetGoal(text) {
         ctx.globalState.dataState.mode.goalHitSize = ctx.settings.goalHitSizeDefault
@@ -180,7 +204,6 @@ export default {
 
     on_dragstart(eventDrag) {
         //console.info("doDragStart", eventDrag)
-
         let elBall = document.getElementById("ball")
         let elGoal = document.getElementById("goal")
 
@@ -198,7 +221,7 @@ export default {
         stateDrag.y = eventDrag.y
 
         //
-        ctx.th.stopMoveAnimation()
+        ctx.gameplay.stopMoveAnimation()
 
         //
         stateBall.value = 1
@@ -230,8 +253,6 @@ export default {
     },
 
     on_dragend(eventDrag) {
-        console.info("doDragEnd", eventDrag)
-
         let stateDrag = ctx.globalState.dataState.drag
         let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
@@ -239,7 +260,7 @@ export default {
 
 
         // Уведомим сервер
-        ctx.th.api_postTaskAnswer(eventDrag.taskOption.task, {
+        ctx.gameplay.api_postTaskAnswer(eventDrag.taskOption.task, {
             wasTrue: eventDrag.taskOption.isTrue,
             wasFalse: !eventDrag.taskOption.isTrue
         })
@@ -283,7 +304,7 @@ export default {
         stateDrag.dy = dy / framePerSec
 
         // Выбрали ответ - отреагируем
-        if (ctx.th.isOptionIsTrueAnswer(eventDrag.taskOption)) {
+        if (ctx.gameplay.isOptionIsTrueAnswer(eventDrag.taskOption)) {
             // Выбрали правильный ответ
             ctx.globalState.dataState.ball.ballIsTrue = true
             //stateMode.modeShowOptions = null
@@ -315,7 +336,7 @@ export default {
         ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)
 
         //
-        ctx.th.startMoveAnimation(elBall)
+        ctx.gameplay.startMoveAnimation(elBall)
     },
 
     isOptionIsTrueAnswer(taskOption) {
@@ -347,7 +368,7 @@ export default {
         let stateDrag = ctx.globalState.dataState.drag
 
         //
-        stateDrag.interval = setInterval(ctx.th.animationStep, ctx.settings.animationInterval)
+        stateDrag.interval = setInterval(ctx.gameplay.animationStep, ctx.settings.animationInterval)
     },
 
     stopMoveAnimation() {
@@ -394,7 +415,7 @@ export default {
             }
 
             //
-            ctx.th.stopMoveAnimation()
+            ctx.gameplay.stopMoveAnimation()
 
             //
             stateBall.value = 0
@@ -403,8 +424,8 @@ export default {
             ctx.eventBus.emit("change:goal.value", stateGoal.value)
 
             // Перемешаем ответы, если цель не поражена
-            if (!ctx.th.goalDone()) {
-                ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+            if (!ctx.gameplay.goalDone()) {
+                ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
 
                 // Снова выбираем
                 stateMode.modeShowOptions = null
@@ -417,13 +438,13 @@ export default {
         // Выход шарика за границы экрана
         if (stateDrag.x + ctx.settings.ballWidth > innerWidth || stateDrag.x < 0 || stateDrag.y + ctx.settings.ballHeihth > innerHeight || stateDrag.y < 0) {
             //
-            ctx.th.stopMoveAnimation()
+            ctx.gameplay.stopMoveAnimation()
 
             //
             stateBall.value = 0
 
             // Перемешаем ответы
-            ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
 
             // Снова выбираем
             stateMode.modeShowOptions = null
@@ -443,13 +464,13 @@ export default {
         // Выход размера шарика за ограничение размера
         if (stateBall.value > 5 || stateBall.value < 0) {
             //
-            ctx.th.stopMoveAnimation()
+            ctx.gameplay.stopMoveAnimation()
 
             // Прекращаем полет шарика
             stateBall.value = 0
 
             // Перемешаем ответы
-            ctx.globalState.gameTask.taskOptions = ctx.th.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
 
             // Снова выбираем
             stateMode.modeShowOptions = null
@@ -466,8 +487,8 @@ export default {
     },
 
     onChange_goalValue(v) {
-        if (ctx.th.goalDone()) {
-            ctx.th.nextTask()
+        if (ctx.gameplay.goalDone()) {
+            ctx.gameplay.nextTask()
         }
     },
 
@@ -483,7 +504,7 @@ export default {
 
             // Если не отправляли ответ - отправим
             if (!ctx.globalState.dataState.mode.postTaskAnswerDone) {
-                ctx.th.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasHint: true})
+                ctx.gameplay.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasHint: true})
             }
         }
     },

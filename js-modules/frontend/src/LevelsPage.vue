@@ -1,9 +1,6 @@
 <template>
 
-    <MenuContainer
-        title="Уровни"
-        :globalState="globalState"
-    >
+    <MenuContainer title="Уровни">
 
         <div v-for="plan in plans"
              class="game-plan-item"
@@ -46,12 +43,8 @@ export default {
     data() {
         return {
             plans: [],
-            globalState: null,
+            globalState: ctx.getGlobalState(),
         }
-    },
-
-    created() {
-        this.globalState = ctx.globalState
     },
 
     methods: {
@@ -101,8 +94,10 @@ export default {
     },
 
     mounted() {
-        if (!ctx.globalState.user || !(ctx.globalState.user.id > 0)) {
-            apx.showFrame({frame: import("./HomePage")})
+        if (!this.globalState.user || !(this.globalState.user.id > 0)) {
+            apx.showFrame({
+                frame: '/login',
+            })
             return
         }
 

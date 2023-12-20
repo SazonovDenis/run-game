@@ -1,10 +1,10 @@
 <template>
-    <q-layout view="hHh lpR fFr" style="user-select: none;">
+    <q-layout view="hHh lpR fFf" style="user-select: none;">
 
         <q-header reveal elevated class="bg-primary text-white">
             <q-toolbar>
                 <q-toolbar-title>
-                    <q-avatar>
+                    <q-avatar @click="onMain()">
                         <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
                     </q-avatar>
                     <span v-if="title">
@@ -30,6 +30,9 @@
                         <div class="q-scrollarea__content absolute"><!---->
                             <div class="q-item__label q-item__label--header">Right
                                 Drawer
+                            </div>
+                            <div class="q-item__label q-item__label--header"
+                                 @click="onLevels()">Уровни
                             </div>
                             <div class="text-grey" style="padding: 25px 16px 16px;">
                                 <p><em>Right Drawer has intended scroll</em></p>
@@ -105,7 +108,8 @@
                         draggable="false" src="https://cdn.quasar.dev/img/material.png"
                         style="object-fit: cover; object-position: 50% 50%;"></div>
                     <div class="q-img__content absolute-full q-anchor--skip">
-                        <div class="absolute-bottom bg-transparent">
+                        <div class="absolute-bottom bg-transparent"
+                             @click="onUser()">
                             <div class="q-avatar q-mb-sm" style="font-size: 56px;">
                                 <div
                                     class="q-avatar__content row flex-center overflow-hidden">
@@ -152,6 +156,8 @@
 
 <script>
 import {ref} from 'vue'
+import ctx from "../gameplayCtx"
+import {apx} from "run-game-frontend/src/vendor"
 
 export default {
     name: "MenuContainer",
@@ -159,12 +165,36 @@ export default {
     props: {
         title: null,
         menu: [],
-        globalState: null,
+    },
+
+    data: function() {
+        return {
+            globalState: ctx.getGlobalState(),
+        }
+    },
+
+    methods: {
+        onUser: function() {
+            apx.showFrame({
+                frame: '/user',
+            })
+        },
+        onLevels: function() {
+            apx.showFrame({
+                frame: '/levels',
+            })
+        },
+        onMain: function() {
+            apx.showFrame({
+                frame: '/',
+            })
+        },
     },
 
     setup() {
         const rightDrawerOpen = ref(false)
 
+        //
         return {
             rightDrawerOpen,
             toggleRightDrawer() {

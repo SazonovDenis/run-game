@@ -368,6 +368,13 @@ export default {
         let stateDrag = ctx.globalState.dataState.drag
 
         //
+        console.info("startMoveAnimation, stateDrag.interval", stateDrag.interval)
+
+        if (stateDrag.interval != null) {
+            console.error("startMoveAnimation, stateDrag.interval != null", stateDrag.interval)
+            return
+        }
+        //
         stateDrag.interval = setInterval(ctx.gameplay.animationStep, ctx.settings.animationInterval)
     },
 
@@ -375,7 +382,11 @@ export default {
         let stateDrag = ctx.globalState.dataState.drag
 
         //
+        console.info("stopMoveAnimation, stateDrag.interval", stateDrag.interval)
+
+        //
         clearInterval(stateDrag.interval)
+        stateDrag.interval = null
     },
 
     /**
@@ -392,6 +403,9 @@ export default {
         let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
         let stateMode = ctx.globalState.dataState.mode
+
+        //
+        console.info("animationStep().stateDrag.interval", stateDrag.interval)
 
         // Шаг
         stateDrag.x = stateDrag.x + stateDrag.dx

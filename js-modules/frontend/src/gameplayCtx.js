@@ -8,7 +8,7 @@ export default {
      * Не меняющиеся настройки приложения
      */
     settings: {
-        animationInterval: 500,
+        animationInterval: 10,
         ballWidth: 32,
         ballHeihth: 32,
         goalSize: 16,

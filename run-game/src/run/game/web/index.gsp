@@ -7,7 +7,7 @@
   def ctx = th.inst(JsIndexGspContext)
   def wpCtx = th.inst(FrontendIndexGspContext)
   //
-  ctx.title = "Quizzy"
+  ctx.title = "Word strike"
 
   wpCtx.addLink("main")
 %>

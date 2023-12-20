@@ -8,10 +8,10 @@
                         <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
                     </q-avatar>
                     <span v-if="title">
-                        Quizzy - {{ title }}
+                        Word strike - {{ title }}
                     </span>
                     <span v-else>
-                        Quizzy
+                        Word strike
                     </span>
                 </q-toolbar-title>
 

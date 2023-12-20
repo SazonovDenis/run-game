@@ -37,6 +37,7 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         return res
     }
 
+/*
     @DaoMethod
     public Store getTaskStatistic() {
         long idUsr = getCurrentUserId()
@@ -50,6 +51,7 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         //
         return res
     }
+*/
 
     @DaoMethod
     public Store getTaskStatisticByPlan(long idPlan) {
@@ -61,10 +63,17 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         Store res = mdb.createStore("Task.list.statistic")
         mdb.loadQuery(res, sqlTaskStatisticByPlan(), params)
 
+        // Если статистики по task еще нет - заполнить пессимистичный вариант
+        fillDummyTaskProgress(res)
+
+        //
+        res.sort("progress")
+
         //
         return res
     }
 
+/*
     String sqlTaskStatistic() {
         """
 ${sqlStatistic()}
@@ -81,6 +90,7 @@ order by
 limit 10    
 """
     }
+*/
 
     String sqlPlanStatistic() {
         """           
@@ -144,80 +154,6 @@ order by
 """
     }
 
-    String sqlStatistic() {
-        return """
-with
-
-Tab_TaskStatisticBase as (
-select
-    GameTask.usr,
-    GameTask.task,
-    Task.factQuestion,
-    Task.factAnswer,
-    avg(extract('epoch' from GameTask.dtAnswer) - extract('epoch' from GameTask.dtTask)) as answerTime,
-    count(*) as cnt,
-    sum(case when wasTrue = 1 then 1.0 else 0.0 end) as cntTrue,
-    sum(case when wasFalse = 1 then 1.0 else 0.0 end) as cntFalse,
-    sum(case when wasHint = 1 then 1.0 else 0.0 end) as cntHint,
-    sum(case when wasSkip = 1 then 1.0 else 0.0 end) as cntSkip
-from
-    GameTask
-    join Task on (GameTask.task = Task.id)
-where
-    GameTask.usr = :usr and
-    GameTask.dtTask > :dt
-group by
-    GameTask.usr,
-    GameTask.task,
-    Task.factQuestion,
-    Task.factAnswer
-),
-
-Tab_TaskStatistic as (
-select 
-    Tab_TaskStatisticBase.*,
-    (cntTrue) / (cnt) * 100 as kfcTrue,
-    (cntFalse) / (cnt) * 100 as kfcFalse,
-    (cntHint) / (cnt) * 100 as kfcHint,
-    (cntSkip) / (cnt) * 100 as kfcSkip
-from
-    Tab_TaskStatisticBase
-)
-
-"""
-    }
-
-
-    String sqlFact() {
-        return """
-select
-    * 
-from
-    PlanFact
-where
-    PlanFact.plan = :plan
-"""
-
-    }
-
-    String sqlFactStatistic() {
-        return """
-select
-    Task.*,
-    GameTask.dtTask,
-    GameTask.dtAnswer,
-    TaskOption.isTrue
-from
-    GameTask
-    join Task on (GameTask.task = Task.id and Task.factQuestion = :fact) 
-    join TaskOption on (TaskOption.id = GameTask.answerTaskOption) 
-where
-    GameTask.usr = :usr
-"""
-
-    }
-
-
     void fillDummyTaskInfo(Store st) {
         for (StoreRecord rec : st) {
             if (rec.isValueNull("progress")) {
@@ -228,6 +164,14 @@ where
                 Map first = taskInfoDummy.get(0)
                 first.put("count", rec.getLong("count"))
                 rec.setValue("taskInfo", taskInfoDummy)
+            }
+        }
+    }
+
+    void fillDummyTaskProgress(Store st) {
+        for (StoreRecord rec : st) {
+            if (rec.isValueNull("progress")) {
+                rec.setValue("progress", Cube_UsrPlanStatistic.PROGRESS_MIN)
             }
         }
     }

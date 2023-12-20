@@ -1,20 +1,30 @@
 <template>
-    <div>
+
+    <MenuContainer
+        title="Уровни"
+        :globalState="globalState"
+    >
 
         <div v-for="plan in plans"
              class="game-plan-item"
              @click="click(plan.id)">
             {{ plan.text }} ({{ plan.count }})
             <div class="game-plan-item-progress">
-                <div v-for="item in plan.taskInfo"
-                     :class="getClass(item)"
+                <div v-for="(item, index) in plan.taskInfo"
+                     :class="'game-plan-item-progress-el game-plan-item-progress-bar ' + getClass(item, index, plan.taskInfo.length)"
                      :style="{height: getHeight(plan, item)}">
+                </div>
+            </div>
+            <div class="game-plan-item-progress">
+                <div v-for="(item, index) in plan.taskInfo"
+                     class="game-plan-item-progress-el game-plan-item-progress-num">
                     {{ getItemCount(item) }}
                 </div>
             </div>
         </div>
 
-    </div>
+    </MenuContainer>
+
 </template>
 
 <script>
@@ -23,25 +33,36 @@ import {apx} from './vendor'
 import {daoApi} from "./dao"
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
+import MenuContainer from "./comp/MenuContainer"
 
 export default {
 
     extends: apx.JcFrame,
 
-    components: {},
+    components: {
+        MenuContainer
+    },
 
     data() {
         return {
-            plans: []
+            plans: [],
+            globalState: null,
         }
     },
 
     created() {
+        this.globalState = ctx.globalState
     },
 
     methods: {
-        getClass(item) {
-            return "game-plan-item-progress-el game-plan-inprogress"
+        getClass(item, index, count) {
+            if (index === 0) {
+                return "game-plan-todo"
+            } else if (index === (count - 1)) {
+                return "game-plan-done"
+            } else {
+                return "game-plan-inprogress"
+            }
         },
 
         getHeight(plan, item) {
@@ -109,14 +130,24 @@ export default {
 .game-plan-item-progress {
     display: flex;
     flex-direction: row;
+    align-items: flex-end;
 }
 
 .game-plan-item-progress-el {
-    margin: 0.1em;
-    _padding: 0.5em;
-    width: 2em;
+    margin: 0.1rem;
+    padding: 0.1rem 0.2rem;
+    min-width: 3rem;
+}
+
+.game-plan-item-progress-bar {
     border: 1px solid silver;
     border-radius: 5px;
+}
+
+.game-plan-item-progress-num {
+    text-align: center;
+    font-size: 90%;
+    _border: 1px solid silver;
 }
 
 .game-plan-done {

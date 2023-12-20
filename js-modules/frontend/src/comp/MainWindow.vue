@@ -1,55 +1,66 @@
 <template>
 
-    <div style="user-select: none;">
+    <MenuContainer
+        title=""
+        :globalState="globalState"
+    >
 
-        <div class="main-window-menu">
-            <q-btn color="white" text-color="black" label="Next"
-                   v-if="globalState.user.id > 0"
-                   v-on:click="nextTask"/>
+        <template v-slot:footer>
+            <GameState :game="globalState.game"/>
+        </template>
 
-            <q-btn color="white" text-color="black" label="Денис"
-                   v-if="globalState.user.id == 0"
-                   v-on:click="login('user1010', '')"/>
-            <q-btn color="white" text-color="black" label="Паша"
-                   v-if="globalState.user.id == 0"
-                   v-on:click="login('user1012', '')"/>
-            <q-btn color="white" text-color="black" label="Admin"
-                   v-if="globalState.user.id == 0"
-                   v-on:click="login('admin', '111')"/>
+        <div style="user-select: none;">
 
-            <q-btn color="white" text-color="black" label="Уровень"
-                   v-if="globalState.user.id > 0"
-                   v-on:click="levels()"/>
+            <div class="main-window-menu">
+                <q-btn color="white" text-color="black" label="Next"
+                       v-if="globalState.user.id > 0"
+                       v-on:click="nextTask"/>
 
-            <q-btn color="white" text-color="black" label="F"
-                   v-if="globalState.user.id > 0"
-                   v-on:click="openFullscreen()"/>
+                <q-btn color="white" text-color="black" label="Денис"
+                       v-if="globalState.user.id == 0"
+                       v-on:click="login('user1010', '')"/>
+                <q-btn color="white" text-color="black" label="Паша"
+                       v-if="globalState.user.id == 0"
+                       v-on:click="login('user1012', '')"/>
+                <q-btn color="white" text-color="black" label="Admin"
+                       v-if="globalState.user.id == 0"
+                       v-on:click="login('admin', '111')"/>
 
-            <GameInfo :game="globalState.game"/>
+                <q-btn color="white" text-color="black" label="Уровень"
+                       v-if="globalState.user.id > 0"
+                       v-on:click="levels()"/>
 
-            <div class="menu-fill">
+                <q-btn color="white" text-color="black" label="F"
+                       v-if="globalState.user.id > 0"
+                       v-on:click="openFullscreen()"/>
+
+
+                <div class="menu-fill">
+                </div>
+
+                <!--
+                            <q-btn color="white" text-color="black" label="Logout"
+                                   v-if="globalState.user.id > 0"
+                                   v-on:click="logout()"/>
+                -->
+
+                <UserInfo
+                    :user="globalState.user"
+                    v-on:click="logout()"
+                />
+
             </div>
 
-<!--
-            <q-btn color="white" text-color="black" label="Logout"
-                   v-if="globalState.user.id > 0"
-                   v-on:click="logout()"/>
--->
+            <UserTaskPanel
+                v-if="globalState.user.id > 0"
+                :gameTask="globalState.gameTask" :dataState="globalState.dataState"/>
 
-            <UserInfo :user="globalState.user"
-                      v-on:click="logout()"
-            />
+            <div v-else class="main-window-img">
+                <img v-bind:src="backgroundImage">
+            </div>
+
         </div>
-
-        <UserTaskPanel
-            v-if="globalState.user.id > 0"
-            :gameTask="globalState.gameTask" :dataState="globalState.dataState"/>
-
-        <div v-else class="main-window-img">
-            <img v-bind:src="backgroundImage">
-        </div>
-
-    </div>
+    </MenuContainer>
 
 </template>
 
@@ -58,17 +69,18 @@
 
 import UserTaskPanel from "./UserTaskPanel"
 import UserInfo from "./UserInfo"
-import GameInfo from "./GameInfo"
+import GameState from "./GameState"
 import gameplay from "../gameplay"
 import ctx from "../gameplayCtx"
 import utils from '../utils'
 import {apx, jcBase} from '../vendor'
+import MenuContainer from "./MenuContainer"
 
 export default {
     name: "MainWindow",
 
     components: {
-        UserTaskPanel, UserInfo, GameInfo, gameplay
+        MenuContainer, UserTaskPanel, UserInfo, GameState, gameplay
     },
 
     computed: {

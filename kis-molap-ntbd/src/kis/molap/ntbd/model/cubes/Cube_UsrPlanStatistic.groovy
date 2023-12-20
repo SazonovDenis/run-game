@@ -28,7 +28,7 @@ public class Cube_UsrPlanStatistic extends CubeCustom implements ICalcData {
 
 
     static double LAST_PERCENTILE = 999
-    static List progressPercentiles = [-1.5, 1.5, LAST_PERCENTILE]
+    static List progressPercentiles = [-4.5, -1.5, -0.5, 1, LAST_PERCENTILE]
 
     /**
      * Предполагаемое худшее значение progress.

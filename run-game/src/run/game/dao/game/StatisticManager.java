@@ -16,7 +16,7 @@ public interface StatisticManager {
     /**
      * Выдает статистику и успехи для каждого Task.
      */
-    Store getTaskStatistic();
+    //Store getTaskStatistic();
 
 
     /**

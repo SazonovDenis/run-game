@@ -161,7 +161,7 @@ class Server_Game_Test extends RgmBase_Test {
         }
     }
 
-
+    @Test
     void getAndPrintActiveGame() {
         Server upd = mdb.create(ServerImpl)
 

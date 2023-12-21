@@ -138,7 +138,7 @@
 
   <div style="font-size: 2em;">Игровой тренажер</div>
 
-  <div style="font-size: 4em;">${ctx.title}</div>
+  <div style="font-size: 3em;">${ctx.title}</div>
 
   <div class="jc-splash-icon">
     <img id="jc-splash-icon" class="jc-splash-icon"

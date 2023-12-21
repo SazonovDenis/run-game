@@ -149,22 +149,15 @@ export default {
 
     created() {
         gameplay.init(this.globalState)
-        //jcBase.cfg.envDev = false
     },
 
     mounted() {
         ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
-
-        //
-        this.getUserInfo()
-
-        //
-        this.nextTask()
     },
 
     unmounted() {
         ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
-        gameplay.shutdown()
+        //gameplay.shutdown()
     },
 
 }

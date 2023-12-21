@@ -59,7 +59,7 @@ export default {
         },
 
         getHeight(plan, item) {
-            if (plan.count == 0) {
+            if (plan.count === 0) {
                 return "0em"
             }
             let perc = 100 * item.count / plan.count
@@ -75,12 +75,12 @@ export default {
             }
         },
 
-        click(idPlan) {
-            apx.showFrame({
-                frame: '/', props: {}
-            })
+        async click(idPlan) {
+            await gameplay.gameStart(idPlan)
 
-            gameplay.gameStart(idPlan)
+            apx.showFrame({
+                frame: '/game', props: {}
+            })
         },
 
         async loadLevels() {

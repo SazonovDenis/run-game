@@ -14,6 +14,9 @@ export default {
             return
         }
 
+        //
+        //jcBase.cfg.envDev = false
+
         // Инициализация контекста
         ctx.gameplay = this
         ctx.eventBus = apx.app.eventBus
@@ -45,6 +48,21 @@ export default {
         ctx.eventBus.off("*", this.onEvent)
         //
         ctx.gameplay = null
+    },
+
+    async getUserInfo() {
+        let res = await apx.jcBase.ajax.request({
+            url: "auth/getUserInfo",
+        })
+
+        this.globalState.user.id = res.data.id
+        this.globalState.user.login = res.data.login
+        this.globalState.user.text = res.data.text
+        this.globalState.user.color = res.data.color
+        //
+        if (!this.globalState.user.id) {
+            this.globalState.user.id = 0
+        }
     },
 
     // Новое задание
@@ -100,12 +118,49 @@ export default {
         ctx.gameplay.nextTask()
     },
 
+    async getActiveGame() {
+        let recGame = await ctx.gameplay.api_getActiveGame()
+
+        if (recGame) {
+            // Задание и раунд в глобальном контексте
+            ctx.globalState.game = recGame
+            ctx.globalState.gameTask = {}
+
+            //
+            //ctx.gameplay.nextTask()
+        } else {
+            ctx.gameplay.clearGame()
+        }
+    },
+
+    async closeActiveGame() {
+        await ctx.gameplay.api_closeActiveGame()
+        ctx.gameplay.clearGame()
+    },
+
+    clearGame() {
+        ctx.globalState.game = {}
+        ctx.globalState.gameTask = {}
+    },
+
     async api_gameStart(idPlan) {
         let resApi = await daoApi.loadStore('m/Game/gameStart', [idPlan])
 
         let res = resApi.records[0]
 
         return res
+    },
+
+    async api_getActiveGame() {
+        let resApi = await daoApi.loadStore('m/Game/getActiveGame', [])
+
+        let res = resApi.records[0]
+
+        return res
+    },
+
+    async api_closeActiveGame() {
+        await daoApi.invoke('m/Game/closeActiveGame', [])
     },
 
     async api_choiceTask() {
@@ -119,7 +174,7 @@ export default {
 
             //
             res.game = {}
-            res.game.text = "test"
+            res.game.text = "test game"
             res.game.countTotal = testData.tasks.length
             res.game.countDone = ctx.testData_taskIdx
 

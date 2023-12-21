@@ -1,14 +1,25 @@
 <template>
 
-    <MenuContainer itle="Итоги игры">
+    <MenuContainer title="Итоги игры">
 
         <game-info :game="globalState.game">
 
         </game-info>
 
-        <q-btn>Yes</q-btn>
+        <q-btn v-if="globalState.game.id && !globalState.game.done"
+               @click="closeActiveGame()">
+            Выйти из игры
+        </q-btn>
 
-        <q-btn>No</q-btn>
+        <q-btn v-if="globalState.game.id && !globalState.game.done"
+               @click="continueActiveGame()">
+            Продолжить игру
+        </q-btn>
+
+        <q-btn v-if="globalState.game.plan && globalState.game.done"
+               @click="startNewGame()">
+            Играть еще раз
+        </q-btn>
 
     </MenuContainer>
 
@@ -16,8 +27,10 @@
 
 <script>
 
-import GameInfo from "./comp/GameInfo"
+import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
+import gameplay from "./gameplay"
+import GameInfo from "./comp/GameInfo"
 import MenuContainer from "./comp/MenuContainer"
 
 export default {
@@ -30,10 +43,38 @@ export default {
         }
     },
 
+    methods: {
+        async closeActiveGame() {
+            await gameplay.closeActiveGame()
+
+            apx.showFrame({
+                frame: '/', props: {prop1: 1}
+            })
+        },
+
+        continueActiveGame() {
+            apx.showFrame({
+                frame: '/game', props: {prop1: 1}
+            })
+        },
+
+        async startNewGame() {
+            await gameplay.gameStart(globalState.game.plan)
+
+            apx.showFrame({
+                frame: '/game', props: {prop1: 1}
+            })
+        },
+    }
+
 }
 
 </script>
 
-<style scoped>
+<style>
+
+.q-btn {
+    margin: 0.5rem;
+}
 
 </style>

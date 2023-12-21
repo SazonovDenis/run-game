@@ -12,6 +12,7 @@ export function run() {
     let routes = [
         {path: '', frame: Home},
         {path: '/login', frame: import('./LoginPage')},
+        {path: '/game', frame: import('./GamePage')},
 /*
         {path: '/start', frame: import('./StartPage')},
 */

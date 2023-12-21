@@ -374,6 +374,8 @@ where
 select
     Game.id,
     Game.plan,
+    Game.dbeg,
+    Game.dend,
     Plan.text,
     count(*) as countTotal,
     sum(case when GameTask.dtTask is null then 0 else 1 end) as countDone

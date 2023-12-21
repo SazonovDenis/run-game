@@ -1,13 +1,15 @@
 <template>
-    <div class="game-info">
-        <span class="game-text">{{ text }}</span>
-        <span class="game-info">{{ info }}</span>
+    <div class="game-state">
+        <span class="game-state__game-text">{{ text }}</span>
+        <span class="game-state__info">{{ info }}</span>
     </div>
 </template>
 
 <script>
 
-
+/**
+ * Состояние игры. Виджет для таскбара
+ */
 export default {
     components: {},
 
@@ -42,20 +44,24 @@ export default {
 </script>
 
 
-<style>
+<style lang="less">
 
-.game-info {
-    background-color: #eeeeee;
-    padding: 5px;
+.game-state {
+    padding: 0.5em;
+
+    span {
+        margin: 0.5em;
+    }
+
+    &__text {
+        font-size: 80%;
+        color: #850000;
+    }
+
+    &__info {
+        color: #5b9e3a;
+    }
 }
 
-.game-text {
-    font-size: 80%;
-    color: #850000;
-}
-
-.game-info {
-    color: #003eff;
-}
 
 </style>

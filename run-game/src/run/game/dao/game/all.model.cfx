@@ -24,6 +24,8 @@
         <field name="id" parent="Game/ref"/>
         <field name="plan" parent="Plan/ref"/>
         <field name="text" parent="Plan/text"/>
+        <field name="dbeg" parent="datetime"/>
+        <field name="dend" parent="datetime"/>
         <field name="countTotal" parent="long"/>
         <field name="countDone" parent="long"/>
     </domain>

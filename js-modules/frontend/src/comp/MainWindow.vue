@@ -1,48 +1,19 @@
 <template>
 
-    <MenuContainer title="">
+    <MenuContainer title="MainWindow_xxx">
 
         <template v-slot:footer>
             <GameState :game="globalState.game"/>
         </template>
 
-        <div style="user-select: none;">
+        <q-btn color="white" text-color="black" label="F"
+               v-if="globalState.user.id > 0"
+               v-on:click="openFullscreen()"/>
 
-            <div class="main-window-menu">
-                <!--
-                                <q-btn color="white" text-color="black" label="Next"
-                                       v-if="globalState.user.id > 0"
-                                       v-on:click="nextTask"/>
-                -->
-
-                <q-btn color="white" text-color="black" label="Уровень"
-                       v-if="globalState.user.id > 0"
-                       v-on:click="levels"/>
-
-                <q-btn label="GameInfo"
-                       v-on:click="gameInfo"/>
-
-                <q-btn color="white" text-color="black" label="F"
-                       v-if="globalState.user.id > 0"
-                       v-on:click="openFullscreen()"/>
-
-
-<!--
-                <div class="menu-fill">
-                </div>
--->
-
-            </div>
-
-            <UserTaskPanel
-                v-if="globalState.user.id > 0"
-                :gameTask="globalState.gameTask" :dataState="globalState.dataState"/>
-
-            <div v-else class="main-window-img">
-                <img v-bind:src="backgroundImage">
-            </div>
-
+        <div class="main-window-img">
+            <img v-bind:src="backgroundImage">
         </div>
+
     </MenuContainer>
 
 </template>
@@ -81,44 +52,6 @@ export default {
 
     methods: {
 
-/*
-        async login(login, password) {
-            await gameplay.login(username, password)
-
-            //
-            if (!jcBase.cfg.envDev) {
-                utils.openFullscreen()
-            }
-
-            //
-            if (this.globalState.user.id > 0) {
-                this.nextTask()
-            }
-        },
-
-        async logout() {
-            await gameplay.logout()
-
-            apx.showFrame({
-                frame: '/login',
-            })
-        },
-*/
-
-        async getUserInfo() {
-            let res = await apx.jcBase.ajax.request({
-                url: "auth/getUserInfo",
-            })
-
-            this.globalState.user.id = res.data.id
-            this.globalState.user.login = res.data.login
-            this.globalState.user.text = res.data.text
-            this.globalState.user.color = res.data.color
-            //
-            if (!this.globalState.user.id) {
-                this.globalState.user.id = 0
-            }
-        },
 
         levels() {
             apx.showFrame({
@@ -136,23 +69,39 @@ export default {
             utils.openFullscreen()
         },
 
-        nextTask() {
-            if (this.globalState.user.id > 0) {
-                gameplay.nextTask()
-            }
-        },
+        /*
+                nextTask() {
+                    if (this.globalState.user.id > 0) {
+                        gameplay.nextTask()
+                    }
+                },
+        */
 
-        //
-        onLoadedGameTask(gameTask) {
-        },
+        /*
+                //
+                onLoadedGameTask(gameTask) {
+                },
+        */
     },
 
     created() {
         gameplay.init(this.globalState)
     },
 
-    mounted() {
-        ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
+    async mounted() {
+        /*
+                ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
+        */
+
+        //
+        await gameplay.getActiveGame()
+
+        // Есть текущая игра?
+        if (this.globalState.game.id) {
+            this.gameInfo()
+        } else {
+            //this.levels()
+        }
     },
 
     unmounted() {

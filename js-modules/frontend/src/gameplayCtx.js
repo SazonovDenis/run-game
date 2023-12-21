@@ -46,6 +46,9 @@ export default {
                     text: "не загружена",
                     countTotal: 0,
                     countDone: 0,
+                    done: null,
+                    dbeg: null,
+                    dend: null,
                 },
 
                 // Задание

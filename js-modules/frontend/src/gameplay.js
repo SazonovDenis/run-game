@@ -10,7 +10,7 @@ export default {
 
 
     init(globalState) {
-        if (this.gameplay) {
+        if (ctx.gameplay) {
             return
         }
 
@@ -43,6 +43,8 @@ export default {
         ctx.eventBus.off("showHint", this.onShowHint)
         //
         ctx.eventBus.off("*", this.onEvent)
+        //
+        ctx.gameplay = null
     },
 
     // Новое задание
@@ -203,11 +205,9 @@ export default {
 
 
     on_dragstart(eventDrag) {
-        //console.info("doDragStart", eventDrag)
         let elBall = document.getElementById("ball")
         let elGoal = document.getElementById("goal")
 
-        let obj = eventDrag.srcElement
         let taskOption = eventDrag.taskOption
 
         let stateDrag = ctx.globalState.dataState.drag
@@ -233,7 +233,6 @@ export default {
     },
 
     on_drag(eventDrag) {
-        //console.info("doDragMove", eventDrag)
 
         //
         let stateDrag = ctx.globalState.dataState.drag
@@ -368,21 +367,11 @@ export default {
         let stateDrag = ctx.globalState.dataState.drag
 
         //
-        console.info("startMoveAnimation, stateDrag.interval", stateDrag.interval)
-
-        if (stateDrag.interval != null) {
-            console.error("startMoveAnimation, stateDrag.interval != null", stateDrag.interval)
-            return
-        }
-        //
         stateDrag.interval = setInterval(ctx.gameplay.animationStep, ctx.settings.animationInterval)
     },
 
     stopMoveAnimation() {
         let stateDrag = ctx.globalState.dataState.drag
-
-        //
-        console.info("stopMoveAnimation, stateDrag.interval", stateDrag.interval)
 
         //
         clearInterval(stateDrag.interval)
@@ -403,9 +392,6 @@ export default {
         let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
         let stateMode = ctx.globalState.dataState.mode
-
-        //
-        console.info("animationStep().stateDrag.interval", stateDrag.interval)
 
         // Шаг
         stateDrag.x = stateDrag.x + stateDrag.dx
@@ -524,8 +510,8 @@ export default {
     },
 
     onEvent(ev, obj) {
-        //console.info("gameplay.event", ev, obj)
-        //console.info("state", ctx.state)
+        //console.log("gameplay.event", ev, obj)
+        //console.log("state", ctx.state)
     },
 
 

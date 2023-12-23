@@ -73,7 +73,7 @@ export default {
             let res = []
 
             //
-            let list = utils.getCookiesArr()
+            let list = utils.getCookiesKeys()
             for (let item of list) {
                 let key = item.name
                 if (this.isLocalUserCookeName(key)) {
@@ -89,7 +89,6 @@ export default {
     },
 
     methods: {
-
 
         isLocalUserCookeName(name) {
             return name && name.startsWith("user_")

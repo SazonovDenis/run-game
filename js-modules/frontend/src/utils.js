@@ -57,30 +57,13 @@ export default {
     /**
      * Возвращает куки в виде массива пар name:value
      */
-    getCookiesArr() {
+    getCookiesKeys() {
         let res = []
 
         let list = document.cookie.split("; ");
         for (let pair of list) {
-            let name = pair.split("=")[0]
-            let value = pair.substr(name.length + 1)
-            res.push({name: name, value: value})
-        }
-
-        return res
-    },
-
-    /**
-     * Возвращает куки в виде объекта
-     */
-    getCookiesObj() {
-        let res = {}
-
-        let list = document.cookie.split("; ");
-        for (let pair of list) {
-            let name = pair.split("=")[0]
-            let value = pair.substr(name.length + 1)
-            res[name] = value
+            let key = pair.split("=")[0]
+            res.push(key)
         }
 
         return res

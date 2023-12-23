@@ -70,11 +70,3 @@ export default {
 }
 
 </script>
-
-<style>
-
-.q-btn {
-    margin: 0.5rem;
-}
-
-</style>

@@ -7,7 +7,7 @@
 <script>
 
 import {apx} from './vendor'
-import MainWindow from "./comp/MainWindow"
+import MainWindow from "./MainPage"
 
 export default {
 

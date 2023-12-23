@@ -1,7 +1,7 @@
 <template>
     <div v-if="game.id" class="game-info">
         <div class="game-info__text">{{ game.text }}</div>
-        <div class="game-info__count">Выполнено заданий: {{ game.countDone - 1 }} из
+        <div class="game-info__count">Пройдено заданий: {{ game.countDone }} из
             {{ game.countTotal }}
         </div>
         <div class="">Игра начата {{ game.dbeg }}</div>

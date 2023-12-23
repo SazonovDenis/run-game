@@ -6,7 +6,7 @@
 
 <script>
 
-import MainWindow from "../../src/comp/MainWindow"
+import MainWindow from "../../src/MainPage"
 
 export default {
 

@@ -134,7 +134,11 @@
         <q-page-container>
 
             <!-- slot default -->
-            <slot>slot default</slot>
+            <slot>
+                <div class="main-window-img">
+                    <img v-bind:src="backgroundImage">
+                </div>
+            </slot>
             <!-- -->
 
         </q-page-container>
@@ -178,6 +182,12 @@ export default {
             userInfo: auth.getUserInfo(),
             globalState: ctx.getGlobalState(),
         }
+    },
+
+    computed: {
+        backgroundImage() {
+            return apx.url.ref("run/game/web/cube.png")
+        },
     },
 
     methods: {
@@ -230,6 +240,19 @@ export default {
     &--content {
         border: 5px dotted rgba(0, 62, 255, 0.3);
     }
+}
+
+.main-window-img img {
+    padding-top: 10em;
+    width: 10em;
+}
+
+.main-window-img {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
 }
 
 </style>

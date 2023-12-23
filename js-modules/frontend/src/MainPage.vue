@@ -1,18 +1,10 @@
 <template>
 
-    <MenuContainer title="MainWindow_xxx">
+    <MenuContainer title="MainPage_xxx">
 
         <template v-slot:footer>
             <GameState :game="globalState.game"/>
         </template>
-
-        <q-btn color="white" text-color="black" label="F"
-               v-if="isAuth()"
-               v-on:click="openFullscreen()"/>
-
-        <div class="main-window-img">
-            <img v-bind:src="backgroundImage">
-        </div>
 
     </MenuContainer>
 
@@ -21,27 +13,21 @@
 
 <script>
 
-import UserTaskPanel from "./UserTaskPanel"
-import UserInfo from "./UserInfo"
-import GameState from "./GameState"
-import gameplay from "../gameplay"
-import ctx from "../gameplayCtx"
-import utils from '../utils'
-import {apx} from '../vendor'
-import MenuContainer from "./MenuContainer"
-import auth from "run-game-frontend/src/auth"
+import UserTaskPanel from "./comp/UserTaskPanel"
+import UserInfo from "./comp/UserInfo"
+import GameState from "./comp/GameState"
+import gameplay from "./gameplay"
+import ctx from "./gameplayCtx"
+import utils from './utils'
+import {apx} from './vendor'
+import MenuContainer from "./comp/MenuContainer"
+import auth from "./auth"
 
 export default {
-    name: "MainWindow",
+    name: "MainPage",
 
     components: {
         MenuContainer, UserTaskPanel, UserInfo, GameState, gameplay
-    },
-
-    computed: {
-        backgroundImage() {
-            return apx.url.ref("run/game/web/cube.png")
-        },
     },
 
     // Состояние игрового мира
@@ -108,33 +94,5 @@ export default {
 
 
 <style scoped>
-
-.main-window-menu {
-    display: flex;
-    flex-direction: row;
-}
-
-.menu-fill {
-    flex-grow: 100;
-}
-
-.main-window-img img {
-    padding-top: 10em;
-    width: 10em;
-}
-
-.main-window-img {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    width: 100%;
-}
-
-.main-window-info {
-    padding: 1em;
-    font-size: 1.5em;
-    color: #7a7a7a;
-}
 
 </style>

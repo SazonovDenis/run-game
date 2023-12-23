@@ -1,13 +1,19 @@
 <template>
-    <div class="col" style="margin: 5em">
+    <div class="col">
 
-        <span class="row">Имя</span>
-        <input class="row" v-model="username">
+        <div class="main-window-img">
+            <img v-bind:src="backgroundImage">
+        </div>
 
-        <span class="row">Пароль</span>
-        <input class="row" v-model="password">
+        <div style="margin: 0 5em">
+            <span class="row">Имя</span>
+            <input class="row" v-model="username">
 
-        <q-btn class="row" @click="login()">Вход</q-btn>
+            <span class="row">Пароль</span>
+            <input class="row" v-model="password">
+
+            <q-btn class="row" @click="login()">Вход</q-btn>
+        </div>
 
         <q-separator style="margin: 2em 0"/>
 
@@ -64,6 +70,10 @@ export default {
     },
 
     computed: {
+        backgroundImage() {
+            return apx.url.ref("run/game/web/cube.png")
+        },
+
         getLocalUserList() {
             // Хак реактивности. Это написано исключительно чтобы заставить
             // перерисоваться при изменении cookie
@@ -140,5 +150,23 @@ export default {
 </script>
 
 <style scoped>
+
+.main-window-img img {
+    padding: 0 5em;
+    margin: 1em;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+}
+
+.main-window-img {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+}
 
 </style>

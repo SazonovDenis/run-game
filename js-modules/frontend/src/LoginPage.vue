@@ -11,12 +11,31 @@
 
         <q-separator style="margin: 2em 0"/>
 
-        <q-btn color="white" text-color="black" label="Денис"
-               v-on:click="loginAsUser('user1010', '')"/>
-        <q-btn color="white" text-color="black" label="Паша"
-               v-on:click="loginAsUser('user1012', '')"/>
-        <q-btn color="white" text-color="black" label="Admin"
-               v-on:click="loginAsUser('admin', '111')"/>
+        <div>Предыдущие игроки</div>
+        <div v-for="user in getLocalUserList">
+            <q-btn
+                color="white" text-color="black" :label="user.text"
+                v-on:click="loginAsUser(user.login, '')"/>
+
+            <q-btn
+                color="white" text-color="black" label="Удалить"
+                v-on:click="clearLocalUser(user.id)"/>
+        </div>
+
+
+        <div v-if="isEnvDev()">
+            <q-separator style="margin: 2em 0"/>
+
+            <div>Для отладки</div>
+
+            <q-btn color="white" text-color="black" label="Денис"
+                   v-on:click="loginAsUser('user1010', '')"/>
+            <q-btn color="white" text-color="black" label="Паша"
+                   v-on:click="loginAsUser('user1012', '')"/>
+            <q-btn color="white" text-color="black" label="Admin"
+                   v-on:click="loginAsUser('admin', '111')"/>
+        </div>
+
     </div>
 
 </template>
@@ -34,8 +53,8 @@ export default {
 
     data: function() {
         return {
-            username: "admin",
-            password: "111",
+            username: null,
+            password: null,
             globalState: ctx.getGlobalState(),
         }
     },
@@ -44,9 +63,62 @@ export default {
         gameplay.init(this.globalState)
     },
 
+    computed: {
+        getLocalUserList() {
+            // Хак реактивности. Это написано исключительно чтобы заставить
+            // перерисоваться при изменении cookie
+            this.globalState.flag
+
+            //
+            let res = []
+
+            //
+            let list = utils.getCookiesArr()
+            for (let item of list) {
+                let key = item.name
+                if (this.isLocalUserCookeName(key)) {
+                    let userInfo = utils.getCookie(key, true)
+                    res.push({
+                        id: userInfo.id, login: userInfo.login, text: userInfo.text
+                    })
+                }
+            }
+
+            return res;
+        },
+    },
+
     methods: {
+
+
+        isLocalUserCookeName(name) {
+            return name && name.startsWith("user_")
+        },
+
+        getLocalUserCookeName(iserId) {
+            return "user_" + iserId
+        },
+
+        clearLocalUser(userId) {
+            utils.deleteCookie(this.getLocalUserCookeName(userId))
+            // Хак реактивности. Это написано исключительно чтобы заставить
+            // перерисоваться при изменении cookie
+            this.globalState.flag = {}
+        },
+
         async loginAsUser(username, password) {
+            if (!jcBase.cfg.envDev) {
+                utils.openFullscreen()
+            }
+
+            //
             await gameplay.login(username, password)
+
+            //
+            if (auth.isAuth()) {
+                let ui = auth.getUserInfo()
+                utils.setCookie(this.getLocalUserCookeName(ui.id), ui)
+            }
 
             //
             if (auth.isAuth()) {
@@ -57,12 +129,11 @@ export default {
 
         },
 
-        async login() {
-            if (!jcBase.cfg.envDev) {
-                utils.openFullscreen()
-            }
+        isEnvDev() {
+            return jcBase.cfg.envDev
+        },
 
-            //
+        async login() {
             this.loginAsUser(this.username, this.password)
         }
     }

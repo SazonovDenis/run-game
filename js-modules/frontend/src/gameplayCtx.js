@@ -31,13 +31,9 @@ export default {
             return this.globalState
         } else {
             this.globalState = reactive({
-                // Иноформация об авторизованном пользователе
-                user: {
-                    id: 0,
-                    login: null,
-                    text: null,
-                    color: null,
-                },
+                // Хак реактивности. Это написано исключительно,
+                // чтобы заставить перерисоваться при изменении
+                flag: {},
 
                 // Иноформация о раунде
                 game: {

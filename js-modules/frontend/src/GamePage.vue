@@ -6,25 +6,8 @@
             <GameState :game="globalState.game"/>
         </template>
 
-
-        <!--
-                    <div class="main-window-menu">
-                        <q-btn color="white" text-color="black" label="Уровень"
-                               v-if="globalState.user.id > 0"
-                               v-on:click="levels"/>
-
-                        <q-btn label="GameInfo"
-                               v-on:click="gameInfo"/>
-
-                        <q-btn color="white" text-color="black" label="F"
-                               v-if="globalState.user.id > 0"
-                               v-on:click="openFullscreen()"/>
-
-                    </div>
-        -->
-
         <UserTaskPanel
-            v-if="globalState.user.id > 0"
+            v-if="isAuth()"
             :gameTask="globalState.gameTask" :dataState="globalState.dataState"/>
 
     </MenuContainer>
@@ -36,6 +19,7 @@
 
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
+import auth from "./auth"
 import UserTaskPanel from "./comp/UserTaskPanel"
 import GameState from "./comp/GameState"
 import MenuContainer from "./comp/MenuContainer"
@@ -57,9 +41,12 @@ export default {
     },
 
     methods: {
+        isAuth() {
+            return auth.isAuth()
+        },
 
         nextTask() {
-            if (this.globalState.user.id > 0) {
+            if (auth.isAuth()) {
                 gameplay.nextTask()
             }
         },

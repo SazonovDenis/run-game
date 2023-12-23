@@ -31,6 +31,7 @@ import {daoApi} from "./dao"
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import MenuContainer from "./comp/MenuContainer"
+import auth from "./auth"
 
 export default {
 
@@ -94,7 +95,7 @@ export default {
     },
 
     mounted() {
-        if (!this.globalState.user || !(this.globalState.user.id > 0)) {
+        if (!auth.isAuth()) {
             apx.showFrame({
                 frame: '/login',
             })

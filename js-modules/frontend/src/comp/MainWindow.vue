@@ -7,7 +7,7 @@
         </template>
 
         <q-btn color="white" text-color="black" label="F"
-               v-if="globalState.user.id > 0"
+               v-if="isAuth()"
                v-on:click="openFullscreen()"/>
 
         <div class="main-window-img">
@@ -29,6 +29,7 @@ import ctx from "../gameplayCtx"
 import utils from '../utils'
 import {apx} from '../vendor'
 import MenuContainer from "./MenuContainer"
+import auth from "run-game-frontend/src/auth"
 
 export default {
     name: "MainWindow",
@@ -52,6 +53,9 @@ export default {
 
     methods: {
 
+        isAuth() {
+            return auth.isAuth()
+        },
 
         levels() {
             apx.showFrame({
@@ -69,19 +73,6 @@ export default {
             utils.openFullscreen()
         },
 
-        /*
-                nextTask() {
-                    if (this.globalState.user.id > 0) {
-                        gameplay.nextTask()
-                    }
-                },
-        */
-
-        /*
-                //
-                onLoadedGameTask(gameTask) {
-                },
-        */
     },
 
     created() {
@@ -89,14 +80,16 @@ export default {
     },
 
     async mounted() {
-        /*
-                ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
-        */
+        // Есть текущий пользователь?
+        if (!auth.isAuth()) {
+            apx.showFrame({
+                frame: '/login', props: {prop1: 1}
+            })
+            return
+        }
 
-        //
+        // Есть  текущая игра?
         await gameplay.getActiveGame()
-
-        // Есть текущая игра?
         if (this.globalState.game.id) {
             this.gameInfo()
         } else {

@@ -121,9 +121,9 @@
                                     <img src="https://cdn.quasar.dev/img/boy-avatar.png">
                                 </div>
                             </div>
-                            <div class="text-weight-bold">{{ globalState.user.text }}
+                            <div class="text-weight-bold">{{ userInfo.text }}
                             </div>
-                            <div>{{ globalState.user.id }}</div>
+                            <div>{{ userInfo.id }}</div>
                         </div>
                     </div>
                 </div>
@@ -163,6 +163,7 @@
 import {ref} from 'vue'
 import ctx from "../gameplayCtx"
 import {apx} from "run-game-frontend/src/vendor"
+import auth from "run-game-frontend/src/auth"
 
 export default {
     name: "MenuContainer",
@@ -174,13 +175,14 @@ export default {
 
     data: function() {
         return {
+            userInfo: auth.getUserInfo(),
             globalState: ctx.getGlobalState(),
         }
     },
 
     methods: {
         onUser: function() {
-            if (ctx.globalState.user.id) {
+            if (auth.isAuth()) {
                 apx.showFrame({
                     frame: '/user',
                 })

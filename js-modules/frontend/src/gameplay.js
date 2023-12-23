@@ -4,7 +4,8 @@ import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
 import testData from "./gameplayTestData"
-import utils from "run-game-frontend/src/utils"
+import utils from "./utils"
+import auth from "./auth"
 
 export default {
 
@@ -50,25 +51,26 @@ export default {
         ctx.gameplay = null
     },
 
-    async getUserInfo() {
-        let res = await apx.jcBase.ajax.request({
-            url: "auth/getUserInfo",
-        })
+    /*
+        async getUserInfo() {
+            let res = await apx.jcBase.ajax.request({
+                url: "auth/getUserInfo",
+            })
 
-        this.globalState.user.id = res.data.id
-        this.globalState.user.login = res.data.login
-        this.globalState.user.text = res.data.text
-        this.globalState.user.color = res.data.color
-        //
-        if (!this.globalState.user.id) {
-            this.globalState.user.id = 0
-        }
-    },
+            this.globalState.user.id = res.data.id
+            this.globalState.user.login = res.data.login
+            this.globalState.user.text = res.data.text
+            this.globalState.user.color = res.data.color
+            //
+            if (!this.globalState.user.id) {
+                this.globalState.user.id = 0
+            }
+        },
+    */
 
     // Новое задание
     async nextTask() {
-        if (!ctx.globalState.user.id ||
-            !ctx.globalState.game.id) {
+        if (!auth.isAuth() || !ctx.globalState.game.id) {
             return
         }
 
@@ -221,15 +223,8 @@ export default {
             params: {login: login, password: password},
         })
 
-        ctx.globalState.user.id = res.data.id
-        ctx.globalState.user.login = res.data.login
-        ctx.globalState.user.text = res.data.text
-        ctx.globalState.user.color = res.data.color
-
         //
-        if (!jcBase.cfg.envDev) {
-            utils.openFullscreen()
-        }
+        this.assignAuthUserInfo(res.data)
     },
 
     async logout() {
@@ -237,16 +232,59 @@ export default {
             url: "auth/logout",
         })
 
-        ctx.globalState.user.id = res.data.id
-        ctx.globalState.user.login = res.data.login
-        ctx.globalState.user.text = res.data.text
-        ctx.globalState.user.color = res.data.color
-        if (!ctx.globalState.user.id) {
-            ctx.globalState.user.id = 0
-        }
+        //
+        this.clearAuthUserInfo()
+        /*
+                ctx.globalState.user.id = res.data.id
+                ctx.globalState.user.login = res.data.login
+                ctx.globalState.user.text = res.data.text
+                ctx.globalState.user.color = res.data.color
+                if (!ctx.globalState.user.id) {
+                    ctx.globalState.user.id = 0
+                }
+        */
+
         // Задание и раунд в глобальном контексте
         ctx.globalState.game = {}
         ctx.globalState.gameTask = {}
+    },
+
+    /**
+     * Записывает данные пользователя, пришедшие от ajax-запроса авторизации auth/login
+     * в переменную, которая возвращается фунцией auth.getUserInfo(),
+     * что дает состояние залогиненности в приложение.
+     *
+     * Избавляет от необходимости перезагружать страницу,
+     * чтобы получить состояние залогинености.
+     *
+     * @param data данные пользователя
+     */
+    assignAuthUserInfo(data) {
+        let userInfo = auth.getUserInfo()
+        userInfo.id = data.id
+        userInfo.login = data.login
+        userInfo.text = data.text
+        userInfo.color = data.color
+        userInfo.guest = data.guest
+    },
+
+    /**
+     * Записывает данные пользователя, пришедшие от ajax-запроса авторизации auth/login
+     * в переменную, которая возвращается фунцией auth.getUserInfo(),
+     * что дает состояние залогиненности в приложение.
+     *
+     * Избавляет от необходимости перезагружать страницу,
+     * чтобы получить состояние залогинености.
+     *
+     * @param data данные пользователя
+     */
+    clearAuthUserInfo() {
+        let userInfo = auth.getUserInfo()
+        userInfo.id = null
+        userInfo.login = null
+        userInfo.text = null
+        userInfo.color = null
+        userInfo.guest = null
     },
 
 

@@ -12,13 +12,10 @@
         <q-separator style="margin: 2em 0"/>
 
         <q-btn color="white" text-color="black" label="Денис"
-               v-if="globalState.user.id == 0"
                v-on:click="loginAsUser('user1010', '')"/>
         <q-btn color="white" text-color="black" label="Паша"
-               v-if="globalState.user.id == 0"
                v-on:click="loginAsUser('user1012', '')"/>
         <q-btn color="white" text-color="black" label="Admin"
-               v-if="globalState.user.id == 0"
                v-on:click="loginAsUser('admin', '111')"/>
     </div>
 
@@ -30,6 +27,7 @@ import {apx, jcBase} from "./vendor"
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import utils from './utils'
+import auth from "./auth"
 
 export default {
     name: "LoginPage",
@@ -50,33 +48,22 @@ export default {
         async loginAsUser(username, password) {
             await gameplay.login(username, password)
 
-            if (this.globalState.user.id > 0) {
-                //window.location = "/"
+            //
+            if (auth.isAuth()) {
                 apx.showFrame({
                     frame: '/', props: {prop1: 1}
                 })
             }
 
-            //
-            if (!jcBase.cfg.envDev) {
-                utils.openFullscreen()
-            }
         },
 
         async login() {
-            await gameplay.login(this.username, this.password)
-
-            if (this.globalState.user.id > 0) {
-                //window.location = "/"
-                apx.showFrame({
-                    frame: '/', props: {prop1: 1}
-                })
-            }
-
-            //
             if (!jcBase.cfg.envDev) {
                 utils.openFullscreen()
             }
+
+            //
+            this.loginAsUser(this.username, this.password)
         }
     }
 }

@@ -3,7 +3,7 @@
     <MenuContainer itle="Профиль игрока">
 
         <UserInfo
-            :user="globalState.user"
+            :user="userInfo"
         />
 
         <q-btn @click="logout()">Logout</q-btn>
@@ -14,11 +14,12 @@
 
 <script>
 
-import ctx from "./gameplayCtx"
+import {apx} from "./vendor"
+import auth from "./auth"
 import gameplay from "./gameplay"
+import ctx from "./gameplayCtx"
 import MenuContainer from "./comp/MenuContainer"
 import UserInfo from "./comp/UserInfo"
-import {apx} from "run-game-frontend/src/vendor"
 
 export default {
 
@@ -28,6 +29,7 @@ export default {
 
     data() {
         return {
+            userInfo: auth.getUserInfo(),
             globalState: ctx.getGlobalState(),
         }
     },

@@ -74,8 +74,7 @@ export default {
 
             //
             let list = utils.getCookiesKeys()
-            for (let item of list) {
-                let key = item.name
+            for (let key of list) {
                 if (this.isLocalUserCookeName(key)) {
                     let userInfo = utils.getCookie(key, true)
                     res.push({

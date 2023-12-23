@@ -45,6 +45,15 @@ public interface Server {
 
 
     /**
+     * Выдать последнее выданное задание для пользователя.
+     *
+     * @param idGame игра
+     * @return задание
+     */
+    DataBox currentTask(long idGame);
+
+
+    /**
      * Принять ответ пользователя на задание.
      *
      * @param idGameTask id ранее выданного задания GameTask.id)

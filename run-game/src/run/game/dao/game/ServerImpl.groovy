@@ -91,43 +91,31 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox choiceTask(long idGame) {
-        // --- Выбираем, что осталось спросить по плану
+        // Выбираем, что осталось спросить по плану
         StoreRecord recGameTask = choiceGameTask(idGame)
+
         //
         if (recGameTask == null) {
             throw new XError("Все задания уже выполнены")
         }
-        //
-        long idTask = recGameTask.getLong("task")
-        long idGameTask = recGameTask.getLong("id")
-
-
-        // --- Грузим задание
-        Task_upd upd = mdb.create(Task_upd)
-        DataBox task = upd.loadTask(idTask)
-
-
-        // --- Преобразуем задание по требованиям frontend-api
-        DataBox res = prepareTask(task)
-
-
-        // --- Записываем факт выдачи задания для пользователя
-        XDateTime dt = XDateTime.now()
-        mdb.updateRec("GameTask", [id: idGameTask, dtTask: dt])
-
-
-        // --- Дополняем задание технической информацией
-        StoreRecord resTask = res.get("task")
-        resTask.setValue("id", idGameTask)
-        resTask.setValue("dtTask", dt)
 
         //
-        StoreRecord resGame = loadGame(idGame)
-        res.put("game", resGame)
+        return loadAndPrepareTask(recGameTask)
+    }
 
+
+    @DaoMethod
+    public DataBox currentTask(long idGame) {
+        // Выбираем, последнее выданное задание
+        StoreRecord recGameTask = getGameLastTask(idGame)
 
         //
-        return res
+        if (recGameTask == null) {
+            throw new XError("Все задания уже выполнены")
+        }
+
+        //
+        return loadAndPrepareTask(recGameTask)
     }
 
 
@@ -203,6 +191,43 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
+    public DataBox loadAndPrepareTask(StoreRecord recGameTask) {
+        //
+        long idTask = recGameTask.getLong("task")
+        long idGameTask = recGameTask.getLong("id")
+        long idGame = recGameTask.getLong("game")
+
+
+        // --- Грузим задание
+        Task_upd upd = mdb.create(Task_upd)
+        DataBox task = upd.loadTask(idTask)
+
+
+        // --- Преобразуем задание по требованиям frontend-api
+        DataBox res = prepareTask(task)
+
+
+        // --- Записываем факт выдачи задания для пользователя
+        XDateTime dtTask = recGameTask.getDateTime("dtTask")
+        if (UtDateTime.isEmpty(dtTask)) {
+            dtTask = XDateTime.now()
+            mdb.updateRec("GameTask", [id: idGameTask, dtTask: dtTask])
+        }
+
+
+        // --- Дополняем задание технической информацией
+        StoreRecord resTask = res.get("task")
+        resTask.setValue("id", idGameTask)
+        resTask.setValue("dtTask", dtTask)
+
+        //
+        StoreRecord resGame = loadGame(idGame)
+        res.put("game", resGame)
+
+
+        //
+        return res
+    }
 
     DataBox prepareTask(DataBox task) {
         StoreRecord resTask = mdb.createStoreRecord("Task.Server")
@@ -268,7 +293,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idUsr = getCurrentUserId()
 
         // Извлечем не выданные задания
-        Store stGameTask = mdb.loadQuery(sqlSelectTask(), [
+        Store stGameTask = mdb.loadQuery(sqlChoiceTask(), [
                 game: idGame,
                 usr : idUsr,
         ])
@@ -286,7 +311,24 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    String sqlSelectTask() {
+    StoreRecord getGameLastTask(long idGame) {
+        long idUsr = getCurrentUserId()
+
+        // Извлечем выданное, но не отвеченное задание
+        Store stGameTask = mdb.loadQuery(sqlGetTask(), [
+                game: idGame,
+                usr : idUsr,
+        ])
+
+        // Выберем последнее
+        StoreRecord rec = stGameTask.get(0)
+
+        //
+        return rec
+    }
+
+
+    String sqlChoiceTask() {
         return """
 select
     GameTask.*
@@ -297,6 +339,25 @@ where
     usr = :usr and
     -- неотвеченные
     dtTask is null 
+"""
+    }
+
+
+    String sqlGetTask() {
+        return """
+select
+    GameTask.*
+from
+    GameTask 
+where
+    game = :game and
+    usr = :usr and
+    -- выданное, но ...
+    dtTask is not null and 
+    -- ... но неотвеченные
+    dtAnswer is null 
+order by
+    dtTask desc 
 """
     }
 

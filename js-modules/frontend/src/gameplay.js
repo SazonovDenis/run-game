@@ -1,10 +1,9 @@
-import {apx, jcBase} from "./vendor"
+import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
 import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
 import testData from "./gameplayTestData"
-import utils from "./utils"
 import auth from "./auth"
 
 export default {
@@ -82,6 +81,54 @@ export default {
         // Грузим новое задание с сервера
         let dataGameTask = await ctx.gameplay.api_choiceTask()
 
+        // Задание в глобальном контексте
+        this.useGameTask(dataGameTask)
+    },
+
+    async gameStart(idPlan) {
+        let recGame = await ctx.gameplay.api_gameStart(idPlan)
+
+        // Задание и раунд в глобальном контексте
+        ctx.globalState.game = recGame
+        ctx.globalState.gameTask = {}
+
+        //
+        ctx.gameplay.nextTask()
+    },
+
+    async getActiveGame() {
+        let recGame = await ctx.gameplay.api_getActiveGame()
+
+        if (recGame) {
+            // Игра в глобальном контексте
+            if (ctx.globalState.game && ctx.globalState.game.id !== recGame.id) {
+                ctx.globalState.game = recGame
+                ctx.globalState.gameTask = {}
+            }
+
+            // Задание и раунд в глобальном контексте
+            if (!ctx.globalState.gameTask.task) {
+                // Грузим текущее задание с сервера
+                let dataGameTask = await ctx.gameplay.api_getCurrentTask(ctx.globalState.game.id)
+
+                // Задание в глобальном контексте
+                this.useGameTask(dataGameTask)
+            }
+
+            //
+            //ctx.gameplay.nextTask()
+
+        } else {
+            ctx.gameplay.clearGame()
+        }
+    },
+
+    async closeActiveGame() {
+        await ctx.gameplay.api_closeActiveGame()
+        ctx.gameplay.clearGame()
+    },
+
+    useGameTask(dataGameTask) {
         // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
         for (let i = 0; i < dataGameTask.taskOptions.length; i++) {
             let taskOption = dataGameTask.taskOptions[i]
@@ -107,37 +154,6 @@ export default {
 
         // Состояние цели
         ctx.gameplay.resetGoal(dataGameTask.task.text)
-    },
-
-    async gameStart(idPlan) {
-        let recGame = await ctx.gameplay.api_gameStart(idPlan)
-
-        // Задание и раунд в глобальном контексте
-        ctx.globalState.game = recGame
-        ctx.globalState.gameTask = {}
-
-        //
-        ctx.gameplay.nextTask()
-    },
-
-    async getActiveGame() {
-        let recGame = await ctx.gameplay.api_getActiveGame()
-
-        if (recGame) {
-            // Задание и раунд в глобальном контексте
-            ctx.globalState.game = recGame
-            ctx.globalState.gameTask = {}
-
-            //
-            //ctx.gameplay.nextTask()
-        } else {
-            ctx.gameplay.clearGame()
-        }
-    },
-
-    async closeActiveGame() {
-        await ctx.gameplay.api_closeActiveGame()
-        ctx.gameplay.clearGame()
     },
 
     clearGame() {
@@ -187,6 +203,22 @@ export default {
 
         //
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [ctx.globalState.game.id])
+
+        //
+        let res = {
+            task: resApi.task.records[0],
+            taskOptions: resApi.taskOption.records,
+            game: resApi.game.records[0],
+        }
+
+        //
+        return res
+    },
+
+    // Повторить текущее задание
+    async api_getCurrentTask() {
+        //
+        let resApi = await daoApi.loadStore('m/Game/currentTask', [ctx.globalState.game.id])
 
         //
         let res = {

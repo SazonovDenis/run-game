@@ -2,8 +2,6 @@ package run.game.dao.game
 
 import groovy.transform.*
 import jandcode.commons.datetime.*
-import jandcode.commons.rnd.*
-import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.cubes.*
@@ -11,10 +9,6 @@ import run.game.dao.*
 
 @TypeChecked
 public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManager {
-
-
-    //
-    Rnd rnd = new RndImpl()
 
 
     @DaoMethod
@@ -37,21 +31,6 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         return res
     }
 
-/*
-    @DaoMethod
-    public Store getTaskStatistic() {
-        long idUsr = getCurrentUserId()
-        XDateTime dt = XDateTime.now().addDays(-5)
-        Map params = [usr: idUsr, dt: dt]
-
-        //
-        Store res = mdb.createStore("Task.list.statistic")
-        mdb.loadQuery(res, sqlTaskStatistic(), params)
-
-        //
-        return res
-    }
-*/
 
     @DaoMethod
     public Store getTaskStatisticByPlan(long idPlan) {
@@ -70,24 +49,6 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         return res
     }
 
-/*
-    String sqlTaskStatistic() {
-        """
-${sqlStatistic()}
-
-select 
-    Tab_TaskStatistic.* 
-
-from
-    Tab_TaskStatistic     
-
-order by
-    kfcTrue asc
-
-limit 10    
-"""
-    }
-*/
 
     String sqlPlanStatistic() {
         """           

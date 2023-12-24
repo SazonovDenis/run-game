@@ -63,9 +63,23 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Задание выбирается с учетом статистики пользователя.
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
-        //mdb.outTable(stTask)
+        //stTask.sort("progress")
+        //mdb.outTable(stTask, 20)
 
-        // Добавляем задания на игру
+        // Слегка рандомизируем рейтинг -
+        // иначе для для заданий без рейтинга (например, которые никогда не выдавали)
+        // рейтинг перестает быть хорошим выбором порядка - получается список идущих подряд
+        // одних тех же слов (потому, что задания сортируются по номеру факта,
+        // а для одного факта несколько заданий)
+        for (StoreRecord recTask : stTask) {
+            double progressSeed = rnd.num(-1000, 1000) / 10000
+            recTask.setValue("progressprogress", recTask.getDouble("progress") + progressSeed)
+        }
+
+        // Теперь выберем задания на игру по рейтингу
+        stTask.sort("progress")
+        //mdb.outTable(stTask, 20)
+        //
         long taskForGameCount = 0
         for (StoreRecord recTask : stTask) {
             mdb.insertRec("GameTask", [

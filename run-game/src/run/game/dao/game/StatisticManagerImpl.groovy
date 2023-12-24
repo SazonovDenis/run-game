@@ -67,9 +67,6 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         fillDummyTaskProgress(res)
 
         //
-        res.sort("progress")
-
-        //
         return res
     }
 

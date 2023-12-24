@@ -73,7 +73,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // а для одного факта несколько заданий)
         for (StoreRecord recTask : stTask) {
             double progressSeed = rnd.num(-1000, 1000) / 10000
-            recTask.setValue("progressprogress", recTask.getDouble("progress") + progressSeed)
+            recTask.setValue("progress", recTask.getDouble("progress") + progressSeed)
         }
 
         // Теперь выберем задания на игру по рейтингу

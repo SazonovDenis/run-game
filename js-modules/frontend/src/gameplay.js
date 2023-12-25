@@ -249,7 +249,7 @@ export default {
         return res
     },
 
-    async login(login, password) {
+    async api_login(login, password) {
         let res = await apx.jcBase.ajax.request({
             url: "auth/login",
             params: {login: login, password: password},
@@ -259,7 +259,17 @@ export default {
         this.assignAuthUserInfo(res.data)
     },
 
-    async logout() {
+    async api_register(text, login, password) {
+        let res = await apx.jcBase.ajax.request({
+            url: "auth/register",
+            params: {text: text, login: login, password: password},
+        })
+
+        //
+        this.assignAuthUserInfo(res.data)
+    },
+
+    async api_logout() {
         let res = await apx.jcBase.ajax.request({
             url: "auth/logout",
         })

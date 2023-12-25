@@ -40,7 +40,7 @@ export default {
 
     methods: {
         async logout() {
-            await gameplay.logout()
+            await gameplay.api_logout()
 
             apx.showFrame({
                 frame: '/login',

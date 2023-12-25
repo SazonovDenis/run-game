@@ -1,6 +1,5 @@
 package run.game.dao.auth;
 
-import jandcode.commons.*;
 import jandcode.core.*;
 import jandcode.core.auth.*;
 import jandcode.core.dbm.*;
@@ -23,18 +22,13 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
     public AuthUser login(AuthToken authToken) throws Exception {
         UserPasswdAuthToken token = (UserPasswdAuthToken) authToken;
 
-        ModelService mdbs = getApp().bean(ModelService.class);
-        Mdb mdb = mdbs.getModel().createMdb();
+        ModelService modelService = getApp().bean(ModelService.class);
+        Mdb mdb = modelService.getModel().createMdb();
         mdb.connect();
 
         try {
-            StoreRecord rec = mdb.loadQueryRecord("select id, login, text from Usr where login = :login and (password = :password or password is null)",
-                    UtCnv.toMap(
-                            "login", token.getUsername(),
-                            "password", UtString.md5Str(token.getPasswd())
-                    ),
-                    false
-            );
+            UsrUpd upd = mdb.create(UsrUpd.class);
+            StoreRecord rec = upd.loadByLoginPassword(token.getUsername(), token.getPasswd());
 
             //
             if (rec == null) {
@@ -55,6 +49,7 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         attrs.put("login", login);
         attrs.put("text", text);
 
+/*
         if ("user1010".equals(login)) {
             attrs.put("color", "red");
 
@@ -67,6 +62,7 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         } else {
             attrs.put("color", "black");
         }
+*/
 
         return new DefaultAuthUser(attrs);
     }

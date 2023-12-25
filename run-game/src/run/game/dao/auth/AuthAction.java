@@ -4,6 +4,9 @@ import jandcode.commons.*;
 import jandcode.core.apx.auth.*;
 import jandcode.core.auth.*;
 import jandcode.core.auth.std.*;
+import jandcode.core.dbm.*;
+import jandcode.core.dbm.mdb.*;
+import jandcode.core.store.*;
 import jandcode.core.web.action.*;
 
 import java.util.*;
@@ -14,28 +17,34 @@ import java.util.*;
 public class AuthAction extends BaseAction {
 
     /**
-     * login
+     *
      */
     public void login() throws Exception {
-        AuthService authSvc = getApp().bean(AuthService.class);
         ActionRequestUtils requestUtils = getReq();
 
-        //
+        // Проверим пользователя
         String login = requestUtils.getParams().getString("login");
         String password = requestUtils.getParams().getString("password");
+        //
+        loginInternal(login, password);
+    }
+
+    public void register() throws Exception {
+        ActionRequestUtils requestUtils = getReq();
+
+        // Добавим пользователя
+        StoreRecord rec = insInternal();
 
         // Проверим пользователя
-        AuthUser authUser = authSvc.login(new DefaultUserPasswdAuthToken(login, password));
-        // Записываем пользователя в сессию
-        requestUtils.getSession().put(AuthConsts.SESSION_KEY_USER, authUser);
-
-        // Читаем и возвращаем данные пользователя
-        String s = UtJson.toJson(authUser.getAttrs());
-        requestUtils.render(s);
+        String login = rec.getString("login");
+        // Пароль не берем из insInternal() - он там будет зашифрован и нам бесполезен
+        String password = requestUtils.getParams().getString("password");
+        //
+        loginInternal(login, password);
     }
 
     /**
-     * login
+     *
      */
     public void getUserInfo() throws Exception {
         AuthService authSvc = getApp().bean(AuthService.class);
@@ -65,6 +74,40 @@ public class AuthAction extends BaseAction {
         // Возвращаем пустые данные
         String s = UtJson.toJson(new HashMap());
         requestUtils.render(s);
+    }
+
+
+    private void loginInternal(String login, String password) throws Exception {
+        ActionRequestUtils requestUtils = getReq();
+
+        // Проверим пользователя
+        AuthService authSvc = getApp().bean(AuthService.class);
+        AuthUser authUser = authSvc.login(new DefaultUserPasswdAuthToken(login, password));
+
+        // Записываем пользователя в сессию
+        requestUtils.getSession().put(AuthConsts.SESSION_KEY_USER, authUser);
+
+        // Читаем и возвращаем данные пользователя
+        String s = UtJson.toJson(authUser.getAttrs());
+        requestUtils.render(s);
+    }
+
+    private StoreRecord insInternal() throws Exception {
+        StoreRecord rec;
+
+        ActionRequestUtils requestUtils = getReq();
+        ModelService modelService = getApp().bean(ModelService.class);
+        Mdb mdb = modelService.getModel().createMdb();
+        mdb.connect();
+        try {
+            UsrUpd upd = mdb.create(UsrUpd.class);
+            Map params = new HashMap(requestUtils.getParams());
+            rec = upd.ins(params);
+        } finally {
+            mdb.disconnect();
+        }
+
+        return rec;
     }
 
 

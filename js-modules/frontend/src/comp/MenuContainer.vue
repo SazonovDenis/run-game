@@ -244,7 +244,7 @@ export default {
 
 .main-window-img img {
     padding-top: 10em;
-    width: 10em;
+    height: 10em;
 }
 
 .main-window-img {
@@ -252,7 +252,7 @@ export default {
     flex-direction: column;
     align-items: center;
 
-    width: 100%;
+    height: 10em;
 }
 
 </style>

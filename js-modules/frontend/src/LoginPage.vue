@@ -3,11 +3,15 @@
         <q-page-container>
             <q-page class="flex flex-center">
 
-
                 <!-- loginType==='full' -->
 
                 <q-card v-if="loginType==='full'"
                         style="min-width: 25rem; box-shadow: none">
+
+                    <div class="main-window-img">
+                        <img v-bind:src="backgroundImage">
+                    </div>
+
                     <q-card-section class="q-pa-lg text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
                             Вход / регистрация
@@ -70,6 +74,11 @@
 
                 <q-card v-if="loginType==='localOneUser'"
                         style="min-width: 25rem; box-shadow: none">
+
+                    <div class="main-window-img">
+                        <img v-bind:src="backgroundImage">
+                    </div>
+
                     <q-card-section class="q-pa-lg text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
                             Вход
@@ -130,6 +139,10 @@
 
                 <q-card v-if="loginType==='localUserList'"
                         style="min-width: 25rem; box-shadow: none">
+
+                    <div class="main-window-img">
+                        <img v-bind:src="backgroundImage">
+                    </div>
 
                     <q-card-section class="q-pa-lg text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
@@ -192,11 +205,10 @@
 
                     </q-card-section>
 
-                </q-card>
 
-                <q-card>
-                    <q-card-section>
+                     <q-card-section>
 
+<!--
                         <div>Предыдущие игроки</div>
                         <div v-for="user in localUserList">
                             <q-btn
@@ -207,6 +219,7 @@
                                 color="white" text-color="black" label="Удалить"
                                 v-on:click="clearLocalUser(user.id)"/>
                         </div>
+-->
 
 
                         <div v-if="isEnvDev()">
@@ -222,9 +235,6 @@
                                    v-on:click="execLoginAsUser('admin', '111')"/>
                         </div>
 
-                        <div class="main-window-img">
-                            <img v-bind:src="backgroundImage">
-                        </div>
 
                     </q-card-section>
 
@@ -382,7 +392,8 @@ export default {
         },
 
         isEnvDev() {
-            return jcBase.cfg.envDev
+            return false
+            //return jcBase.cfg.envDev
         },
 
         doFullLogin() {
@@ -414,7 +425,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 
 .rgm-link-soft {
     text-decoration: underline;
@@ -424,13 +435,15 @@ export default {
 }
 
 .main-window-img img {
+/*
     padding: 0 5em;
     margin: 1em;
+*/
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 10em;
+    height: 8em;
 }
 
 .main-window-img {
@@ -438,7 +451,7 @@ export default {
     flex-direction: column;
     align-items: center;
 
-    height: 10em;
+    height: 8em;
 }
 
 </style>

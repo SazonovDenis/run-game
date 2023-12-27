@@ -164,17 +164,28 @@
 
 
 <script>
+
 import {ref} from 'vue'
 import ctx from "../gameplayCtx"
-import {apx} from "run-game-frontend/src/vendor"
-import auth from "run-game-frontend/src/auth"
+import {apx} from "../vendor"
+import auth from "../auth"
+import gameplay from "../gameplay"
 
 export default {
     name: "MenuContainer",
 
+    components: {
+        //gameplay
+    },
+
     props: {
         title: null,
         menu: [],
+    },
+
+    created() {
+        let globalState = ctx.getGlobalState()
+        gameplay.init(globalState)
     },
 
     data: function() {

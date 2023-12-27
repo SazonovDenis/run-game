@@ -61,10 +61,6 @@ export default {
 
     },
 
-    created() {
-        gameplay.init(this.globalState)
-    },
-
     async mounted() {
         // Есть текущий пользователь?
         if (!auth.isAuth()) {
@@ -85,8 +81,6 @@ export default {
     },
 
     unmounted() {
-        //ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
-        //gameplay.shutdown()
     },
 
 }

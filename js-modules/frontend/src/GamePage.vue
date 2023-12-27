@@ -63,7 +63,7 @@ export default {
     },
 
     created() {
-        ctx.gameplay.init(this.globalState)
+        //ctx.gameplay.init(this.globalState)
     },
 
     async mounted() {

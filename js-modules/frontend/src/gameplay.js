@@ -3,11 +3,9 @@ import ctx from "./gameplayCtx"
 import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
-import testData from "./gameplayTestData"
 import auth from "./auth"
 
 export default {
-
 
     init(globalState) {
         if (ctx.gameplay) {
@@ -29,12 +27,6 @@ export default {
         ctx.eventBus.on("showHint", this.onShowHint)
         //
         ctx.eventBus.on("*", this.onEvent)
-
-        // Инициализация состояния тестовых данных
-        if (ctx.useTestData) {
-            ctx.useTestData = this.useTestData;
-            ctx.testData_taskIdx = -1;
-        }
     },
 
     shutdown() {
@@ -209,25 +201,6 @@ export default {
     },
 
     async api_choiceTask() {
-        if (ctx.useTestData) {
-            ctx.testData_taskIdx = ctx.testData_taskIdx + 1;
-            if (ctx.testData_taskIdx >= testData.tasks.length) {
-                ctx.testData_taskIdx = 0;
-            }
-            //
-            let res = testData.tasks[ctx.testData_taskIdx]
-
-            //
-            res.game = {}
-            res.game.text = "test game"
-            res.game.countTotal = testData.tasks.length
-            res.game.countDone = ctx.testData_taskIdx
-
-            //
-            return res
-        }
-
-        //
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [ctx.globalState.game.id])
 
         //
@@ -271,11 +244,6 @@ export default {
     },
 
     api_postTaskAnswer(idGameTask, taskResult) {
-        if (ctx.useTestData) {
-            return
-        }
-
-        //
         if (ctx.globalState.dataState.mode.postTaskAnswerDone) {
             return
         }

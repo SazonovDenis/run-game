@@ -2,8 +2,6 @@ import {reactive} from 'vue'
 
 export default {
 
-    //useTestData: true,
-
     /**
      * Не меняющиеся настройки приложения
      */
@@ -83,7 +81,6 @@ export default {
                     showTaskHint: false,
                 },
 
-                testData_taskIdx: 1,
             })
 
             return this.globalState

@@ -8,7 +8,7 @@
                         <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
                     </q-avatar>
                     <span v-if="title">
-                        Word strike - {{ title }}
+                        {{ title }}
                     </span>
                     <span v-else>
                         Word strike

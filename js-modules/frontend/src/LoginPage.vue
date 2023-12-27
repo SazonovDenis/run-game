@@ -6,7 +6,7 @@
                 <!-- loginType==='full' -->
 
                 <q-card v-if="loginType==='full'"
-                        style="min-width: 25rem; box-shadow: none">
+                        style="min-width: 25rem; _box-shadow: none">
 
                     <div class="main-window-img">
                         <img v-bind:src="backgroundImage">
@@ -73,13 +73,13 @@
                 <!-- loginType==='localOneUser' -->
 
                 <q-card v-if="loginType==='localOneUser'"
-                        style="min-width: 25rem; box-shadow: none">
+                        style="min-width: 25rem; _box-shadow: none">
 
                     <div class="main-window-img">
                         <img v-bind:src="backgroundImage">
                     </div>
 
-                    <q-card-section class="q-pa-lg text-center">
+                    <q-card-section class="q-page flex flex-center text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
                             Вход
                         </div>
@@ -112,15 +112,19 @@
                             </template>
                         </q-input>
 
-                        <div class="row justify-center q-mt-lg q-mb-lg11">
-                            <jc-btn kind="secondary" label="Забыть пользователя"
-                                    @click="clearLocalUser(id)">
-                            </jc-btn>
+                        <div class="row justify-center q-mt-lg q-mb-lg11 q-gutter-x-sm">
+                            <div>
+                                <jc-btn kind="secondary" label="Забыть пользователя"
+                                        @click="clearLocalUser(id)">
+                                </jc-btn>
+                            </div>
 
-                            <jc-btn kind="primary" label="Войти"
-                                    style="min-width: 10em;"
-                                    @click="this.execLoginAsUser(this.login, this.password)">
-                            </jc-btn>
+                            <div>
+                                <jc-btn kind="primary" label="Войти"
+                                        style="min-width: 10em;"
+                                        @click="this.execLoginAsUser(this.login, this.password)">
+                                </jc-btn>
+                            </div>
                         </div>
 
                         <div class="row justify-left q-mt-lg q-mb-lg11"
@@ -138,7 +142,7 @@
                 <!-- loginType==='localUserList' -->
 
                 <q-card v-if="loginType==='localUserList'"
-                        style="min-width: 25rem; box-shadow: none">
+                        style="min-width: 25rem; _box-shadow: none">
 
                     <div class="main-window-img">
                         <img v-bind:src="backgroundImage">
@@ -179,15 +183,21 @@
                             </q-input>
 
 
-                            <div class="row justify-center q-mt-lg q-mb-lg11">
-                                <jc-btn kind="secondary" label="Забыть пользователя"
-                                        @click="clearLocalUser(user.id)">
-                                </jc-btn>
+                            <div
+                                class="row justify-center q-mt-lg q-mb-lg11d q-gutter-x-sm">
+                                <div>
+                                    <jc-btn kind="secondary" label="Забыть пользователя"
+                                            @click="clearLocalUser(user.id)">
+                                    </jc-btn>
+                                </div>
 
-                                <jc-btn kind="primary" :label="'Войти как: ' + user.text"
-                                        style="min-width: 10em;"
-                                        @click="execLoginAsUser(user.login, user.password)">
-                                </jc-btn>
+                                <div>
+                                    <jc-btn kind="primary"
+                                            :label="'Войти как: ' + user.text"
+                                            style="min-width: 10em;"
+                                            @click="execLoginAsUser(user.login, user.password)">
+                                    </jc-btn>
+                                </div>
                             </div>
 
                         </q-card-section>
@@ -206,20 +216,20 @@
                     </q-card-section>
 
 
-                     <q-card-section>
+                    <q-card-section>
 
-<!--
-                        <div>Предыдущие игроки</div>
-                        <div v-for="user in localUserList">
-                            <q-btn
-                                color="white" text-color="black" :label="user.text"
-                                v-on:click="execLoginAsUser(user.login, '')"/>
+                        <!--
+                                                <div>Предыдущие игроки</div>
+                                                <div v-for="user in localUserList">
+                                                    <q-btn
+                                                        color="white" text-color="black" :label="user.text"
+                                                        v-on:click="execLoginAsUser(user.login, '')"/>
 
-                            <q-btn
-                                color="white" text-color="black" label="Удалить"
-                                v-on:click="clearLocalUser(user.id)"/>
-                        </div>
--->
+                                                    <q-btn
+                                                        color="white" text-color="black" label="Удалить"
+                                                        v-on:click="clearLocalUser(user.id)"/>
+                                                </div>
+                        -->
 
 
                         <div v-if="isEnvDev()">
@@ -435,23 +445,19 @@ export default {
 }
 
 .main-window-img img {
-/*
-    padding: 0 5em;
-    margin: 1em;
-*/
-
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 8em;
+    height: 5em;
 }
 
 .main-window-img {
+    padding-top: 1em;
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    height: 8em;
+    height: 5em;
 }
 
 </style>

@@ -23,6 +23,7 @@ import auth from "./auth"
 import UserTaskPanel from "./comp/UserTaskPanel"
 import GameState from "./comp/GameState"
 import MenuContainer from "./comp/MenuContainer"
+import {apx} from "run-game-frontend/src/vendor"
 
 export default {
     name: "GamePage",
@@ -47,21 +48,29 @@ export default {
 
         nextTask() {
             if (auth.isAuth()) {
-                gameplay.nextTask()
+                ctx.gameplay.loadNextTask()
             }
         },
 
         //
         onLoadedGameTask(gameTask) {
+            if (ctx.globalState.game.done) {
+                apx.showFrame({
+                    frame: '/gameInfo', props: {prop1: 1}
+                })
+            }
         },
     },
 
     created() {
-        gameplay.init(this.globalState)
+        ctx.gameplay.init(this.globalState)
     },
 
     async mounted() {
         ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
+
+        //
+        ctx.gameplay.loadCurrentOrNextTask()
 
         //
         //await gameplay.getActiveGame()

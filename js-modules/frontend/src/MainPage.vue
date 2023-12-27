@@ -75,7 +75,8 @@ export default {
         }
 
         // Есть  текущая игра?
-        await gameplay.getActiveGame()
+        await gameplay.loadActiveGame()
+        //
         if (this.globalState.game.id) {
             this.gameInfo()
         } else {
@@ -84,7 +85,7 @@ export default {
     },
 
     unmounted() {
-        ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
+        //ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
         //gameplay.shutdown()
     },
 

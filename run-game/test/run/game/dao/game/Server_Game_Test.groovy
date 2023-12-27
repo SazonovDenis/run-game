@@ -169,7 +169,8 @@ class Server_Game_Test extends RgmBase_Test {
         StoreRecord recActiveGame = upd.getActiveGame()
         if (recActiveGame != null) {
             long idGame = recActiveGame.getLong("id")
-            StoreRecord rec = upd.loadGame(idGame)
+            long idUsr = getCurrentUserId()
+            StoreRecord rec = upd.loadGameState(idGame, idUsr)
 
             // Текущая игра
             println()

@@ -15,17 +15,19 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     long MAX_TASK_FOR_GAME = 10
 
+    String msg_all_task_done = "Все задания уже выполнены"
+
     Rnd rnd = new RndImpl()
 
 
     @DaoMethod
     public StoreRecord getActiveGame() {
         long idUsr = getCurrentUserId()
-        Store storeGames = mdb.loadQuery(sqlActiveGame(), [usr: idUsr])
+        Store storeGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
 
         if (storeGames.size() != 0) {
             long idGame = storeGames.get(0).getLong("id")
-            return loadGame(idGame)
+            return loadGameState(idGame, idUsr)
         } else {
             return null
         }
@@ -99,7 +101,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         //
-        return loadGame(idGame)
+        return loadGameState(idGame, idUsr)
     }
 
 
@@ -108,28 +110,32 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Выбираем, что осталось спросить по плану
         StoreRecord recGameTask = choiceGameTask(idGame)
 
-        //
-        if (recGameTask == null) {
-            throw new XError("Все задания уже выполнены")
+        // Записываем факт выдачи задания для пользователя
+        if (recGameTask != null) {
+            long idGameTask = recGameTask.getLong("id")
+            XDateTime dtTask = XDateTime.now()
+            mdb.updateRec("GameTask", [id: idGameTask, dtTask: dtTask])
         }
 
         //
-        return loadAndPrepareTask(recGameTask)
+        return loadAndPrepareTask(idGame, recGameTask)
     }
 
 
     @DaoMethod
     public DataBox currentTask(long idGame) {
-        // Выбираем, последнее выданное задание
+        // Выбираем последнее выданное задание
         StoreRecord recGameTask = getGameLastTask(idGame)
 
         //
+/*
         if (recGameTask == null) {
-            throw new XError("Все задания уже выполнены")
+            throw new XError(msg_all_task_done)
         }
+*/
 
         //
-        return loadAndPrepareTask(recGameTask)
+        return loadAndPrepareTask(idGame, recGameTask)
     }
 
 
@@ -165,13 +171,24 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         mdb.validateErrors.checkErrors()
 
 
-        // Обновляем задание
+        // --- Обновляем задание
         recGameTask.setValue("dtAnswer", XDateTime.now())
         recGameTask.setValue("wasTrue", taskResult.get("wasTrue"))
         recGameTask.setValue("wasFalse", taskResult.get("wasFalse"))
         recGameTask.setValue("wasHint", taskResult.get("wasHint"))
         recGameTask.setValue("wasSkip", taskResult.get("wasSkip"))
         mdb.updateRec("GameTask", recGameTask)
+
+
+        // --- Игра окончена?
+        // Выбираем, что осталось спросить по плану
+        long idGame = recGameTask.getLong("game")
+        StoreRecord recGameTaskNext = choiceGameTask(idGame)
+
+        // Закрываем игру, если нечего
+        if (recGameTaskNext == null) {
+            closeActiveGame()
+        }
     }
 
 
@@ -205,38 +222,38 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
-    public DataBox loadAndPrepareTask(StoreRecord recGameTask) {
+    public DataBox loadAndPrepareTask(long idGame, StoreRecord recGameTask) {
+        DataBox res
+
         //
-        long idTask = recGameTask.getLong("task")
-        long idGameTask = recGameTask.getLong("id")
-        long idGame = recGameTask.getLong("game")
+        long idUsr = getCurrentUserId()
 
 
-        // --- Грузим задание
-        Task_upd upd = mdb.create(Task_upd)
-        DataBox task = upd.loadTask(idTask)
+        // --- Формируем задание
+        if (recGameTask != null) {
+            long idTask = recGameTask.getLong("task")
+            long idGameTask = recGameTask.getLong("id")
+            XDateTime dtTask = recGameTask.getDateTime("dtTask")
 
+            // Грузим задание
+            Task_upd upd = mdb.create(Task_upd)
+            DataBox task = upd.loadTask(idTask)
 
-        // --- Преобразуем задание по требованиям frontend-api
-        DataBox res = prepareTask(task)
+            // Преобразуем задание по требованиям frontend-api
+            res = prepareTask(task)
 
-
-        // --- Записываем факт выдачи задания для пользователя
-        XDateTime dtTask = recGameTask.getDateTime("dtTask")
-        if (UtDateTime.isEmpty(dtTask)) {
-            dtTask = XDateTime.now()
-            mdb.updateRec("GameTask", [id: idGameTask, dtTask: dtTask])
+            // Дополняем задание технической информацией
+            StoreRecord resTask = res.get("task")
+            resTask.setValue("id", idGameTask)
+            resTask.setValue("dtTask", dtTask)
+        } else {
+            res = new DataBox()
         }
 
 
-        // --- Дополняем задание технической информацией
-        StoreRecord resTask = res.get("task")
-        resTask.setValue("id", idGameTask)
-        resTask.setValue("dtTask", dtTask)
-
-        //
-        StoreRecord resGame = loadGame(idGame)
-        res.put("game", resGame)
+        // --- Дополняем задание данными по игре
+        StoreRecord recGame = loadGameState(idGame, idUsr)
+        res.put("game", recGame)
 
 
         //
@@ -334,6 +351,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
                 usr : idUsr,
         ])
 
+        if (stGameTask.size() == 0) {
+            return null
+            //throw new XError(msg_all_task_done)
+        }
+
         // Выберем последнее
         StoreRecord rec = stGameTask.get(0)
 
@@ -351,7 +373,7 @@ from
 where
     game = :game and
     usr = :usr and
-    -- неотвеченные
+    -- не выданное
     dtTask is null 
 """
     }
@@ -403,11 +425,11 @@ where
 """
     }
 
-    StoreRecord loadGame(long idGame) {
+    StoreRecord loadGameState(long idGame, long idUsr) {
         StoreRecord resGame = mdb.createStoreRecord("Game.Server")
 
         //
-        StoreRecord recGame = mdb.loadQueryRecord(sqlGame(), [game: idGame])
+        StoreRecord recGame = mdb.loadQueryRecord(sqlGameState(), [game: idGame, usr: idUsr])
         resGame.setValues(recGame)
 
         //
@@ -415,7 +437,7 @@ where
     }
 
 
-    String sqlActiveGame() {
+    String sqlActiveGames() {
         return """
 select
     Game.*
@@ -439,12 +461,17 @@ set
     dend = :dt
 where
     Game.id in (
-        select GameUsr.game from GameUsr where GameUsr.usr = :usr
+        select
+            GameUsr.game 
+        from 
+            GameUsr
+        where
+            GameUsr.usr = :usr
     )
 """
     }
 
-    String sqlGame() {
+    String sqlGameState() {
         return """
 select
     Game.id,
@@ -459,7 +486,8 @@ from
     join Plan on (Game.plan = Plan.id)
     join GameTask on (Game.id = GameTask.game)
 where
-    Game.id = :game
+    Game.id = :game and
+    GameTask.usr = :usr
 group by    
     Plan.text,
     Game.id

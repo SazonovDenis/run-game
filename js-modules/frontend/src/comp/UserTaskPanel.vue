@@ -44,7 +44,7 @@ export default {
 
     methods: {
         nextTask() {
-            gameplay.nextTask()
+            gameplay.loadNextTask()
         },
     },
 

@@ -6,20 +6,30 @@
 
         </game-info>
 
-        <q-btn v-if="globalState.game.id && !globalState.game.done"
-               @click="closeActiveGame()">
-            Выйти из игры
-        </q-btn>
 
-        <q-btn v-if="globalState.game.id && !globalState.game.done"
-               @click="continueActiveGame()">
-            Продолжить игру
-        </q-btn>
+        <template v-if="globalState.game.id && !globalState.game.done">
 
-        <q-btn v-if="globalState.game.plan && globalState.game.done"
-               @click="startNewGame()">
-            Играть еще раз
-        </q-btn>
+            <q-btn @click="closeActiveGame()">
+                Выйти из игры
+            </q-btn>
+
+            <q-btn @click="continueActiveGame()">
+                Продолжить игру
+            </q-btn>
+
+        </template>
+
+
+        <template v-if="globalState.game.plan && globalState.game.done">
+
+            <q-btn @click="startNewGame()">
+                Играть еще раз
+            </q-btn>
+            <q-btn @click="onSelectLevel()">
+                Выбрать другой уровень
+            </q-btn>
+
+        </template>
 
     </MenuContainer>
 
@@ -58,8 +68,14 @@ export default {
             })
         },
 
+        onSelectLevel: function() {
+            apx.showFrame({
+                frame: '/levels',
+            })
+        },
+
         async startNewGame() {
-            await gameplay.gameStart(globalState.game.plan)
+            await gameplay.gameStart(this.globalState.game.plan)
 
             apx.showFrame({
                 frame: '/game', props: {prop1: 1}

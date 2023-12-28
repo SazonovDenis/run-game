@@ -2,34 +2,39 @@
 
     <MenuContainer title="Итоги игры">
 
-        <game-info :game="globalState.game">
+        <div class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
+            <div>
+                <game-info :game="globalState.game">
+                </game-info>
+            </div>
 
-        </game-info>
+            <div v-if="globalState.game.id && !globalState.game.done">
+                <jc-btn kind="secondary" label="Выйти из игры"
+                        @click="closeActiveGame()">
+                </jc-btn>
+            </div>
 
+            <div v-if="globalState.game.id && !globalState.game.done">
+                <jc-btn kind="primary" label="Продолжить игру"
+                        style="min-width: 15em;"
+                        @click="continueActiveGame()">
+                </jc-btn>
+            </div>
 
-        <template v-if="globalState.game.id && !globalState.game.done">
+            <div v-if="globalState.game.plan && globalState.game.done">
+                <jc-btn kind="secondary" label="Играть еще раз"
+                        @click="startNewGame()">
+                </jc-btn>
+            </div>
 
-            <q-btn @click="closeActiveGame()">
-                Выйти из игры
-            </q-btn>
+            <div>
+                <jc-btn kind="primary" label="Выбрать другой уровень"
+                        style="min-width: 15em;"
+                        @click="onSelectLevel()">
+                </jc-btn>
+            </div>
+        </div>
 
-            <q-btn @click="continueActiveGame()">
-                Продолжить игру
-            </q-btn>
-
-        </template>
-
-
-        <template v-if="globalState.game.plan && globalState.game.done">
-
-            <q-btn @click="startNewGame()">
-                Играть еще раз
-            </q-btn>
-            <q-btn @click="onSelectLevel()">
-                Выбрать другой уровень
-            </q-btn>
-
-        </template>
 
     </MenuContainer>
 
@@ -42,6 +47,7 @@ import ctx from "./gameplayCtx"
 import gameplay from "./gameplay"
 import GameInfo from "./comp/GameInfo"
 import MenuContainer from "./comp/MenuContainer"
+import auth from "run-game-frontend/src/auth"
 
 export default {
     name: "GameInfoPage",
@@ -81,7 +87,30 @@ export default {
                 frame: '/game', props: {prop1: 1}
             })
         },
-    }
+    },
+
+    async mounted() {
+        // Есть текущий пользователь?
+        if (!auth.isAuth()) {
+            apx.showFrame({
+                frame: '/login', props: {prop1: 1}
+            })
+            return
+        }
+
+        // Есть текущая игра?
+        if (!this.globalState.game.id) {
+            // Загружаем текущую  игру
+            await gameplay.loadActiveGame()
+        }
+
+        // Есть текущая игра?
+        if (!this.globalState.game.id) {
+            // Загружаем последнюю игру
+            await gameplay.loadLastGame()
+        }
+    },
+
 
 }
 

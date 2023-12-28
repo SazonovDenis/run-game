@@ -130,6 +130,20 @@ export default {
         }
     },
 
+    async loadLastGame() {
+        let recGame = await ctx.gameplay.api_getLastGame()
+
+        if (recGame) {
+            // Игра в глобальном контексте
+            if (ctx.globalState.game && ctx.globalState.game.id !== recGame.id) {
+                ctx.globalState.game = recGame
+                ctx.globalState.gameTask = {}
+            }
+        } else {
+            ctx.gameplay.clearGame()
+        }
+    },
+
     async closeActiveGame() {
         await ctx.gameplay.api_closeActiveGame()
         ctx.gameplay.clearGame()
@@ -182,6 +196,14 @@ export default {
 
     async api_gameStart(idPlan) {
         let resApi = await daoApi.loadStore('m/Game/gameStart', [idPlan])
+
+        let res = resApi.records[0]
+
+        return res
+    },
+
+    async api_getLastGame() {
+        let resApi = await daoApi.loadStore('m/Game/getLastGame', [])
 
         let res = resApi.records[0]
 

@@ -93,14 +93,13 @@ public class UsrUpd extends RgmMdbUtils {
 
 
         // ---
-        StoreRecord rec = mdb.loadQueryRecord(
-                "select id, login, text from Usr where login = :login and (password = :password or password is null)",
-                [
-                        "login"   : login,
-                        "password": password
-                ],
-                false
-        )
+        String sql
+        if (!UtCnv.isEmpty(password)) {
+            sql = "select id, login, text from Usr where login = :login and password = :password"
+        } else {
+            sql = "select id, login, text from Usr where login = :login and password is null"
+        }
+        StoreRecord rec = mdb.loadQueryRecord(sql, ["login": login, "password": password], false)
 
         //
         return rec

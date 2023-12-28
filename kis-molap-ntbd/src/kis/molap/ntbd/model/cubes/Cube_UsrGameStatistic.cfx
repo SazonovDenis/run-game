@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <cube name="Cube_UsrGameStatistic"
+          title="Статистика прохождения игры пользователем"
+          space="Space_UsrGame"
+          class="kis.molap.ntbd.model.cubes.Cube_UsrGameStatistic">
+
+        <!-- Поля -->
+        <field name="cnt"/>
+        <field name="cntAsked"/>
+        <field name="cntAnswered"/>
+        <field name="cntTrue"/>
+        <field name="cntFalse"/>
+        <field name="cntHint"/>
+        <field name="cntSkip"/>
+
+        <!-- Зависит от таблиц -->
+        <depend name="GameUsr"/>
+
+        <!-- Зависит от кубов -->
+
+    </cube>
+
+    <!-- Дополнение физической таблицы для space -->
+    <domain name="Cube_UsrGame">
+
+        <field name="cnt" parent="long" title="Количество вопросов"/>
+        <field name="cntAsked" parent="long" title="Количество заданных вопросов"/>
+        <field name="cntAnswered" parent="long" title="Количество ответов"/>
+        <field name="cntTrue" parent="long" title="Количество верных ответов"/>
+        <field name="cntFalse" parent="long" title="Количество ошибок"/>
+        <field name="cntHint" parent="long" title="Количество подсказок"/>
+        <field name="cntSkip" parent="long" title="Количество пропусков"/>
+
+    </domain>
+
+</root>

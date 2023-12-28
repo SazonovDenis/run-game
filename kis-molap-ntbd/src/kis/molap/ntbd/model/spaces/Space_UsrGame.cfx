@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!-- Пространство usr, game -->
+    <space name="Space_UsrGame"
+           title="Пространство: пользователь + игра"
+           table="Cube_UsrGame"
+           class="kis.molap.ntbd.model.spaces.Space_UsrGame">
+
+        <!-- Координаты -->
+        <coord name="usr"/>
+        <coord name="game"/>
+
+    </space>
+
+
+    <!-- Физическая таблица пространства -->
+    <domain name="Cube_UsrGame" parent="base" tag.db="true">
+
+        <!-- Координаты -->
+        <field name="usr" parent="long" title="Пользователь"/>
+        <field name="game" parent="long" title="Игра"/>
+
+        <!-- Индекс для координат -->
+        <dbindex name="main" fields="usr,game" unique="true"/>
+
+    </domain>
+
+
+</root>

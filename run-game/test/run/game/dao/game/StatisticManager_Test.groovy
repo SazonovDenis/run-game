@@ -7,6 +7,25 @@ import run.game.dao.*
 class StatisticManager_Test extends RgmBase_Test {
 
 
+    @Test
+    void getGameStatisticByPlan() {
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+
+        //
+        utils.logOn()
+        mdb.outTable(statisticManager.getGamesStatisticByPlan(1002))
+    }
+
+    @Test
+    void getGameStatistic() {
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+
+        //
+        mdb.outTable(statisticManager.getGameStatistic(1000))
+        mdb.outTable(statisticManager.getGameStatistic(1001))
+    }
+
+
     /**
      * Статистика по планам для пользователя
      */
@@ -17,7 +36,6 @@ class StatisticManager_Test extends RgmBase_Test {
         //
         mdb.outTable(statisticManager.getPlanStatistic())
     }
-
     /**
      * Статистика заданий в плане для пользователя
      */

@@ -2,7 +2,6 @@ package run.game.dao.game
 
 import jandcode.commons.*
 import jandcode.commons.datetime.*
-import jandcode.commons.error.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
@@ -19,6 +18,25 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     Rnd rnd = new RndImpl()
 
+
+    @DaoMethod
+    public StoreRecord getLastGame() {
+        long idUsr = getCurrentUserId()
+        StoreRecord recGame = mdb.loadQueryRecord(sqlLastGame(), [usr: idUsr], false)
+
+        if (recGame != null) {
+            long idGame = recGame.getLong("id")
+            StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+            Store stGameStatistic = statisticManager.getGameStatistic(idGame)
+            if (stGameStatistic.size() != 0) {
+                return stGameStatistic.get(0)
+            } else {
+                return null
+            }
+        } else {
+            return null
+        }
+    }
 
     @DaoMethod
     public StoreRecord getActiveGame() {
@@ -436,6 +454,22 @@ where
         return resGame
     }
 
+
+    String sqlLastGame() {
+        return """
+select
+    Game.*
+from
+    Game
+    join GameUsr on (Game.id = GameUsr.game)
+where
+    GameUsr.usr = :usr
+order by    
+    Game.dbeg,
+    Game.id
+limit 1
+"""
+    }
 
     String sqlActiveGames() {
         return """

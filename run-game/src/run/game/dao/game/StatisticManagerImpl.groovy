@@ -1,7 +1,9 @@
 package run.game.dao.game
 
 import groovy.transform.*
+import jandcode.commons.*
 import jandcode.commons.datetime.*
+import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.cubes.*
@@ -10,6 +12,56 @@ import run.game.dao.*
 @TypeChecked
 public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManager {
 
+
+    @DaoMethod
+    public Store getGamesStatisticByPlan(long idPlan) {
+        XDateTime dend = XDateTime.now()
+        XDateTime dbeg = dend.addDays(-365)
+
+        //
+        Map params = [dbeg: dbeg, dend: dend, plan: idPlan, limit: 10]
+
+        //
+        return loadGameStatistic(params)
+    }
+
+
+    @DaoMethod
+    public Store getGameStatistic(long idGame) {
+        Map params = [game: idGame]
+
+        //
+        return loadGameStatistic(params)
+    }
+
+
+    Store loadGameStatistic(Map params) {
+        long idUsr = getCurrentUserId()
+        params.put("usr", idUsr)
+
+        //
+        Store res = mdb.createStore("Game.list.statistic")
+        SqlFilter filter = SqlFilter.create(mdb, sqlGameStatistic(), params)
+        filter.addWhere("game", "equal", [sqlField: "Game.id"])
+        filter.addWhere("plan", "equal")
+        filter.addWhere("dbeg", "equalAbove", [sqlField: "dbeg"])
+        filter.addWhere("dend", "equalBelow", [sqlField: "dbeg"])
+        //
+        SqlFilterBuilder part_limit = { SqlFilterContext ctx ->
+            ctx.addPart("limit", this.getPart_limit(params))
+        }
+        filter.addWhere("limit", part_limit)
+        //
+        filter.load(res)
+
+        //
+        return res
+    }
+
+    String getPart_limit(Map params) {
+        long limit = UtCnv.toLong(params.get("limit"))
+        return "limit " + limit
+    }
 
     @DaoMethod
     public Store getPlanStatistic() {
@@ -47,6 +99,35 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
 
         //
         return res
+    }
+
+
+    String sqlGameStatistic() {
+        return """
+select
+    Game.*,
+    Cube_UsrGame.cnt,
+    Cube_UsrGame.cntAsked,
+    Cube_UsrGame.cntAnswered,
+    Cube_UsrGame.cntTrue,
+    Cube_UsrGame.cntFalse,
+    Cube_UsrGame.cntHint,
+    Cube_UsrGame.cntSkip
+    
+from
+    Game
+    join GameUsr on (Game.id = GameUsr.game and GameUsr.usr = :usr)
+    join Cube_UsrGame on (Game.id = Cube_UsrGame.game and Cube_UsrGame.usr = :usr)
+
+where
+    GameUsr.usr = :usr
+
+order by    
+    Game.dbeg desc,
+    Game.id
+    
+/*part:limit*/    
+"""
     }
 
 

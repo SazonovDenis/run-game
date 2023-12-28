@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <sql-filter-builder name="in"
+                        filterNull="true"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_in"/>
+
+    <sql-filter-builder name="like"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_like"/>
+
+    <sql-filter-builder name="range"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_range"/>
+
+    <sql-filter-builder name="above"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_above"/>
+
+    <sql-filter-builder name="below"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_below"/>
+
+    <sql-filter-builder name="equalAbove"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_equalAbove"/>
+
+    <sql-filter-builder name="equalBelow"
+                        class="run.game.model.sqlfilter.SqlFilterBuilder_equalBelow"/>
+
+</root>

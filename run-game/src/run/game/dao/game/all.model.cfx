@@ -45,7 +45,18 @@
     <domain name="Plan.list.statistic" parent="Plan">
         <field name="count" parent="long" title="Общее количество слов"/>
         <field name="progress" parent="double" title="Степень выученности слов, средняя"/>
-        <field name="taskInfo" parent="object" title="Степень выученности слов, по процентилям"/>
+        <field name="taskInfo" parent="object"
+               title="Степень выученности слов, по процентилям"/>
+    </domain>
+
+    <domain name="Game.list.statistic" parent="Game">
+        <field name="cnt" parent="long" title="Общее количество"/>
+        <field name="cntAsked" parent="long" title="Количество заданных вопросов"/>
+        <field name="cntAnswered" parent="long" title="Количество ответов"/>
+        <field name="cntTrue" parent="long" title="Количество верных ответов"/>
+        <field name="cntFalse" parent="long" title="Количество ошибок"/>
+        <field name="cntHint" parent="long" title="Количество подсказок"/>
+        <field name="cntSkip" parent="long" title="Количество пропусков"/>
     </domain>
 
     <domain name="Task.list.statistic">
@@ -53,20 +64,9 @@
 
         <field name="progress" parent="double" title="Степень выученности слова"/>
 
-<!--
-        <field name="answerTime" parent="double" scale="3"/>
-
-        <field name="cnt" parent="long"/>
-        <field name="cntTrue" parent="long"/>
-        <field name="cntFalse" parent="long"/>
-        <field name="cntHint" parent="long"/>
-        <field name="cntSkip" parent="long"/>
-
-        <field name="kfcTrue" parent="double" scale="2"/>
-        <field name="kfcFalse" parent="double" scale="2"/>
-        <field name="kfcHint" parent="double" scale="2"/>
-        <field name="kfcSkip" parent="double" scale="2"/>
--->
+        <!--
+                <field name="answerTime" parent="double" scale="3"/>
+        -->
     </domain>
 
 </root>

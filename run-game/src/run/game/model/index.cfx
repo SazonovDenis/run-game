@@ -12,6 +12,7 @@
 
             <x-include path="domain/index.cfx"/>
             <x-include path="dict/index-model.cfx"/>
+            <x-include path="sqlfilter/index-model.cfx"/>
 
             <ddl name="dbdata.system"
                  class="jandcode.core.dbm.dbdata.DDLProvider_dbdata"

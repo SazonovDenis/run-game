@@ -7,6 +7,19 @@ import jandcode.core.store.*;
  */
 public interface StatisticManager {
 
+
+    /**
+     * @return Выдает статистику по играм плана
+     */
+    Store getGamesStatisticByPlan(long idPlan);
+
+
+    /**
+     * @return Выдает статистику по игре
+     */
+    Store getGameStatistic(long idPlan);
+
+
     /**
      * Выдает статистику и успехи каждого Paln.
      */

@@ -102,7 +102,7 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
         }
     }
 
-    String sql_GameTaskList = """                                       
+    public static String sql_GameTaskList = """                                       
             -- Список заданий (в любых планах) со всей историей их выдачи пользователю
             with Tab_GameTaskList as (
              
@@ -165,11 +165,4 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
     public void convertCoords(String sourceCubeName, CoordList coords, CoordList coordsRes) throws Exception {
     }
 
-    private String sqlOrgProdDirectValues() {
-        String sqlQueryText = """
-                                
-                """
-
-        return sqlQueryText
-    }
 }

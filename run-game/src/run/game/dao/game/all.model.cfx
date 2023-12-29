@@ -20,14 +20,9 @@
         <field name="image" parent="string"/>
     </domain>
 
-    <domain name="Game.Server">
-        <field name="id" parent="Game/ref"/>
-        <field name="plan" parent="Plan/ref"/>
+    <domain name="Game.Server" parent="Game">
         <field name="text" parent="Plan/text"/>
-        <field name="dbeg" parent="datetime"/>
-        <field name="dend" parent="datetime"/>
-        <field name="countTotal" parent="long"/>
-        <field name="countDone" parent="long"/>
+        <include name="Game.list.statistic"/>
     </domain>
 
     <!-- Список уровней со статистикой по словам -->
@@ -50,13 +45,13 @@
     </domain>
 
     <domain name="Game.list.statistic" parent="Game">
-        <field name="cnt" parent="long" title="Общее количество"/>
-        <field name="cntAsked" parent="long" title="Количество заданных вопросов"/>
-        <field name="cntAnswered" parent="long" title="Количество ответов"/>
-        <field name="cntTrue" parent="long" title="Количество верных ответов"/>
-        <field name="cntFalse" parent="long" title="Количество ошибок"/>
-        <field name="cntHint" parent="long" title="Количество подсказок"/>
-        <field name="cntSkip" parent="long" title="Количество пропусков"/>
+        <field name="countTask" parent="long" title="Общее количество вопросов"/>
+        <field name="countAsked" parent="long" title="Количество заданных вопросов"/>
+        <field name="countAnswered" parent="long" title="Количество ответов"/>
+        <field name="countTrue" parent="long" title="Количество верных ответов"/>
+        <field name="countFalse" parent="long" title="Количество ошибок"/>
+        <field name="countHint" parent="long" title="Количество подсказок"/>
+        <field name="countSkip" parent="long" title="Количество пропусков"/>
     </domain>
 
     <domain name="Task.list.statistic">

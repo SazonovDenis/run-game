@@ -7,7 +7,7 @@
           class="kis.molap.ntbd.model.cubes.Cube_UsrGameStatistic">
 
         <!-- Поля -->
-        <field name="cnt"/>
+        <field name="cntTask"/>
         <field name="cntAsked"/>
         <field name="cntAnswered"/>
         <field name="cntTrue"/>
@@ -25,7 +25,7 @@
     <!-- Дополнение физической таблицы для space -->
     <domain name="Cube_UsrGame">
 
-        <field name="cnt" parent="long" title="Количество вопросов"/>
+        <field name="cntTask" parent="long" title="Количество вопросов"/>
         <field name="cntAsked" parent="long" title="Количество заданных вопросов"/>
         <field name="cntAnswered" parent="long" title="Количество ответов"/>
         <field name="cntTrue" parent="long" title="Количество верных ответов"/>

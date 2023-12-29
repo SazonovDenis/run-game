@@ -27,11 +27,18 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
 
 
     @DaoMethod
-    public Store getGameStatistic(long idGame) {
+    public StoreRecord getGameStatistic(long idGame) {
         Map params = [game: idGame]
 
         //
-        return loadGameStatistic(params)
+        Store st = loadGameStatistic(params)
+
+        //
+        if (st.size() == 0) {
+            return null
+        } else {
+            return st.get(0)
+        }
     }
 
 
@@ -106,18 +113,18 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         return """
 select
     Game.*,
-    Cube_UsrGame.cnt,
-    Cube_UsrGame.cntAsked,
-    Cube_UsrGame.cntAnswered,
-    Cube_UsrGame.cntTrue,
-    Cube_UsrGame.cntFalse,
-    Cube_UsrGame.cntHint,
-    Cube_UsrGame.cntSkip
+    Cube_UsrGame.cnt countTask,
+    Cube_UsrGame.cntAsked countAsked,
+    Cube_UsrGame.cntAnswered countAnswered,
+    Cube_UsrGame.cntTrue countTrue,
+    Cube_UsrGame.cntFalse countFalse,
+    Cube_UsrGame.cntHint countHint,
+    Cube_UsrGame.cntSkip countSkip
     
 from
     Game
     join GameUsr on (Game.id = GameUsr.game and GameUsr.usr = :usr)
-    join Cube_UsrGame on (Game.id = Cube_UsrGame.game and Cube_UsrGame.usr = :usr)
+    left join Cube_UsrGame on (Game.id = Cube_UsrGame.game and Cube_UsrGame.usr = :usr)
 
 where
     GameUsr.usr = :usr

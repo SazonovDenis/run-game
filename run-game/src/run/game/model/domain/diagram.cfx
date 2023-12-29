@@ -3,11 +3,11 @@
 
 
     <diagram name="fact" title="Сущности и факты">
-        <domain name="Fact"/>
-        <domain name="FactTag"/>
-        <domain name="DataType" showfields="false"/>
         <domain name="Item"/>
-        <domain name="ItemTag"/>
+        <domain name="Fact"/>
+        <domain name="FactTag" showfields="false"/>
+        <domain name="ItemTag" showfields="false"/>
+        <domain name="DataType" showfields="false"/>
     </diagram>
 
 

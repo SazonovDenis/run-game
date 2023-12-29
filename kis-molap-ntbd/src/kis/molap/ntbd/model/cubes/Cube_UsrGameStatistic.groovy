@@ -9,7 +9,6 @@ import kis.molap.model.cube.*
 import kis.molap.model.cube.impl.*
 import kis.molap.model.service.*
 import kis.molap.model.value.*
-import kis.molap.ntbd.model.*
 
 /**
  * Зависимости от GameUsr нет, а только от GameTask, т.к. предполагаем, что
@@ -49,6 +48,9 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
                 "dend", intervalDend
         )
 
+        //
+        StatisticManager_cube statisticManager = mdb.create(StatisticManager_cube)
+
         if (coords == null) {
             CubeService cubeService = mdb.getModel().bean(CubeService.class)
             Space space = cubeService.createSpace(cubeInfo.getSpace(), mdb)
@@ -72,7 +74,8 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
             //
             params.put("usr", usr)
             params.put("game", game)
-            StoreRecord rec = mdb.loadQueryRecord(sql_GameStatistic, params)
+            StoreRecord rec = statisticManager.loadGameStatistic(game, usr)
+            //StoreRecord rec = mdb.loadQueryRecord(sql_UsrGameStatistic, params)
             //mdb.outTable(rec)
 
             //
@@ -86,7 +89,7 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
 
             //
             ValueSingle valueSingle = ValueSingle.create()
-            valueSingle.put("cnt", rec.getLong("cnt"))
+            valueSingle.put("cntTask", rec.getLong("cntTask"))
             valueSingle.put("cntAsked", rec.getLong("cntAsked"))
             valueSingle.put("cntAnswered", rec.getLong("cntAnswered"))
             valueSingle.put("cntTrue", rec.getLong("cntTrue"))
@@ -104,8 +107,8 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
     }
 
 
-    String sql_GameStatistic = """
-            ${Cube_UsrTaskStatistic.sql_GameTaskList}
+    String sql_UsrGameStatistic = """
+            ${StatisticManager_cube.sql_GameTaskList}
               
             -- Статистика по каждому заданию 
             select

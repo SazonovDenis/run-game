@@ -68,7 +68,7 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
             //
             params.put("usr", usr)
             params.put("task", task)
-            StoreRecord rec = mdb.loadQueryRecord(sql_TaskStatistic, params)
+            StoreRecord rec = mdb.loadQueryRecord(StatisticManager_cube.sql_TaskStatistic, params)
             //mdb.outTable(rec)
 
             //
@@ -102,65 +102,6 @@ public class Cube_UsrTaskStatistic extends CubeCustom implements ICalcData {
         }
     }
 
-    public static String sql_GameTaskList = """                                       
-            -- Список заданий (в любых планах) со всей историей их выдачи пользователю
-            with Tab_GameTaskList as (
-             
-            select
-                GameTask.id,
-                GameTask.task,
-                GameTask.id gameTask,
-                GameTask.game,
-                GameTask.usr,
-                GameTask.dtTask,
-                GameTask.dtAnswer,
-                (case when GameTask.dtTask is not null then 1 else 0 end) wasAsked,
-                (case when GameTask.dtAnswer is not null then 1 else 0 end) wasAnswered,
-                (extract('epoch' from GameTask.dtAnswer) - extract('epoch' from GameTask.dtTask)) as answerDuration,
-                GameTask.wasTrue,
-                GameTask.wasFalse,
-                GameTask.wasHint,
-                GameTask.wasSkip
-            
-            from
-                GameTask
-            
-            where
-                GameTask.usr = :usr
-             
-            order by
-                GameTask.task,
-                GameTask.game
-            )
-            """
-
-    String sql_TaskStatistic = """
-            ${sql_GameTaskList}
-              
-            -- Статистика по каждому заданию 
-            select
-                Tab_GameTaskList.usr,
-                Tab_GameTaskList.task,
-                count(Tab_GameTaskList.id) cnt,
-                sum(Tab_GameTaskList.wasAsked) cntAsked,
-                sum(Tab_GameTaskList.wasAnswered) cntAnswered,
-                sum(Tab_GameTaskList.answerDuration) answerDuration,
-                sum(Tab_GameTaskList.wasTrue) cntTrue,
-                sum(Tab_GameTaskList.wasFalse) cntFalse,
-                sum(Tab_GameTaskList.wasHint) cntHint,
-                sum(Tab_GameTaskList.wasSkip) cntSkip
-
-            from
-                Tab_GameTaskList
-
-            where
-                Tab_GameTaskList.task = :task
-
-            group by
-                Tab_GameTaskList.usr,
-                Tab_GameTaskList.task
-                
-            """
 
     public void convertCoords(String sourceCubeName, CoordList coords, CoordList coordsRes) throws Exception {
     }

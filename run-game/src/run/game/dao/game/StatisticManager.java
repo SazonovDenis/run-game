@@ -17,7 +17,7 @@ public interface StatisticManager {
     /**
      * @return Выдает статистику по игре
      */
-    Store getGameStatistic(long idPlan);
+    StoreRecord getGameStatistic(long idPlan);
 
 
     /**

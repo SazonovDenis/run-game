@@ -7,6 +7,7 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
+import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 
@@ -24,31 +25,64 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idUsr = getCurrentUserId()
         StoreRecord recGame = mdb.loadQueryRecord(sqlLastGame(), [usr: idUsr], false)
 
-        if (recGame != null) {
-            long idGame = recGame.getLong("id")
-            StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-            Store stGameStatistic = statisticManager.getGameStatistic(idGame)
-            if (stGameStatistic.size() != 0) {
-                return stGameStatistic.get(0)
-            } else {
-                return null
-            }
-        } else {
+        //
+        if (recGame == null) {
             return null
         }
+
+        //
+        long idGame = recGame.getLong("id")
+
+        //
+        return loadGameInternal(idGame, idUsr)
     }
 
     @DaoMethod
     public StoreRecord getActiveGame() {
         long idUsr = getCurrentUserId()
-        Store storeGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
+        Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
 
-        if (storeGames.size() != 0) {
-            long idGame = storeGames.get(0).getLong("id")
-            return loadGameState(idGame, idUsr)
-        } else {
+        //
+        if (stGames.size() == 0) {
             return null
         }
+
+        //
+        StoreRecord recGame = stGames.get(0)
+        long idGame = recGame.getLong("id")
+
+        //
+        return loadGameInternal(idGame, idUsr)
+    }
+
+    StoreRecord loadGameInternal(long idGame, long idUsr) {
+        StoreRecord recGame = mdb.loadQueryRecord(sqlGame(), [game: idGame, usr: idUsr], false)
+
+        //
+        if (recGame == null) {
+            return null
+        }
+
+        //
+        StatisticManager_cube statisticManager = mdb.create(StatisticManager_cube)
+        StoreRecord recGameStatistic = statisticManager.loadGameStatistic(idGame, idUsr)
+        //mdb.outTable(recGameStatistic)
+
+        //
+        StoreRecord res = mdb.createStoreRecord("Game.Server")
+        //
+        res.setValue("countTask", recGameStatistic.getValue("cntTask"))
+        res.setValue("countAsked", recGameStatistic.getValue("cntAsked"))
+        res.setValue("countAnswered", recGameStatistic.getValue("cntAnswered"))
+        res.setValue("countTrue", recGameStatistic.getValue("cntTrue"))
+        res.setValue("countFalse", recGameStatistic.getValue("cntFalse"))
+        res.setValue("countHint", recGameStatistic.getValue("cntHint"))
+        res.setValue("countSkip", recGameStatistic.getValue("cntSkip"))
+        //
+        res.setValues(recGame.getValues())
+
+        //
+        return res
     }
 
 
@@ -119,7 +153,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         //
-        return loadGameState(idGame, idUsr)
+        return loadGameInternal(idGame, idUsr)
     }
 
 
@@ -127,6 +161,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     public DataBox choiceTask(long idGame) {
         // Выбираем, что осталось спросить по плану
         StoreRecord recGameTask = choiceGameTask(idGame)
+
+        // Закрываем игру, если нечего
+        if (recGameTask == null) {
+            closeActiveGame()
+        }
 
         // Записываем факт выдачи задания для пользователя
         if (recGameTask != null) {
@@ -270,7 +309,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Дополняем задание данными по игре
-        StoreRecord recGame = loadGameState(idGame, idUsr)
+        StoreRecord recGame = loadGameInternal(idGame, idUsr)
         res.put("game", recGame)
 
 
@@ -443,6 +482,7 @@ where
 """
     }
 
+/*
     StoreRecord loadGameState(long idGame, long idUsr) {
         StoreRecord resGame = mdb.createStoreRecord("Game.Server")
 
@@ -453,6 +493,7 @@ where
         //
         return resGame
     }
+*/
 
 
     String sqlLastGame() {
@@ -465,7 +506,7 @@ from
 where
     GameUsr.usr = :usr
 order by    
-    Game.dbeg,
+    Game.dbeg desc,
     Game.id
 limit 1
 """
@@ -487,6 +528,21 @@ order by
 """
     }
 
+    String sqlGame() {
+        return """
+select
+    Game.*,
+    Plan.text
+from
+    Game
+    join Plan on (Game.plan = Plan.id)
+    join GameUsr on (Game.id = GameUsr.game)
+where
+    Game.id = :game and
+    GameUsr.usr = :usr
+"""
+    }
+
     String sqlCloseActiveGame() {
         return """
 update
@@ -505,6 +561,7 @@ where
 """
     }
 
+/*
     String sqlGameState() {
         return """
 select
@@ -527,6 +584,7 @@ group by
     Game.id
 """
     }
+*/
 
 
 }

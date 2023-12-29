@@ -42,7 +42,6 @@ export default {
         ctx.gameplay = null
     },
 
-    /*
         async getUserInfo() {
             let res = await apx.jcBase.ajax.request({
                 url: "auth/getUserInfo",
@@ -57,7 +56,6 @@ export default {
                 this.globalState.user.id = 0
             }
         },
-    */
 
     /**
      * Грузим новое задание с сервера
@@ -286,6 +284,16 @@ export default {
         let res = await apx.jcBase.ajax.request({
             url: "auth/login",
             params: {login: login, password: password},
+        })
+
+        //
+        this.assignAuthUserInfo(res.data)
+    },
+
+    async api_updUsr(userInfo) {
+        let res = await apx.jcBase.ajax.request({
+            url: "auth/updUsr",
+            params: {text: userInfo.text, login: userInfo.login, password: userInfo.password},
         })
 
         //

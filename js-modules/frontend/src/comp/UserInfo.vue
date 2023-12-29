@@ -1,8 +1,40 @@
 <template>
-    <div class="user-info">
-        <div class="user-name">{{ text }}</div>
-        <div class="user-icon" v-bind:style="{backgroundColor: color}">&nbsp;</div>
+    <div>
+        <q-input v-model="user.text"
+                 label="Имя*"
+                 outlined
+                 stack-label :dense="true">
+            <template #prepend>
+                <q-icon name="user" size="1em" color="gray-600"/>
+            </template>
+        </q-input>
     </div>
+
+    <div>
+        <q-input v-model="user.login"
+                 label="Почта или телефон"
+                 outlined
+                 stack-label
+                 :dense="true">
+            <template #prepend>
+                <q-icon name="mail" size="1em" color="gray-600"/>
+            </template>
+        </q-input>
+    </div>
+
+    <div>
+        <q-input v-model="user.password"
+                 outlined
+                 stack-label
+                 :dense="true"
+                 label="Пароль"
+                 type="password">
+            <template #prepend>
+                <q-icon name="password" size="1em" color="gray-600"/>
+            </template>
+        </q-input>
+    </div>
+
 </template>
 
 <script>
@@ -41,28 +73,5 @@ export default {
 
 
 <style>
-
-
-.user-info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    background-color: #eeeeee;
-    border-radius: 5em;
-    padding: 0.3em;
-    margin: 0 0.3em;
-}
-
-.user-name {
-    margin-left: 0.5em;
-}
-
-.user-icon {
-    width: 2em;
-    height: 2em;
-    margin-left: 0.5em;
-    border-radius: 5em;
-}
 
 </style>

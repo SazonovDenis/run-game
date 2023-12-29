@@ -325,7 +325,7 @@ export default {
             //
             let list = utils.getCookiesKeys()
             for (let key of list) {
-                if (this.isLocalUserCookeName(key)) {
+                if (utils.isLocalUserCookeName(key)) {
                     let userInfo = utils.getCookie(key, true)
                     res.push({
                         id: userInfo.id, login: userInfo.login, text: userInfo.text
@@ -336,16 +336,8 @@ export default {
             return res;
         },
 
-        isLocalUserCookeName(name) {
-            return name && name.startsWith("user_")
-        },
-
-        getLocalUserCookeName(iserId) {
-            return "user_" + iserId
-        },
-
         clearLocalUser(userId) {
-            utils.deleteCookie(this.getLocalUserCookeName(userId))
+            utils.deleteCookie(utils.getLocalUserCookeName(userId))
 
             //
             this.localUserList = this.getLocalUserList()
@@ -371,7 +363,7 @@ export default {
             //
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
-                utils.setCookie(this.getLocalUserCookeName(ui.id), ui)
+                utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
             }
 
             //
@@ -389,7 +381,7 @@ export default {
             //
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
-                utils.setCookie(this.getLocalUserCookeName(ui.id), ui)
+                utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
             }
 
             //

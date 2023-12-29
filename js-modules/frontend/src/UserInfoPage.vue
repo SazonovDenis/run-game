@@ -1,13 +1,43 @@
 <template>
 
-    <MenuContainer itle="Профиль игрока">
+    <MenuContainer title="Профиль игрока">
 
-        <UserInfo
-            :user="userInfo"
-        />
+        <q-layout>
+            <q-page-container>
 
-        <q-btn @click="logout()">Logout</q-btn>
+                <q-card-section class="q-gutter-y-md">
 
+                    <UserInfo
+                        :user="userInfo"
+                    />
+
+                    <div class="row q-mt-lg q-mb-lg11d q-gutter-x-sm">
+
+                        <jc-btn kind="secondary" label="Выйти"
+                                style="min-width: 10em;"
+                                @click="logout">
+                        </jc-btn>
+
+                        <jc-btn kind="primary" label="Сохранить изменения"
+                                style="min-width: 10em;"
+                                @click="doUsrUpd">
+                        </jc-btn>
+
+                    </div>
+
+                </q-card-section>
+
+                <q-card-section>
+
+                    <jc-btn kind="primary" label="На главную"
+                            style="min-width: 15em;"
+                            @click="goMain">
+                    </jc-btn>
+
+                </q-card-section>
+
+            </q-page-container>
+        </q-layout>
     </MenuContainer>
 
 </template>
@@ -20,6 +50,7 @@ import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import MenuContainer from "./comp/MenuContainer"
 import UserInfo from "./comp/UserInfo"
+import utils from "./utils"
 
 export default {
 
@@ -34,10 +65,6 @@ export default {
         }
     },
 
-    created() {
-        gameplay.init(this.globalState)
-    },
-
     methods: {
         async logout() {
             await gameplay.api_logout()
@@ -47,6 +74,31 @@ export default {
             })
         },
 
+        async goMain() {
+            apx.showFrame({
+                frame: '/',
+            })
+        },
+
+        async doUsrUpd() {
+            await gameplay.api_updUsr(this.userInfo)
+
+            //
+            if (auth.isAuth()) {
+                let ui = auth.getUserInfo()
+                utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
+            }
+        },
+
+    },
+
+    async mounted() {
+        // Есть текущий пользователь?
+        if (!auth.isAuth()) {
+            apx.showFrame({
+                frame: '/login', props: {prop1: 1}
+            })
+        }
     },
 
 }

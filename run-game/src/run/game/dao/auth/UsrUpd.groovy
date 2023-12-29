@@ -61,6 +61,53 @@ public class UsrUpd extends RgmMdbUtils {
         return loadRec(id)
     }
 
+    @DaoMethod
+    public StoreRecord upd(Map params) {
+        // --- Проверки
+        long idUsr = getCurrentUserId()
+
+        // Нет такого пользователя?
+        String login = params.get("login")
+        StoreRecord rec = loadByLogin(login)
+        //
+        if (rec != null && rec.getLong("id") != idUsr) {
+            mdb.validateErrors.addError(msg_user_exists)
+        }
+
+        // Обязательные поля
+        if (UtCnv.isEmpty(params.get("text"))) {
+            mdb.validateErrors.addError(msg_is_required_text)
+        }
+
+        if (UtCnv.isEmpty(params.get("login"))) {
+            mdb.validateErrors.addError(msg_is_required_login)
+        }
+
+        //
+        mdb.validateErrors.checkErrors()
+
+
+        // --- Значения по умолчанию
+
+        // Маскировка password
+        String password = params.get("password")
+        if (!UtCnv.isEmpty(password)) {
+            password = UtString.md5Str(password)
+            params.put("password", password)
+        } else {
+            password = null
+            params.put("password", password)
+        }
+
+        // --- Запись
+        params.put("id", idUsr)
+        mdb.updateRec("Usr", params)
+
+
+        // ---
+        return loadRec(idUsr)
+    }
+
     StoreRecord loadRec(long id) {
         StoreRecord rec = mdb.loadQueryRecord(
                 "select id, login, text from Usr where id = :id",
@@ -89,6 +136,8 @@ public class UsrUpd extends RgmMdbUtils {
         // Маскировка password
         if (!UtCnv.isEmpty(password)) {
             password = UtString.md5Str(password)
+        } else {
+            password = null
         }
 
 

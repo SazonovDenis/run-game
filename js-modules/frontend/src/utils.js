@@ -116,4 +116,14 @@ export default {
         })
     },
 
+
+    isLocalUserCookeName(name) {
+        return name && name.startsWith("user_")
+    },
+
+    getLocalUserCookeName(iserId) {
+        return "user_" + iserId
+    },
+
+
 }

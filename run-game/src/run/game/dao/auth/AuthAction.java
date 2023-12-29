@@ -43,6 +43,20 @@ public class AuthAction extends BaseAction {
         loginInternal(login, password);
     }
 
+    public void updUsr() throws Exception {
+        ActionRequestUtils requestUtils = getReq();
+
+        // Отредактируем пользователя
+        StoreRecord rec = updInternal();
+
+        // Обновим сессию пользователя
+        String login = rec.getString("login");
+        // Пароль не берем из updInternal() - он там будет зашифрован и нам бесполезен
+        String password = requestUtils.getParams().getString("password");
+        //
+        loginInternal(login, password);
+    }
+
     /**
      *
      */
@@ -103,6 +117,24 @@ public class AuthAction extends BaseAction {
             UsrUpd upd = mdb.create(UsrUpd.class);
             Map params = new HashMap(requestUtils.getParams());
             rec = upd.ins(params);
+        } finally {
+            mdb.disconnect();
+        }
+
+        return rec;
+    }
+
+    private StoreRecord updInternal() throws Exception {
+        StoreRecord rec;
+
+        ActionRequestUtils requestUtils = getReq();
+        ModelService modelService = getApp().bean(ModelService.class);
+        Mdb mdb = modelService.getModel().createMdb();
+        mdb.connect();
+        try {
+            UsrUpd upd = mdb.create(UsrUpd.class);
+            Map params = new HashMap(requestUtils.getParams());
+            rec = upd.upd(params);
         } finally {
             mdb.disconnect();
         }

@@ -1,17 +1,11 @@
 <template>
 
-    <MenuContainer title="Итоги игры">
+    <MenuContainer :title="title">
 
         <div class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
             <div>
                 <game-info :game="globalState.game">
                 </game-info>
-            </div>
-
-            <div v-if="globalState.game.id && !globalState.game.done">
-                <jc-btn kind="secondary" label="Выйти из игры"
-                        @click="closeActiveGame()">
-                </jc-btn>
             </div>
 
             <div v-if="globalState.game.id && !globalState.game.done">
@@ -21,13 +15,28 @@
                 </jc-btn>
             </div>
 
+            <div v-if="globalState.game.id && !globalState.game.done">
+                <jc-btn kind="secondary" label="Выйти из игры"
+                        style="min-width: 15em;"
+                        @click="closeActiveGame()">
+                </jc-btn>
+            </div>
+
             <div v-if="globalState.game.plan && globalState.game.done">
-                <jc-btn kind="secondary" label="Играть еще раз"
+                <jc-btn kind="secondary" label="Играть уровень еще раз"
+                        style="min-width: 15em;"
                         @click="startNewGame()">
                 </jc-btn>
             </div>
 
-            <div>
+            <div v-if="globalState.game.plan && !globalState.game.done">
+                <jc-btn kind="secondary" label="Выбрать другой уровень"
+                        style="min-width: 15em;"
+                        @click="onSelectLevel()">
+                </jc-btn>
+            </div>
+
+            <div v-if="globalState.game.plan && globalState.game.done">
                 <jc-btn kind="primary" label="Выбрать другой уровень"
                         style="min-width: 15em;"
                         @click="onSelectLevel()">
@@ -59,6 +68,18 @@ export default {
         }
     },
 
+    computed: {
+        title: function() {
+            if (!this.globalState.game.id) {
+                return ""
+            } else if (this.globalState.game.done) {
+                return "Последняя игра"
+            } else {
+                return "Текушая игра"
+            }
+        }
+    },
+
     methods: {
         async closeActiveGame() {
             await gameplay.closeActiveGame()
@@ -74,7 +95,9 @@ export default {
             })
         },
 
-        onSelectLevel: function() {
+        async onSelectLevel() {
+            await gameplay.closeActiveGame()
+
             apx.showFrame({
                 frame: '/levels',
             })

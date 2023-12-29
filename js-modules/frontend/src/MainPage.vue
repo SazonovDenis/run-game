@@ -102,8 +102,10 @@ export default {
 
         // Есть текущая игра?
         if (this.globalState.game.id) {
-            // Переходим на текущую игру
-            this.gameInfo()
+            if (!this.globalState.game.done) {
+                // Переходим на текущую игру
+                this.gameInfo()
+            }
         } else {
             // Загружаем текущую  игру
             await gameplay.loadActiveGame()

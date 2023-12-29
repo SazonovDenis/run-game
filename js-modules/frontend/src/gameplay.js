@@ -69,7 +69,7 @@ export default {
 
         // Если не отправляли ответ - отправим
         if (ctx.globalState.gameTask.task && !ctx.globalState.dataState.mode.postTaskAnswerDone) {
-            ctx.gameplay.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
+            await ctx.gameplay.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
         }
 
         // Грузим новое задание с сервера
@@ -109,7 +109,7 @@ export default {
         let recGame = await ctx.gameplay.api_gameStart(idPlan)
 
         // Задание и раунд в глобальном контексте
-        ctx.globalState.game = recGame
+        ctx.gameplay.useGame(recGame)
         ctx.globalState.gameTask = {}
 
         //
@@ -122,7 +122,7 @@ export default {
         if (recGame) {
             // Игра в глобальном контексте
             if (ctx.globalState.game && ctx.globalState.game.id !== recGame.id) {
-                ctx.globalState.game = recGame
+                ctx.gameplay.useGame(recGame)
                 ctx.globalState.gameTask = {}
             }
         } else {
@@ -136,7 +136,7 @@ export default {
         if (recGame) {
             // Игра в глобальном контексте
             if (ctx.globalState.game && ctx.globalState.game.id !== recGame.id) {
-                ctx.globalState.game = recGame
+                ctx.gameplay.useGame(recGame)
                 ctx.globalState.gameTask = {}
             }
         } else {
@@ -175,11 +175,7 @@ export default {
         }
 
         // Состояние раунда в глобальный контекст
-        ctx.globalState.game = dataGameTask.game
-        //
-        if (ctx.globalState.game.dend) {
-            ctx.globalState.game.done = true
-        }
+        ctx.gameplay.useGame(dataGameTask.game)
 
         // Уведомим об изменении задания
         ctx.eventBus.emit("loadedGameTask", dataGameTask)
@@ -192,6 +188,14 @@ export default {
     clearGame() {
         ctx.globalState.game = {}
         ctx.globalState.gameTask = {}
+    },
+
+    useGame(game) {
+        ctx.globalState.game = game
+        //
+        if (ctx.globalState.game.dend) {
+            ctx.globalState.game.done = true
+        }
     },
 
     async api_gameStart(idPlan) {
@@ -305,19 +309,9 @@ export default {
 
         //
         this.clearAuthUserInfo()
-        /*
-                ctx.globalState.user.id = res.data.id
-                ctx.globalState.user.login = res.data.login
-                ctx.globalState.user.text = res.data.text
-                ctx.globalState.user.color = res.data.color
-                if (!ctx.globalState.user.id) {
-                    ctx.globalState.user.id = 0
-                }
-        */
 
         // Задание и раунд в глобальном контексте
-        ctx.globalState.game = {}
-        ctx.globalState.gameTask = {}
+        ctx.gameplay.clearGame()
     },
 
     /**

@@ -28,7 +28,7 @@ export default {
         },
         info() {
             if (this.game.id > 0) {
-                return this.game.countDone + "/" + this.game.countTotal
+                return this.game.countAsked + " из " + this.game.countTask
             } else {
                 return ""
             }

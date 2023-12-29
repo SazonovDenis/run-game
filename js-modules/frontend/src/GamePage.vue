@@ -1,6 +1,6 @@
 <template>
 
-    <MenuContainer title="Game!!!">
+    <MenuContainer title="Играем!">
 
         <template v-slot:footer>
             <GameState :game="globalState.game"/>

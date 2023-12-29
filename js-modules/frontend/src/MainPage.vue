@@ -87,7 +87,7 @@ export default {
 
     computed: {
         backgroundImage() {
-            return apx.url.ref("run/game/web/cube.png")
+            return apx.url.ref("run/game/web/img/cube.png")
         },
     },
 

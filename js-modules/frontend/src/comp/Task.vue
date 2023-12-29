@@ -118,7 +118,7 @@ export default {
     computed: {
 
         wave() {
-            return apx.url.ref("run/game/web/wave.png")
+            return apx.url.ref("run/game/web/img/wave.png")
         },
 
         doShowText() {

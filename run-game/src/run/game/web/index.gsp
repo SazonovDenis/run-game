@@ -142,7 +142,7 @@
 
   <div class="jc-splash-icon">
     <img id="jc-splash-icon" class="jc-splash-icon"
-         src="${th.ref(th.path('./cube.png'))}"/>
+         src="${th.ref(th.path('./img/cube.png'))}"/>
   </div>
 
   <div class="jc-progress">

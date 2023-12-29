@@ -4,8 +4,11 @@
         <q-header reveal elevated class="bg-primary text-white">
             <q-toolbar>
                 <q-toolbar-title>
-                    <q-avatar @click="onMain()">
-                        <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+                    <q-avatar
+                        style="width: 0.8em; height: 0.8em; margin-right: 0.2em"
+                        @click="onMain()"
+                    >
+                        <img :src="icon">
                     </q-avatar>
                     <span v-if="title">
                         {{ title }}
@@ -110,7 +113,7 @@
                     <div class="q-img__container absolute-full"><img
                         class="q-img__image q-img__image--with-transition q-img__image--loaded"
                         loading="lazy" fetchpriority="auto" aria-hidden="true"
-                        draggable="false" src="https://cdn.quasar.dev/img/material.png"
+                        draggable="false" v-bind:src="material"
                         style="object-fit: cover; object-position: 50% 50%;"></div>
                     <div class="q-img__content absolute-full q-anchor--skip">
                         <div class="absolute-bottom bg-transparent"
@@ -118,7 +121,7 @@
                             <div class="q-avatar q-mb-sm" style="font-size: 56px;">
                                 <div
                                     class="q-avatar__content row flex-center overflow-hidden">
-                                    <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+                                    <img v-bind:src="avatar">
                                 </div>
                             </div>
                             <div class="text-weight-bold">{{ userInfo.text }}
@@ -146,8 +149,8 @@
         <q-footer reveal bordered class="bg-grey-8 text-white">
             <q-toolbar>
                 <q-toolbar-title>
-                    <q-avatar>
-                        <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+                    <q-avatar style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
+                        <img v-bind:src="icon">
                     </q-avatar>
                     <div></div>
                 </q-toolbar-title>
@@ -196,8 +199,17 @@ export default {
     },
 
     computed: {
+        icon() {
+            return apx.url.ref("run/game/web/img/logo-mono-white.svg")
+        },
+        avatar() {
+            return apx.url.ref("run/game/web/img/boy-avatar.png")
+        },
+        material() {
+            return apx.url.ref("run/game/web/img/material.png")
+        },
         backgroundImage() {
-            return apx.url.ref("run/game/web/cube.png")
+            return apx.url.ref("run/game/web/img/cube.png")
         },
     },
 

@@ -8,9 +8,7 @@
                 <q-card v-if="loginType==='full'"
                         style="min-width: 25rem; _box-shadow: none">
 
-                    <div class="main-window-img">
-                        <img v-bind:src="backgroundImage">
-                    </div>
+                    <LogoGame/>
 
                     <q-card-section class="q-pa-lg text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
@@ -75,9 +73,7 @@
                 <q-card v-if="loginType==='localOneUser'"
                         style="min-width: 25rem; _box-shadow: none">
 
-                    <div class="main-window-img">
-                        <img v-bind:src="backgroundImage">
-                    </div>
+                    <LogoGame/>
 
                     <q-card-section class="q-page flex flex-center text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
@@ -127,10 +123,11 @@
                             </div>
                         </div>
 
-                        <div class="row justify-left q-mt-lg q-mb-lg11"
-                             style="padding-top: 1em"
-                             @click="doFullLogin">
+                    </q-card-section>
 
+                    <q-card-section>
+
+                        <div @click="doFullLogin">
                             <span class="rgm-link-soft">Войти другим пользователем</span>
                         </div>
 
@@ -144,9 +141,7 @@
                 <q-card v-if="loginType==='localUserList'"
                         style="min-width: 25rem; _box-shadow: none">
 
-                    <div class="main-window-img">
-                        <img v-bind:src="backgroundImage">
-                    </div>
+                    <LogoGame/>
 
                     <q-card-section class="q-pa-lg text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
@@ -206,10 +201,7 @@
 
                     <q-card-section>
 
-                        <div _class="row justify-left q-mt-lg q-mb-lg11"
-                             _style="padding-top: 1em"
-                             @click="doFullLogin">
-
+                        <div @click="doFullLogin">
                             <span class="rgm-link-soft">Войти другим пользователем</span>
                         </div>
 
@@ -263,9 +255,13 @@ import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import utils from './utils'
 import auth from "./auth"
+import LogoGame from "./comp/LogoGame"
 
 export default {
+
     name: "LoginPage",
+
+    components: {LogoGame},
 
     data: function() {
         return {
@@ -300,12 +296,7 @@ export default {
         this.checkLoginMode()
     },
 
-    computed: {
-        backgroundImage() {
-            return apx.url.ref("run/game/web/img/cube.png")
-        },
-    },
-
+    computed: {},
 
     methods: {
 
@@ -434,22 +425,6 @@ export default {
     text-decoration-style: dashed;
     text-decoration-color: rgb(56 134 203);
     text-underline-offset: 0.3em;
-}
-
-.main-window-img img {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 5em;
-}
-
-.main-window-img {
-    padding-top: 1em;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    height: 5em;
 }
 
 </style>

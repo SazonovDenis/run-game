@@ -9,9 +9,7 @@
 
         <div class="q-gutter-md">
 
-            <div class="main-window-img">
-                <img v-bind:src="backgroundImage">
-            </div>
+            <LogoGame/>
 
             <div class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
                 <div>
@@ -45,13 +43,14 @@ import ctx from "./gameplayCtx"
 import utils from './utils'
 import {apx} from './vendor'
 import MenuContainer from "./comp/MenuContainer"
+import LogoGame from "./comp/LogoGame"
 import auth from "./auth"
 
 export default {
     name: "MainPage",
 
     components: {
-        MenuContainer, UserTaskPanel, UserInfo, GameState, gameplay
+        MenuContainer, UserTaskPanel, UserInfo, GameState, LogoGame, gameplay
     },
 
     // Состояние игрового мира
@@ -86,9 +85,6 @@ export default {
     },
 
     computed: {
-        backgroundImage() {
-            return apx.url.ref("run/game/web/img/cube.png")
-        },
     },
 
     async mounted() {

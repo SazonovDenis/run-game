@@ -138,9 +138,7 @@
 
             <!-- slot default -->
             <slot>
-                <div class="main-window-img">
-                    <img v-bind:src="backgroundImage">
-                </div>
+                <LogoGame/>
             </slot>
             <!-- -->
 
@@ -173,12 +171,13 @@ import ctx from "../gameplayCtx"
 import {apx} from "../vendor"
 import auth from "../auth"
 import gameplay from "../gameplay"
+import LogoGame from "./LogoGame"
 
 export default {
     name: "MenuContainer",
 
     components: {
-        //gameplay
+        LogoGame
     },
 
     props: {
@@ -207,9 +206,6 @@ export default {
         },
         material() {
             return apx.url.ref("run/game/web/img/material.png")
-        },
-        backgroundImage() {
-            return apx.url.ref("run/game/web/img/cube.png")
         },
     },
 

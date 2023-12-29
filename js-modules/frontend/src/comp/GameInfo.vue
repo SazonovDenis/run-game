@@ -15,7 +15,9 @@
 
         <q-separator/>
 
+<!--
         <div>Количество ответов: {{ game.countAnswered }}</div>
+-->
         <div>Количество верных ответов: {{ game.countTrue }}</div>
         <div>Количество ошибок: {{ game.countFalse }}</div>
         <div>Количество подсказок: {{ game.countHint }}</div>

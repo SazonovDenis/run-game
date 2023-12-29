@@ -207,39 +207,6 @@
 
                     </q-card-section>
 
-
-                    <q-card-section>
-
-                        <!--
-                                                <div>Предыдущие игроки</div>
-                                                <div v-for="user in localUserList">
-                                                    <q-btn
-                                                        color="white" text-color="black" :label="user.text"
-                                                        v-on:click="execLoginAsUser(user.login, '')"/>
-
-                                                    <q-btn
-                                                        color="white" text-color="black" label="Удалить"
-                                                        v-on:click="clearLocalUser(user.id)"/>
-                                                </div>
-                        -->
-
-
-                        <div v-if="isEnvDev()">
-                            <q-separator style="margin: 2em 0"/>
-
-                            <div>Для отладки</div>
-
-                            <q-btn color="white" text-color="black" label="Денис"
-                                   v-on:click="execLoginAsUser('user1010', '')"/>
-                            <q-btn color="white" text-color="black" label="Паша"
-                                   v-on:click="execLoginAsUser('user1012', '')"/>
-                            <q-btn color="white" text-color="black" label="Admin"
-                                   v-on:click="execLoginAsUser('admin', '111')"/>
-                        </div>
-
-
-                    </q-card-section>
-
                 </q-card>
 
             </q-page>
@@ -385,8 +352,7 @@ export default {
         },
 
         isEnvDev() {
-            return false
-            //return jcBase.cfg.envDev
+            return jcBase.cfg.envDev
         },
 
         doFullLogin() {

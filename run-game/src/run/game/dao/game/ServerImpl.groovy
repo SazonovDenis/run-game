@@ -10,6 +10,7 @@ import jandcode.core.store.*
 import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.backstage.*
+import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
 
@@ -19,6 +20,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     Rnd rnd = new RndImpl()
 
+
+    @DaoMethod
+    public StoreRecord getGame(long idGame) {
+        long idUsr = getCurrentUserId()
+
+        //
+        return loadGameInternal(idGame, idUsr)
+    }
 
     @DaoMethod
     public StoreRecord getLastGame() {
@@ -34,7 +43,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idGame = recGame.getLong("id")
 
         //
-        return loadGameInternal(idGame, idUsr)
+        StoreRecord st = loadGameInternal(idGame, idUsr)
+
+        //
+        return st
     }
 
     @DaoMethod
@@ -80,6 +92,17 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         res.setValue("countSkip", recGameStatistic.getValue("cntSkip"))
         //
         res.setValues(recGame.getValues())
+
+        // Каждое задание в один список
+        Store stGameTasks = mdb.createStore("GameTask.Server")
+        mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
+        List<Map> tasks = DataUtils.storeToList(stGameTasks)
+        res.setValue("tasks", tasks)
+
+        // Статистику по плану
+        long idPlan = recGame.getLong("plan")
+        StoreRecord recGameTaskStatistic = getPlan(idPlan)
+        res.setValue("tasksStatistic", UtJson.fromJson(recGameTaskStatistic.getString("tasksStatistic")))
 
         //
         return res
@@ -185,13 +208,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recGameTask = getGameLastTask(idGame)
 
         //
-/*
-        if (recGameTask == null) {
-            throw new XError(msg_all_task_done)
-        }
-*/
-
-        //
         return loadAndPrepareTask(idGame, recGameTask)
     }
 
@@ -260,20 +276,32 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store st = statisticManager.getPlanStatistic()
+        Store st = statisticManager.getPlansStatistic()
 
         //
-        for (StoreRecord rec : st) {
-            StoreRecord recRes = res.add()
-            recRes.setValue("id", rec.getValue("id"))
-            recRes.setValue("text", rec.getValue("text"))
-            recRes.setValue("count", rec.getValue("count"))
-            recRes.setValue("progress", rec.getValue("progress"))
-            recRes.setValue("taskInfo", UtJson.fromJson(rec.getString("taskInfo")))
+        st.copyTo(res)
+        for (StoreRecord rec : res) {
+            rec.setValue("tasksStatistic", UtJson.fromJson(rec.getString("tasksStatistic")))
         }
 
         //
-        //res.sort("*progress")
+        res.sort("progress")
+
+        //
+        return res
+    }
+
+    @DaoMethod
+    StoreRecord getPlan(long idPlan) {
+        StoreRecord res = mdb.createStoreRecord("Plan.list.statistic")
+
+        //
+        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
+        StoreRecord rec = statisticManager.getPlanStatistic(idPlan)
+
+        //
+        res.setValues(rec.getValues())
+        rec.setValue("tasksStatistic", UtJson.fromJson(rec.getString("tasksStatistic")))
 
         //
         return res
@@ -512,6 +540,35 @@ limit 1
 """
     }
 
+    String sqlGameTasks() {
+        return """
+select
+    GameTask.task,
+
+    GameTask.dtTask,
+    GameTask.dtAnswer,
+    GameTask.wasTrue,
+    GameTask.wasFalse,
+    GameTask.wasHint,
+    GameTask.wasSkip,
+
+    Task.factQuestion,
+    Task.factAnswer
+
+from
+    GameTask
+    join Task on (GameTask.task = Task.id)
+
+where
+    GameTask.usr = :usr and
+    GameTask.game = :game
+
+order by
+    GameTask.dtTask,
+    GameTask.id
+"""
+    }
+
     String sqlActiveGames() {
         return """
 select
@@ -532,7 +589,7 @@ order by
         return """
 select
     Game.*,
-    Plan.text
+    Plan.text planText
 from
     Game
     join Plan on (Game.plan = Plan.id)
@@ -560,31 +617,6 @@ where
     )
 """
     }
-
-/*
-    String sqlGameState() {
-        return """
-select
-    Game.id,
-    Game.plan,
-    Game.dbeg,
-    Game.dend,
-    Plan.text,
-    count(*) as countTotal,
-    sum(case when GameTask.dtTask is null then 0 else 1 end) as countDone
-from
-    Game
-    join Plan on (Game.plan = Plan.id)
-    join GameTask on (Game.id = GameTask.game)
-where
-    Game.id = :game and
-    GameTask.usr = :usr
-group by    
-    Plan.text,
-    Game.id
-"""
-    }
-*/
 
 
 }

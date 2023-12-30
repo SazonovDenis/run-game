@@ -34,8 +34,10 @@ class StatisticManager_Test extends RgmBase_Test {
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
 
         //
-        mdb.outTable(statisticManager.getPlanStatistic())
+        mdb.outTable(statisticManager.getPlansStatistic())
     }
+
+
     /**
      * Статистика заданий в плане для пользователя
      */

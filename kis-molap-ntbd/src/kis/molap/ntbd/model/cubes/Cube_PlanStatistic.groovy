@@ -66,7 +66,6 @@ public class Cube_PlanStatistic extends CubeCustom implements ICalcData {
         for (StoreRecord rec : st) {
             long plan = rec.getLong("plan")
             long cnt = rec.getLong("cnt")
-            //println(taskInfo)
 
             //
             Coord newCoord = Coord.create()

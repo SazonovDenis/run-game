@@ -23,7 +23,7 @@ public interface StatisticManager {
     /**
      * Выдает статистику и успехи каждого Paln.
      */
-    Store getPlanStatistic();
+    Store getPlansStatistic();
 
 
     /**

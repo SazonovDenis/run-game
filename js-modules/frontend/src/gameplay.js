@@ -42,20 +42,20 @@ export default {
         ctx.gameplay = null
     },
 
-        async getUserInfo() {
-            let res = await apx.jcBase.ajax.request({
-                url: "auth/getUserInfo",
-            })
+    async getUserInfo() {
+        let res = await apx.jcBase.ajax.request({
+            url: "auth/getUserInfo",
+        })
 
-            this.globalState.user.id = res.data.id
-            this.globalState.user.login = res.data.login
-            this.globalState.user.text = res.data.text
-            this.globalState.user.color = res.data.color
-            //
-            if (!this.globalState.user.id) {
-                this.globalState.user.id = 0
-            }
-        },
+        this.globalState.user.id = res.data.id
+        this.globalState.user.login = res.data.login
+        this.globalState.user.text = res.data.text
+        this.globalState.user.color = res.data.color
+        //
+        if (!this.globalState.user.id) {
+            this.globalState.user.id = 0
+        }
+    },
 
     /**
      * Грузим новое задание с сервера
@@ -111,7 +111,7 @@ export default {
         ctx.globalState.gameTask = {}
 
         //
-        ctx.gameplay.loadNextTask()
+        await ctx.gameplay.loadNextTask()
     },
 
     async loadActiveGame() {
@@ -224,6 +224,14 @@ export default {
         await daoApi.invoke('m/Game/closeActiveGame', [])
     },
 
+    async api_getPlans() {
+        let res = await daoApi.loadStore(
+            "m/Game/getPlans", {}
+        )
+
+        return res.records
+    },
+
     async api_choiceTask() {
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [ctx.globalState.game.id])
 
@@ -293,7 +301,9 @@ export default {
     async api_updUsr(userInfo) {
         let res = await apx.jcBase.ajax.request({
             url: "auth/updUsr",
-            params: {text: userInfo.text, login: userInfo.login, password: userInfo.password},
+            params: {
+                text: userInfo.text, login: userInfo.login, password: userInfo.password
+            },
         })
 
         //

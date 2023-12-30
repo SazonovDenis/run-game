@@ -37,7 +37,7 @@ export default {
                 game: {
                     id: null,
                     plan: null,
-                    text: "не загружена",
+                    planText: "не загружена",
                     dbeg: null,
                     dend: null,
                     countTask: null,

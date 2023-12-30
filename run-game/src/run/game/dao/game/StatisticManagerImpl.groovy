@@ -71,17 +71,51 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
     }
 
     @DaoMethod
-    public Store getPlanStatistic() {
+    public Store getPlansStatistic() {
         long idUsr = getCurrentUserId()
         XDateTime dt = XDateTime.now().addDays(-5)
         Map params = [usr: idUsr, dt: dt]
 
         //
+        Store res = loadPlanStatistic(params)
+
+        //
+        return res
+    }
+
+    @DaoMethod
+    public StoreRecord getPlanStatistic(long idPlan) {
+        long idUsr = getCurrentUserId()
+        XDateTime dt = XDateTime.now().addDays(-5)
+        Map params = [plan: idPlan, usr: idUsr, dt: dt]
+
+        //
+        Store res = loadPlanStatistic(params)
+
+        //
+        return res.get(0)
+    }
+
+    Store loadPlanStatistic(Map params) {
+        long idUsr = getCurrentUserId()
+        params.put("usr", idUsr)
+
+        //
         Store res = mdb.createStore("Plan.list.statistic")
-        mdb.loadQuery(res, sqlPlanStatistic(), params)
+        SqlFilter filter = SqlFilter.create(mdb, sqlPlanStatistic(), params)
+        filter.addWhere("plan", "equal", [sqlField: "Tab_UsrPlanStatistic.plan"])
+        filter.addWhere("dbeg", "equalAbove", [sqlField: "dbeg"])
+        filter.addWhere("dend", "equalBelow", [sqlField: "dbeg"])
+        //
+        SqlFilterBuilder part_limit = { SqlFilterContext ctx ->
+            ctx.addPart("limit", this.getPart_limit(params))
+        }
+        filter.addWhere("limit", part_limit)
+        //
+        filter.load(res)
 
         // Если статистики по плану еще нет - заполнить пессимистичный вариант
-        fillDummyTaskInfo(res)
+        fillDummyTasksStatistic(res)
 
         //
         res.sort("progress")
@@ -89,7 +123,6 @@ public class StatisticManagerImpl extends RgmMdbUtils implements StatisticManage
         //
         return res
     }
-
 
     @DaoMethod
     public Store getTaskStatisticByPlan(long idPlan) {
@@ -143,14 +176,14 @@ order by
 with Tab_UsrPlanStatistic as (
  
 select 
-    Plan.id,
-    Plan.text,
+    Plan.id plan,
+    Plan.text planText,
     Cube_UsrPlan.usr,          
                          
     Cube_Plan.cnt count,
     
     Cube_UsrPlan.progress,
-    Cube_UsrPlan.taskInfo
+    Cube_UsrPlan.tasksStatistic
 
 from
     Plan
@@ -164,12 +197,17 @@ from
 )
 
 select 
-    * 
+    Tab_UsrPlanStatistic.* 
+
 from 
     Tab_UsrPlanStatistic 
+
+where
+    1=1
+
 order by
     progress asc,
-    text 
+    planText 
 """
     }
 
@@ -200,16 +238,16 @@ order by
 """
     }
 
-    void fillDummyTaskInfo(Store st) {
+    void fillDummyTasksStatistic(Store st) {
         for (StoreRecord rec : st) {
             if (rec.isValueNull("progress")) {
                 rec.setValue("progress", Cube_UsrPlanStatistic.PROGRESS_MIN)
             }
-            if (rec.isValueNull("taskInfo")) {
-                List<Map> taskInfoDummy = Cube_UsrPlanStatistic.getTaskInfoDummy()
+            if (rec.isValueNull("tasksStatistic")) {
+                List<Map> taskInfoDummy = Cube_UsrPlanStatistic.getTasksStatisticDummy()
                 Map first = taskInfoDummy.get(0)
                 first.put("count", rec.getLong("count"))
-                rec.setValue("taskInfo", taskInfoDummy)
+                rec.setValue("tasksStatistic", taskInfoDummy)
             }
         }
     }

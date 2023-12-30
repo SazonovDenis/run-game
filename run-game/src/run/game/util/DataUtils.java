@@ -1,6 +1,7 @@
 package run.game.util;
 
 import jandcode.commons.*;
+import jandcode.core.store.*;
 
 import java.util.*;
 
@@ -21,6 +22,16 @@ public class DataUtils {
         List<Long> res = new ArrayList<>();
         for (String v : vals) {
             res.add(UtCnv.toLong(v));
+        }
+
+        return res;
+    }
+
+    public static List<Map> storeToList(Store st) {
+        List<Map> res = new ArrayList<>();
+
+        for (StoreRecord rec : st) {
+            res.add(rec.getValues());
         }
 
         return res;

@@ -1,13 +1,13 @@
 <template>
     <div v-if="game.id" class="game-info">
-        <div class="game-info__text">{{ game.text }}</div>
+        <div class="game-info__text">{{ game.planText }}</div>
 
         <q-separator/>
 
-        <div class="">Игра начата {{ dbeg }}</div>
-        <div v-if="game.done" class="">Игра завершена {{ dend }}</div>
-
-        <q-separator/>
+        <div class="">
+            <span>Игра начата {{ dbeg }}</span>
+            <span v-if="game.done">, завершена {{ dend }}</span>
+        </div>
 
         <div class="game-info__count">
             Показано заданий: {{ game.countAsked }} из {{ game.countTask }}
@@ -15,28 +15,48 @@
 
         <q-separator/>
 
-<!--
-        <div>Количество ответов: {{ game.countAnswered }}</div>
--->
-        <div>Количество верных ответов: {{ game.countTrue }}</div>
-        <div>Количество ошибок: {{ game.countFalse }}</div>
-        <div>Количество подсказок: {{ game.countHint }}</div>
-        <div>Количество пропусков: {{ game.countSkip }}</div>
+        <div>Игра</div>
+
+        <div>Ответов: {{ game.countAnswered }}</div>
+        <div>Верных ответов: {{ game.countTrue }}</div>
+        <div>Ошибок: {{ game.countFalse }}</div>
+        <div>Подсказок: {{ game.countHint }}</div>
+        <div>Пропусков: {{ game.countSkip }}</div>
+
+        <div class="game-tasks row">
+            <GameTasks :tasks="game.tasks"/>
+        </div>
+
+        <q-separator/>
+
+        <div>План</div>
+
+        <div class="game-tasks row">
+            <TasksStatistic :tasksStatistic="game.tasksStatistic"/>
+        </div>
 
     </div>
+
     <div v-else class="game-info xxx-yyy">Нет текущей игры</div>
 </template>
 
 <script>
 
 import {apx} from '../vendor'
+import GameTasks from "./GameTasks"
+import TasksStatistic from "./TasksStatistic"
 
 
 /**
  * Состояние игры. Виджет для экрана
  */
 export default {
+
     name: "GameInfo",
+
+    components: {
+        GameTasks, TasksStatistic
+    },
 
     props: {
         game: null
@@ -54,7 +74,11 @@ export default {
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
+
+.game-tasks {
+    justify-content: center;
+}
 
 .game-info {
     font-size: 1.5em;

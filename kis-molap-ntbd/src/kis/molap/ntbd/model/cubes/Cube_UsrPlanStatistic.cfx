@@ -7,7 +7,7 @@
 
         <!-- Поля -->
         <field name="progress"/>
-        <field name="taskInfo"/>
+        <field name="tasksStatistic"/>
 
         <!-- Зависит от таблиц -->
         <depend name="GameTask"/>
@@ -21,7 +21,7 @@
     <domain name="Cube_UsrPlan">
 
         <field name="progress" parent="double" title="Степень выученности слов, средняя"/>
-        <field name="taskInfo" parent="memo" title="Степень выученности, по процентилям"/>
+        <field name="tasksStatistic" parent="memo" title="Степень выученности, по процентилям"/>
 
     </domain>
 

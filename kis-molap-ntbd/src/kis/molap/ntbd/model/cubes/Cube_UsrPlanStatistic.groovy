@@ -37,12 +37,12 @@ public class Cube_UsrPlanStatistic extends CubeCustom implements ICalcData {
     public static double PROGRESS_MIN = -5
     public static double PROGRESS_MAX = +4
 
-    public static List getTaskInfoDummy() {
-        List taskInfo = []
+    public static List getTasksStatisticDummy() {
+        List tasksStatistic = []
         for (double progressPercentile : progressPercentiles) {
-            taskInfo.add([percentile: progressPercentile, count: 0])
+            tasksStatistic.add([percentile: progressPercentile, count: 0])
         }
-        return taskInfo
+        return tasksStatistic
     }
 
     public CoordList getDirtyCoords(long auditAgeFrom, long auditAgeTo) throws Exception {
@@ -133,12 +133,11 @@ public class Cube_UsrPlanStatistic extends CubeCustom implements ICalcData {
             double progressAvg = progressSumm / cnt
             progressAvg = CubeUtils.discardExtraDigits(progressAvg, 3)
             // Кол-во по процентилям
-            List taskInfo = []
+            List tasksStatistic = []
             for (double progressPercentile : progressPercentiles) {
                 int countForPercentile = UtCnv.toInt(countByPercentiles.get(progressPercentile))
-                taskInfo.add([percentile: progressPercentile, count: countForPercentile])
+                tasksStatistic.add([percentile: progressPercentile, count: countForPercentile])
             }
-            //println(taskInfo)
 
             //
             CalcResult calcResult = new CalcResult()
@@ -152,8 +151,8 @@ public class Cube_UsrPlanStatistic extends CubeCustom implements ICalcData {
             //
             ValueSingle valueSingle = ValueSingle.create()
             valueSingle.put("progress", progressAvg)
-            String taskInfoJson = UtJson.toJson(taskInfo)
-            valueSingle.put("taskInfo", taskInfoJson)
+            String tasksStatisticJson = UtJson.toJson(tasksStatistic)
+            valueSingle.put("tasksStatistic", tasksStatisticJson)
             calcResult.value = valueSingle
 
             //

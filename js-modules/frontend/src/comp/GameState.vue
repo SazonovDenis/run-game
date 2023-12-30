@@ -1,32 +1,38 @@
 <template>
-    <div class="game-state">
-        <span class="game-state__game-text">{{ text }}</span>
-        <span class="game-state__info">{{ info }}</span>
+    <div class="game-state row">
+        <span class="game-state__planText">{{ planText }}</span>
+        <GameTasks :tasks="game.tasks"/>
+        <!--
+                <span class="game-state__gameStep">{{ gameStep }}</span>
+        -->
     </div>
 </template>
 
 <script>
 
+import GameTasks from "./GameTasks"
+
 /**
- * Состояние игры. Виджет для таскбара
+ * Состояние игры. Виджет для таскбара.
  */
 export default {
-    components: {},
+
+    components: {GameTasks},
 
     props: {
         game: {},
     },
 
     computed: {
-        text() {
+        planText() {
             if (this.game.id > 0) {
-                return this.game.text
+                return this.game.planText
             } else {
                 return "Игра не начата"
             }
 
         },
-        info() {
+        gameStep() {
             if (this.game.id > 0) {
                 return this.game.countAsked + " из " + this.game.countTask
             } else {
@@ -44,23 +50,26 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="less" scoped>
 
 .game-state {
+
     padding: 0.5em;
+    align-items: center;
 
     span {
         margin: 0.5em;
     }
 
-    &__text {
+    &__planText {
         font-size: 80%;
-        color: #850000;
+        color: silver;
     }
 
-    &__info {
+    &__gameStep {
         color: #5b9e3a;
     }
+
 }
 
 

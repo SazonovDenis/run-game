@@ -4,7 +4,7 @@
         <div class="game-plan-item-progress">
             <div v-for="(item, index) in tasksStatistic"
                  :class="'game-plan-item-progress-el game-plan-item-progress-bar ' + getClass(item, index, tasksStatistic.length)"
-                 :style="{height: getHeight(plan, item)}">
+                 :style="{height: getHeight(item)}">
             </div>
         </div>
         <div class="game-plan-item-progress">
@@ -26,8 +26,17 @@ export default {
     components: {},
 
     props: {
-        plan: {},
         tasksStatistic: {},
+    },
+
+    computed: {
+        countTasks() {
+            let count = 0
+            for (let taskStatistic of this.tasksStatistic) {
+                count = count + taskStatistic.count
+            }
+            return count
+        },
     },
 
     methods: {
@@ -41,11 +50,11 @@ export default {
             }
         },
 
-        getHeight(tasksStatistic, item) {
-            if (tasksStatistic.count === 0) {
+        getHeight(item) {
+            if (this.countTasks === 0) {
                 return "0em"
             }
-            let perc = 100 * item.count / tasksStatistic.count
+            let perc = 100 * item.count / this.countTasks
             let em = perc / 50
             return em + 'em'
         },

@@ -7,7 +7,7 @@
              @click="click(plan.plan)">
             {{ plan.planText }} ({{ plan.count }})
 
-            <TasksStatistic :plan="plan" :tasksStatistic="plan.tasksStatistic"/>
+            <TasksStatistic :tasksStatistic="plan.tasksStatistic"/>
 
         </div>
 

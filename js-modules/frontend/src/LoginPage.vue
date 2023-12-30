@@ -294,6 +294,11 @@ export default {
             return res;
         },
 
+        saveLocalUser(ui) {
+            let expires = new Date("3333-12-31")
+            utils.setCookie(utils.getLocalUserCookeName(ui.id), ui, {expires: expires})
+        },
+
         clearLocalUser(userId) {
             utils.deleteCookie(utils.getLocalUserCookeName(userId))
 
@@ -321,7 +326,7 @@ export default {
             //
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
-                utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
+                this.saveLocalUser(ui)
             }
 
             //
@@ -339,7 +344,7 @@ export default {
             //
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
-                utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
+                this.saveLocalUser(ui)
             }
 
             //

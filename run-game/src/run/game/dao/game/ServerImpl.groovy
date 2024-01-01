@@ -138,9 +138,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Отберем подходящие задания на игру.
         // Задание выбирается с учетом статистики пользователя.
-        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
-        //stTask.sort("progress")
+        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
+        Store stTask = statisticManager.getStatisticForGame(idGame)
+        stTask.sort("rating")
         //mdb.outTable(stTask, 20)
 
         // Слегка рандомизируем рейтинг -
@@ -150,11 +150,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // а для одного факта несколько заданий)
         for (StoreRecord recTask : stTask) {
             double progressSeed = rnd.num(-1000, 1000) / 10000
-            recTask.setValue("progress", recTask.getDouble("progress") + progressSeed)
+            recTask.setValue("rating", recTask.getDouble("rating") + progressSeed)
         }
 
         // Теперь выберем задания на игру по рейтингу
-        stTask.sort("progress")
+        stTask.sort("rating")
         //mdb.outTable(stTask, 20)
         //
         long taskForGameCount = 0
@@ -535,7 +535,7 @@ where
     GameUsr.usr = :usr
 order by    
     Game.dbeg desc,
-    Game.id
+    Game.id desc
 limit 1
 """
     }
@@ -607,6 +607,7 @@ update
 set 
     dend = :dt
 where
+    Game.dend is null and
     Game.id in (
         select
             GameUsr.game 

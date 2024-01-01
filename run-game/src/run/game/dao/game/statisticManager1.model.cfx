@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="StatisticManager1.task.statistic" parent="id">
+        <field name="task" parent="Task/ref"/>
+        <field name="rating" parent="double" scale="3" title="Рейтинг по игре"/>
+    </domain>
+
+    <domain name="StatisticManager1.task.statistic1" parent="id">
+        <field name="task" parent="Task/ref"/>
+
+        <field name="rating0" parent="double" scale="3"
+               title="Рейтинг по последней игре"/>
+        <field name="rating1" parent="double" scale="3"
+               title="Рейтинг по предыдущей игре"/>
+
+        <field name="incSum" parent="double" scale="3"
+               title="Прибавка к рейтингу предыдущей игры"/>
+        <field name="decSum" parent="double" scale="3"
+               title="Потери рейтинга предыдущей игры"/>
+    </domain>
+
+
+</root>

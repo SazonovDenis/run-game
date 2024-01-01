@@ -8,6 +8,8 @@ import run.game.dao.*
 
 class Server_Game_Test extends RgmBase_Test {
 
+    boolean doPauseBeforeAnswer = false
+    boolean doPauseBeforeGame = true
 
     @Test
     void getPlans() {
@@ -117,25 +119,11 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     @Test
-    void testGameProcess_x100() {
-        long idPlan = 1000
+    void closeActiveGame() {
+        Server upd = mdb.create(ServerImpl)
 
-        // Статистика по уровню
-        printTaskStatisticByPlan(idPlan)
-
-        // Много игр
-        for (int i = 0; i < 100; i++) {
-            // Игра
-            doGameProcess(idPlan)
-
-            // Текущая статистика по уровню
-            if (i % 10 == 0) {
-                printTaskStatisticByPlan(idPlan)
-            }
-        }
-
-        // Итоговая статистика по уровню
-        printTaskStatisticByPlan(idPlan)
+        // Закроем все игры
+        upd.closeActiveGame()
     }
 
     @Test
@@ -151,6 +139,35 @@ class Server_Game_Test extends RgmBase_Test {
         // Обновленная статистика по уровню
         printTaskStatisticByPlan(idPlan)
     }
+
+    @Test
+    void testGameProcess_xN() {
+        int countN = 10
+        long idPlan = 1000
+
+        // Статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+
+        // Много игр
+        for (int i = 0; i < countN; i++) {
+            // Игра
+            doGameProcess(idPlan)
+
+            //
+            if (doPauseBeforeGame) {
+                Thread.sleep(rnd.num(150, 500))
+            }
+
+            // Текущая статистика по уровню
+            if (i % 10 == 0) {
+                printTaskStatisticByPlan(idPlan)
+            }
+        }
+
+        // Итоговая статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+    }
+
 
     @Test
     void testGameProcess_3() {
@@ -251,16 +268,22 @@ class Server_Game_Test extends RgmBase_Test {
             // mdb.outTable(task.get("task"))
 
             //
-            //Thread.sleep(rnd.num(25, 250))
+            if (doPauseBeforeAnswer) {
+                Thread.sleep(rnd.num(50, 500))
+            }
 
-            // Пользователь отвечает
             StoreRecord recTask = task.get("task")
             long idGameTask = recTask.getLong("id")
             boolean wasTrue
             boolean wasFalse
             boolean wasSkip
             boolean wasHint = rnd.bool(1, 3)
-            if (allTaskOk && rnd.bool(10, 1)) {
+            if (allTaskOk) {
+                wasTrue = true
+                wasFalse = !wasTrue
+                wasSkip = false
+                wasHint = rnd.bool(1, 10)
+            } else if (rnd.bool(5, 1)) {
                 wasTrue = true
                 wasFalse = !wasTrue
                 wasSkip = false
@@ -282,12 +305,19 @@ class Server_Game_Test extends RgmBase_Test {
                     wasFalse = !wasTrue
                 }
             }
-            upd.postTaskAnswer(idGameTask, [
-                    wasTrue : wasTrue,
-                    wasFalse: wasFalse,
-                    wasSkip : wasSkip,
-                    wasHint : wasHint,
-            ])
+
+            // Пользователь иногда не отвечает
+            boolean skipPostTaskAnswer = rnd.bool(1, 5)
+
+            // Пользователь отвечает
+            if (allTaskOk || !skipPostTaskAnswer) {
+                upd.postTaskAnswer(idGameTask, [
+                        wasTrue : wasTrue,
+                        wasFalse: wasFalse,
+                        wasSkip : wasSkip,
+                        wasHint : wasHint,
+                ])
+            }
 
             //println()
             println("task " + n + "/" + taskUserToDoCount + ", [" + recTask.getLong("task") + "]")

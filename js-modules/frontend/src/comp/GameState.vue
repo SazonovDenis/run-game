@@ -10,7 +10,7 @@
 
 <script>
 
-import GameTasks from "./GameTasks"
+import GameTasks from "./GameTasksState"
 
 /**
  * Состояние игры. Виджет для таскбара.

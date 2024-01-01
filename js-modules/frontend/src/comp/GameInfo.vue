@@ -43,7 +43,7 @@
 <script>
 
 import {apx} from '../vendor'
-import GameTasks from "./GameTasks"
+import GameTasks from "./GameTasksState"
 import TasksStatistic from "./TasksStatistic"
 
 

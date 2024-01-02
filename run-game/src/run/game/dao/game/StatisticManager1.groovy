@@ -2,27 +2,32 @@ package run.game.dao.game
 
 import jandcode.commons.*
 import jandcode.commons.datetime.*
+import jandcode.commons.error.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
 
 class StatisticManager1 extends RgmMdbUtils {
 
+/*
 
-    // Эти коэффицианты отвечают за вес текущего, предыдущего и пред-предыдущего ответа
-    double[] ratingMultiplier = [0.5, 0.3, 0.2]
+    Добавить расчет рейтинга времени
+
+    Заюзать в интерфейсе, в методе getCurrentGame
+*/
+
+    // Расчет рейтингов: вес результата текущего, предыдущего и пред-предыдущего ответа
+    double[] ratingWeight = [0.5, 0.3, 0.2]
+
+    // Расчет рейтинга за скорость: время ответа и баллы за него
+    double[] ratingDurationGrade = [2, 3, 5, 8]
+    double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
 
     @DaoMethod
     public Store getStatisticForGame(long idGame) {
-        long idUsr = getCurrentUserId()
-
-        //println()
-        //println("getStatisticForGame, idGame: " + idGame)
-
         // Игра
-        Map params = [usr: idUsr, game: idGame]
-        StoreRecord recGame = mdb.loadQueryRecord(sqlRecGame(), params)
-        //mdb.outTable(recGame)
+        long idUsr = getCurrentUserId()
+        StoreRecord recGame = loadRecGame(idGame, idUsr)
 
         // План
         long idPlan = recGame.getLong("plan")
@@ -34,19 +39,21 @@ class StatisticManager1 extends RgmMdbUtils {
         dbeg = dbeg.addDays(-1)
         // Для неазаконченной игры dend
         if (UtDateTime.isEmpty(dend)) {
-            dend = UtDateTime.EMPTY_DATETIME_END // XDateTime.now()
+            dend = UtDateTime.EMPTY_DATETIME_END
         }
 
         // Все задания, выданные пользователю по плану за период
-        params = [dbeg: dbeg, dend: dend, "usr": idUsr, plan: idPlan]
+        Map params = [dbeg: dbeg, dend: dend, "usr": idUsr, plan: idPlan]
         Store stGameTask = mdb.loadQuery(sqlGameTask(), params)
         //mdb.outTable(stGameTask)
 
         // Сгруппируем по task
-        Store stTaskStatistic = mdb.createStore("StatisticManager1.task.statistic")
+        Store stTaskStatistic = mdb.createStore("GameTask.statistic")
 
         //
         List<Boolean> taskAnswers = []
+        List<Double> taskAnswersDuration = []
+        //
         for (int n = 0; n < stGameTask.size(); n++) {
             // Текущая и следующая запись
             StoreRecord recGameTask = stGameTask.get(n)
@@ -56,47 +63,203 @@ class StatisticManager1 extends RgmMdbUtils {
             }
 
             // Накопление rating по очередному GameTask
-            if (taskAnswers.size() < 3) {
+            if (taskAnswers.size() < ratingWeight.size()) {
                 if (recGameTask.getLong("wasTrue")) {
                     taskAnswers.add(true)
                 } else {
                     taskAnswers.add(false)
                 }
+                //
+                Double duration = null
+                if (!UtDateTime.isEmpty(recGameTask.getDateTime("dtAnswer"))) {
+                    duration = recGameTask.getDateTime("dtAnswer").diffMSec(recGameTask.getDateTime("dtTask"))
+                }
+                taskAnswersDuration.add(duration)
             }
 
             // Накопление по очередному task закончено
             if (recGameTaskNext == null || recGameTaskNext.getLong("task") != recGameTask.getLong("task")) {
-                // Если не хватает последних результатов (мало раз выполнено task) - считаем, последние были отвечены неправильно
-                while (taskAnswers.size() < 3) {
+                // Если не хватает последних rating (мало раз выполнено task) -
+                // считаем, что предыдущие были отвечены неправильно
+                while (taskAnswers.size() < ratingWeight.size()) {
                     taskAnswers.add(false)
+                    taskAnswersDuration.add(null)
                 }
 
+                //
                 double rating = 0
-                for (int i = 0; i < 3; i++) {
-                    if (taskAnswers.get(i) == true) {
-                        rating = rating + ratingMultiplier[i]
-                    }
+                for (int i = 0; i < ratingWeight.size(); i++) {
+                    double ratingAnswer = getRatingAnswer(taskAnswers.get(i))
+                    rating = rating + ratingAnswer * ratingWeight[i]
+                }
+                //
+                double ratingQuickness = 0
+                for (int i = 0; i < ratingWeight.size(); i++) {
+                    double ratingQuicknessAnswer = getRatingQuickness(taskAnswersDuration.get(i))
+                    ratingQuickness = ratingQuickness + ratingQuicknessAnswer * ratingWeight[i]
                 }
 
                 //
                 StoreRecord recPlanTaskStatistic = stTaskStatistic.add()
                 recPlanTaskStatistic.setValue("task", recGameTask.getValue("task"))
                 recPlanTaskStatistic.setValue("rating", rating)
+                recPlanTaskStatistic.setValue("ratingQuickness", ratingQuickness)
+
                 //
                 taskAnswers = []
+                taskAnswersDuration = []
             }
-
-            //
-            //n = n + 1
         }
-
-        //
-        //mdb.outTable(stTaskStatistic)
 
 
         //
         return stTaskStatistic
     }
+
+
+    /**
+     * Бал за ответ
+     * @param taskAnswer результат ответа
+     * @return Значение от 0 до 1
+     */
+    double getRatingAnswer(boolean taskAnswer) {
+        if (taskAnswer == true) {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+    /**
+     * Бал за скорость
+     * @param taskAnswerDuration время ответа
+     * @return Значение от 0 до 1
+     */
+    double getRatingQuickness(Double taskAnswerDuration) {
+        double ratingQuickness = 0
+
+        if (taskAnswerDuration==null){
+            return ratingQuickness
+        }
+
+        for (int i = 0; i < ratingDurationGrade.size(); i++) {
+            if (taskAnswerDuration <= ratingDurationGrade[i]) {
+                ratingQuickness = ratingDurationWeight[i]
+                break
+            }
+        }
+
+        return ratingQuickness
+    }
+
+    /**
+     * Разница в рейтинге между играми
+     * @param idGame0 текущая игра
+     * @param idGame1 предыдущая игра
+     * @return
+     */
+    @DaoMethod
+    public Store compareStatisticForGames(long idGame0, long idGame1) {
+        Store st0 = getStatisticForGame(idGame0)
+        Store st1 = null
+        if (idGame1 != 0) {
+            st1 = getStatisticForGame(idGame1)
+        }
+
+        // До и после
+        Store stRes = mdb.createStore("GameGameTask.statistic.compare")
+
+        //
+        for (int n = 0; n < st0.size(); n++) {
+            StoreRecord recRes = stRes.add()
+
+            //
+            recRes.setValue("task", st0.get(n).getValue("task"))
+
+            // Рейтинг до
+            recRes.setValue("rating0", st0.get(n).getValue("rating"))
+            recRes.setValue("ratingQuickness0", st0.get(n).getValue("ratingQuickness"))
+        }
+
+        // Рейтинг после
+        if (st1 != null) {
+            for (int n = 0; n < st0.size(); n++) {
+                StoreRecord recRes = stRes.get(n)
+
+                // Защита от дурака
+                if (stRes.get(n).getValue("task") != st1.get(n).getValue("task")) {
+                    throw new XError("st0.task != st1.task")
+                }
+
+                // Рейтинг
+                recRes.setValue("rating1", st1.get(n).getValue("rating"))
+                recRes.setValue("ratingQuickness1", st1.get(n).getValue("ratingQuickness"))
+            }
+        }
+
+        // Заработанные и проигранные баллы (плюсы и минусы)
+        for (int n = 0; n < st0.size(); n++) {
+            StoreRecord recRes = stRes.get(n)
+
+            //
+            double ratingDiff = recRes.getDouble("rating0") - recRes.getDouble("rating1")
+            // Увеличение рейтинга
+            if (ratingDiff > 0) {
+                recRes.setValue("ratingInc", ratingDiff)
+            }
+            // Уменьшение рейтинга
+            if (ratingDiff < 0) {
+                recRes.setValue("ratingDec", ratingDiff)
+            }
+
+            //
+            double ratingQuicknessDiff = recRes.getDouble("ratingQuickness0") - recRes.getDouble("ratingQuickness1")
+            // Увеличение рейтинга
+            if (ratingQuicknessDiff > 0) {
+                recRes.setValue("ratingQuicknessInc", ratingQuicknessDiff)
+            }
+            // Уменьшение рейтинга
+            if (ratingQuicknessDiff < 0) {
+                recRes.setValue("ratingQuicknessDec", ratingQuicknessDiff)
+            }
+        }
+
+        //
+        return stRes
+    }
+
+    /**
+     * Разница в рейтинге между текущей и предыдущей игрой (по этому плану)
+     * @param idGame текущая игра
+     */
+    @DaoMethod
+    public Store compareStatisticForGamePrior(long idGame) {
+        // Предыдущая игра
+        long idUsr = getCurrentUserId()
+        StoreRecord recGamePrior = loadRecGamePrior(idGame, idUsr)
+
+        //
+        long idGamePrior = recGamePrior.getLong("id")
+        return compareStatisticForGames(idGame, idGamePrior)
+    }
+
+    StoreRecord loadRecGame(long idGame, long idUsr) {
+        Map params = [game: idGame, usr: idUsr]
+        StoreRecord recGame = mdb.loadQueryRecord(sqlRecGame(), params)
+        return recGame
+    }
+
+    StoreRecord loadRecGamePrior(long idGame, long idUsr) {
+        StoreRecord recGame = loadRecGame(idGame, idUsr)
+        XDateTime dbeg = recGame.getDateTime("dbeg")
+        long plan = recGame.getLong("plan")
+
+        Map params = [plan: plan, usr: idUsr, dbeg: dbeg]
+        StoreRecord recGamePrior = mdb.loadQueryRecord(sqlGamePrior(), params)
+
+        return recGamePrior
+    }
+
 
     String sqlRecGame() {
         return """
@@ -108,6 +271,24 @@ from
 where
     GameUsr.game = :game and 
     GameUsr.usr = :usr 
+"""
+    }
+
+    String sqlGamePrior() {
+        return """
+select 
+    * 
+from
+    Game
+    join GameUsr on (GameUsr.game = Game.id)
+where
+    GameUsr.usr = :usr and
+    Game.plan = :plan and
+    Game.dbeg < :dbeg
+order by
+    Game.dbeg desc,
+    Game.id desc
+limit 1
 """
     }
 

@@ -1,6 +1,6 @@
 package run.game.dao.game
 
-import jandcode.commons.error.*
+
 import jandcode.core.store.*
 import kis.molap.ntbd.model.*
 import org.junit.jupiter.api.*
@@ -19,11 +19,11 @@ class StatisticManager1_Test extends RgmBase_Test {
         // Последняя игра
         Server upd = mdb.create(ServerImpl)
         StoreRecord recActiveGame = upd.getLastGame()
+        long idGame = recActiveGame.getLong("id")
         mdb.outTable(recActiveGame)
 
         //
         Store st0
-        long idGame = recActiveGame.getLong("id")
         println()
         st0 = compareStatisticForGames(idGame, idGame - 1)
         mdb.outTable(st0)
@@ -46,19 +46,19 @@ class StatisticManager1_Test extends RgmBase_Test {
 
     @Test
     void getStatisticForGame() {
-
-        //
         //utils.logOn()
 
-        long idGame = 1242
+        //
+        Server upd = mdb.create(ServerImpl)
+        StoreRecord recActiveGame = upd.getLastGame()
+        long idGame = recActiveGame.getLong("id")
+        //long idGame = 1258
         println("idGame: " + idGame)
 
-        //
+        // ---
         StatisticManager1 sm = mdb.create(StatisticManager1)
         Store st = sm.getStatisticForGame(idGame)
         mdb.outTable(st)
-
-        //
 
         // Общий рейтинг и проигранные баллы (плюсы и минусы)
         double ratingSum = StoreUtils.getSum(st, "rating")
@@ -67,89 +67,46 @@ class StatisticManager1_Test extends RgmBase_Test {
         //
         println("ratingSum:" + ratingSum)
 
+        //
+        println()
+        st = sm.compareStatisticForGamePrior(idGame)
+        mdb.outTable(st)
     }
 
-    /**
-     * Разница в рейтинге между играми
-     * @param idGame0 текущая игра
-     * @param idGame1 предыдущая игра
-     * @return
-     */
     Store compareStatisticForGames(long idGame0, long idGame1) {
         println("idGame: " + idGame1 + " -> " + idGame0)
 
         //
         StatisticManager1 sm = mdb.create(StatisticManager1)
-        Store st0 = sm.getStatisticForGame(idGame0)
-        Store st1 = null
-        if (idGame1 != 0) {
-            st1 = sm.getStatisticForGame(idGame1)
-        }
-
-        // До и после
-        Store stRes = mdb.createStore("StatisticManager1.task.statistic1")
-
-        //
-        for (int n = 0; n < st0.size(); n++) {
-            StoreRecord recRes = stRes.add()
-
-            //
-            recRes.setValue("task", st0.get(n).getValue("task"))
-
-            // Рейтинг до
-            recRes.setValue("rating0", st0.get(n).getValue("rating"))
-        }
-
-        // Рейтинг после
-        if (st1 != null) {
-            for (int n = 0; n < st0.size(); n++) {
-                StoreRecord recRes = stRes.get(n)
-
-                //
-                if (stRes.get(n).getValue("task") != st1.get(n).getValue("task")) {
-                    throw new XError("st0.task != st1.task")
-                }
-
-                // Рейтинг
-                recRes.setValue("rating1", st1.get(n).getValue("rating"))
-            }
-        }
-
-        // Заработанные и проигранные баллы (плюсы и минусы)
-        for (int n = 0; n < st0.size(); n++) {
-            StoreRecord recRes = stRes.get(n)
-
-            //
-            double diff = recRes.getDouble("rating0") - recRes.getDouble("rating1")
-
-            // Увеличение рейтинга
-            if (diff > 0) {
-                recRes.setValue("incSum", diff)
-            }
-            // Уменьшение рейтинга
-            if (diff < 0) {
-                recRes.setValue("decSum", diff)
-            }
-        }
-
-        //
-        //mdb.outTable(stRes)
-
+        Store stRes = sm.compareStatisticForGames(idGame0, idGame1)
 
         // Общий рейтинг и проигранные баллы (плюсы и минусы)
         double ratingSum0 = StoreUtils.getSum(stRes, "rating0")
         double ratingSum1 = StoreUtils.getSum(stRes, "rating1")
-        double incSum = StoreUtils.getSum(stRes, "incSum")
-        double decSum = StoreUtils.getSum(stRes, "decSum")
+        double ratingIncSum = StoreUtils.getSum(stRes, "ratingInc")
+        double ratingDecSum = StoreUtils.getSum(stRes, "ratingDec")
         ratingSum0 = CubeUtils.discardExtraDigits(ratingSum0)
         ratingSum1 = CubeUtils.discardExtraDigits(ratingSum1)
-        incSum = CubeUtils.discardExtraDigits(incSum)
-        decSum = CubeUtils.discardExtraDigits(decSum)
+        ratingIncSum = CubeUtils.discardExtraDigits(ratingIncSum)
+        ratingDecSum = CubeUtils.discardExtraDigits(ratingDecSum)
+        //
+        double ratingQuicknessSum0 = StoreUtils.getSum(stRes, "ratingQuickness0")
+        double ratingQuicknessSum1 = StoreUtils.getSum(stRes, "ratingQuickness1")
+        double ratingQuicknessIncSum = StoreUtils.getSum(stRes, "ratingQuicknessInc")
+        double ratingQuicknessDecSum = StoreUtils.getSum(stRes, "ratingQuicknessDec")
+        ratingQuicknessSum0 = CubeUtils.discardExtraDigits(ratingQuicknessSum0)
+        ratingQuicknessSum1 = CubeUtils.discardExtraDigits(ratingQuicknessSum1)
+        ratingQuicknessIncSum = CubeUtils.discardExtraDigits(ratingQuicknessIncSum)
+        ratingQuicknessDecSum = CubeUtils.discardExtraDigits(ratingQuicknessDecSum)
 
         //
         println("ratingSum:" + ratingSum1 + " -> " + ratingSum0)
-        println("incSum:" + incSum)
-        println("decSum:" + decSum)
+        println("ratingIncSum:" + ratingIncSum)
+        println("ratingDecSum:" + ratingDecSum)
+        //
+        println("ratingQuicknessSum:" + ratingQuicknessSum1 + " -> " + ratingQuicknessSum0)
+        println("ratingQuicknessIncSum:" + ratingQuicknessIncSum)
+        println("ratingQuicknessDecSum:" + ratingQuicknessDecSum)
 
         //
         return stRes

@@ -2,23 +2,34 @@
 <root>
 
 
-    <domain name="StatisticManager1.task.statistic" parent="id">
+    <domain name="GameTask.statistic" parent="id">
         <field name="task" parent="Task/ref"/>
-        <field name="rating" parent="double" scale="3" title="Рейтинг по игре"/>
+        <field name="rating" parent="double" scale="3" title="Рейтинг за ответы на задание"/>
+        <field name="ratingQuickness" parent="double" scale="3" title="Рейтинг за скорость ответов"/>
     </domain>
 
-    <domain name="StatisticManager1.task.statistic1" parent="id">
+    <domain name="GameGameTask.statistic.compare" parent="id">
         <field name="task" parent="Task/ref"/>
 
         <field name="rating0" parent="double" scale="3"
-               title="Рейтинг по последней игре"/>
+               title="Рейтинг за ответы по текущей игре"/>
         <field name="rating1" parent="double" scale="3"
-               title="Рейтинг по предыдущей игре"/>
+               title="Рейтинг за ответы по предыдущей игре"/>
 
-        <field name="incSum" parent="double" scale="3"
+        <field name="ratingQuickness0" parent="double" scale="3"
+               title="Рейтинг за скорость по текущей игре"/>
+        <field name="ratingQuickness1" parent="double" scale="3"
+               title="Рейтинг за скорость по предыдущей игре"/>
+
+        <field name="ratingInc" parent="double" scale="3"
                title="Прибавка к рейтингу предыдущей игры"/>
-        <field name="decSum" parent="double" scale="3"
+        <field name="ratingDec" parent="double" scale="3"
                title="Потери рейтинга предыдущей игры"/>
+
+        <field name="ratingQuicknessInc" parent="double" scale="3"
+               title="Прибавка к рейтингу за скорость предыдущей игры"/>
+        <field name="ratingQuicknessDec" parent="double" scale="3"
+               title="Потери рейтинга за скорость предыдущей игры"/>
     </domain>
 
 

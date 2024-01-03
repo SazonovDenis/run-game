@@ -1,8 +1,5 @@
 <template>
     <div class="user-task">
-        <q-btn color="white" text-color="black" label="Skip task"
-               v-on:click="nextTask"/>
-
         <div v-if="doShowTask">
             <Task :task="gameTask.task" :state="dataState"/>
         </div>
@@ -21,6 +18,35 @@
 
         <Ball class="ball" id="ball" :drag="dataState.drag" :ball="dataState.ball"/>
 
+
+        <div v-if="!wasLoadedAllSounds">
+
+            <br>
+            <q-separator/>
+            <br>
+
+            <jc-btn
+                kind="primary"
+                label="Пропустить"
+                v-on:click="nextTask"
+            />
+
+        </div>
+
+        <div v-if="isEnvDev">
+
+            <br>
+            <q-separator/>
+            <br>
+
+            <jc-btn
+                kind="srcondary"
+                label="Пропустить test"
+                v-on:click="nextTask"
+            />
+
+        </div>
+
     </div>
 
 </template>
@@ -33,6 +59,8 @@ import Goal from "./Goal"
 import Task from "./Task"
 import TaskOptions from "./TaskOptions"
 import gameplay from "../../src/gameplay"
+import dbConst from "../dao/dbConst"
+import {jcBase} from "../vendor"
 
 export default {
     components: {gameplay, Ball, Goal, Task, TaskOptions},
@@ -46,14 +74,28 @@ export default {
         nextTask() {
             gameplay.loadNextTask()
         },
+
+
     },
 
     computed: {
+
+        isEnvDev() {
+            return jcBase.cfg.envDev
+        },
 
         doShowTask() {
             return (
                 this.gameTask.task &&
                 this.gameTask.task.id
+            )
+        },
+
+        wasLoadedAllSounds() {
+            return (
+                this.dataState.taskSoundLoaded ||
+                !this.gameTask.task ||
+                this.gameTask.task.dataTypeQuestion != dbConst.DataType_word_sound
             )
         },
 

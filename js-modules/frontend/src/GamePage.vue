@@ -17,7 +17,6 @@
 
 <script>
 
-import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import auth from "./auth"
 import UserTaskPanel from "./comp/UserTaskPanel"
@@ -46,12 +45,6 @@ export default {
             return auth.isAuth()
         },
 
-        nextTask() {
-            if (auth.isAuth()) {
-                ctx.gameplay.loadNextTask()
-            }
-        },
-
         //
         onLoadedGameTask(gameTask) {
             if (ctx.globalState.game.done) {
@@ -63,7 +56,6 @@ export default {
     },
 
     created() {
-        //ctx.gameplay.init(this.globalState)
     },
 
     async mounted() {
@@ -71,9 +63,6 @@ export default {
 
         //
         ctx.gameplay.loadCurrentOrNextTask()
-
-        //
-        //await gameplay.getActiveGame()
     },
 
     unmounted() {

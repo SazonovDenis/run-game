@@ -361,12 +361,12 @@ export default {
         },
 
         doFullLogin() {
-            this.loginModeText = "Регистрация нового пользователя"
             this.loginType = "full"
             this.id = null
             this.text = null
             this.login = null
             this.password = null
+            this.checkLoginMode()
         },
 
         checkLocalUserLogin() {

@@ -70,6 +70,9 @@ export default {
             await ctx.gameplay.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
         }
 
+        // Текущее задание скрываем
+        ctx.globalState.gameTask = {}
+
         // Грузим новое задание с сервера
         let dataGameTask = await ctx.gameplay.api_choiceTask()
 
@@ -134,7 +137,8 @@ export default {
 
         if (resGame) {
             // Игра в глобальном контексте
-            if (ctx.globalState.game && ctx.globalState.game.id !== resGame.id) {
+            if (ctx.globalState.game && resGame.game &&
+                ctx.globalState.game.id !== resGame.game.id) {
                 ctx.gameplay.useGame(resGame)
                 ctx.globalState.gameTask = {}
             }

@@ -81,6 +81,7 @@ export default {
                     },
 
                     showTaskHint: false,
+                    taskSoundLoaded: false,
                 },
 
             })

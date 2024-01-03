@@ -54,7 +54,7 @@ export default {
             }
         },
 
-        useAudioTask() {
+        loadAudioTask() {
             // Останавливаем текущий звук
             try {
                 this.audio.pause()
@@ -66,7 +66,8 @@ export default {
             this.state.showTaskHint = false
 
             // Новый звук
-            if (this.task != null && this.task.sound != null) {
+            this.state.taskSoundLoaded = false
+            if (this.task.sound != null) {
                 this.audio.src = apx.url.ref("sound/" + this.task.sound)
             } else {
                 this.audio.src = ""
@@ -77,6 +78,7 @@ export default {
             return (
                 this.task != null &&
                 this.task.sound != null &&
+                this.state.taskSoundLoaded &&
                 (
                     this.state.showTaskHint ||
                     this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
@@ -105,12 +107,24 @@ export default {
             ctx.eventBus.emit("showHint", true)
         },
 
+        onSoundLoaded() {
+            this.state.taskSoundLoaded = true
+            //console.info("onSoundLoaded: " + this.audio.src)
+            //
+            this.audio.play()
+        },
+
+        onSoundError() {
+            this.state.taskSoundLoaded = false
+            //console.info("onSoundError: " + this.audio.src)
+        },
+
     },
 
     watch: {
         task: {
             handler(newValue, oldValue) {
-                this.useAudioTask()
+                this.loadAudioTask()
             }, deep: true
         }
     },
@@ -143,16 +157,14 @@ export default {
 
     mounted() {
         let audio = this.audio = new Audio()
-        let th = this
-        audio.addEventListener('loadeddata', function() {
-            th.play()
-        }, false)
+        audio.addEventListener('loadeddata', this.onSoundLoaded, false)
+        audio.addEventListener('error', this.onSoundError, false)
 
         //
         ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
 
         //
-        th.useAudioTask()
+        this.loadAudioTask()
     },
 
     unmounted() {
@@ -172,7 +184,7 @@ export default {
     display: flex;
     flex-direction: row;
 
-    height: 2.5em;
+    height: 3.5em;
     margin: 5px;
 
     user-select: none;
@@ -186,7 +198,7 @@ export default {
 
     flex-grow: 100;
 
-    padding: 5px;
+    padding: 1em;
 }
 
 .task-sound {
@@ -194,7 +206,7 @@ export default {
 }
 
 .task-help {
-    padding: 3px;
+    padding: 0.8em;
     color: #474747;
 }
 

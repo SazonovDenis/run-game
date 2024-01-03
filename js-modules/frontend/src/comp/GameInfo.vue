@@ -2,15 +2,9 @@
     <div v-if="game.id" class="game-info">
         <div class="game-info__text">{{ game.planText }}</div>
 
-        <div class="game-info__duration">
-            <span>Игра начата {{ dbeg }}</span>
-            <span v-if="game.done">, завершена {{ dend }}</span>
-        </div>
 
-        <q-separator/>
-
-        <div class="game-info__count">
-            Общий итог: {{ game.statistic.rating0 }} из {{ game.statistic.ratingMax }}
+        <div class="game-info__count" style="padding-top: 0.5em">
+            Всего баллов: {{ game.statistic.rating0 }} из {{ game.statistic.ratingMax }}
         </div>
         <div class="game-info__count">
             Баллы за скорость: {{ game.statistic.ratingQuickness0 }}
@@ -18,20 +12,31 @@
 
         <q-separator/>
 
-        <div>Игра</div>
-
-        <div class="game-info__count game-info__ratingInc ">
-            Заработано: {{ game.statistic.ratingInc }}
-        </div>
-        
-        <div class="game-info__count game-info__ratingDec ">
-            Потеряно: {{ game.statistic.ratingDec }}
+        <div class="game-info__duration">
+            <span>Игра начата {{ dbeg }}</span>
+            <span v-if="game.done">, завершена {{ dend }}</span>
         </div>
 
-        <div class="game-tasks row">
+        <div class="game-info__count" style="padding-top: 0.5em">
+            <span class="">
+                За игру заработано:
+            </span>
+            <span class="game-info__ratingInc">
+                {{ game.statistic.ratingInc }}
+                {{ ratingText(game.statistic.ratingInc) }}
+            </span>
+            <span class="">, потеряно:&nbsp;</span>
+            <span class="game-info__ratingDec">{{ game.statistic.ratingDec }}&nbsp;{{
+                    ratingText(game.statistic.ratingDec)
+                }}
+            </span>
+        </div>
+
+        <div class="game-tasks row" style="padding-top: 0.5em">
             <GameTasks :tasks="game.tasks"/>
         </div>
 
+<!--
         <q-separator/>
 
         <div>План</div>
@@ -39,10 +44,10 @@
         <div class="game-tasks row">
             <TasksStatistic :tasksStatistic="game.tasksStatistic"/>
         </div>
+-->
 
     </div>
 
-    <div v-else class="game-info xxx-yyy">Нет текущей игры</div>
 </template>
 
 <script>
@@ -74,6 +79,19 @@ export default {
         dend: function() {
             return apx.date.toDisplayStr(this.game.dend)
         },
+    },
+
+    methods: {
+        ratingText(rating) {
+            let r = rating % 10
+            if (r === 1) {
+                return "балл"
+            } else if (r === 2 || r === 3 || r === 4) {
+                return "балла"
+            } else {
+                return "баллов"
+            }
+        }
     }
 }
 
@@ -95,7 +113,7 @@ hr {
     margin: 0.5rem;
 
     &__text {
-        font-size: 2em;
+        font-size: 1.5em;
         color: #34558b;
     }
 

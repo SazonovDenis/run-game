@@ -104,10 +104,10 @@ export default {
     },
 
     async gameStart(idPlan) {
-        let recGame = await ctx.gameplay.api_gameStart(idPlan)
+        let resGame = await ctx.gameplay.api_gameStart(idPlan)
 
         // Задание и раунд в глобальном контексте
-        ctx.gameplay.useGame(recGame)
+        ctx.gameplay.useGame(resGame)
         ctx.globalState.gameTask = {}
 
         //
@@ -115,12 +115,13 @@ export default {
     },
 
     async loadActiveGame() {
-        let recGame = await ctx.gameplay.api_getActiveGame()
+        let resGame = await ctx.gameplay.api_getActiveGame()
 
-        if (recGame) {
+        if (resGame) {
             // Игра в глобальном контексте
-            if (ctx.globalState.game && ctx.globalState.game.id !== recGame.id) {
-                ctx.gameplay.useGame(recGame)
+            if (ctx.globalState.game && resGame.game &&
+                ctx.globalState.game.id !== resGame.game.id) {
+                ctx.gameplay.useGame(resGame)
                 ctx.globalState.gameTask = {}
             }
         } else {
@@ -129,12 +130,12 @@ export default {
     },
 
     async loadLastGame() {
-        let recGame = await ctx.gameplay.api_getLastGame()
+        let resGame = await ctx.gameplay.api_getLastGame()
 
-        if (recGame) {
+        if (resGame) {
             // Игра в глобальном контексте
-            if (ctx.globalState.game && ctx.globalState.game.id !== recGame.id) {
-                ctx.gameplay.useGame(recGame)
+            if (ctx.globalState.game && ctx.globalState.game.id !== resGame.id) {
+                ctx.gameplay.useGame(resGame)
                 ctx.globalState.gameTask = {}
             }
         } else {
@@ -188,8 +189,10 @@ export default {
         ctx.globalState.gameTask = {}
     },
 
-    useGame(game) {
-        ctx.globalState.game = game
+    useGame(res) {
+        ctx.globalState.game = res.game
+        ctx.globalState.game.tasks = res.tasks
+        ctx.globalState.game.statistic = res.statistic
         //
         if (ctx.globalState.game.dend) {
             ctx.globalState.game.done = true
@@ -198,26 +201,17 @@ export default {
 
     async api_gameStart(idPlan) {
         let resApi = await daoApi.loadStore('m/Game/gameStart', [idPlan])
-
-        let res = resApi.records[0]
-
-        return res
+        return ctx.gameplay.parseResApiGame(resApi)
     },
 
     async api_getLastGame() {
         let resApi = await daoApi.loadStore('m/Game/getLastGame', [])
-
-        let res = resApi.records[0]
-
-        return res
+        return ctx.gameplay.parseResApiGame(resApi)
     },
 
     async api_getActiveGame() {
         let resApi = await daoApi.loadStore('m/Game/getActiveGame', [])
-
-        let res = resApi.records[0]
-
-        return res
+        return ctx.gameplay.parseResApiGame(resApi)
     },
 
     async api_closeActiveGame() {
@@ -234,20 +228,32 @@ export default {
 
     async api_choiceTask() {
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [ctx.globalState.game.id])
-
-        //
-        let res = ctx.gameplay.parseResApiTask(resApi)
-
-        //
-        return res
+        return ctx.gameplay.parseResApiTask(resApi)
     },
 
     // Загрузить текущее задание
     async api_getCurrentTask() {
         let resApi = await daoApi.loadStore('m/Game/currentTask', [ctx.globalState.game.id])
+        return ctx.gameplay.parseResApiTask(resApi)
+    },
+
+    parseResApiGame(resApi) {
+        let res
 
         //
-        let res = ctx.gameplay.parseResApiTask(resApi)
+        if (resApi.game) {
+            res = {
+                game: resApi.game.records[0],
+                tasks: resApi.tasks.records,
+                statistic: resApi.statistic,
+            }
+        } else {
+            res = {
+                game: null,
+                tasks: null,
+                statistic: null,
+            }
+        }
 
         //
         return res
@@ -261,13 +267,13 @@ export default {
             res = {
                 task: resApi.task.records[0],
                 taskOptions: resApi.taskOption.records,
-                game: resApi.game.records[0],
+                game: ctx.gameplay.parseResApiGame(resApi.game),
             }
         } else {
             res = {
                 task: null,
                 taskOptions: null,
-                game: resApi.game.records[0],
+                game: ctx.gameplay.parseResApiGame(resApi.game),
             }
         }
 

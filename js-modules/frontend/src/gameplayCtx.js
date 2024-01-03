@@ -40,14 +40,11 @@ export default {
                     planText: null,
                     dbeg: null,
                     dend: null,
-                    countTask: null,
-                    countAsked: null,
-                    countAnswered: null,
-                    countTrue: null,
-                    countFalse: null,
-                    countHint: null,
-                    countSkip: null,
+                    //
                     done: null,
+                    //
+                    statistic: {},
+                    tasks: {},
                 },
 
                 // Задание

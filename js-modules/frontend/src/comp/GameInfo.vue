@@ -2,26 +2,31 @@
     <div v-if="game.id" class="game-info">
         <div class="game-info__text">{{ game.planText }}</div>
 
-        <q-separator/>
-
-        <div class="">
+        <div class="game-info__duration">
             <span>Игра начата {{ dbeg }}</span>
             <span v-if="game.done">, завершена {{ dend }}</span>
         </div>
 
+        <q-separator/>
+
         <div class="game-info__count">
-            Показано заданий: {{ game.countAsked }} из {{ game.countTask }}
+            Общий итог: {{ game.statistic.rating0 }} из {{ game.statistic.ratingMax }}
+        </div>
+        <div class="game-info__count">
+            Баллы за скорость: {{ game.statistic.ratingQuickness0 }}
         </div>
 
         <q-separator/>
 
         <div>Игра</div>
 
-        <div>Ответов: {{ game.countAnswered }}</div>
-        <div>Верных ответов: {{ game.countTrue }}</div>
-        <div>Ошибок: {{ game.countFalse }}</div>
-        <div>Подсказок: {{ game.countHint }}</div>
-        <div>Пропусков: {{ game.countSkip }}</div>
+        <div class="game-info__count game-info__ratingInc ">
+            Заработано: {{ game.statistic.ratingInc }}
+        </div>
+        
+        <div class="game-info__count game-info__ratingDec ">
+            Потеряно: {{ game.statistic.ratingDec }}
+        </div>
 
         <div class="game-tasks row">
             <GameTasks :tasks="game.tasks"/>
@@ -80,6 +85,10 @@ export default {
     justify-content: center;
 }
 
+hr {
+    margin: 1em 0;
+}
+
 .game-info {
     font-size: 1.5em;
     text-align: center;
@@ -87,10 +96,22 @@ export default {
 
     &__text {
         font-size: 2em;
-        color: #850000;
+        color: #34558b;
+    }
+
+    &__duration {
+        color: #6c6c6c;
     }
 
     &__count {
+        color: #4c4c4c;
+    }
+
+    &__ratingDec {
+        color: #850000;
+    }
+
+    &__ratingInc {
         color: #5b9e3a;
     }
 }

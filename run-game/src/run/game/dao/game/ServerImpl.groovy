@@ -7,10 +7,8 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
-import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.backstage.*
-import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
 
@@ -22,7 +20,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    public StoreRecord getGame(long idGame) {
+    public DataBox getGame(long idGame) {
         long idUsr = getCurrentUserId()
 
         //
@@ -30,7 +28,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
     @DaoMethod
-    public StoreRecord getLastGame() {
+    public DataBox getLastGame() {
         long idUsr = getCurrentUserId()
         StoreRecord recGame = mdb.loadQueryRecord(sqlLastGame(), [usr: idUsr], false)
 
@@ -43,14 +41,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idGame = recGame.getLong("id")
 
         //
-        StoreRecord st = loadGameInternal(idGame, idUsr)
+        DataBox res = loadGameInternal(idGame, idUsr)
 
         //
-        return st
+        return res
     }
 
     @DaoMethod
-    public StoreRecord getActiveGame() {
+    public DataBox getActiveGame() {
         long idUsr = getCurrentUserId()
         Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
 
@@ -67,42 +65,34 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return loadGameInternal(idGame, idUsr)
     }
 
-    StoreRecord loadGameInternal(long idGame, long idUsr) {
-        StoreRecord recGame = mdb.loadQueryRecord(sqlGame(), [game: idGame, usr: idUsr], false)
+    DataBox loadGameInternal(long idGame, long idUsr) {
+        DataBox res = new DataBox()
+
+        StoreRecord recGame = mdb.createStoreRecord("Game.Server")
+        mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
 
         //
-        if (recGame == null) {
+        if (recGame.getLong("id") == 0) {
             return null
         }
 
-        //
-        StatisticManager_cube statisticManager = mdb.create(StatisticManager_cube)
-        StoreRecord recGameStatistic = statisticManager.loadGameStatistic(idGame, idUsr)
-        //mdb.outTable(recGameStatistic)
+        // Рейтинг по текущей и прошлой игре
+        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
+        Store stTasksStatistic = statisticManager.compareStatisticForGamePrior(idGame)
 
-        //
-        StoreRecord res = mdb.createStoreRecord("Game.Server")
-        //
-        res.setValue("countTask", recGameStatistic.getValue("cntTask"))
-        res.setValue("countAsked", recGameStatistic.getValue("cntAsked"))
-        res.setValue("countAnswered", recGameStatistic.getValue("cntAnswered"))
-        res.setValue("countTrue", recGameStatistic.getValue("cntTrue"))
-        res.setValue("countFalse", recGameStatistic.getValue("cntFalse"))
-        res.setValue("countHint", recGameStatistic.getValue("cntHint"))
-        res.setValue("countSkip", recGameStatistic.getValue("cntSkip"))
-        //
-        res.setValues(recGame.getValues())
+        // Общий рейтинг и проигранные баллы (плюсы и минусы)
+        Map aggretate = statisticManager.aggregateStatistic(stTasksStatistic)
+        aggretate.put("ratingMax", stTasksStatistic.size())
 
-        // Каждое задание в один список
+        // Задания игры и результат их выполнения
         Store stGameTasks = mdb.createStore("GameTask.Server")
         mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
-        List<Map> tasks = DataUtils.storeToList(stGameTasks)
-        res.setValue("tasks", tasks)
 
-        // Статистику по плану
-        long idPlan = recGame.getLong("plan")
-        StoreRecord recGameTaskStatistic = getPlan(idPlan)
-        res.setValue("tasksStatistic", UtJson.fromJson(recGameTaskStatistic.getString("tasksStatistic")))
+        //
+        res.put("game", recGame)
+        res.put("tasks", stGameTasks)
+        res.put("tasksStatistic", stTasksStatistic)
+        res.put("statistic", aggretate)
 
         //
         return res
@@ -118,7 +108,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    public StoreRecord gameStart(long idPlan) {
+    public DataBox gameStart(long idPlan) {
         // Добавляем Game
         StoreRecord recGame = mdb.createStoreRecord("Game")
         XDateTime dt = XDateTime.now()
@@ -138,8 +128,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Задание выбирается с учетом статистики пользователя.
         StatisticManager1 statisticManager = mdb.create(StatisticManager1)
         Store stTask = statisticManager.getStatisticForGame(idGame)
-        stTask.sort("rating")
-        //mdb.outTable(stTask, 20)
+        //stTask.sort("rating")
 
         // Слегка рандомизируем рейтинг -
         // иначе для для заданий без рейтинга (например, которые никогда не выдавали)
@@ -153,7 +142,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Теперь выберем задания на игру по рейтингу
         stTask.sort("rating")
-        //mdb.outTable(stTask, 20)
         //
         long taskForGameCount = 0
         for (StoreRecord recTask : stTask) {
@@ -335,8 +323,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Дополняем задание данными по игре
-        StoreRecord recGame = loadGameInternal(idGame, idUsr)
-        res.put("game", recGame)
+        DataBox resGame = loadGameInternal(idGame, idUsr)
+        res.put("game", resGame)
 
 
         //

@@ -1,6 +1,6 @@
 package run.game.dao.game
 
-
+import jandcode.core.dbm.std.DataBox
 import jandcode.core.store.*
 import kis.molap.ntbd.model.*
 import org.junit.jupiter.api.*
@@ -18,30 +18,26 @@ class StatisticManager1_Test extends RgmBase_Test {
 
         // Последняя игра
         Server upd = mdb.create(ServerImpl)
-        StoreRecord recActiveGame = upd.getLastGame()
+        DataBox activeGame = upd.getLastGame()
+        StoreRecord recActiveGame = activeGame.get("game")
         long idGame = recActiveGame.getLong("id")
         mdb.outTable(recActiveGame)
 
         //
-        Store st0
         println()
-        st0 = compareStatisticForGames(idGame, idGame - 1)
-        mdb.outTable(st0)
+        compareStatisticForGames(idGame, idGame - 1)
 
         idGame = idGame - 1
         println()
-        st0 = compareStatisticForGames(idGame, idGame - 1)
-        mdb.outTable(st0)
+        compareStatisticForGames(idGame, idGame - 1)
 
         idGame = idGame - 1
         println()
-        st0 = compareStatisticForGames(idGame, idGame - 1)
-        mdb.outTable(st0)
+        compareStatisticForGames(idGame, idGame - 1)
 
         idGame = idGame - 1
         println()
-        st0 = compareStatisticForGames(idGame, 0)
-        mdb.outTable(st0)
+        compareStatisticForGames(idGame, 0)
     }
 
     @Test
@@ -73,43 +69,26 @@ class StatisticManager1_Test extends RgmBase_Test {
         mdb.outTable(st)
     }
 
-    Store compareStatisticForGames(long idGame0, long idGame1) {
+    void compareStatisticForGames(long idGame0, long idGame1) {
         println("idGame: " + idGame1 + " -> " + idGame0)
 
         //
         StatisticManager1 sm = mdb.create(StatisticManager1)
-        Store stRes = sm.compareStatisticForGames(idGame0, idGame1)
+        Store stStatistic = sm.compareStatisticForGames(idGame0, idGame1)
 
         // Общий рейтинг и проигранные баллы (плюсы и минусы)
-        double ratingSum0 = StoreUtils.getSum(stRes, "rating0")
-        double ratingSum1 = StoreUtils.getSum(stRes, "rating1")
-        double ratingIncSum = StoreUtils.getSum(stRes, "ratingInc")
-        double ratingDecSum = StoreUtils.getSum(stRes, "ratingDec")
-        ratingSum0 = CubeUtils.discardExtraDigits(ratingSum0)
-        ratingSum1 = CubeUtils.discardExtraDigits(ratingSum1)
-        ratingIncSum = CubeUtils.discardExtraDigits(ratingIncSum)
-        ratingDecSum = CubeUtils.discardExtraDigits(ratingDecSum)
-        //
-        double ratingQuicknessSum0 = StoreUtils.getSum(stRes, "ratingQuickness0")
-        double ratingQuicknessSum1 = StoreUtils.getSum(stRes, "ratingQuickness1")
-        double ratingQuicknessIncSum = StoreUtils.getSum(stRes, "ratingQuicknessInc")
-        double ratingQuicknessDecSum = StoreUtils.getSum(stRes, "ratingQuicknessDec")
-        ratingQuicknessSum0 = CubeUtils.discardExtraDigits(ratingQuicknessSum0)
-        ratingQuicknessSum1 = CubeUtils.discardExtraDigits(ratingQuicknessSum1)
-        ratingQuicknessIncSum = CubeUtils.discardExtraDigits(ratingQuicknessIncSum)
-        ratingQuicknessDecSum = CubeUtils.discardExtraDigits(ratingQuicknessDecSum)
+        Map aggretate = sm.aggregateStatistic(stStatistic)
 
+        // Печатаем
+        println("rating:" + aggretate.get("rating1") + " -> " + aggretate.get("rating0"))
+        println("ratingInc:" + aggretate.get("ratingInc"))
+        println("ratingDec:" + aggretate.get("ratingDec"))
         //
-        println("ratingSum:" + ratingSum1 + " -> " + ratingSum0)
-        println("ratingIncSum:" + ratingIncSum)
-        println("ratingDecSum:" + ratingDecSum)
+        println("ratingQuickness:" + aggretate.get("ratingQuickness1") + " -> " + aggretate.get("ratingQuickness0"))
+        println("ratingQuicknessInc:" + aggretate.get("ratingQuicknessInc"))
+        println("ratingQuicknessDec:" + aggretate.get("ratingQuicknessDec"))
         //
-        println("ratingQuicknessSum:" + ratingQuicknessSum1 + " -> " + ratingQuicknessSum0)
-        println("ratingQuicknessIncSum:" + ratingQuicknessIncSum)
-        println("ratingQuicknessDecSum:" + ratingQuicknessDecSum)
-
-        //
-        return stRes
+        mdb.outTable(stStatistic)
     }
 
 }

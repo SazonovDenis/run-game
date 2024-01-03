@@ -16,7 +16,7 @@ public interface Server {
      *
      * @return игра
      */
-    StoreRecord getActiveGame();
+    DataBox getActiveGame();
 
 
     /**
@@ -31,7 +31,7 @@ public interface Server {
      * @param idPaln план
      * @return игра
      */
-    StoreRecord gameStart(long idPaln);
+    DataBox gameStart(long idPaln);
 
 
     /**

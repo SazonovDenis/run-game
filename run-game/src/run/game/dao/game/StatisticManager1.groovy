@@ -6,7 +6,9 @@ import jandcode.commons.datetime.*
 import jandcode.commons.error.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
+import kis.molap.ntbd.model.*
 import run.game.dao.*
+import run.game.util.*
 
 @TypeChecked
 class StatisticManager1 extends RgmMdbUtils {
@@ -121,9 +123,12 @@ class StatisticManager1 extends RgmMdbUtils {
         // Предыдущая игра
         long idUsr = getCurrentUserId()
         StoreRecord recGamePrior = loadRecGamePrior(idGame, idUsr)
+        long idGamePrior = 0
+        if (recGamePrior) {
+            idGamePrior = recGamePrior.getLong("id")
+        }
 
         //
-        long idGamePrior = recGamePrior.getLong("id")
         return compareStatisticForGames(idGame, idGamePrior)
     }
 
@@ -249,7 +254,7 @@ class StatisticManager1 extends RgmMdbUtils {
         long plan = recGame.getLong("plan")
 
         Map params = [plan: plan, usr: idUsr, dbeg: dbeg]
-        StoreRecord recGamePrior = mdb.loadQueryRecord(sqlGamePrior(), params)
+        StoreRecord recGamePrior = mdb.loadQueryRecord(sqlGamePrior(), params, false)
 
         return recGamePrior
     }
@@ -326,5 +331,45 @@ order by
 """
     }
 
+
+    /**
+     * Общий рейтинг и проигранные баллы (плюсы и минусы)
+     * @param stStatistic статистика по каждому заданию
+     * @return сумма по всем заданиям
+     */
+    Map aggregateStatistic(Store stStatistic) {
+        double rating0 = StoreUtils.getSum(stStatistic, "rating0")
+        double rating1 = StoreUtils.getSum(stStatistic, "rating1")
+        double ratingInc = StoreUtils.getSum(stStatistic, "ratingInc")
+        double ratingDec = StoreUtils.getSum(stStatistic, "ratingDec")
+        rating0 = CubeUtils.discardExtraDigits(rating0)
+        rating1 = CubeUtils.discardExtraDigits(rating1)
+        ratingInc = CubeUtils.discardExtraDigits(ratingInc)
+        ratingDec = CubeUtils.discardExtraDigits(ratingDec)
+        //
+        double ratingQuickness0 = StoreUtils.getSum(stStatistic, "ratingQuickness0")
+        double ratingQuickness1 = StoreUtils.getSum(stStatistic, "ratingQuickness1")
+        double ratingQuicknessInc = StoreUtils.getSum(stStatistic, "ratingQuicknessInc")
+        double ratingQuicknessDec = StoreUtils.getSum(stStatistic, "ratingQuicknessDec")
+        ratingQuickness0 = CubeUtils.discardExtraDigits(ratingQuickness0)
+        ratingQuickness1 = CubeUtils.discardExtraDigits(ratingQuickness1)
+        ratingQuicknessInc = CubeUtils.discardExtraDigits(ratingQuicknessInc)
+        ratingQuicknessDec = CubeUtils.discardExtraDigits(ratingQuicknessDec)
+
+        //
+        Map aggretate = [
+                rating0           : rating0,
+                rating1           : rating1,
+                ratingInc         : ratingInc,
+                ratingDec         : ratingDec,
+                ratingQuickness0  : ratingQuickness0,
+                ratingQuickness1  : ratingQuickness1,
+                ratingQuicknessInc: ratingQuicknessInc,
+                ratingQuicknessDec: ratingQuicknessDec,
+        ]
+
+        //
+        return aggretate
+    }
 
 }

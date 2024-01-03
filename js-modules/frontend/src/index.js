@@ -13,12 +13,10 @@ export function run() {
         {path: '', frame: Home},
         {path: '/login', frame: import('./LoginPage')},
         {path: '/game', frame: import('./GamePage')},
-/*
-        {path: '/start', frame: import('./StartPage')},
-*/
         {path: '/levels', frame: import('./LevelsPage')},
         {path: '/gameInfo', frame: import('./GameInfoPage')},
         {path: '/user', frame: import('./UserInfoPage')},
+        {path: '/plan', frame: import('./PlanPage')},
     ]
 
     apx.app.onBeforeRun(async () => {

@@ -14,23 +14,61 @@ public class StoreUtils {
     /**
      * Объединить два Store
      *
+     * @param dest      куда объеденинять
+     * @param sour      откуда
+     * @param keyField  по какому индексному полю
+     * @param fieldsMap соотвестве полей [откуда:куда]
+     */
+    public static void join(Store dest, Store sour, String keyField, Map<String, String> fieldsMap, boolean doAddByKeyField) {
+        StoreIndex destIdx = dest.getIndex(keyField);
+
+        for (StoreRecord recSour : sour) {
+            // Ищем целевую запись
+            StoreRecord destRec = destIdx.get(recSour.getValue(keyField), false);
+            if (destRec == null) {
+                if (doAddByKeyField) {
+                    destRec = dest.add();
+                } else {
+                    continue;
+                }
+            }
+
+            // Копируем значения
+            if (fieldsMap == null) {
+                // Все значения
+                destRec.setValues(recSour.getValues());
+            } else {
+                // Значения по списку
+                for (String fieldSour : fieldsMap.keySet()) {
+                    String fieldDest = fieldsMap.get(fieldSour);
+                    destRec.setValue(fieldDest, recSour.getValue(fieldSour));
+                }
+            }
+        }
+    }
+
+    /**
+     * Объединить два Store
+     *
      * @param dest     куда объеденинять
      * @param sour     откуда
      * @param keyField по какому индексному полю
      * @param fields   соотвестве полей [куда:откуда]
      */
     public static void join(Store dest, Store sour, String keyField, Collection<String> fields) {
-        StoreIndex destIdx = dest.getIndex(keyField);
+        Map<String, String> fieldsMap = null;
 
-        for (StoreRecord r : sour.getRecords()) {
-            StoreRecord destRec = destIdx.get(r.getValue(keyField), false);
-            if (destRec == null) {
-                continue;
-            }
-            for (String field : fields) {
-                destRec.setValue(field, r.getValue(field));
+        if (fields != null) {
+            // Значения по списку
+            fieldsMap = new HashMap<>();
+            for (String fieldKey : fields) {
+
+                fieldsMap.put(fieldKey, fieldKey);
             }
         }
+
+        //
+        join(dest, sour, keyField, fieldsMap, false);
     }
 
     /**

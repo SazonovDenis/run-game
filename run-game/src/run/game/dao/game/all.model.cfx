@@ -27,23 +27,35 @@
 
     <domain name="GameTask.Server" parent="GameTask">
         <field name="task" parent="Task/ref"/>
+
         <field name="factQuestion" parent="Task/factQuestion"/>
         <field name="factAnswer" parent="Task/factAnswer"/>
+        <field name="factQuestionDataType" parent="Fact/dataType"/>
+        <field name="factQuestionValue" parent="Fact/value"/>
+        <field name="factAnswerDataType" parent="Fact/dataType"/>
+        <field name="factAnswerValue" parent="Fact/value"/>
+
+        <field name="rating" parent="double" scale="3"
+               title="Рейтинг за ответы по текущей игре"/>
+        <field name="ratingInc" parent="double" scale="3"
+               title="Прибавка к рейтингу предыдущей игры"/>
+        <field name="ratingDec" parent="double" scale="3"
+               title="Потери рейтинга предыдущей игры"/>
     </domain>
 
     <!-- Список уровней со статистикой по словам -->
-<!--
-    <domain name="Plan.Server" parent="id">
-        <field name="usr" parent="Usr/ref"/>
+    <!--
+        <domain name="Plan.Server" parent="id">
+            <field name="usr" parent="Usr/ref"/>
 
-        <field name="count" parent="long" title="Общее количество слов"/>
-        <field name="cntDone" parent="long" title="Количество выученных слов"/>
-        <field name="cntInProgress" parent="long" title="Слов на повторение"/>
-        <field name="cntToDo" parent="long" title="Количество не выученных слов"/>
+            <field name="count" parent="long" title="Общее количество слов"/>
+            <field name="cntDone" parent="long" title="Количество выученных слов"/>
+            <field name="cntInProgress" parent="long" title="Слов на повторение"/>
+            <field name="cntToDo" parent="long" title="Количество не выученных слов"/>
 
-        <field name="order" parent="double" title="Сортировка" scale="2"/>
-    </domain>
--->
+            <field name="order" parent="double" title="Сортировка" scale="2"/>
+        </domain>
+    -->
 
     <domain name="Plan.list.statistic" parent="id">
         <field name="plan" parent="Plan/ref"/>

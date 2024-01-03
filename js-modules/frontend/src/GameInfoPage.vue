@@ -29,6 +29,13 @@
                 </jc-btn>
             </div>
 
+            <div v-if="globalState.game.plan && globalState.game.done">
+                <jc-btn kind="secondary" label="Редактировать уровень"
+                        style="min-width: 15em;"
+                        @click="planTaskStatistic(globalState.game.plan)">
+                </jc-btn>
+            </div>
+
             <div v-if="globalState.game.plan && !globalState.game.done">
                 <jc-btn kind="secondary" label="Выбрать другой уровень"
                         style="min-width: 15em;"
@@ -100,6 +107,12 @@ export default {
 
             apx.showFrame({
                 frame: '/levels',
+            })
+        },
+
+        planTaskStatistic(plan) {
+            apx.showFrame({
+                frame: '/plan', props: {plan: plan}
             })
         },
 

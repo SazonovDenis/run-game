@@ -1,23 +1,23 @@
 <template>
     <div class="game-state row">
         <span class="game-state__planText">{{ planText }}</span>
-        <GameTasks :tasks="game.tasks"/>
-        <!--
-                <span class="game-state__gameStep">{{ gameStep }}</span>
-        -->
+        <GameTasksState :tasks="game.tasks"/>
     </div>
 </template>
 
 <script>
 
-import GameTasks from "./GameTasksState"
+import GameTasksState from "./GameTasksState"
 
 /**
- * Состояние игры. Виджет для таскбара.
+ * Состояние заданий в игре.
+ * Виджет для таскбара.
  */
 export default {
 
-    components: {GameTasks},
+    components: {
+        GameTasksState
+    },
 
     props: {
         game: {},

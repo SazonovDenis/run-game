@@ -36,16 +36,6 @@
             <GameTasks :tasks="game.tasks"/>
         </div>
 
-<!--
-        <q-separator/>
-
-        <div>План</div>
-
-        <div class="game-tasks row">
-            <TasksStatistic :tasksStatistic="game.tasksStatistic"/>
-        </div>
--->
-
     </div>
 
 </template>
@@ -53,8 +43,7 @@
 <script>
 
 import {apx} from '../vendor'
-import GameTasks from "./GameTasksState"
-import TasksStatistic from "./TasksStatistic"
+import GameTasks from "./GameTasks"
 
 
 /**
@@ -65,7 +54,7 @@ export default {
     name: "GameInfo",
 
     components: {
-        GameTasks, TasksStatistic
+        GameTasks
     },
 
     props: {

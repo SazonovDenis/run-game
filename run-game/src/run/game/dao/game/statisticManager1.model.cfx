@@ -4,9 +4,12 @@
 
     <domain name="GameTask.statistic" parent="id">
         <field name="task" parent="Task/ref"/>
-        <field name="rating" parent="double" scale="3" title="Рейтинг за ответы на задание"/>
-        <field name="ratingQuickness" parent="double" scale="3" title="Рейтинг за скорость ответов"/>
+        <field name="rating" parent="double" scale="3"
+               title="Рейтинг за ответы на задание"/>
+        <field name="ratingQuickness" parent="double" scale="3"
+               title="Рейтинг за скорость ответов"/>
     </domain>
+
 
     <domain name="GameGameTask.statistic.compare" parent="id">
         <field name="task" parent="Task/ref"/>
@@ -30,6 +33,16 @@
                title="Прибавка к рейтингу за скорость предыдущей игры"/>
         <field name="ratingQuicknessDec" parent="double" scale="3"
                title="Потери рейтинга за скорость предыдущей игры"/>
+    </domain>
+
+
+    <domain name="PlanTask.statistic" parent="GameTask.statistic">
+        <field name="factQuestion" parent="Task/factQuestion"/>
+        <field name="factAnswer" parent="Task/factAnswer"/>
+        <field name="factQuestionDataType" parent="Fact/dataType"/>
+        <field name="factQuestionValue" parent="Fact/value"/>
+        <field name="factAnswerDataType" parent="Fact/dataType"/>
+        <field name="factAnswerValue" parent="Fact/value"/>
     </domain>
 
 

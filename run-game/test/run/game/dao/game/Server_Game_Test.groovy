@@ -25,11 +25,14 @@ class Server_Game_Test extends RgmBase_Test {
 
 
     @Test
-    void getPlan() {
+    void getPlanTaskStatistic() {
         long idPlan = 1000
+
+        //utils.logOn()
         //
         Server srv = mdb.create(ServerImpl)
-        StoreRecord st = srv.getPlan(idPlan)
+        Store st = srv.getPlanTaskStatistic(idPlan)
+        mdb.resolveDicts(st)
 
         //
         println()
@@ -191,17 +194,24 @@ class Server_Game_Test extends RgmBase_Test {
         long idGame = doGameProcess(idPlan)
 
         Server upd = mdb.create(ServerImpl)
-        StoreRecord st = upd.getGame(idGame)
+        DataBox res = upd.getGame(idGame)
 
         println()
         println("getGame")
-        mdb.outTable(st)
+        mdb.outTable(res)
     }
 
     @Test
-    void testGameProcess_1003() {
-        for (int i = 1; i <= 50; i++) {
-            doGameProcess(1003, true)
+    void testGameProcess_1000_bad() {
+        for (int i = 1; i <= 10; i++) {
+            doGameProcess(1000, true)
+        }
+    }
+
+    @Test
+    void testGameProcess_1000_good() {
+        for (int i = 1; i <= 10; i++) {
+            doGameProcess(1000, true)
         }
     }
 
@@ -210,26 +220,22 @@ class Server_Game_Test extends RgmBase_Test {
         Server upd = mdb.create(ServerImpl)
 
         // Есть текущая игра?
-        StoreRecord recActiveGame = upd.getActiveGame()
+        DataBox game = upd.getActiveGame()
+        StoreRecord recActiveGame = game.get("game")
         if (recActiveGame != null) {
             long idGame = recActiveGame.getLong("id")
             long idUsr = getCurrentUserId()
-            StoreRecord rec = upd.loadGameInternal(idGame, idUsr)
+            game = upd.loadGameInternal(idGame, idUsr)
+            recActiveGame = game.get("game")
 
             // Текущая игра
             println()
             println("Current ActiveGame")
-            mdb.outTable(rec)
+            mdb.outTable(recActiveGame)
         } else {
             println()
             println("No current ActiveGame")
         }
-    }
-
-    void printGameTask(long idGame) {
-        println("GameTask, game: " + idGame)
-        Store st = mdb.loadQuery("select * from GameTask where game = :game order by dtTask", [game: idGame])
-        mdb.outTable(st, 10)
     }
 
     void printTaskStatisticByPlan(long idPlan) {
@@ -237,7 +243,6 @@ class Server_Game_Test extends RgmBase_Test {
         Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
         mdb.outTable(stTask)
     }
-
 
     long doGameProcess(long idPlan) {
         return doGameProcess(idPlan, false)
@@ -250,7 +255,8 @@ class Server_Game_Test extends RgmBase_Test {
         upd.closeActiveGame()
 
         // Стартуем новую игру
-        StoreRecord recActiveGame = upd.gameStart(idPlan)
+        DataBox game = upd.gameStart(idPlan)
+        StoreRecord recActiveGame = game.get("game")
         long idGame = recActiveGame.getLong("id")
         //
         println()
@@ -322,6 +328,9 @@ class Server_Game_Test extends RgmBase_Test {
             //println()
             println("task " + n + "/" + taskUserToDoCount + ", [" + recTask.getLong("task") + "]")
         }
+
+        // Закроем игру
+        upd.closeActiveGame()
 
         //
         return idGame

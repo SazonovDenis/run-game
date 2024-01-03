@@ -9,14 +9,13 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
+import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
 
-    long MAX_TASK_FOR_GAME = 10
+    private long MAX_TASK_FOR_GAME = 10
 
-    String msg_all_task_done = "Все задания уже выполнены"
-
-    Rnd rnd = new RndImpl()
+    private Rnd rnd = new RndImpl()
 
 
     @DaoMethod
@@ -64,40 +63,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //
         return loadGameInternal(idGame, idUsr)
     }
-
-    DataBox loadGameInternal(long idGame, long idUsr) {
-        DataBox res = new DataBox()
-
-        StoreRecord recGame = mdb.createStoreRecord("Game.Server")
-        mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
-
-        //
-        if (recGame.getLong("id") == 0) {
-            return null
-        }
-
-        // Рейтинг по текущей и прошлой игре
-        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
-        Store stTasksStatistic = statisticManager.compareStatisticForGamePrior(idGame)
-
-        // Общий рейтинг и проигранные баллы (плюсы и минусы)
-        Map aggretate = statisticManager.aggregateStatistic(stTasksStatistic)
-        aggretate.put("ratingMax", stTasksStatistic.size())
-
-        // Задания игры и результат их выполнения
-        Store stGameTasks = mdb.createStore("GameTask.Server")
-        mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
-
-        //
-        res.put("game", recGame)
-        res.put("tasks", stGameTasks)
-        res.put("tasksStatistic", stTasksStatistic)
-        res.put("statistic", aggretate)
-
-        //
-        return res
-    }
-
 
     @DaoMethod
     public void closeActiveGame() {
@@ -278,22 +243,64 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
     @DaoMethod
-    StoreRecord getPlan(long idPlan) {
-        StoreRecord res = mdb.createStoreRecord("Plan.list.statistic")
+    Store getPlanTaskStatistic(long idPlan) {
+        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
+        return statisticManager.getPlanTaskStatistic(idPlan)
+    }
+
+
+    DataBox loadGameInternal(long idGame, long idUsr) {
+        DataBox res = new DataBox()
+
+        StoreRecord recGame = mdb.createStoreRecord("Game.Server")
+        mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
 
         //
-        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        StoreRecord rec = statisticManager.getPlanStatistic(idPlan)
+        if (recGame.getLong("id") == 0) {
+            return null
+        }
+
+        // Баллы (рейтинг) по текущей и прошлой игре
+        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
+        Store stTasksStatistic = statisticManager.compareStatisticForGamePrior(idGame)
+        //mdb.outTable(stTasksStatistic)
+
+        // Общий рейтинг и проигранные баллы (плюсы и минусы)
+        Map aggretate = statisticManager.aggregateStatistic(stTasksStatistic)
+        aggretate.put("ratingMax", stTasksStatistic.size())
+
+        // Задания игры и результат их выполнения
+        Store stGameTasks = mdb.createStore("GameTask.Server")
+        mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
+
+        // Задания в плане
+        long idPlan = recGame.getLong("plan")
+        Store stPlanTask = statisticManager.loadPlanTask(idPlan)
 
         //
-        res.setValues(rec.getValues())
-        rec.setValue("tasksStatistic", UtJson.fromJson(rec.getString("tasksStatistic")))
+        StoreUtils.join(stGameTasks, stPlanTask, "task", [
+                "factQuestionDataType",
+                "factQuestionValue",
+                "factAnswerDataType",
+                "factAnswerValue",
+        ])
+        StoreUtils.join(stGameTasks, stTasksStatistic, "task", [
+                rating0  : "rating",
+                ratingInc: "ratingInc",
+                ratingDec: "ratingDec"
+        ], false)
+
+        //
+        res.put("game", recGame)
+        res.put("tasks", stGameTasks)
+        //res.put("tasksStatistic", stTasksStatistic)
+        res.put("statistic", aggretate)
 
         //
         return res
     }
 
-    public DataBox loadAndPrepareTask(long idGame, StoreRecord recGameTask) {
+    protected DataBox loadAndPrepareTask(long idGame, StoreRecord recGameTask) {
         DataBox res
 
         //
@@ -331,7 +338,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
-    DataBox prepareTask(DataBox task) {
+    protected DataBox prepareTask(DataBox task) {
         StoreRecord resTask = mdb.createStoreRecord("Task.Server")
         Store resTaskOption = mdb.createStore("TaskOption.Server")
 
@@ -391,7 +398,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    StoreRecord choiceGameTask(long idGame) {
+    protected StoreRecord choiceGameTask(long idGame) {
         long idUsr = getCurrentUserId()
 
         // Извлечем не выданные задания
@@ -413,7 +420,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    StoreRecord getGameLastTask(long idGame) {
+    protected StoreRecord getGameLastTask(long idGame) {
         long idUsr = getCurrentUserId()
 
         // Извлечем выданное, но не отвеченное задание
@@ -424,7 +431,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         if (stGameTask.size() == 0) {
             return null
-            //throw new XError(msg_all_task_done)
         }
 
         // Выберем последнее
@@ -435,7 +441,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    String sqlChoiceTask() {
+    private String sqlChoiceTask() {
         return """
 select
     GameTask.*
@@ -450,7 +456,7 @@ where
     }
 
 
-    String sqlGetTask() {
+    private String sqlGetTask() {
         return """
 select
     GameTask.*
@@ -469,7 +475,7 @@ order by
     }
 
 
-    String sqlGameTask() {
+    private String sqlGameTask() {
         return """
 select 
     * 
@@ -482,7 +488,7 @@ where
     }
 
 
-    String sqlGameTaskOption() {
+    private String sqlGameTaskOption() {
         return """
 select
     TaskOption.*
@@ -496,21 +502,8 @@ where
 """
     }
 
-/*
-    StoreRecord loadGameState(long idGame, long idUsr) {
-        StoreRecord resGame = mdb.createStoreRecord("Game.Server")
 
-        //
-        StoreRecord recGame = mdb.loadQueryRecord(sqlGameState(), [game: idGame, usr: idUsr])
-        resGame.setValues(recGame)
-
-        //
-        return resGame
-    }
-*/
-
-
-    String sqlLastGame() {
+    private String sqlLastGame() {
         return """
 select
     Game.*
@@ -526,7 +519,7 @@ limit 1
 """
     }
 
-    String sqlGameTasks() {
+    private String sqlGameTasks() {
         return """
 select
     GameTask.task,
@@ -555,7 +548,7 @@ order by
 """
     }
 
-    String sqlActiveGames() {
+    private String sqlActiveGames() {
         return """
 select
     Game.*
@@ -571,7 +564,7 @@ order by
 """
     }
 
-    String sqlGame() {
+    private String sqlGame() {
         return """
 select
     Game.*,
@@ -586,7 +579,7 @@ where
 """
     }
 
-    String sqlCloseActiveGame() {
+    private String sqlCloseActiveGame() {
         return """
 update
     Game

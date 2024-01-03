@@ -22,6 +22,32 @@ class StatisticManager1 extends RgmMdbUtils {
 
 
     @DaoMethod
+    public Store getPlanTaskStatistic(long idPlan) {
+        long idUsr = getCurrentUserId()
+
+        // Период заданий - за несколько дней
+        XDateTime dend = XDateTime.now()
+        XDateTime dbeg = dend.addDays(-7)
+
+        // Статистика по заданиям
+        Store stStatistic = getStatisticForPlanInternal(idPlan, idUsr, dbeg, dend)
+
+        // Задания в плане
+        Store stPlanTask = loadPlanTask(idPlan)
+
+        // Собираем вместе
+        Store res = mdb.createStore("PlanTask.statistic")
+        StoreUtils.join(res, stPlanTask, "task", null, true)
+        StoreUtils.join(res, stStatistic, "task", ["rating", "ratingQuickness"])
+
+        //
+        res.sort("*rating")
+
+        //
+        return res
+    }
+
+    @DaoMethod
     public Store getStatisticForGame(long idGame) {
         // Игра
         long idUsr = getCurrentUserId()
@@ -41,6 +67,42 @@ class StatisticManager1 extends RgmMdbUtils {
         }
 
         // Все задания, выданные пользователю по плану за период
+        Store stTaskStatistic = getStatisticForPlanInternal(idPlan, idUsr, dbeg, dend)
+
+        //
+        return stTaskStatistic
+    }
+
+    /**
+     * Разница в рейтинге между текущей и предыдущей игрой (по этому плану)
+     * @param idGame текущая игра
+     */
+    @DaoMethod
+    public Store compareStatisticForGamePrior(long idGame) {
+        // Предыдущая игра
+        long idUsr = getCurrentUserId()
+        StoreRecord recGamePrior = loadRecGamePrior(idGame, idUsr)
+        long idGamePrior = 0
+        if (recGamePrior) {
+            idGamePrior = recGamePrior.getLong("id")
+        }
+
+        //
+        return compareStatisticForGames(idGame, idGamePrior)
+    }
+
+    /**
+     * Задания в плане
+     */
+    Store loadPlanTask(long idPlan) {
+        Store stPlanTask = mdb.loadQuery(sqlPlanTask(), [plan: idPlan])
+        return stPlanTask
+    }
+
+    /**
+     * Все задания, выданные пользователю по плану за период
+     */
+    protected Store getStatisticForPlanInternal(long idPlan, long idUsr, XDateTime dbeg, XDateTime dend) {
         Map params = [dbeg: dbeg, dend: dend, "usr": idUsr, plan: idPlan]
         Store stGameTask = mdb.loadQuery(sqlGameTask(), params)
         //mdb.outTable(stGameTask)
@@ -112,24 +174,6 @@ class StatisticManager1 extends RgmMdbUtils {
 
         //
         return stTaskStatistic
-    }
-
-    /**
-     * Разница в рейтинге между текущей и предыдущей игрой (по этому плану)
-     * @param idGame текущая игра
-     */
-    @DaoMethod
-    public Store compareStatisticForGamePrior(long idGame) {
-        // Предыдущая игра
-        long idUsr = getCurrentUserId()
-        StoreRecord recGamePrior = loadRecGamePrior(idGame, idUsr)
-        long idGamePrior = 0
-        if (recGamePrior) {
-            idGamePrior = recGamePrior.getLong("id")
-        }
-
-        //
-        return compareStatisticForGames(idGame, idGamePrior)
     }
 
     /**
@@ -331,6 +375,28 @@ order by
 """
     }
 
+    protected String sqlPlanTask() {
+        return """
+select
+    PlanTask.*,
+    Task.factQuestion,
+    Task.factAnswer,
+    FactQuestion.dataType factQuestionDataType,
+    FactQuestion.value factQuestionValue,
+    FactAnswer.dataType factAnswerDataType,
+    FactAnswer.value factAnswerValue,
+    1 as x
+
+from
+    PlanTask
+    join Task on (PlanTask.task = Task.id)
+    join Fact FactQuestion on (Task.factQuestion = FactQuestion.id)
+    join Fact FactAnswer on (Task.factAnswer = FactAnswer.id)
+
+where
+    PlanTask.plan = :plan
+"""
+    }
 
     /**
      * Общий рейтинг и проигранные баллы (плюсы и минусы)

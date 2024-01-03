@@ -1,5 +1,6 @@
 package run.game.dao.game
 
+import groovy.transform.*
 import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
@@ -7,21 +8,16 @@ import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
 
+@TypeChecked
 class StatisticManager1 extends RgmMdbUtils {
 
-/*
-
-    Добавить расчет рейтинга времени
-
-    Заюзать в интерфейсе, в методе getCurrentGame
-*/
-
     // Расчет рейтингов: вес результата текущего, предыдущего и пред-предыдущего ответа
-    double[] ratingWeight = [0.5, 0.3, 0.2]
+    protected double[] ratingWeight = [0.5, 0.3, 0.2]
 
     // Расчет рейтинга за скорость: время ответа и баллы за него
-    double[] ratingDurationGrade = [2, 3, 5, 8]
-    double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
+    protected double[] ratingDurationGrade = [2, 3, 5, 8]
+    protected double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
+
 
     @DaoMethod
     public Store getStatisticForGame(long idGame) {
@@ -116,40 +112,19 @@ class StatisticManager1 extends RgmMdbUtils {
         return stTaskStatistic
     }
 
-
     /**
-     * Бал за ответ
-     * @param taskAnswer результат ответа
-     * @return Значение от 0 до 1
+     * Разница в рейтинге между текущей и предыдущей игрой (по этому плану)
+     * @param idGame текущая игра
      */
-    double getRatingAnswer(boolean taskAnswer) {
-        if (taskAnswer == true) {
-            return 1
-        } else {
-            return 0
-        }
-    }
+    @DaoMethod
+    public Store compareStatisticForGamePrior(long idGame) {
+        // Предыдущая игра
+        long idUsr = getCurrentUserId()
+        StoreRecord recGamePrior = loadRecGamePrior(idGame, idUsr)
 
-    /**
-     * Бал за скорость
-     * @param taskAnswerDuration время ответа
-     * @return Значение от 0 до 1
-     */
-    double getRatingQuickness(Double taskAnswerDuration) {
-        double ratingQuickness = 0
-
-        if (taskAnswerDuration==null){
-            return ratingQuickness
-        }
-
-        for (int i = 0; i < ratingDurationGrade.size(); i++) {
-            if (taskAnswerDuration <= ratingDurationGrade[i]) {
-                ratingQuickness = ratingDurationWeight[i]
-                break
-            }
-        }
-
-        return ratingQuickness
+        //
+        long idGamePrior = recGamePrior.getLong("id")
+        return compareStatisticForGames(idGame, idGamePrior)
     }
 
     /**
@@ -158,8 +133,7 @@ class StatisticManager1 extends RgmMdbUtils {
      * @param idGame1 предыдущая игра
      * @return
      */
-    @DaoMethod
-    public Store compareStatisticForGames(long idGame0, long idGame1) {
+    protected Store compareStatisticForGames(long idGame0, long idGame1) {
         Store st0 = getStatisticForGame(idGame0)
         Store st1 = null
         if (idGame1 != 0) {
@@ -229,27 +203,47 @@ class StatisticManager1 extends RgmMdbUtils {
     }
 
     /**
-     * Разница в рейтинге между текущей и предыдущей игрой (по этому плану)
-     * @param idGame текущая игра
+     * Бал за ответ
+     * @param taskAnswer результат ответа
+     * @return Значение от 0 до 1
      */
-    @DaoMethod
-    public Store compareStatisticForGamePrior(long idGame) {
-        // Предыдущая игра
-        long idUsr = getCurrentUserId()
-        StoreRecord recGamePrior = loadRecGamePrior(idGame, idUsr)
-
-        //
-        long idGamePrior = recGamePrior.getLong("id")
-        return compareStatisticForGames(idGame, idGamePrior)
+    protected double getRatingAnswer(boolean taskAnswer) {
+        if (taskAnswer == true) {
+            return 1
+        } else {
+            return 0
+        }
     }
 
-    StoreRecord loadRecGame(long idGame, long idUsr) {
+    /**
+     * Бал за скорость
+     * @param taskAnswerDuration время ответа
+     * @return Значение от 0 до 1
+     */
+    protected double getRatingQuickness(Double taskAnswerDuration) {
+        double ratingQuickness = 0
+
+        if (taskAnswerDuration == null) {
+            return ratingQuickness
+        }
+
+        for (int i = 0; i < ratingDurationGrade.size(); i++) {
+            if (taskAnswerDuration <= ratingDurationGrade[i]) {
+                ratingQuickness = ratingDurationWeight[i]
+                break
+            }
+        }
+
+        return ratingQuickness
+    }
+
+    protected StoreRecord loadRecGame(long idGame, long idUsr) {
         Map params = [game: idGame, usr: idUsr]
         StoreRecord recGame = mdb.loadQueryRecord(sqlRecGame(), params)
         return recGame
     }
 
-    StoreRecord loadRecGamePrior(long idGame, long idUsr) {
+    protected StoreRecord loadRecGamePrior(long idGame, long idUsr) {
         StoreRecord recGame = loadRecGame(idGame, idUsr)
         XDateTime dbeg = recGame.getDateTime("dbeg")
         long plan = recGame.getLong("plan")
@@ -261,7 +255,7 @@ class StatisticManager1 extends RgmMdbUtils {
     }
 
 
-    String sqlRecGame() {
+    protected String sqlRecGame() {
         return """
 select 
     Game.* 
@@ -274,7 +268,7 @@ where
 """
     }
 
-    String sqlGamePrior() {
+    protected String sqlGamePrior() {
         return """
 select 
     * 
@@ -292,7 +286,7 @@ limit 1
 """
     }
 
-    String sqlGameTask() {
+    protected String sqlGameTask() {
         return """
 select 
     -- Plan.id as planId,

@@ -121,10 +121,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     public StoreRecord gameStart(long idPlan) {
         // Добавляем Game
         StoreRecord recGame = mdb.createStoreRecord("Game")
-        //
         XDateTime dt = XDateTime.now()
         recGame.setValue("dbeg", dt)
-        //
         recGame.setValue("plan", idPlan)
 
         //

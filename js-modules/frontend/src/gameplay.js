@@ -668,8 +668,8 @@ export default {
         }
     },
 
-    onShowHint(v) {
-        if (v) {
+    onShowHint(doShowHint) {
+        if (doShowHint) {
             // Показывать подсказки
             ctx.globalState.dataState.mode.modeShowOptions = "hint-true"
 

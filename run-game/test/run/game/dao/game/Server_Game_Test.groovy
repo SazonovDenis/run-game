@@ -8,7 +8,7 @@ import run.game.dao.*
 
 class Server_Game_Test extends RgmBase_Test {
 
-    boolean doPauseBeforeAnswer = false
+    boolean doPauseBeforeAnswer = true
     boolean doPauseBeforeGame = true
 
     @Test

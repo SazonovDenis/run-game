@@ -5,6 +5,7 @@
     <domain name="TaskQuestion" parent="tab.id" tag.db="true"
             title="Значения для показа вопроса">
         <!--@
+        Для одного задания могут быть сформулированы несколько TaskQuestion.
         Для заданий, где у факта factQuestion значение dataType == "word-spelling",
         формируется дополнительная запись на основе факта, где dataType == "word-sound"
         (если такой факт имеется в базе)

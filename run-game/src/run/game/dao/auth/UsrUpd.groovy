@@ -40,7 +40,7 @@ public class UsrUpd extends RgmMdbUtils {
         // --- Значения по умолчанию
 
         // Логин
-        if (!params.containsKey("login")) {
+        if (UtCnv.isEmpty(login)) {
             login = rnd.text("0123456789abcdef", 32, 32, 32)
             params.put("login", login)
         }
@@ -49,6 +49,9 @@ public class UsrUpd extends RgmMdbUtils {
         String password = params.get("password")
         if (!UtCnv.isEmpty(password)) {
             password = UtString.md5Str(password)
+            params.put("password", password)
+        } else {
+            password = null
             params.put("password", password)
         }
 

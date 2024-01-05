@@ -249,13 +249,22 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
+    StoreRecord loadGameServerRecInternal(long idGame, long idUsr) {
+        StoreRecord recGame = mdb.createStoreRecord("Game.Server")
+        //
+        mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
+        if (recGame.getLong("id") == 0) {
+            return null
+        }
+        //
+        return recGame
+    }
+
     DataBox loadGameInternal(long idGame, long idUsr) {
         DataBox res = new DataBox()
 
-        StoreRecord recGame = mdb.createStoreRecord("Game.Server")
-        mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
-
         //
+        StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
         if (recGame.getLong("id") == 0) {
             return null
         }
@@ -279,6 +288,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         StoreUtils.join(stGameTasks, stPlanTask, "task", [
+                "textQuestion",
+                "soundQuestion",
+                "textAnswer",
                 "factQuestionDataType",
                 "factQuestionValue",
                 "factAnswerDataType",
@@ -330,8 +342,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Дополняем задание данными по игре
-        DataBox resGame = loadGameInternal(idGame, idUsr)
-        res.put("game", resGame)
+        DataBox recGame = loadGameInternal(idGame, idUsr)
+        res.put("game", recGame)
 
 
         //

@@ -37,6 +37,10 @@
 
 
     <domain name="PlanTask.statistic" parent="GameTask.statistic">
+        <field name="textQuestion" parent="TaskQuestion/value"/>
+        <field name="soundQuestion" parent="TaskQuestion/value"/>
+        <field name="textAnswer" parent="TaskOption/value"/>
+
         <field name="factQuestion" parent="Task/factQuestion"/>
         <field name="factAnswer" parent="Task/factAnswer"/>
         <field name="factQuestionDataType" parent="Fact/dataType"/>

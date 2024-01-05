@@ -26,7 +26,7 @@ class Server_Game_Test extends RgmBase_Test {
 
     @Test
     void getPlanTaskStatistic() {
-        long idPlan = 1000
+        long idPlan = 1008
 
         //utils.logOn()
         //

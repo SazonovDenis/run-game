@@ -1,9 +1,9 @@
 <template>
     <div class="task-bar">
 
-        <div class="task" @click="play">
+        <div class="row task" @click="play">
 
-            <div v-if="canPlaySound()" class="task-sound">
+            <div v-if="canPlaySound" class="task-sound">
                 <template v-if="doShowText">
                     <q-icon size="1.8em" name="speaker-on"/>
                 </template>
@@ -37,6 +37,10 @@ import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
 import ctx from "../gameplayCtx"
 
+
+/**
+ * Задание в игре. Вопрос показанный в правильном состоянии (текст скрыт, если нужно)
+ */
 export default {
     components: {},
 
@@ -74,21 +78,8 @@ export default {
             }
         },
 
-        canPlaySound() {
-            return (
-                this.task != null &&
-                this.task.sound != null &&
-                this.state.taskSoundLoaded &&
-                (
-                    this.state.showTaskHint ||
-                    this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
-                    this.task.dataTypeQuestion == dbConst.DataType_word_spelling
-                )
-            )
-        },
-
         play() {
-            if (this.canPlaySound()) {
+            if (this.canPlaySound) {
                 try {
                     this.audio.play()
                 } catch(e) {
@@ -135,6 +126,19 @@ export default {
             return apx.url.ref("run/game/web/img/wave.png")
         },
 
+        canPlaySound() {
+            return (
+                this.task != null &&
+                this.task.sound != null &&
+                this.state.taskSoundLoaded &&
+                (
+                    this.state.showTaskHint ||
+                    this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
+                    this.task.dataTypeQuestion == dbConst.DataType_word_spelling
+                )
+            )
+        },
+
         doShowText() {
             return (
                 this.task != null &&
@@ -175,7 +179,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 
 .task-help, .task-sound, .task-text {
 }
@@ -193,9 +197,6 @@ export default {
 }
 
 .task {
-    display: flex;
-    flex-direction: row;
-
     flex-grow: 100;
 
     padding: 1em;

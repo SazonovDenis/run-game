@@ -47,13 +47,17 @@ public class StoreUtils {
         }
     }
 
+    public static void join(Store dest, Store sour, String keyField, Map<String, String> fieldsMap) {
+        join(dest, sour, keyField, fieldsMap, false);
+    }
+
     /**
      * Объединить два Store
      *
      * @param dest     куда объеденинять
      * @param sour     откуда
      * @param keyField по какому индексному полю
-     * @param fields   соотвестве полей [куда:откуда]
+     * @param fields   какие поля копировать
      */
     public static void join(Store dest, Store sour, String keyField, Collection<String> fields) {
         Map<String, String> fieldsMap = null;

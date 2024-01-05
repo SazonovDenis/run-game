@@ -1,7 +1,7 @@
 <template>
     <q-layout>
         <q-page-container>
-            <q-page class="flex flex-center">
+            <q-page class="flex" style="padding: 5px 0; justify-content: center;">
 
                 <!-- loginType==='full' -->
 

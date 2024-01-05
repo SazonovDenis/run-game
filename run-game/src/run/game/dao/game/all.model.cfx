@@ -25,8 +25,27 @@
         <field name="planText" parent="Plan/text"/>
     </domain>
 
+    <domain name="PlanTask.Server" parent="GameTask">
+        <field name="task" parent="Task/ref"/>
+
+        <field name="textQuestion" parent="TaskQuestion/value"/>
+        <field name="soundQuestion" parent="TaskQuestion/value"/>
+        <field name="textAnswer" parent="TaskOption/value"/>
+
+        <field name="factQuestion" parent="Task/factQuestion"/>
+        <field name="factAnswer" parent="Task/factAnswer"/>
+        <field name="factQuestionDataType" parent="Fact/dataType"/>
+        <field name="factQuestionValue" parent="Fact/value"/>
+        <field name="factAnswerDataType" parent="Fact/dataType"/>
+        <field name="factAnswerValue" parent="Fact/value"/>
+    </domain>
+
     <domain name="GameTask.Server" parent="GameTask">
         <field name="task" parent="Task/ref"/>
+
+        <field name="textQuestion" parent="TaskQuestion/value"/>
+        <field name="soundQuestion" parent="TaskQuestion/value"/>
+        <field name="textAnswer" parent="TaskOption/value"/>
 
         <field name="factQuestion" parent="Task/factQuestion"/>
         <field name="factAnswer" parent="Task/factAnswer"/>

@@ -121,23 +121,3 @@ export default {
 
 </script>
 
-
-<style scoped>
-
-.main-window-img img {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 5em;
-}
-
-.main-window-img {
-    padding-top: 1em;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    height: 5em;
-}
-
-</style>

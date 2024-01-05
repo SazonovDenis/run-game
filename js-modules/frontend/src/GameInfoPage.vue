@@ -2,11 +2,9 @@
 
     <MenuContainer :title="title">
 
-        <div class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
-            <div>
-                <game-info :game="globalState.game">
-                </game-info>
-            </div>
+        <div v-if="dataLoaded" class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
+            <game-info :game="globalState.game">
+            </game-info>
 
             <div v-if="globalState.game.id && !globalState.game.done">
                 <jc-btn kind="primary" label="Продолжить игру"
@@ -49,6 +47,13 @@
                         @click="onSelectLevel()">
                 </jc-btn>
             </div>
+
+            <div v-if="!globalState.game.plan">
+                <jc-btn kind="primary" label="Выбрать уровень"
+                        style="min-width: 15em;"
+                        @click="onSelectLevel()">
+                </jc-btn>
+            </div>
         </div>
 
 
@@ -72,6 +77,7 @@ export default {
     data() {
         return {
             globalState: ctx.getGlobalState(),
+            dataLoaded: false,
         }
     },
 
@@ -134,6 +140,9 @@ export default {
             return
         }
 
+        //
+        this.dataLoaded = false
+
         // Есть текущая игра?
         if (!this.globalState.game.id) {
             // Загружаем текущую  игру
@@ -145,6 +154,9 @@ export default {
             // Загружаем последнюю игру
             await gameplay.loadLastGame()
         }
+
+        //
+        this.dataLoaded = true
     },
 
 

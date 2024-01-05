@@ -28,16 +28,16 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 5em;
+    height: 5rem;
 }
 
 .main-window-img {
-    padding-top: 1em;
+    padding-top: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    height: 5em;
+    height: 6rem;
 }
 
 </style>

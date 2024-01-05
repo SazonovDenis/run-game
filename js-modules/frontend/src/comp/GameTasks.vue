@@ -1,18 +1,18 @@
 <template>
     <div class="col" v-if="tasks">
         <template v-for="task in tasks">
-            <div class="row" v-if="tasks">
+            <div class="row">
                 <div :class="classTask(task) + ' task-state-state'"></div>
-                <div class="task-state-text">
-                    {{ task.factQuestionValue }} &ndash;
-                    {{ task.factAnswerValue }}
-                </div>
+
+                <GameTask :task="task"/>
+
                 <div v-if="task.ratingInc > 0"
-                     class="task-state-text task-state-text__ratingInc">
+                     class="task-text task-text__ratingInc">
                     +{{ task.ratingInc }}
                 </div>
+
                 <div v-if="task.ratingDec < 0"
-                     class="task-state-text task-state-text__ratingDec">
+                     class="task-text task-text__ratingDec">
                     {{ task.ratingDec }}
                 </div>
             </div>
@@ -22,11 +22,13 @@
 
 <script>
 
+import GameTask from "./GameTask"
+
 /**
  * Состояние заданий в игре (в виде закрашенных кружков)
  */
 export default {
-    components: {},
+    components: {GameTask},
 
     props: {
         tasks: {},
@@ -35,13 +37,13 @@ export default {
     methods: {
         classTask(task) {
             if (task.wasTrue) {
-                return "task-state-text__was-true"
+                return "task-text__was-true"
             } else if (task.wasFalse) {
-                return "task-state-text__was-false"
+                return "task-text__was-false"
             } else if (task.wasHint) {
-                return "task-state-text__was-hint"
+                return "task-text__was-hint"
             } else if (task.wasSkip) {
-                return "task-state-text__was-skip"
+                return "task-text__was-skip"
             }
             return ""
         },
@@ -68,7 +70,7 @@ export default {
     margin-right: 0.3em;
 }
 
-.task-state-text {
+.task-text {
 
     margin: 0.2em 0.2em;
     max-width: 80%;

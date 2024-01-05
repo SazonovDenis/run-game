@@ -37,6 +37,10 @@
         </div>
 
     </div>
+    <div v-else class="game-info">
+        <LogoGame/>
+        <div class="no-data-text">Нет данных об игре</div>
+    </div>
 
 </template>
 
@@ -44,6 +48,7 @@
 
 import {apx} from '../vendor'
 import GameTasks from "./GameTasks"
+import LogoGame from "./LogoGame"
 
 
 /**
@@ -54,7 +59,8 @@ export default {
     name: "GameInfo",
 
     components: {
-        GameTasks
+        GameTasks,
+        LogoGame,
     },
 
     props: {
@@ -96,10 +102,15 @@ hr {
     margin: 1em 0;
 }
 
+.no-data-text {
+    margin: 1em;
+    font-size: 1em;
+    color: #6c6c6c;
+}
+
 .game-info {
     font-size: 1.5em;
     text-align: center;
-    margin: 0.5rem;
 
     &__text {
         font-size: 1.5em;

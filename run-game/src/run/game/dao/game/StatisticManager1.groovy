@@ -95,7 +95,19 @@ class StatisticManager1 extends RgmMdbUtils {
      * Задания в плане
      */
     Store loadPlanTask(long idPlan) {
-        Store stPlanTask = mdb.loadQuery(sqlPlanTask(), [plan: idPlan])
+        Store stPlanTask = mdb.createStore("PlanTask.Server")
+
+        mdb.loadQuery(stPlanTask, sqlPlanTask(), [plan: idPlan])
+
+        Store stTask = mdb.loadQuery(sqlPlanTaskQuestion(RgmDbConst.DataType_word_spelling), [plan: idPlan])
+        StoreUtils.join(stPlanTask, stTask, "task", [value: "textQuestion"])
+
+        stTask = mdb.loadQuery(sqlPlanTaskQuestion(RgmDbConst.DataType_word_sound), [plan: idPlan])
+        StoreUtils.join(stPlanTask, stTask, "task", [value: "soundQuestion"])
+
+        stTask = mdb.loadQuery(sqlPlanTaskAnswer(), [plan: idPlan])
+        StoreUtils.join(stPlanTask, stTask, "task", [value: "textAnswer"])
+
         return stPlanTask
     }
 
@@ -395,6 +407,45 @@ from
 
 where
     PlanTask.plan = :plan
+"""
+    }
+
+    String sqlPlanTaskQuestion(long questionDataType) {
+        return """
+select 
+    PlanTask.*,
+    TaskQuestion.dataType,
+    TaskQuestion.value
+
+from 
+    PlanTask
+    join TaskQuestion on (
+        TaskQuestion.task = PlanTask.task and 
+        TaskQuestion.dataType = ${questionDataType}
+    )
+
+where
+    PlanTask.plan = :plan 
+"""
+    }
+
+    String sqlPlanTaskAnswer() {
+        return """
+select 
+    PlanTask.*,
+    TaskOption.dataType,
+    TaskOption.value
+
+from 
+    PlanTask
+    join TaskOption on (
+        TaskOption.task = PlanTask.task and 
+        TaskOption.isTrue = 1 and 
+        TaskOption.dataType = ${RgmDbConst.DataType_word_translate}
+    )
+
+where
+    PlanTask.plan = :plan 
 """
     }
 

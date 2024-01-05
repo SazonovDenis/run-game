@@ -41,6 +41,23 @@ class StatisticManager1_Test extends RgmBase_Test {
     }
 
     @Test
+    void getPlanTaskStatistic() {
+        long idPlan = 1000
+
+        //utils.logOn()
+        //
+        StatisticManager1 sm = mdb.create(StatisticManager1)
+        Store st = sm.getPlanTaskStatistic(idPlan)
+        mdb.resolveDicts(st)
+
+        //
+        println()
+        println("Plan: " + idPlan)
+        mdb.outTable(st)
+    }
+
+
+    @Test
     void getStatisticForGame() {
         //utils.logOn()
 

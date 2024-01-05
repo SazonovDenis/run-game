@@ -2,27 +2,18 @@
 
     <MenuContainer title="Уровень">
 
-        <div v-for="planTask in planTasks"
-             class="">
+        <div v-for="planTask in planTasks" class="plan-info">
+
             <div class="row">
-                <div class="col">
-                    {{ planTask.factQuestionValue }}
-                </div>
-                <div class="col">
-                    {{ planTask.factAnswerValue }}
-                </div>
+
+                <GameTask :task="planTask"/>
+
                 <div class="col" style="max-width: 5em">
                     {{ planTask.rating }}
                 </div>
-<!--
-                <div class="col" style="max-width: 3em">
-                    <jc-btn kind="secondary"
-                            label="-"
-                            @click="taskRemove(planTask)">
-                    </jc-btn>
-                </div>
--->
+
             </div>
+
         </div>
 
         <jc-btn kind="primary"
@@ -44,6 +35,7 @@ import ctx from "./gameplayCtx"
 import auth from "./auth"
 import {daoApi} from "./dao"
 import MenuContainer from "./comp/MenuContainer"
+import GameTask from "./comp/GameTask"
 
 export default {
     name: "PlanPage",
@@ -53,7 +45,7 @@ export default {
     },
 
     components: {
-        MenuContainer
+        MenuContainer, GameTask
     },
 
     computed: {},
@@ -116,5 +108,9 @@ export default {
 
 
 <style scoped>
+
+.plan-info {
+    font-size: 1.5em;
+}
 
 </style>

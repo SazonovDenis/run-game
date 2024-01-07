@@ -18,6 +18,37 @@
     </domain>
 
 
+    <domain name="Game.server" parent="Game">
+        <field name="plan" parent="Plan/ref"/>
+        <field name="planText" parent="Plan/text"/>
+    </domain>
+
+
+    <domain name="Task.server">
+        <field name="id" parent="GameTask/ref"/>
+        <field name="task" parent="Task/ref"/>
+        <field name="dtTask" parent="GameTask/dtTask"/>
+
+        <field name="dataType" parent="long"/>
+        <field name="valueSpelling" parent="string"/>
+        <field name="valueTranslate" parent="string"/>
+        <field name="valueSound" parent="string"/>
+        <field name="valueImage" parent="string"/>
+    </domain>
+
+
+    <domain name="TaskOption.server">
+        <field name="id" parent="Task/ref"/>
+        <field name="isTrue" parent="TaskOption/isTrue"/>
+
+        <field name="dataType" parent="long"/>
+        <field name="valueSpelling" parent="string"/>
+        <field name="valueTranslate" parent="string"/>
+        <field name="valueSound" parent="string"/>
+        <field name="valueImage" parent="string"/>
+    </domain>
+
+
     <!--
     Задания игры и результат их выполнения
     -->

@@ -1,3 +1,5 @@
+import {apx} from "./vendor"
+
 export default {
 
     /* View in fullscreen */
@@ -125,5 +127,13 @@ export default {
         return "user_" + iserId
     },
 
+
+    getAudioSrc(task) {
+        if (!task.valueSound) {
+            return ""
+        }
+
+        return apx.url.ref("sound/" + task.valueSound)
+    },
 
 }

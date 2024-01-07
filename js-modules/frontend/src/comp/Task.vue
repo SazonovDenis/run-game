@@ -16,7 +16,7 @@
             </div>
 
             <div v-if="doShowText" class="task-text">
-                {{ task.text }}
+                {{ task.valueSpelling }}
             </div>
             <div v-else class="task-text-image">
                 <img :src="wave">
@@ -36,6 +36,7 @@
 import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
 import ctx from "../gameplayCtx"
+import utils from '../utils'
 
 
 /**
@@ -51,13 +52,6 @@ export default {
 
     methods: {
 
-        onTaskOptionSelected(taskOption) {
-            // Играть звук, если была подсказка - значит идет заучивание
-            if (taskOption.isTrue && this.state.showTaskHint) {
-                this.play()
-            }
-        },
-
         loadAudioTask() {
             // Останавливаем текущий звук
             try {
@@ -71,11 +65,7 @@ export default {
 
             // Новый звук
             this.state.taskSoundLoaded = false
-            if (this.task.sound != null) {
-                this.audio.src = apx.url.ref("sound/" + this.task.sound)
-            } else {
-                this.audio.src = ""
-            }
+            this.audio.src = utils.getAudioSrc(this.task)
         },
 
         play() {
@@ -96,6 +86,14 @@ export default {
 
             //
             ctx.eventBus.emit("showHint", true)
+        },
+
+
+        onTaskOptionSelected(taskOption) {
+            // Играть звук, если была подсказка - значит идет заучивание
+            if (taskOption.isTrue && this.state.showTaskHint) {
+                this.play()
+            }
         },
 
         onSoundLoaded() {
@@ -129,12 +127,12 @@ export default {
         canPlaySound() {
             return (
                 this.task != null &&
-                this.task.sound != null &&
+                this.task.valueSound != null &&
                 this.state.taskSoundLoaded &&
                 (
                     this.state.showTaskHint ||
-                    this.task.dataTypeQuestion == dbConst.DataType_word_sound ||
-                    this.task.dataTypeQuestion == dbConst.DataType_word_spelling
+                    this.task.dataType == dbConst.DataType_word_sound ||
+                    this.task.dataType == dbConst.DataType_word_spelling
                 )
             )
         },
@@ -142,10 +140,10 @@ export default {
         doShowText() {
             return (
                 this.task != null &&
-                this.task.text != null &&
+                this.task.valueSpelling != null &&
                 (
                     this.state.showTaskHint ||
-                    this.task.dataTypeQuestion != dbConst.DataType_word_sound
+                    this.task.dataType != dbConst.DataType_word_sound
                 )
             )
         },
@@ -153,7 +151,7 @@ export default {
         doShowSound() {
             return (
                 this.task != null &&
-                this.task.sound != null
+                this.task.valueSound != null
             )
         },
 

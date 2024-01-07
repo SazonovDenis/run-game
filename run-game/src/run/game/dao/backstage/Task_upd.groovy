@@ -11,17 +11,17 @@ class Task_upd extends RgmMdbUtils {
         DataBox res = new DataBox()
 
         //
-        StoreRecord recTask = mdb.createStoreRecord("Task.info")
-        Store stTaskOption = mdb.createStore("TaskOption")
+        StoreRecord recTask = mdb.createStoreRecord("Task.rec")
         Store stTaskQuestion = mdb.createStore("TaskQuestion")
-        mdb.loadQueryRecord(recTask, sqlFactForTask(), [id: idTask])
-        mdb.loadQuery(stTaskOption, sqlTaskOption(), [id: idTask])
+        Store stTaskOption = mdb.createStore("TaskOption")
+        mdb.loadQueryRecord(recTask, sqlTask(), [id: idTask])
         mdb.loadQuery(stTaskQuestion, sqlTaskQuestion(), [id: idTask])
+        mdb.loadQuery(stTaskOption, sqlTaskOption(), [id: idTask])
 
         //
         res.put("task", recTask)
-        res.put("taskOption", stTaskOption)
         res.put("taskQuestion", stTaskQuestion)
+        res.put("taskOption", stTaskOption)
 
         //
         return res
@@ -56,31 +56,18 @@ class Task_upd extends RgmMdbUtils {
     }
 
 
-    String sqlFactForTask() {
+    String sqlTask() {
         return """
 select 
     Task.*,
     FactQuestion.dataType dataTypeQuestion, 
-    FactQuestion.value valueQuestion,
-    FactAnswer.dataType dataTypeAnswer, 
-    FactAnswer.value valueAnswer 
+    FactAnswer.dataType dataTypeAnswer 
 from 
     Task
     join Fact FactQuestion on (Task.factQuestion = FactQuestion.id)
     join Fact FactAnswer on (Task.factAnswer = FactAnswer.id)
 where 
     Task.id = :id 
-"""
-    }
-
-    String sqlTaskOption() {
-        return """
-select 
-    *
-from 
-    TaskOption
-where
-    TaskOption.task = :id 
 """
     }
 
@@ -92,6 +79,17 @@ from
     TaskQuestion
 where
     TaskQuestion.task = :id 
+"""
+    }
+
+    String sqlTaskOption() {
+        return """
+select 
+    *
+from 
+    TaskOption
+where
+    TaskOption.task = :id 
 """
     }
 

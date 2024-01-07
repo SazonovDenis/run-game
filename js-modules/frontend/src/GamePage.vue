@@ -24,6 +24,9 @@ import GameState from "./comp/GameState"
 import MenuContainer from "./comp/MenuContainer"
 import {apx} from "run-game-frontend/src/vendor"
 
+/**
+ * Окно игры, показываются задание и ответы.
+ */
 export default {
     name: "GamePage",
 

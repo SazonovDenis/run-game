@@ -28,6 +28,7 @@
 
 import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
+import utils from "../utils"
 
 
 /**
@@ -69,11 +70,7 @@ export default {
 
             // Новый звук
             this.taskSoundLoaded = false
-            if (this.task.soundQuestion != null) {
-                this.audio.src = apx.url.ref("sound/" + this.task.soundQuestion)
-            } else {
-                this.audio.src = ""
-            }
+            this.audio.src = utils.getAudioSrc(this.taskQuestion)
         },
 
         onSoundLoaded() {

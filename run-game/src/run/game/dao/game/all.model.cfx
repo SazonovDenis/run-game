@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
-    <domain name="Task.Server">
-        <field name="id" parent="GameTask/ref"/>
-        <field name="task" parent="Task/ref"/>
-        <field name="dataTypeQuestion" parent="long"/>
-        <field name="dataTypeAnswer" parent="long"/>
-        <field name="dtTask" parent="GameTask/dtTask"/>
-        <field name="text" parent="string"/>
-        <field name="sound" parent="string"/>
-        <field name="image" parent="string"/>
-    </domain>
-
-    <domain name="TaskOption.Server">
-        <field name="id" parent="Task/ref"/>
-        <field name="isTrue" parent="TaskOption/isTrue"/>
-        <field name="text" parent="string"/>
-        <field name="sound" parent="string"/>
-        <field name="image" parent="string"/>
-    </domain>
-
-    <domain name="Game.rec" parent="Game">
-        <field name="plan" parent="Plan/ref"/>
-        <field name="planText" parent="Plan/text"/>
-    </domain>
 
     <domain name="PlanTask.Server" parent="GameTask">
         <field name="task" parent="Task/ref"/>

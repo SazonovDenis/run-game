@@ -2,9 +2,9 @@
 <root>
 
 
-    <!-- run.game.dao.backstage.Task_upd#loadTask -->
+    <!-- Task_upd -->
 
-    <domain name="Task.info" parent="Task">
+    <domain name="Task.rec" parent="Task">
         <!--@ Типы данных вопроса и ответа (Task.factQuestion и Task.factAnswer) -->
 
         <field name="dataTypeQuestion" parent="Fact/dataType"/>

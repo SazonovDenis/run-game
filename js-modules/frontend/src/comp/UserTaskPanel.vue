@@ -95,7 +95,7 @@ export default {
             return (
                 this.dataState.taskSoundLoaded ||
                 !this.gameTask.task ||
-                this.gameTask.task.dataTypeQuestion != dbConst.DataType_word_sound
+                this.gameTask.task.dataType != dbConst.DataType_word_sound
             )
         },
 

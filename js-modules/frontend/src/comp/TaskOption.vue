@@ -1,10 +1,10 @@
 <template>
     <div
-        v-bind:id="'taskOption-'+taskOption.id"
+        v-bind:id="'taskOption-' + taskOption.id"
         v-bind:class="'option ' + getClassName(taskOption)"
     >
 
-        <div v-if="taskOption.sound">
+        <div v-if="taskOption.valueSound">
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
 
@@ -17,7 +17,7 @@
              v-on:touchcancel="onTouchCancel"
              v-on:click="no-click"
         >
-            <span>{{ taskOption.text }}</span>
+            <span>{{ taskOption.valueTranslate }}</span>
         </div>
     </div>
 </template>
@@ -26,6 +26,7 @@
 
 import {apx} from '../vendor'
 import ctx from "../gameplayCtx"
+import utils from "../utils"
 
 export default {
     components: {
@@ -34,7 +35,6 @@ export default {
 
     props: {
         taskOption: {},
-
         state: {},
     },
 
@@ -212,10 +212,8 @@ export default {
     },
 
     mounted() {
-        let audio = this.audio = new Audio()
-        if (this.taskOption.sound) {
-            audio.src = this.taskOption.sound
-        }
+        this.audio = new Audio()
+        this.audio.src = utils.getAudioSrc(this.taskOption)
     },
 
     computed: {}

@@ -6,54 +6,72 @@
             <GameInfo :game="localState.game" :statistic="localState.statistic">
             </GameInfo>
 
-            <div v-if="localState.game.id && !localState.game.done">
-                <jc-btn kind="primary" label="Продолжить игру"
-                        style="min-width: 15em;"
-                        @click="continueActiveGame()">
-                </jc-btn>
-            </div>
+            <template v-if="localState.game">
 
-            <div v-if="localState.game.id && !localState.game.done">
-                <jc-btn kind="secondary" label="Выйти из игры"
-                        style="min-width: 15em;"
-                        @click="closeActiveGame()">
-                </jc-btn>
-            </div>
+                <div v-if="!localState.game.done">
+                    <jc-btn kind="primary" label="Продолжить игру"
+                            style="min-width: 15em;"
+                            @click="continueActiveGame()">
+                    </jc-btn>
+                </div>
 
-            <div v-if="localState.game.plan && localState.game.done">
-                <jc-btn kind="secondary" label="Играть уровень еще раз"
-                        style="min-width: 15em;"
-                        @click="startNewGame()">
-                </jc-btn>
-            </div>
+                <div v-if="!localState.game.done">
+                    <jc-btn kind="secondary" label="Выйти из игры"
+                            style="min-width: 15em;"
+                            @click="closeActiveGame()">
+                    </jc-btn>
+                </div>
 
-            <div v-if="localState.game.plan && localState.game.done">
-                <jc-btn kind="secondary" label="Редактировать уровень"
-                        style="min-width: 15em;"
-                        @click="planTaskStatistic(localState.game.plan)">
-                </jc-btn>
-            </div>
+                <div
+                    v-if="localState.game.plan && localState.game.done">
+                    <jc-btn kind="secondary" label="Играть уровень еще раз"
+                            style="min-width: 15em;"
+                            @click="startNewGame()">
+                    </jc-btn>
+                </div>
 
-            <div v-if="localState.game.plan && !localState.game.done">
-                <jc-btn kind="secondary" label="Выбрать другой уровень"
-                        style="min-width: 15em;"
-                        @click="onSelectLevel()">
-                </jc-btn>
-            </div>
+                <div
+                    v-if="localState.game.plan && localState.game.done">
+                    <jc-btn kind="secondary" label="Редактировать уровень"
+                            style="min-width: 15em;"
+                            @click="planTaskStatistic(localState.game.plan)">
+                    </jc-btn>
+                </div>
 
-            <div v-if="localState.game.plan && localState.game.done">
-                <jc-btn kind="primary" label="Выбрать другой уровень"
-                        style="min-width: 15em;"
-                        @click="onSelectLevel()">
-                </jc-btn>
-            </div>
+                <div
+                    v-if="localState.game.plan && !localState.game.done">
+                    <jc-btn kind="secondary" label="Выбрать другой уровень"
+                            style="min-width: 15em;"
+                            @click="onSelectLevel()">
+                    </jc-btn>
+                </div>
 
-            <div v-if="!localState.game.plan">
-                <jc-btn kind="primary" label="Выбрать уровень"
-                        style="min-width: 15em;"
-                        @click="onSelectLevel()">
-                </jc-btn>
-            </div>
+                <div
+                    v-if="localState.game.plan && localState.game.done">
+                    <jc-btn kind="primary" label="Выбрать другой уровень"
+                            style="min-width: 15em;"
+                            @click="onSelectLevel()">
+                    </jc-btn>
+                </div>
+
+                <div v-if="!localState.game.plan">
+                    <jc-btn kind="primary" label="Выбрать уровень"
+                            style="min-width: 15em;"
+                            @click="onSelectLevel()">
+                    </jc-btn>
+                </div>
+
+            </template>
+
+            <template v-else>
+                <div>
+                    <jc-btn kind="primary" label="Выбрать другой уровень"
+                            style="min-width: 15em;"
+                            @click="onSelectLevel()">
+                    </jc-btn>
+                </div>
+            </template>
+
         </div>
 
 
@@ -143,14 +161,11 @@ export default {
         //
         this.dataLoaded = false
 
-        // Есть текущая игра?
-        //if (!this.localState.game.id) {
         // Загружаем текущую  игру
         this.localState = await gameplay.loadActiveGame()
-        //}
 
         // Есть текущая игра?
-        if (!this.localState.game.id) {
+        if (!this.localState.game) {
             // Загружаем последнюю игру
             this.localState = await gameplay.loadLastGame()
         }

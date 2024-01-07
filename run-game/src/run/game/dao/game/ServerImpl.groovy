@@ -143,7 +143,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         }
 
         //
-        return loadAndPrepareTask(idGame, recGameTask)
+        return loadAndPrepareGameTask(idGame, recGameTask)
     }
 
 
@@ -153,7 +153,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recGameTask = getGameLastTask(idGame)
 
         //
-        return loadAndPrepareTask(idGame, recGameTask)
+        return loadAndPrepareGameTask(idGame, recGameTask)
     }
 
 
@@ -245,7 +245,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     StoreRecord loadGameServerRecInternal(long idGame, long idUsr) {
-        StoreRecord recGame = mdb.createStoreRecord("Game.rec")
+        StoreRecord recGame = mdb.createStoreRecord("Game.server")
         //
         mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
         if (recGame.getLong("id") == 0) {
@@ -325,7 +325,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
-    protected DataBox loadAndPrepareTask(long idGame, StoreRecord recGameTask) {
+    protected DataBox loadAndPrepareGameTask(long idGame, StoreRecord recGameTask) {
         DataBox res = new DataBox()
 
         //
@@ -334,88 +334,72 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // --- Формируем задание
         if (recGameTask != null) {
-            long idTask = recGameTask.getLong("task")
-            long idGameTask = recGameTask.getLong("id")
-            XDateTime dtTask = recGameTask.getDateTime("dtTask")
-
             // Грузим задание
-            Task_upd upd = mdb.create(Task_upd)
-            DataBox task = upd.loadTask(idTask)
-
-            // Преобразуем задание по требованиям frontend-api
-            DataBox resTask = prepareTask(task)
+            long idTask = recGameTask.getLong("task")
+            DataBox resTask = loadTask(idTask)
+            StoreRecord recTask = resTask.get("task")
+            Store taskOption = resTask.get("taskOption")
 
             // Дополняем задание технической информацией
-            StoreRecord recTask = resTask.get("task")
+            long idGameTask = recGameTask.getLong("id")
+            XDateTime dtTask = recGameTask.getDateTime("dtTask")
             recTask.setValue("id", idGameTask)
             recTask.setValue("dtTask", dtTask)
 
             //
             res.put("task", recTask)
-            res.put("taskOption", resTask.get("taskOption"))
+            res.put("taskOption", taskOption)
         }
 
 
-        // Добавмим данные по игре
-        DataBox gameInfo = loadAndPrepareGame_Short(idGame, idUsr)
-        res.put("game", gameInfo.get("game"))
-        res.put("tasksResult", gameInfo.get("tasksResult"))
+        // --- Добавим данные по игре
+        DataBox resGame = loadAndPrepareGame_Short(idGame, idUsr)
+        res.put("game", resGame.get("game"))
+        res.put("tasksResult", resGame.get("tasksResult"))
 
 
         //
         return res
     }
 
-    protected DataBox prepareTask(DataBox task) {
-        StoreRecord resTask = mdb.createStoreRecord("Task.Server")
-        Store resTaskOption = mdb.createStore("TaskOption.Server")
+    /**
+     * Преобразуем задание по требованиям frontend-api
+     * Превращает списки stTaskQuestion и stTaskOption в пару плоских записей,
+     * где имеем valueText, valueSound, valueImage и т.д.
+     */
+    protected DataBox loadTask(long idTask) {
+        // --- Грузим задание
+        Task_upd upd = mdb.create(Task_upd)
+        DataBox task = upd.loadTask(idTask)
+
+
+        // --- Преобразуем задание по требованиям frontend-api
+        StoreRecord resTask = mdb.createStoreRecord("Task.server")
+        Store resTaskOption = mdb.createStore("TaskOption.server")
 
         // Основной вопрос задания
         StoreRecord recTask = task.get("task")
-        long dataTypeQuestion = recTask.getLong("dataTypeQuestion")
-        long dataTypeAnswer = recTask.getLong("dataTypeAnswer")
         resTask.setValue("task", recTask.getLong("id"))
-        resTask.setValue("dataTypeQuestion", dataTypeQuestion)
-        resTask.setValue("dataTypeAnswer", dataTypeAnswer)
+        resTask.setValue("dataType", recTask.getLong("dataTypeQuestion"))
 
-        // Заполняем данные задания по типам.
+        // Делаем плоскую запись на основе значений задания и их типам
         Store stTaskQuestion = task.get("taskQuestion")
-        String valueSound = null
-        String valueTranslate = null
-        String valueSpelling = null
         for (StoreRecord recTaskQuestion : stTaskQuestion) {
-            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_sound) {
-                valueSound = recTaskQuestion.getValue("value")
-            }
-            // Текст
-            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
-                valueSpelling = recTaskQuestion.getValue("value")
-            }
-            if (recTaskQuestion.getLong("dataType") == RgmDbConst.DataType_word_translate) {
-                valueTranslate = recTaskQuestion.getValue("value")
-            }
-        }
-        // Звук попадает всегда
-        resTask.setValue("sound", valueSound)
-        // Текст зависит от вопроса
-        if (dataTypeQuestion == RgmDbConst.DataType_word_spelling || dataTypeQuestion == RgmDbConst.DataType_word_sound) {
-            resTask.setValue("text", valueSpelling)
-        } else {
-            resTask.setValue("text", valueTranslate)
+            convert(recTaskQuestion, resTask)
         }
 
         // Варианты ответа
         Store stTaskOption = task.get("taskOption")
-        for (StoreRecord recTaskOption : stTaskOption) {
-            resTaskOption.add([
-                    "id"    : recTaskOption.getValue("id"),
-                    "text"  : recTaskOption.getValue("value"),
-                    "isTrue": recTaskOption.getValue("isTrue"),
-            ])
+        for (StoreRecord rec : stTaskOption) {
+            StoreRecord recTaskOption = resTaskOption.add()
+            recTaskOption.setValue("id", rec.getValue("id"))
+            recTaskOption.setValue("isTrue", rec.getValue("isTrue"))
+            recTaskOption.setValue("dataType", rec.getValue("dataType"))
+            convert(rec, recTaskOption)
         }
 
 
-        //
+        // ---
         DataBox res = new DataBox()
         res.put("task", resTask)
         res.put("taskOption", resTaskOption)
@@ -423,6 +407,26 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         return res
+    }
+
+
+    void convert(StoreRecord recTaskSource, StoreRecord resTask) {
+        // Звук
+        if (recTaskSource.getLong("dataType") == RgmDbConst.DataType_word_sound) {
+            resTask.setValue("valueSound", recTaskSource.getValue("value"))
+        }
+        // Текст
+        if (recTaskSource.getLong("dataType") == RgmDbConst.DataType_word_translate) {
+            resTask.setValue("valueTranslate", recTaskSource.getValue("value"))
+        }
+        // Текст
+        if (recTaskSource.getLong("dataType") == RgmDbConst.DataType_word_spelling) {
+            resTask.setValue("valueSpelling", recTaskSource.getValue("value"))
+        }
+        // Картинка
+        if (recTaskSource.getLong("dataType") == RgmDbConst.DataType_word_picture) {
+            resTask.setValue("valuePicture", recTaskSource.getValue("value"))
+        }
     }
 
 

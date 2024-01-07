@@ -87,10 +87,10 @@ export default {
         // Задание и раунд в глобальном контексте
         if (!ctx.globalState.gameTask.task) {
             // Грузим текущее задание с сервера
-            let dataGameTask = await ctx.gameplay.api_getCurrentTask(ctx.globalState.game.id)
+            let resGameTask = await ctx.gameplay.api_getCurrentTask(ctx.globalState.game.id)
 
             // Задание в глобальном контексте
-            this.useGameTask(dataGameTask)
+            this.useGameTask(resGameTask)
         }
     },
 
@@ -120,13 +120,9 @@ export default {
     async loadActiveGame() {
         let resGame = await ctx.gameplay.api_getActiveGame()
 
-        if (resGame) {
-            // Игра в глобальном контексте
-            if (ctx.globalState.game && resGame.game &&
-                ctx.globalState.game.id !== resGame.game.id) {
-                ctx.gameplay.useGame(resGame)
-                ctx.globalState.gameTask = {}
-            }
+        // Игра в глобальном контексте
+        if (resGame && resGame.game) {
+            ctx.gameplay.useGame(resGame)
         } else {
             ctx.gameplay.clearGame()
         }
@@ -137,17 +133,14 @@ export default {
     async loadLastGame() {
         let resGame = await ctx.gameplay.api_getLastGame()
 
-        if (resGame) {
-            // Игра в глобальном контексте
-            if (ctx.globalState.game && resGame.game &&
-                ctx.globalState.game.id !== resGame.game.id) {
-                ctx.gameplay.useGame(resGame)
-                ctx.globalState.gameTask = {}
-            }
+        // Игра в глобальном контексте
+        if (resGame && resGame.game) {
+            ctx.gameplay.useGame(resGame)
         } else {
             ctx.gameplay.clearGame()
         }
 
+        //
         return resGame
     },
 
@@ -156,23 +149,23 @@ export default {
         ctx.gameplay.clearGame()
     },
 
-    useGameTask(dataGameTask) {
-        if (dataGameTask.task) {
+    useGameTask(resGameTask) {
+        if (resGameTask.task) {
             // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
-            for (let i = 0; i < dataGameTask.taskOptions.length; i++) {
-                let taskOption = dataGameTask.taskOptions[i]
-                taskOption.task = dataGameTask.task.id
+            for (let i = 0; i < resGameTask.taskOptions.length; i++) {
+                let taskOption = resGameTask.taskOptions[i]
+                taskOption.task = resGameTask.task.id
             }
 
             // Перемешаем ответы
-            dataGameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(dataGameTask.taskOptions)
+            resGameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(resGameTask.taskOptions)
 
             // Задание в глобальный контекст
-            ctx.globalState.gameTask.task = dataGameTask.task
-            ctx.globalState.gameTask.taskOptions = dataGameTask.taskOptions
+            ctx.globalState.gameTask.task = resGameTask.task
+            ctx.globalState.gameTask.taskOptions = resGameTask.taskOptions
 
             // Состояние цели
-            ctx.gameplay.resetGoal(dataGameTask.task.text)
+            ctx.gameplay.resetGoal(resGameTask.task.text)
         } else {
             // Задание в глобальный контекст
             ctx.globalState.gameTask = {}
@@ -182,10 +175,10 @@ export default {
         }
 
         // Состояние раунда в глобальный контекст
-        ctx.gameplay.useGame(dataGameTask.game)
+        ctx.gameplay.useGame(resGameTask)
 
         // Уведомим об изменении задания
-        ctx.eventBus.emit("loadedGameTask", dataGameTask)
+        ctx.eventBus.emit("loadedGameTask", resGameTask.game)
 
         // Разные умолчания
         ctx.globalState.dataState.mode.modeShowOptions = null
@@ -193,18 +186,14 @@ export default {
     },
 
     clearGame() {
-        ctx.globalState.game = {}
-        ctx.globalState.gameTask = {}
-        ctx.globalState.tasksResult = {}
+        ctx.globalState.game = null
+        ctx.globalState.gameTask = null
+        ctx.globalState.tasksResult = null
     },
 
-    useGame(res) {
-        ctx.globalState.game = res.game
-        ctx.globalState.tasksResult = res.tasksResult
-        //
-        if (ctx.globalState.game.dend) {
-            ctx.globalState.game.done = true
-        }
+    useGame(resGameTask) {
+        ctx.globalState.game = resGameTask.game
+        ctx.globalState.tasksResult = resGameTask.tasksResult
     },
 
     async api_gameStart(idPlan) {
@@ -234,12 +223,17 @@ export default {
         return res.records
     },
 
+    /**
+     * Выбрать следующее задание
+     */
     async api_choiceTask() {
         let resApi = await daoApi.loadStore('m/Game/choiceTask', [ctx.globalState.game.id])
         return ctx.gameplay.parseResApiTask(resApi)
     },
 
-    // Загрузить текущее задание
+    /**
+     * Загрузить текущее задание
+     */
     async api_getCurrentTask() {
         let resApi = await daoApi.loadStore('m/Game/currentTask', [ctx.globalState.game.id])
         return ctx.gameplay.parseResApiTask(resApi)
@@ -251,6 +245,9 @@ export default {
         //
         if (resApi.game) {
             res.game = resApi.game.records[0]
+            if (res.game.dend) {
+                res.game.done = true
+            }
         } else {
             res.game = null
         }
@@ -277,17 +274,24 @@ export default {
         let res
 
         //
+        let resGame = ctx.gameplay.parseResApiGame(resApi)
+
+        //
         if (resApi.task) {
             res = {
                 task: resApi.task.records[0],
                 taskOptions: resApi.taskOption.records,
-                game: ctx.gameplay.parseResApiGame(resApi),
+                game: resGame.game,
+                tasksResult: resGame.tasksResult,
+                statistic: resGame.statistic,
             }
         } else {
             res = {
                 task: null,
                 taskOptions: null,
-                game: ctx.gameplay.parseResApiGame(resApi),
+                game: resGame.game,
+                tasksResult: resGame.tasksResult,
+                statistic: resGame.statistic,
             }
         }
 

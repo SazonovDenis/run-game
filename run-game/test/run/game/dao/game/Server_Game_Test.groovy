@@ -26,18 +26,26 @@ class Server_Game_Test extends RgmBase_Test {
 
     @Test
     void getPlanTaskStatistic() {
-        long idPlan = 1008
+        long idPlan = 1000
 
         //utils.logOn()
         //
         Server srv = mdb.create(ServerImpl)
-        Store st = srv.getPlanTaskStatistic(idPlan)
-        mdb.resolveDicts(st)
+        DataBox box = srv.getPlanTaskStatistic(idPlan)
+        mdb.resolveDicts(box)
 
         //
         println()
         println("Plan: " + idPlan)
-        mdb.outTable(st)
+        println()
+        println("plan")
+        mdb.outTable(box.get("plan"))
+        println()
+        println("planTasks")
+        mdb.outTable(box.get("planTasks"))
+        println()
+        println("statistic")
+        mdb.outTable(box.get("statistic"))
     }
 
 

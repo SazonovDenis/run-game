@@ -2,6 +2,21 @@
 
     <MenuContainer title="Уровень">
 
+        <div class="game-info">
+
+            <div class="game-info__text">{{ plan.planText }}</div>
+
+            <div class="game-info__count" style="padding-top: 0.5em">
+                Всего баллов: {{ statistic.rating }} из {{ statistic.ratingMax }}
+            </div>
+            <div class="game-info__count">
+                Баллы за скорость: {{ statistic.ratingQuickness }}
+            </div>
+
+        </div>
+
+        <q-separator/>
+
         <div v-for="planTask in planTasks" class="plan-info">
 
             <div class="row">
@@ -33,19 +48,19 @@ import {apx} from "./vendor"
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import auth from "./auth"
-import {daoApi} from "./dao"
 import MenuContainer from "./comp/MenuContainer"
 import GameTask from "./comp/GameTask"
+import GameInfo from "./comp/GameInfo"
 
 export default {
     name: "PlanPage",
 
     props: {
-        plan: null,
+        idPlan: null,
     },
 
     components: {
-        MenuContainer, GameTask
+        MenuContainer, GameTask, GameInfo
     },
 
     computed: {},
@@ -53,7 +68,9 @@ export default {
     // Состояние игрового мира
     data() {
         return {
+            plan: {},
             planTasks: {},
+            statistic: {},
             globalState: ctx.getGlobalState(),
         }
     },
@@ -65,7 +82,7 @@ export default {
         },
 
         async gameStart() {
-            await gameplay.gameStart(this.plan)
+            await gameplay.gameStart(this.idPlan)
 
             apx.showFrame({
                 frame: '/game', props: {}
@@ -90,10 +107,12 @@ export default {
         }
 
         //
-        let resApi = await daoApi.loadStore('m/Game/getPlanTaskStatistic', [this.plan])
+        let res = await ctx.gameplay.api_getPlanTasks(this.idPlan)
 
         //
-        this.planTasks = resApi.records
+        this.plan = res.plan
+        this.planTasks = res.planTasks
+        this.statistic = res.statistic
     },
 
     unmounted() {
@@ -104,10 +123,41 @@ export default {
 </script>
 
 
-<style scoped>
+<style lang="less" scoped>
 
 .plan-info {
     font-size: 1.5em;
+}
+
+
+hr {
+    margin: 1em 0;
+}
+
+.game-info {
+    font-size: 1.5em;
+    text-align: center;
+
+    &__text {
+        font-size: 1.5em;
+        color: #34558b;
+    }
+
+    &__duration {
+        color: #6c6c6c;
+    }
+
+    &__count {
+        color: #4c4c4c;
+    }
+
+    &__ratingDec {
+        color: #850000;
+    }
+
+    &__ratingInc {
+        color: #5b9e3a;
+    }
 }
 
 </style>

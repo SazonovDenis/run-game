@@ -136,7 +136,7 @@ export default {
 
         planTaskStatistic(plan) {
             apx.showFrame({
-                frame: '/plan', props: {plan: plan}
+                frame: '/plan', props: {idPlan: plan}
             })
         },
 

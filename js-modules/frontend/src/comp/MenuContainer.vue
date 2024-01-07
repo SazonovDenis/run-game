@@ -38,7 +38,7 @@
                                  @click="onGameInfo()">Текущая игра
                             </div>
                             <div class="q-item__label q-item__label--header"
-                                 @click="onLevels()">Выбрать уровень
+                                 @click="onLevels()">Уровни
                             </div>
                             <div class="text-grey" style="padding: 25px 16px 16px;">
                                 <p><em>Right Drawer has intended scroll</em></p>

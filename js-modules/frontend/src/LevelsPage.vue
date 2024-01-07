@@ -42,17 +42,12 @@ export default {
     methods: {
         planTaskStatistic(plan) {
             apx.showFrame({
-                frame: '/plan', props: {plan: plan}
+                frame: '/plan', props: {idPlan: plan}
             })
         },
-
-        async loadLevels() {
-            this.plans = await gameplay.api_getPlans()
-        },
-
     },
 
-    mounted() {
+    async mounted() {
         if (!auth.isAuth()) {
             apx.showFrame({
                 frame: '/login',
@@ -61,7 +56,7 @@ export default {
         }
 
         //
-        this.loadLevels()
+        this.plans = await gameplay.api_getPlans()
     },
 
 

@@ -1,6 +1,7 @@
 package run.game.dao.game
 
-import jandcode.core.dbm.std.DataBox
+import jandcode.commons.datetime.*
+import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.*
 import org.junit.jupiter.api.*
@@ -41,13 +42,17 @@ class StatisticManager1_Test extends RgmBase_Test {
     }
 
     @Test
-    void getPlanTaskStatistic() {
+    void getStatisticForPlanInternal() {
         long idPlan = 1000
+        long idUsr = 1000
 
-        //utils.logOn()
+        // Период заданий для плана
+        XDateTime dend = XDateTime.now()
+        XDateTime dbeg = dend.addDays(-10)
+
         //
         StatisticManager1 sm = mdb.create(StatisticManager1)
-        Store st = sm.getPlanTaskStatistic(idPlan)
+        Store st = sm.getStatisticForPlanInternal(idPlan, idUsr, dbeg, dend)
         mdb.resolveDicts(st)
 
         //
@@ -94,7 +99,7 @@ class StatisticManager1_Test extends RgmBase_Test {
         Store stStatistic = sm.compareStatisticForGames(idGame0, idGame1)
 
         // Общий рейтинг и проигранные баллы (плюсы и минусы)
-        Map aggretate = sm.aggregateStatistic(stStatistic)
+        Map aggretate = sm.aggregateStatistic0(stStatistic)
 
         // Печатаем
         println("rating:" + aggretate.get("rating1") + " -> " + aggretate.get("rating0"))

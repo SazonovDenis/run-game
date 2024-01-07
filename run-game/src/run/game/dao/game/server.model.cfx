@@ -5,16 +5,9 @@
     <!--
     Список уровней с рейтингом
     -->
-    <domain name="Plan.list" parent="id">
+    <domain name="Plan.server" parent="id">
         <field name="plan" parent="Plan/ref"/>
         <field name="planText" parent="Plan/text"/>
-
-        <field name="count" parent="long"
-               title="Общее количество заданий"/>
-        <field name="ratingTask" parent="double" scale="3"
-               title="Рейтинг за ответы"/>
-        <field name="ratingQuickness" parent="double" scale="3"
-               title="Рейтинг за скорость"/>
     </domain>
 
 
@@ -59,9 +52,10 @@
 
 
     <!--
-    Задания игры и результат их выполнения +
+    Задания игры +
+    Результат их выполнения +
     Тело задания (вопрос и ответ) +
-    Подробный рейтинг
+    Рейтинг задания и изменения рейтинга
     -->
     <domain name="GameTask.list.statistic" parent="GameTask.list">
         <!-- Тело задания (вопрос и ответ) -->
@@ -75,6 +69,26 @@
                title="Прибавка к рейтингу предыдущей игры"/>
         <field name="ratingDec" parent="double" scale="3"
                title="Потери рейтинга предыдущей игры"/>
+    </domain>
+
+
+    <!--
+    Задания плана +
+    Тело задания (вопрос и ответ) +
+    Рейтинг задания
+    -->
+    <domain name="PlanTask.list.statistic" parent="id">
+        <field name="task" parent="Task/ref"/>
+
+        <!-- Тело задания (вопрос и ответ) -->
+        <field name="question" parent="object" title="Вопрос (струтура - Task.fields)"/>
+        <field name="answer" parent="object" title="Ответ (струтура - Task.fields)"/>
+
+        <!-- Рейтинг -->
+        <field name="rating" parent="double" scale="3"
+               title="Рейтинг за ответы на задание"/>
+        <field name="ratingQuickness" parent="double" scale="3"
+               title="Рейтинг за скорость ответов"/>
     </domain>
 
 

@@ -22,32 +22,6 @@ class StatisticManager1 extends RgmMdbUtils {
 
 
     @DaoMethod
-    public Store getPlanTaskStatistic(long idPlan) {
-        long idUsr = getCurrentUserId()
-
-        // Период заданий - за несколько дней
-        XDateTime dend = XDateTime.now()
-        XDateTime dbeg = dend.addDays(-7)
-
-        // Статистика по заданиям
-        Store stStatistic = getStatisticForPlanInternal(idPlan, idUsr, dbeg, dend)
-
-        // Задания в плане
-        Store stPlanTask = loadPlanTask(idPlan)
-
-        // Собираем вместе
-        Store res = mdb.createStore("PlanTask.statistic")
-        StoreUtils.join(res, stPlanTask, "task", null, true)
-        StoreUtils.join(res, stStatistic, "task", ["rating", "ratingQuickness"])
-
-        //
-        res.sort("*rating")
-
-        //
-        return res
-    }
-
-    @DaoMethod
     public Store getStatisticForGame(long idGame) {
         // Игра
         long idUsr = getCurrentUserId()
@@ -91,30 +65,11 @@ class StatisticManager1 extends RgmMdbUtils {
         return compareStatisticForGames(idGame, idGamePrior)
     }
 
-    /**
-     * Задания в плане
-     */
-    Store loadPlanTask(long idPlan) {
-        Store stPlanTask = mdb.createStore("PlanTask.Server")
-
-        mdb.loadQuery(stPlanTask, sqlPlanTask(), [plan: idPlan])
-
-        Store stTask = mdb.loadQuery(sqlPlanTaskQuestion(RgmDbConst.DataType_word_spelling), [plan: idPlan])
-        StoreUtils.join(stPlanTask, stTask, "task", [value: "textQuestion"])
-
-        stTask = mdb.loadQuery(sqlPlanTaskQuestion(RgmDbConst.DataType_word_sound), [plan: idPlan])
-        StoreUtils.join(stPlanTask, stTask, "task", [value: "soundQuestion"])
-
-        stTask = mdb.loadQuery(sqlPlanTaskAnswer(), [plan: idPlan])
-        StoreUtils.join(stPlanTask, stTask, "task", [value: "textAnswer"])
-
-        return stPlanTask
-    }
 
     /**
      * Все задания, выданные пользователю по плану за период
      */
-    protected Store getStatisticForPlanInternal(long idPlan, long idUsr, XDateTime dbeg, XDateTime dend) {
+    Store getStatisticForPlanInternal(long idPlan, long idUsr, XDateTime dbeg, XDateTime dend) {
         Map params = [dbeg: dbeg, dend: dend, "usr": idUsr, plan: idPlan]
         Store stGameTask = mdb.loadQuery(sqlGameTask(), params)
         //mdb.outTable(stGameTask)
@@ -387,74 +342,12 @@ order by
 """
     }
 
-    protected String sqlPlanTask() {
-        return """
-select
-    PlanTask.*,
-    Task.factQuestion,
-    Task.factAnswer,
-    FactQuestion.dataType factQuestionDataType,
-    FactQuestion.value factQuestionValue,
-    FactAnswer.dataType factAnswerDataType,
-    FactAnswer.value factAnswerValue,
-    1 as x
-
-from
-    PlanTask
-    join Task on (PlanTask.task = Task.id)
-    join Fact FactQuestion on (Task.factQuestion = FactQuestion.id)
-    join Fact FactAnswer on (Task.factAnswer = FactAnswer.id)
-
-where
-    PlanTask.plan = :plan
-"""
-    }
-
-    String sqlPlanTaskQuestion(long questionDataType) {
-        return """
-select 
-    PlanTask.*,
-    TaskQuestion.dataType,
-    TaskQuestion.value
-
-from 
-    PlanTask
-    join TaskQuestion on (
-        TaskQuestion.task = PlanTask.task and 
-        TaskQuestion.dataType = ${questionDataType}
-    )
-
-where
-    PlanTask.plan = :plan 
-"""
-    }
-
-    String sqlPlanTaskAnswer() {
-        return """
-select 
-    PlanTask.*,
-    TaskOption.dataType,
-    TaskOption.value
-
-from 
-    PlanTask
-    join TaskOption on (
-        TaskOption.task = PlanTask.task and 
-        TaskOption.isTrue = 1 and 
-        TaskOption.dataType = ${RgmDbConst.DataType_word_translate}
-    )
-
-where
-    PlanTask.plan = :plan 
-"""
-    }
-
     /**
      * Общий рейтинг и проигранные баллы (плюсы и минусы)
      * @param stStatistic статистика по каждому заданию
      * @return сумма по всем заданиям
      */
-    Map aggregateStatistic(Store stStatistic) {
+    Map aggregateStatistic0(Store stStatistic) {
         double rating0 = StoreUtils.getSum(stStatistic, "rating0")
         double rating1 = StoreUtils.getSum(stStatistic, "rating1")
         double ratingInc = StoreUtils.getSum(stStatistic, "ratingInc")
@@ -483,6 +376,30 @@ where
                 ratingQuickness1  : ratingQuickness1,
                 ratingQuicknessInc: ratingQuicknessInc,
                 ratingQuicknessDec: ratingQuicknessDec,
+                ratingMax         : stStatistic.size(),
+        ]
+
+        //
+        return aggretate
+    }
+
+    /**
+     * Общий рейтинг и проигранные баллы (плюсы и минусы)
+     * @param stStatistic статистика по каждому заданию
+     * @return сумма по всем заданиям
+     */
+    Map aggregateStatistic(Store stStatistic) {
+        double rating = StoreUtils.getSum(stStatistic, "rating")
+        rating = CubeUtils.discardExtraDigits(rating)
+        //
+        double ratingQuickness = StoreUtils.getSum(stStatistic, "ratingQuickness")
+        ratingQuickness = CubeUtils.discardExtraDigits(ratingQuickness)
+
+        //
+        Map aggretate = [
+                rating         : rating,
+                ratingQuickness: ratingQuickness,
+                ratingMax      : stStatistic.size(),
         ]
 
         //

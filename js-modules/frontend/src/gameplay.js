@@ -219,11 +219,25 @@ export default {
     },
 
     async api_getPlans() {
-        let res = await daoApi.loadStore(
+        let resApi = await daoApi.loadStore(
             "m/Game/getPlans", {}
         )
 
-        return res.records
+        return resApi.records
+    },
+
+    async api_getPlanTasks(plan) {
+        let resApi = await daoApi.loadStore(
+            'm/Game/getPlanTaskStatistic', [plan]
+        )
+
+        let res = {
+            plan: resApi.plan.records[0],
+            planTasks: resApi.planTasks.records,
+            statistic: resApi.statistic,
+        }
+
+        return res
     },
 
     /**

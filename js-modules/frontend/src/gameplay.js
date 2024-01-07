@@ -130,6 +130,8 @@ export default {
         } else {
             ctx.gameplay.clearGame()
         }
+
+        return resGame
     },
 
     async loadLastGame() {
@@ -145,6 +147,8 @@ export default {
         } else {
             ctx.gameplay.clearGame()
         }
+
+        return resGame
     },
 
     async closeActiveGame() {
@@ -191,12 +195,12 @@ export default {
     clearGame() {
         ctx.globalState.game = {}
         ctx.globalState.gameTask = {}
+        ctx.globalState.tasksResult = {}
     },
 
     useGame(res) {
         ctx.globalState.game = res.game
-        ctx.globalState.game.tasks = res.tasks
-        ctx.globalState.game.statistic = res.statistic
+        ctx.globalState.tasksResult = res.tasksResult
         //
         if (ctx.globalState.game.dend) {
             ctx.globalState.game.done = true
@@ -242,21 +246,27 @@ export default {
     },
 
     parseResApiGame(resApi) {
-        let res
+        let res = {}
 
         //
         if (resApi.game) {
-            res = {
-                game: resApi.game.records[0],
-                tasks: resApi.tasks.records,
-                statistic: resApi.statistic,
-            }
+            res.game = resApi.game.records[0]
         } else {
-            res = {
-                game: null,
-                tasks: null,
-                statistic: null,
-            }
+            res.game = null
+        }
+
+        //
+        if (resApi.tasksResult) {
+            res.tasksResult = resApi.tasksResult.records
+        } else {
+            res.tasksResult = null
+        }
+
+        // Если пришел расширенный ответ - со статистикой
+        if (resApi.statistic) {
+            res.statistic = resApi.statistic
+        } else {
+            res.statistic = null
         }
 
         //
@@ -271,13 +281,13 @@ export default {
             res = {
                 task: resApi.task.records[0],
                 taskOptions: resApi.taskOption.records,
-                game: ctx.gameplay.parseResApiGame(resApi.game),
+                game: ctx.gameplay.parseResApiGame(resApi),
             }
         } else {
             res = {
                 task: null,
                 taskOptions: null,
-                game: ctx.gameplay.parseResApiGame(resApi.game),
+                game: ctx.gameplay.parseResApiGame(resApi),
             }
         }
 

@@ -3,7 +3,7 @@
     <MenuContainer title="Главная">
 
         <template v-slot:footer>
-            <GameState :game="globalState.game"/>
+            <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
         </template>
 
 

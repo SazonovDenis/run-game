@@ -57,7 +57,7 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="less" scoped>
 
 .task-state-state {
     border: 1px solid silver;

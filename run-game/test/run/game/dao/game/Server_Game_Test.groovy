@@ -225,7 +225,7 @@ class Server_Game_Test extends RgmBase_Test {
         if (recActiveGame != null) {
             long idGame = recActiveGame.getLong("id")
             long idUsr = getCurrentUserId()
-            game = upd.loadGameInternal(idGame, idUsr)
+            game = upd.loadAndPrepareGame(idGame, idUsr)
             recActiveGame = game.get("game")
 
             // Текущая игра

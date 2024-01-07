@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!--
+    Список уровней с рейтингом
+    -->
+    <domain name="Plan.list" parent="id">
+        <field name="plan" parent="Plan/ref"/>
+        <field name="planText" parent="Plan/text"/>
+
+        <field name="count" parent="long"
+               title="Общее количество заданий"/>
+        <field name="ratingTask" parent="double" scale="3"
+               title="Рейтинг за ответы"/>
+        <field name="ratingQuickness" parent="double" scale="3"
+               title="Рейтинг за скорость"/>
+    </domain>
+
+
+    <!--
+    Задания игры и результат их выполнения
+    -->
+    <domain name="GameTask.list" parent="GameTask">
+
+    </domain>
+
+
+    <!--
+    Задания игры и результат их выполнения +
+    Тело задания (вопрос и ответ) +
+    Подробный рейтинг
+    -->
+    <domain name="GameTask.list.statistic" parent="GameTask.list">
+
+        <!-- Тело задания (вопрос и ответ) -->
+        <field name="textQuestion" parent="TaskQuestion/value"/>
+        <field name="soundQuestion" parent="TaskQuestion/value"/>
+        <field name="textAnswer" parent="TaskOption/value"/>
+
+        <field name="factQuestion" parent="Task/factQuestion"/>
+        <field name="factAnswer" parent="Task/factAnswer"/>
+        <field name="factQuestionDataType" parent="Fact/dataType"/>
+        <field name="factQuestionValue" parent="Fact/value"/>
+        <field name="factAnswerDataType" parent="Fact/dataType"/>
+        <field name="factAnswerValue" parent="Fact/value"/>
+
+        <!-- Подробный рейтинг -->
+        <field name="rating" parent="double" scale="3"
+               title="Рейтинг за ответы по текущей игре"/>
+        <field name="ratingInc" parent="double" scale="3"
+               title="Прибавка к рейтингу предыдущей игры"/>
+        <field name="ratingDec" parent="double" scale="3"
+               title="Потери рейтинга предыдущей игры"/>
+    </domain>
+
+
+</root>

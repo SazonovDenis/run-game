@@ -1,7 +1,7 @@
 <template>
-    <div class="row" v-if="tasks">
-        <template v-for="task in tasks">
-            <div :class="classTask(task) + ' task-state'"></div>
+    <div class="row" v-if="tasksResult">
+        <template v-for="taskResult in tasksResult">
+            <div :class="classTask(taskResult) + ' task-result'"></div>
         </template>
     </div>
 </template>
@@ -15,19 +15,19 @@ export default {
     components: {},
 
     props: {
-        tasks: {},
+        tasksResult: {},
     },
 
     methods: {
-        classTask(task) {
-            if (task.wasTrue) {
-                return "task-state__was-true"
-            } else if (task.wasFalse) {
-                return "task-state__was-false"
-            } else if (task.wasHint) {
-                return "task-state__was-hint"
-            } else if (task.wasSkip) {
-                return "task-state__was-skip"
+        classTask(taskResult) {
+            if (taskResult.wasTrue) {
+                return "task-result__was-true"
+            } else if (taskResult.wasFalse) {
+                return "task-result__was-false"
+            } else if (taskResult.wasHint) {
+                return "task-result__was-hint"
+            } else if (taskResult.wasSkip) {
+                return "task-result__was-skip"
             }
             return ""
         },
@@ -43,7 +43,7 @@ export default {
 
 <style lang="less">
 
-.task-state {
+.task-result {
 
     border: 1px solid silver;
     width: 1em;

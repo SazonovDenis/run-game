@@ -23,7 +23,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idUsr = getCurrentUserId()
 
         //
-        return loadGameInternal(idGame, idUsr)
+        return loadAndPrepareGame(idGame, idUsr)
     }
 
     @DaoMethod
@@ -40,10 +40,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idGame = recGame.getLong("id")
 
         //
-        DataBox res = loadGameInternal(idGame, idUsr)
-
-        //
-        return res
+        return loadAndPrepareGame(idGame, idUsr)
     }
 
     @DaoMethod
@@ -61,7 +58,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idGame = recGame.getLong("id")
 
         //
-        return loadGameInternal(idGame, idUsr)
+        return loadAndPrepareGame(idGame, idUsr)
     }
 
     @DaoMethod
@@ -118,16 +115,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
             //
             taskForGameCount = taskForGameCount + 1
-
-            //
             if (taskForGameCount >= MAX_TASK_FOR_GAME) {
                 break
             }
         }
 
-
         //
-        return loadGameInternal(idGame, idUsr)
+        return loadAndPrepareGame_Short(idGame, idUsr)
     }
 
 
@@ -217,12 +211,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     /**
-     * Список уровней, со статистикой по словам,
+     * Список уровней с рейтингом,
      * сортированный по некоторому критерию, например по самому отстающему
      * или по запланированному учителем.
      */
     @DaoMethod
     Store getPlans() {
+        //Store res = mdb.createStore("Plan.list")
         Store res = mdb.createStore("Plan.list.statistic")
 
         //
@@ -250,7 +245,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     StoreRecord loadGameServerRecInternal(long idGame, long idUsr) {
-        StoreRecord recGame = mdb.createStoreRecord("Game.Server")
+        StoreRecord recGame = mdb.createStoreRecord("Game.rec")
         //
         mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
         if (recGame.getLong("id") == 0) {
@@ -260,12 +255,28 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return recGame
     }
 
-    DataBox loadGameInternal(long idGame, long idUsr) {
+    DataBox loadAndPrepareGame_Short(long idGame, long idUsr) {
+        DataBox res = new DataBox()
+
+        // Данные по игре
+        StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
+        res.put("game", recGame)
+
+        // Задания игры и результат их выполнения
+        Store stGameTasksResult = mdb.createStore("GameTask.list")
+        mdb.loadQuery(stGameTasksResult, sqlGameTasksResult(), [game: idGame, usr: idUsr])
+        res.put("tasksResult", stGameTasksResult)
+
+        //
+        return res
+    }
+
+    DataBox loadAndPrepareGame(long idGame, long idUsr) {
         DataBox res = new DataBox()
 
         //
         StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
-        if (recGame.getLong("id") == 0) {
+        if (recGame == null) {
             return null
         }
 
@@ -278,9 +289,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Map aggretate = statisticManager.aggregateStatistic(stTasksStatistic)
         aggretate.put("ratingMax", stTasksStatistic.size())
 
-        // Задания игры и результат их выполнения
-        Store stGameTasks = mdb.createStore("GameTask.Server")
-        mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
+        // Задания игры и результат их выполнения +
+        // Тело задания (вопрос и ответ) +
+        // Подробный рейтинг
+        Store stGameTasks = mdb.createStore("GameTask.list.statistic")
+        mdb.loadQuery(stGameTasks, sqlGameTasksResult(), [game: idGame, usr: idUsr])
 
         // Задания в плане
         long idPlan = recGame.getLong("plan")
@@ -313,7 +326,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
     protected DataBox loadAndPrepareTask(long idGame, StoreRecord recGameTask) {
-        DataBox res
+        DataBox res = new DataBox()
 
         //
         long idUsr = getCurrentUserId()
@@ -330,20 +343,23 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             DataBox task = upd.loadTask(idTask)
 
             // Преобразуем задание по требованиям frontend-api
-            res = prepareTask(task)
+            DataBox resTask = prepareTask(task)
 
             // Дополняем задание технической информацией
-            StoreRecord resTask = res.get("task")
-            resTask.setValue("id", idGameTask)
-            resTask.setValue("dtTask", dtTask)
-        } else {
-            res = new DataBox()
+            StoreRecord recTask = resTask.get("task")
+            recTask.setValue("id", idGameTask)
+            recTask.setValue("dtTask", dtTask)
+
+            //
+            res.put("task", recTask)
+            res.put("taskOption", resTask.get("taskOption"))
         }
 
 
-        // --- Дополняем задание данными по игре
-        DataBox recGame = loadGameInternal(idGame, idUsr)
-        res.put("game", recGame)
+        // Добавмим данные по игре
+        DataBox gameInfo = loadAndPrepareGame_Short(idGame, idUsr)
+        res.put("game", gameInfo.get("game"))
+        res.put("tasksResult", gameInfo.get("tasksResult"))
 
 
         //
@@ -531,7 +547,7 @@ limit 1
 """
     }
 
-    private String sqlGameTasks() {
+    private String sqlGameTasksResult() {
         return """
 select
     GameTask.task,
@@ -541,10 +557,7 @@ select
     GameTask.wasTrue,
     GameTask.wasFalse,
     GameTask.wasHint,
-    GameTask.wasSkip,
-
-    Task.factQuestion,
-    Task.factAnswer
+    GameTask.wasSkip
 
 from
     GameTask

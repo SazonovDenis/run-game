@@ -4,10 +4,10 @@
 
 
         <div class="game-info__count" style="padding-top: 0.5em">
-            Всего баллов: {{ game.statistic.rating0 }} из {{ game.statistic.ratingMax }}
+            Всего баллов: {{ statistic.rating0 }} из {{ statistic.ratingMax }}
         </div>
         <div class="game-info__count">
-            Баллы за скорость: {{ game.statistic.ratingQuickness0 }}
+            Баллы за скорость: {{ statistic.ratingQuickness0 }}
         </div>
 
         <q-separator/>
@@ -22,12 +22,12 @@
                 За игру заработано:
             </span>
             <span class="game-info__ratingInc">
-                {{ game.statistic.ratingInc }}
-                {{ ratingText(game.statistic.ratingInc) }}
+                {{ statistic.ratingInc }}
+                {{ ratingText(statistic.ratingInc) }}
             </span>
             <span class="">, потеряно:&nbsp;</span>
-            <span class="game-info__ratingDec">{{ game.statistic.ratingDec }}&nbsp;{{
-                    ratingText(game.statistic.ratingDec)
+            <span class="game-info__ratingDec">{{ statistic.ratingDec }}&nbsp;{{
+                    ratingText(statistic.ratingDec)
                 }}
             </span>
         </div>
@@ -64,7 +64,8 @@ export default {
     },
 
     props: {
-        game: null
+        game: {},
+        statistic: {},
     },
 
     computed: {

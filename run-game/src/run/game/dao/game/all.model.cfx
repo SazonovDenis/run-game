@@ -20,7 +20,7 @@
         <field name="image" parent="string"/>
     </domain>
 
-    <domain name="Game.Server" parent="Game">
+    <domain name="Game.rec" parent="Game">
         <field name="plan" parent="Plan/ref"/>
         <field name="planText" parent="Plan/text"/>
     </domain>

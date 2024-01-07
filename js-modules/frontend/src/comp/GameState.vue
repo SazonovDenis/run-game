@@ -1,7 +1,7 @@
 <template>
     <div class="game-state row">
         <span class="game-state__planText">{{ planText }}</span>
-        <GameTasksState :tasks="game.tasks"/>
+        <GameTasksState :tasksResult="tasksResult"/>
     </div>
 </template>
 
@@ -21,6 +21,7 @@ export default {
 
     props: {
         game: {},
+        tasksResult: {},
     },
 
     computed: {
@@ -29,14 +30,6 @@ export default {
                 return this.game.planText
             } else {
                 return "Игра не начата"
-            }
-
-        },
-        gameStep() {
-            if (this.game.id > 0) {
-                return this.game.countAsked + " из " + this.game.countTask
-            } else {
-                return ""
             }
 
         },

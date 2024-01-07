@@ -113,11 +113,11 @@ export default {
 
     methods: {
         async closeActiveGame() {
+            // Закрываем последнюю игру
             await gameplay.closeActiveGame()
 
-            apx.showFrame({
-                frame: '/', props: {prop1: 1}
-            })
+            // Загружаем последнюю игру, со статистикой
+            this.localState = await gameplay.loadLastGame()
         },
 
         continueActiveGame() {

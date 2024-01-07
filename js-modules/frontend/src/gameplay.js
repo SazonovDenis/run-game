@@ -19,6 +19,9 @@ export default {
         ctx.gameplay = this
         ctx.eventBus = apx.app.eventBus
 
+        // Начальное состояние контекста
+        ctx.gameplay.globalClear_Game()
+
         // Подписка на события
         ctx.eventBus.on("dragstart", this.on_dragstart)
         ctx.eventBus.on("drag", this.on_drag)
@@ -66,12 +69,12 @@ export default {
         }
 
         // Если не отправляли ответ - отправим
-        if (ctx.globalState.gameTask.task && !ctx.globalState.dataState.mode.postTaskAnswerDone) {
+        if (ctx.globalState.gameTask && !ctx.globalState.dataState.mode.postTaskAnswerDone) {
             await ctx.gameplay.api_postTaskAnswer(ctx.globalState.gameTask.task.id, {wasSkip: true})
         }
 
-        // Текущее задание скрываем
-        ctx.globalState.gameTask = {}
+        // Текущее задание - скрываем
+        ctx.globalState.gameTask = null
 
         // Грузим новое задание с сервера
         let dataGameTask = await ctx.gameplay.api_choiceTask()
@@ -85,7 +88,7 @@ export default {
      */
     async loadCurrentTask() {
         // Задание и раунд в глобальном контексте
-        if (!ctx.globalState.gameTask.task) {
+        if (!ctx.globalState.gameTask) {
             // Грузим текущее задание с сервера
             let resGameTask = await ctx.gameplay.api_getCurrentTask(ctx.globalState.game.id)
 
@@ -96,12 +99,12 @@ export default {
 
     async loadCurrentOrNextTask() {
         // Грузим текущее задание с сервера
-        if (!ctx.globalState.gameTask.task) {
+        if (!ctx.globalState.gameTask) {
             await ctx.gameplay.loadCurrentTask()
         }
 
         // Грузим следующее задание с сервера
-        if (!ctx.globalState.gameTask.task) {
+        if (!ctx.globalState.gameTask) {
             await ctx.gameplay.loadNextTask()
         }
     },
@@ -109,11 +112,10 @@ export default {
     async gameStart(idPlan) {
         let resGame = await ctx.gameplay.api_gameStart(idPlan)
 
-        // Задание и раунд в глобальном контексте
+        // Игра в глобальном контексте
         ctx.gameplay.globalUse_Game(resGame)
-        ctx.globalState.gameTask = {}
 
-        //
+        // Грузим задание с сервера
         await ctx.gameplay.loadNextTask()
     },
 
@@ -160,15 +162,16 @@ export default {
             // Перемешаем ответы
             resGameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(resGameTask.taskOptions)
 
-            // Задание в глобальный контекст
+            // Текущее задание
+            ctx.globalState.gameTask = {}
             ctx.globalState.gameTask.task = resGameTask.task
             ctx.globalState.gameTask.taskOptions = resGameTask.taskOptions
 
             // Состояние цели
             ctx.gameplay.resetGoal(resGameTask.task.text)
         } else {
-            // Задание в глобальный контекст
-            ctx.globalState.gameTask = {}
+            // Текущее задание - пустое
+            ctx.globalState.gameTask = null
 
             // Состояние цели
             ctx.gameplay.resetGoal(null)

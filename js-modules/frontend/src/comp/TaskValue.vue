@@ -2,7 +2,7 @@
 
     <template v-if="taskHasSound">
 
-        <div class="row task" @click="play(task)">
+        <div class="row" @click="play(task)">
 
             <div class="task-sound">
                 <template v-if="canPlaySound">
@@ -80,9 +80,6 @@ export default {
     methods: {
 
         play(task) {
-            console.info("task", task)
-            console.info("audio._task", this.audio._task)
-
             if (this.canPlaySound) {
                 try {
                     this.audio.play()
@@ -147,7 +144,6 @@ export default {
 
     mounted() {
         this.audio = new Audio()
-        this.audio._task = this.task
         this.audio.addEventListener('loadeddata', this.onSoundLoaded, false)
         this.audio.addEventListener('error', this.onSoundError, false)
     },
@@ -166,17 +162,17 @@ export default {
 
 <style scoped>
 
+.task-text {
+}
+
 .task-sound {
     color: #7a7a7a;
     padding-right: 0.2em;
     size: 1em;
 }
 
-.task-text {
-}
-
 .task-spelling {
-    color: #505050;
+    color: #202020;
 }
 
 .task-translate {
@@ -185,7 +181,8 @@ export default {
 }
 
 .task-text-image img {
-    height: 1.6em;
+    margin-top: 0.1em;
+    height: 1em;
     opacity: 0.8;
 }
 

@@ -1,9 +1,12 @@
 <template>
     <div
         v-bind:id="'taskOption-' + taskOption.id"
-        v-bind:class="'option ' + getClassName(taskOption)"
-    >
+        v-bind:class="'option ' + getClassName(taskOption)">
 
+        <!--
+        на случай если у ответа есть звук.
+        А вообще заюзать TaskValue
+        -->
         <div v-if="taskOption.valueSound">
             <q-btn color="blue" text-color="black" label="Play" @click="play"/>
         </div>
@@ -24,13 +27,13 @@
 
 <script>
 
-import {apx} from '../vendor'
 import ctx from "../gameplayCtx"
 import utils from "../utils"
+import TaskValue from "../comp/TaskValue"
 
 export default {
     components: {
-        apx
+        TaskValue
     },
 
     props: {
@@ -231,6 +234,8 @@ export default {
     padding: 1em 2em;
     border-radius: 0.5rem;
     min-width: 10em;
+
+    color: #202020;
 }
 
 .option-text {

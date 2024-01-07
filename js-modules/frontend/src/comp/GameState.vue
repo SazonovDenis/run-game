@@ -26,7 +26,7 @@ export default {
 
     computed: {
         planText() {
-            if (this.game.id > 0) {
+            if (this.game && this.game.id > 0) {
                 return this.game.planText
             } else {
                 return "Игра не начата"

@@ -1,30 +1,9 @@
 <template>
-    <div class="task-bar">
+    <div class="row task-bar">
 
-        <div class="row task" @click="play">
+        <TaskValue :task="task" :doShowText="doShowText" class="task-value"/>
 
-            <div v-if="canPlaySound" class="task-sound">
-                <template v-if="doShowText">
-                    <q-icon size="1.8em" name="speaker-on"/>
-                </template>
-                <template v-else>
-                    <q-icon size="1.8em" name="speaker"/>
-                </template>
-            </div>
-            <div v-else class="task-sound">
-                <q-icon size="1.8em" name="speaker-off"/>
-            </div>
-
-            <div v-if="doShowText" class="task-text">
-                {{ task.valueSpelling }}
-            </div>
-            <div v-else class="task-text-image">
-                <img :src="wave">
-            </div>
-
-        </div>
-
-        <div class="task-help">
+        <div class="task-help-icon">
             <q-icon size="2em" name="help" @click="showHint"/>
         </div>
 
@@ -37,13 +16,14 @@ import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
 import ctx from "../gameplayCtx"
 import utils from '../utils'
+import TaskValue from "../comp/TaskValue"
 
 
 /**
  * Задание в игре. Вопрос показанный в правильном состоянии (текст скрыт, если нужно)
  */
 export default {
-    components: {},
+    components: {TaskValue},
 
     props: {
         task: {},
@@ -179,13 +159,7 @@ export default {
 
 <style scoped>
 
-.task-help, .task-sound, .task-text {
-}
-
 .task-bar {
-    display: flex;
-    flex-direction: row;
-
     height: 3.5em;
     margin: 5px;
 
@@ -194,30 +168,15 @@ export default {
     background-color: #e6ffda;
 }
 
-.task {
+.task-value {
     flex-grow: 100;
-
-    padding: 1em;
+    padding: 0.5em;
+    font-size: 1.6em;
 }
 
-.task-sound {
-    color: #7a7a7a;
-}
-
-.task-help {
+.task-help-icon {
     padding: 0.8em;
-    color: #474747;
-}
-
-.task-text {
-    padding-left: 5px;
-    padding-right: 5px;
-    font-size: 1.5em;
-}
-
-.task-text-image img {
-    height: 1.6em;
-    opacity: 0.8;
+    color: #404040;
 }
 
 </style>

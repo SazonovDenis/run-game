@@ -129,7 +129,7 @@ export default {
 
 
     getAudioSrc(task) {
-        if (!task.valueSound) {
+        if (!task || !task.valueSound) {
             return ""
         }
 

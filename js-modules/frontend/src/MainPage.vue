@@ -35,22 +35,19 @@
 
 <script>
 
-import UserTaskPanel from "./comp/UserTaskPanel"
-import UserInfo from "./comp/UserInfo"
-import GameState from "./comp/GameState"
-import gameplay from "./gameplay"
-import ctx from "./gameplayCtx"
-import utils from './utils'
 import {apx} from './vendor'
-import MenuContainer from "./comp/MenuContainer"
-import LogoGame from "./comp/LogoGame"
+import ctx from "./gameplayCtx"
+import gameplay from "./gameplay"
 import auth from "./auth"
+import MenuContainer from "./comp/MenuContainer"
+import GameState from "./comp/GameState"
+import LogoGame from "./comp/LogoGame"
 
 export default {
     name: "MainPage",
 
     components: {
-        MenuContainer, UserTaskPanel, UserInfo, GameState, LogoGame, gameplay
+        MenuContainer, GameState, LogoGame, gameplay
     },
 
     // Состояние игрового мира
@@ -61,10 +58,6 @@ export default {
     },
 
     methods: {
-
-        isAuth() {
-            return auth.isAuth()
-        },
 
         levels() {
             apx.showFrame({
@@ -78,14 +71,9 @@ export default {
             })
         },
 
-        openFullscreen() {
-            utils.openFullscreen()
-        },
-
     },
 
-    computed: {
-    },
+    computed: {},
 
     async mounted() {
         // Есть текущий пользователь?
@@ -97,17 +85,18 @@ export default {
         }
 
         // Есть текущая игра?
-        if (this.globalState.game.id) {
+        if (this.globalState.game) {
             if (!this.globalState.game.done) {
                 // Переходим на текущую игру
                 this.gameInfo()
             }
         } else {
             // Загружаем текущую  игру
+            // todo: при перезагрузке страницы вызывается отсюда, а потом в gameInfoPage - два раза получается, что избыточно
             await gameplay.loadActiveGame()
 
             // Есть текущая игра?
-            if (this.globalState.game.id) {
+            if (this.globalState.game) {
                 // Переходим на текущую игру
                 this.gameInfo()
             }

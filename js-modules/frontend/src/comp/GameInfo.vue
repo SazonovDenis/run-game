@@ -32,7 +32,7 @@
             </span>
         </div>
 
-        <div class="game-tasks row" style="padding-top: 0.5em">
+        <div v-if="game.done" class="game-tasks row" style="padding-top: 0.5em">
             <GameTasks :gameTasks="gameTasks"/>
         </div>
 

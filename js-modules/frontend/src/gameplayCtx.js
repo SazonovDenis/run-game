@@ -29,7 +29,7 @@ export default {
             return this.globalState
         } else {
             this.globalState = reactive({
-                // Хак реактивности. Это написано исключительно,
+                // Поле flag - хак реактивности. Это написано исключительно,
                 // чтобы заставить перерисоваться при изменении
                 flag: {},
 
@@ -49,8 +49,8 @@ export default {
 
                 // Состояние раунда: текущее задание
                 gameTask: {
-                    task: {},
-                    taskOptions: {}
+                    task: null,
+                    taskOptions: null
                 },
 
 

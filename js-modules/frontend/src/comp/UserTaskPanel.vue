@@ -1,17 +1,17 @@
 <template>
     <div class="user-task">
-        <div v-if="doShowTask">
+        <div v-if="gameTask">
             <Task :task="gameTask.task" :state="dataState"/>
         </div>
 
 
-        <Goal v-if="doShowTask" class="goal" id="goal" :goal="dataState.goal"/>
+        <Goal v-if="gameTask" class="goal" id="goal" :goal="dataState.goal"/>
 
 
         <div class="game-field">&nbsp;</div>
 
 
-        <div v-if="doShowTask" class="task-options">
+        <div v-if="gameTask" class="task-options">
             <TaskOptions :taskOptions="gameTask.taskOptions" :state="dataState"/>
         </div>
 
@@ -62,6 +62,9 @@ import gameplay from "../../src/gameplay"
 import dbConst from "../dao/dbConst"
 import {jcBase} from "../vendor"
 
+/**
+ * Компонент "игровое поле", показываются задание и ответы.
+ */
 export default {
     components: {gameplay, Ball, Goal, Task, TaskOptions},
 
@@ -84,16 +87,10 @@ export default {
             return jcBase.cfg.envDev
         },
 
-        doShowTask() {
-            return (
-                this.gameTask.task &&
-                this.gameTask.task.id
-            )
-        },
-
         wasLoadedAllSounds() {
             return (
                 this.dataState.taskSoundLoaded ||
+                !this.gameTask ||
                 !this.gameTask.task ||
                 this.gameTask.task.dataType !== dbConst.DataType_word_sound
             )

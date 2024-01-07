@@ -17,15 +17,15 @@
 
 <script>
 
+import {apx} from "../src/vendor"
 import ctx from "./gameplayCtx"
 import auth from "./auth"
 import UserTaskPanel from "./comp/UserTaskPanel"
 import GameState from "./comp/GameState"
 import MenuContainer from "./comp/MenuContainer"
-import {apx} from "run-game-frontend/src/vendor"
 
 /**
- * Окно игры, показываются задание и ответы.
+ * Окно игры, показываются компонент "игровое поле".
  */
 export default {
     name: "GamePage",
@@ -64,8 +64,8 @@ export default {
     async mounted() {
         ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
 
-        //
-        ctx.gameplay.loadCurrentOrNextTask()
+        // Грузим текущее задание (если оно не загружено)
+        await ctx.gameplay.loadCurrentOrNextTask()
     },
 
     unmounted() {

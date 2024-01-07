@@ -24,11 +24,7 @@
     </domain>
 
 
-    <domain name="Task.server">
-        <field name="id" parent="GameTask/ref"/>
-        <field name="task" parent="Task/ref"/>
-        <field name="dtTask" parent="GameTask/dtTask"/>
-
+    <domain name="Task.fields">
         <field name="dataType" parent="long"/>
         <field name="valueSpelling" parent="string"/>
         <field name="valueTranslate" parent="string"/>
@@ -37,15 +33,20 @@
     </domain>
 
 
+    <domain name="Task.server">
+        <field name="id" parent="GameTask/ref"/>
+        <field name="task" parent="Task/ref"/>
+        <field name="dtTask" parent="GameTask/dtTask"/>
+
+        <include name="Task.fields"/>
+    </domain>
+
+
     <domain name="TaskOption.server">
         <field name="id" parent="Task/ref"/>
         <field name="isTrue" parent="TaskOption/isTrue"/>
 
-        <field name="dataType" parent="long"/>
-        <field name="valueSpelling" parent="string"/>
-        <field name="valueTranslate" parent="string"/>
-        <field name="valueSound" parent="string"/>
-        <field name="valueImage" parent="string"/>
+        <include name="Task.fields"/>
     </domain>
 
 
@@ -63,18 +64,9 @@
     Подробный рейтинг
     -->
     <domain name="GameTask.list.statistic" parent="GameTask.list">
-
         <!-- Тело задания (вопрос и ответ) -->
-        <field name="textQuestion" parent="TaskQuestion/value"/>
-        <field name="soundQuestion" parent="TaskQuestion/value"/>
-        <field name="textAnswer" parent="TaskOption/value"/>
-
-        <field name="factQuestion" parent="Task/factQuestion"/>
-        <field name="factAnswer" parent="Task/factAnswer"/>
-        <field name="factQuestionDataType" parent="Fact/dataType"/>
-        <field name="factQuestionValue" parent="Fact/value"/>
-        <field name="factAnswerDataType" parent="Fact/dataType"/>
-        <field name="factAnswerValue" parent="Fact/value"/>
+        <field name="question" parent="object" title="Вопрос (струтура - Task.fields)"/>
+        <field name="answer" parent="object" title="Ответ (струтура - Task.fields)"/>
 
         <!-- Подробный рейтинг -->
         <field name="rating" parent="double" scale="3"

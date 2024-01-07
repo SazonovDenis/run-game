@@ -131,8 +131,8 @@ export default {
                 this.state.taskSoundLoaded &&
                 (
                     this.state.showTaskHint ||
-                    this.task.dataType == dbConst.DataType_word_sound ||
-                    this.task.dataType == dbConst.DataType_word_spelling
+                    this.task.dataType === dbConst.DataType_word_sound ||
+                    this.task.dataType === dbConst.DataType_word_spelling
                 )
             )
         },
@@ -143,7 +143,7 @@ export default {
                 this.task.valueSpelling != null &&
                 (
                     this.state.showTaskHint ||
-                    this.task.dataType != dbConst.DataType_word_sound
+                    this.task.dataType !== dbConst.DataType_word_sound
                 )
             )
         },

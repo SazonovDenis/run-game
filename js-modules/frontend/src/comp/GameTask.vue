@@ -1,27 +1,11 @@
 <template>
-    <div class="row task" @click="play">
-        <div v-if="taskHasSound" class="task-sound">
-            <template v-if="canPlaySound">
-                <q-icon size="1em" name="speaker-on"/>
-            </template>
-            <template v-else>
-                <q-icon size="1em" name="speaker"/>
-            </template>
-        </div>
-        <div v-else class="task-sound">
-            <q-icon size="1em" name="speaker-off"/>
-        </div>
 
-        <div class="textQuestion">
-            {{ task.textQuestion }}
-        </div>
-        <div>
-            &ndash;
-        </div>
-        <div class="textAnswer">
-            {{ task.textAnswer }}
-        </div>
+    <div class="row task">
+        <TaskValue :task="task.question" :doShowText="true"/>
+        <div>&ndash;</div>
+        <TaskValue :task="task.answer" :doShowText="true"/>
     </div>
+
 </template>
 
 <script>
@@ -29,13 +13,14 @@
 import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
 import utils from "../utils"
+import TaskValue from "./TaskValue"
 
 
 /**
  * Задание. Пара: вопрос и ответ
  */
 export default {
-    components: {},
+    components: {TaskValue},
 
     props: {
         task: {},
@@ -91,7 +76,7 @@ export default {
 
         taskHasSound() {
             return (
-                this.task.factQuestionDataType == dbConst.DataType_word_sound
+                this.task.factQuestionDataType === dbConst.DataType_word_sound
             )
         },
 
@@ -147,20 +132,6 @@ export default {
 
 .task div {
     padding-right: 0.2em;
-}
-
-.task-text-image img {
-    height: 1.6em;
-    opacity: 0.8;
-}
-
-.textQuestion {
-    color: #474747;
-}
-
-.textAnswer {
-    color: #2462ae;
-    font-style: italic;
 }
 
 </style>

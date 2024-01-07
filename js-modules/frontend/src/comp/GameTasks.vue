@@ -1,6 +1,6 @@
 <template>
-    <div class="col" v-if="tasks">
-        <template v-for="task in tasks">
+    <div class="col" v-if="gameTasks">
+        <template v-for="task in gameTasks">
             <div class="row">
                 <div :class="classTask(task) + ' task-state-state'"></div>
 
@@ -31,7 +31,7 @@ export default {
     components: {GameTask},
 
     props: {
-        tasks: {},
+        gameTasks: {},
     },
 
     methods: {

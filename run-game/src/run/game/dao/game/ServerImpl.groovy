@@ -262,14 +262,15 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
         res.put("game", recGame)
 
-        // Задания игры и результат их выполнения
+        // Задания игры и результат ответа на каждое задание
         Store stGameTasksResult = mdb.createStore("GameTask.list")
-        mdb.loadQuery(stGameTasksResult, sqlGameTasksResult(), [game: idGame, usr: idUsr])
+        mdb.loadQuery(stGameTasksResult, sqlGameTasks(), [game: idGame, usr: idUsr])
         res.put("tasksResult", stGameTasksResult)
 
         //
         return res
     }
+
 
     DataBox loadAndPrepareGame(long idGame, long idUsr) {
         DataBox res = new DataBox()
@@ -280,20 +281,52 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             return null
         }
 
-        // Баллы (рейтинг) по текущей и прошлой игре
+        // По каждому заданию - баллы по текущей и прошлой игре, заработанные и проигранные баллы
         StatisticManager1 statisticManager = mdb.create(StatisticManager1)
         Store stTasksStatistic = statisticManager.compareStatisticForGamePrior(idGame)
         //mdb.outTable(stTasksStatistic)
 
-        // Общий рейтинг и проигранные баллы (плюсы и минусы)
-        Map aggretate = statisticManager.aggregateStatistic(stTasksStatistic)
-        aggretate.put("ratingMax", stTasksStatistic.size())
+        // По всем заданиям - баллы и т.д.
+        Map statisticAggretated = statisticManager.aggregateStatistic(stTasksStatistic)
+        statisticAggretated.put("ratingMax", stTasksStatistic.size())
 
-        // Задания игры и результат их выполнения +
+        // Задания игры и результат ответа на каждое задание
+        Store stGameTasks = mdb.createStore("GameTask.list.statistic")
+        mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
+
+        ///////////////////////////
+        // Тело вопроса и ответа
+        long idPlan = recGame.getLong("plan")
+        Store stTaskQuestion = mdb.loadQuery(sqlPlanTaskQuestion(RgmDbConst.DataType_word_spelling), [plan: idPlan])
+        Store stTaskAnswer = mdb.loadQuery(sqlPlanTaskAnswer(RgmDbConst.DataType_word_translate), [plan: idPlan])
+        Map<Object, List<StoreRecord>> mapTaskQuestion = StoreUtils.collectGroupBy_records(stTaskQuestion, "task")
+        Map<Object, List<StoreRecord>> mapTaskAnswer = StoreUtils.collectGroupBy_records(stTaskAnswer, "task")
+
+        for (StoreRecord recGameTask : stGameTasks) {
+            StoreRecord recQuestion = mdb.createStoreRecord("Task.fields")
+            List<StoreRecord> lstTaskQuestion = mapTaskQuestion.get(recGameTask.getLong("task"))
+            for (StoreRecord recTaskQuestion : lstTaskQuestion) {
+                convert(recTaskQuestion, recQuestion)
+            }
+            recGameTask.setValue("question", recQuestion.getValues())
+
+            //
+            StoreRecord recAnswer = mdb.createStoreRecord("Task.fields")
+            List<StoreRecord> lstTaskAnswer = mapTaskAnswer.get(recGameTask.getLong("task"))
+            for (StoreRecord recTaskAnswer : lstTaskAnswer) {
+                convert(recTaskAnswer, recAnswer)
+            }
+            recGameTask.setValue("answer", recAnswer.getValues())
+        }
+
+
+        //////////////////////////////
+
+
+/*
+        // игры и результат их выполнения +
         // Тело задания (вопрос и ответ) +
         // Подробный рейтинг
-        Store stGameTasks = mdb.createStore("GameTask.list.statistic")
-        mdb.loadQuery(stGameTasks, sqlGameTasksResult(), [game: idGame, usr: idUsr])
 
         // Задания в плане
         long idPlan = recGame.getLong("plan")
@@ -309,21 +342,66 @@ public class ServerImpl extends RgmMdbUtils implements Server {
                 "factAnswerDataType",
                 "factAnswerValue",
         ])
+*/
+
+        // Дополним статм
         StoreUtils.join(stGameTasks, stTasksStatistic, "task", [
                 rating0  : "rating",
                 ratingInc: "ratingInc",
                 ratingDec: "ratingDec"
         ], false)
 
+
         //
         res.put("game", recGame)
-        res.put("tasks", stGameTasks)
-        //res.put("tasksStatistic", stTasksStatistic)
-        res.put("statistic", aggretate)
+        res.put("gameTasks", stGameTasks)
+        res.put("statistic", statisticAggretated)
 
         //
         return res
     }
+
+
+    String sqlPlanTaskQuestion(long dataType) {
+        return """
+select 
+    PlanTask.*,
+    TaskQuestion.dataType,
+    TaskQuestion.value
+
+from 
+    PlanTask
+    join TaskQuestion on (
+        TaskQuestion.task = PlanTask.task --and 
+        --TaskQuestion.dataType = ${dataType}
+    )
+
+where
+    PlanTask.plan = :plan 
+"""
+    }
+
+
+    String sqlPlanTaskAnswer(long dataType) {
+        return """
+select 
+    PlanTask.*,
+    TaskOption.dataType,
+    TaskOption.value
+
+from 
+    PlanTask
+    join TaskOption on (
+        TaskOption.task = PlanTask.task and 
+        TaskOption.isTrue = 1 --and 
+        --TaskOption.dataType = ${dataType}
+    )
+
+where
+    PlanTask.plan = :plan 
+"""
+    }
+
 
     protected DataBox loadAndPrepareGameTask(long idGame, StoreRecord recGameTask) {
         DataBox res = new DataBox()
@@ -394,7 +472,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             StoreRecord recTaskOption = resTaskOption.add()
             recTaskOption.setValue("id", rec.getValue("id"))
             recTaskOption.setValue("isTrue", rec.getValue("isTrue"))
-            recTaskOption.setValue("dataType", rec.getValue("dataType"))
             convert(rec, recTaskOption)
         }
 
@@ -411,6 +488,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     void convert(StoreRecord recTaskSource, StoreRecord resTask) {
+        //resTask.setValue("dataType", recTaskSource.getValue("dataType"))
+
         // Звук
         if (recTaskSource.getLong("dataType") == RgmDbConst.DataType_word_sound) {
             resTask.setValue("valueSound", recTaskSource.getValue("value"))
@@ -551,7 +630,7 @@ limit 1
 """
     }
 
-    private String sqlGameTasksResult() {
+    private String sqlGameTasks() {
         return """
 select
     GameTask.task,
@@ -565,7 +644,6 @@ select
 
 from
     GameTask
-    join Task on (GameTask.task = Task.id)
 
 where
     GameTask.usr = :usr and

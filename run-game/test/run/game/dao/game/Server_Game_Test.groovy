@@ -202,6 +202,26 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     @Test
+    void getGame() {
+        long idGame = 1009
+
+        Server upd = mdb.create(ServerImpl)
+        DataBox res = upd.getGame(idGame)
+
+        println()
+        println("game")
+        mdb.outTable(res.get("game"))
+
+        println()
+        println("tasks")
+        mdb.outTable(res.get("tasks"))
+
+        println()
+        println("statistic")
+        mdb.outTable(res.get("statistic"))
+    }
+
+    @Test
     void testGameProcess_1000_bad() {
         for (int i = 1; i <= 10; i++) {
             doGameProcess(1000, true)

@@ -3,7 +3,7 @@
     <MenuContainer :title="title">
 
         <div v-if="dataLoaded" class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
-            <GameInfo :game="localState.game" :statistic="localState.statistic">
+            <GameInfo :game="localState.game" :gameTasks="localState.gameTasks" :statistic="localState.statistic">
             </GameInfo>
 
             <template v-if="localState.game">

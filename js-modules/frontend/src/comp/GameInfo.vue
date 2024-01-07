@@ -33,7 +33,7 @@
         </div>
 
         <div class="game-tasks row" style="padding-top: 0.5em">
-            <GameTasks :tasks="game.tasks"/>
+            <GameTasks :gameTasks="gameTasks"/>
         </div>
 
     </div>
@@ -65,6 +65,7 @@ export default {
 
     props: {
         game: {},
+        gameTasks: {},
         statistic: {},
     },
 

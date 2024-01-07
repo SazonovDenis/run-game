@@ -77,7 +77,7 @@ export default {
         let dataGameTask = await ctx.gameplay.api_choiceTask()
 
         // Задание в глобальном контексте
-        this.useGameTask(dataGameTask)
+        this.globalUse_GameTask(dataGameTask)
     },
 
     /**
@@ -90,7 +90,7 @@ export default {
             let resGameTask = await ctx.gameplay.api_getCurrentTask(ctx.globalState.game.id)
 
             // Задание в глобальном контексте
-            this.useGameTask(resGameTask)
+            this.globalUse_GameTask(resGameTask)
         }
     },
 
@@ -110,7 +110,7 @@ export default {
         let resGame = await ctx.gameplay.api_gameStart(idPlan)
 
         // Задание и раунд в глобальном контексте
-        ctx.gameplay.useGame(resGame)
+        ctx.gameplay.globalUse_Game(resGame)
         ctx.globalState.gameTask = {}
 
         //
@@ -122,9 +122,9 @@ export default {
 
         // Игра в глобальном контексте
         if (resGame && resGame.game) {
-            ctx.gameplay.useGame(resGame)
+            ctx.gameplay.globalUse_Game(resGame)
         } else {
-            ctx.gameplay.clearGame()
+            ctx.gameplay.globalClear_Game()
         }
 
         return resGame
@@ -135,9 +135,9 @@ export default {
 
         // Игра в глобальном контексте
         if (resGame && resGame.game) {
-            ctx.gameplay.useGame(resGame)
+            ctx.gameplay.globalUse_Game(resGame)
         } else {
-            ctx.gameplay.clearGame()
+            ctx.gameplay.globalClear_Game()
         }
 
         //
@@ -146,10 +146,10 @@ export default {
 
     async closeActiveGame() {
         await ctx.gameplay.api_closeActiveGame()
-        ctx.gameplay.clearGame()
+        ctx.gameplay.globalClear_Game()
     },
 
-    useGameTask(resGameTask) {
+    globalUse_GameTask(resGameTask) {
         if (resGameTask.task) {
             // Каждому варианту ответа проставляем id задания - нужно в интерфейсе
             for (let i = 0; i < resGameTask.taskOptions.length; i++) {
@@ -175,7 +175,7 @@ export default {
         }
 
         // Состояние раунда в глобальный контекст
-        ctx.gameplay.useGame(resGameTask)
+        ctx.gameplay.globalUse_Game(resGameTask)
 
         // Уведомим об изменении задания
         ctx.eventBus.emit("loadedGameTask", resGameTask.game)
@@ -185,13 +185,13 @@ export default {
         ctx.globalState.dataState.mode.postTaskAnswerDone = false
     },
 
-    clearGame() {
+    globalClear_Game() {
         ctx.globalState.game = null
         ctx.globalState.gameTask = null
         ctx.globalState.tasksResult = null
     },
 
-    useGame(resGameTask) {
+    globalUse_Game(resGameTask) {
         ctx.globalState.game = resGameTask.game
         ctx.globalState.tasksResult = resGameTask.tasksResult
     },
@@ -264,6 +264,13 @@ export default {
             res.statistic = resApi.statistic
         } else {
             res.statistic = null
+        }
+
+        // Если пришел расширенный ответ - со списком с подробными заданиями и ответами
+        if (resApi.gameTasks) {
+            res.gameTasks = resApi.gameTasks.records
+        } else {
+            res.gameTasks = null
         }
 
         //
@@ -353,16 +360,16 @@ export default {
         this.clearAuthUserInfo()
 
         // Задание и раунд в глобальном контексте
-        ctx.gameplay.clearGame()
+        ctx.gameplay.globalClear_Game()
     },
 
     /**
-     * Записывает данные пользователя, пришедшие от ajax-запроса авторизации auth/login
-     * в переменную, которая возвращается фунцией auth.getUserInfo(),
-     * что дает состояние залогиненности в приложение.
+     * Записывает данные пользователя (нпример, пришедшие от ajax-запроса авторизации auth/login)
+     * в переменную apx.cfg.userInfo (которая возвращается фунцией auth.getUserInfo).
      *
-     * Избавляет от необходимости перезагружать страницу,
-     * чтобы получить состояние залогинености.
+     * Это дает состояние залогиненности в приложение.
+     * Избавляет от необходимости перезагружать страницу, чтобы получить состояние залогинености
+     * (при перезагрузке страницы переменная apx.cfg.userInfo заполняется автоматически).
      *
      * @param data данные пользователя
      */
@@ -376,14 +383,9 @@ export default {
     },
 
     /**
-     * Записывает данные пользователя, пришедшие от ajax-запроса авторизации auth/login
-     * в переменную, которая возвращается фунцией auth.getUserInfo(),
-     * что дает состояние залогиненности в приложение.
+     * Стирает данные пользователя из переменной переменную apx.cfg.userInfo.
      *
-     * Избавляет от необходимости перезагружать страницу,
-     * чтобы получить состояние залогинености.
-     *
-     * @param data данные пользователя
+     * Это дает состояние НЕ залогиненности.
      */
     clearAuthUserInfo() {
         let userInfo = auth.getUserInfo()

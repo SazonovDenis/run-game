@@ -94,9 +94,6 @@ export default {
 
         //
         this.planTasks = resApi.records
-
-        console.info(this.plan)
-        console.info(resApi)
     },
 
     unmounted() {

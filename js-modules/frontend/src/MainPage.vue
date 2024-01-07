@@ -61,7 +61,7 @@ export default {
 
         levels() {
             apx.showFrame({
-                frame: '/levels', props: {prop1: 1}
+                frame: '/LevelChoice'/*, props: {prop1: 1}*/
             })
         },
 

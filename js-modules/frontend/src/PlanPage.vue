@@ -17,6 +17,14 @@
 
         <q-separator/>
 
+        <jc-btn kind="primary"
+                label="Играть уровень"
+                style="min-width: 10em;"
+                @click="gameStart()">
+        </jc-btn>
+
+        <q-separator/>
+
         <div v-for="planTask in planTasks" class="plan-info">
 
             <div class="row">
@@ -30,12 +38,6 @@
             </div>
 
         </div>
-
-        <jc-btn kind="primary"
-                label="Играть уровень"
-                style="min-width: 10em;"
-                @click="gameStart()">
-        </jc-btn>
 
     </MenuContainer>
 

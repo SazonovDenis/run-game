@@ -6,12 +6,9 @@
 
 <script>
 
-import {apx} from './vendor'
 import MainWindow from "./MainPage"
 
 export default {
-
-    extends: apx.JcFrame,
 
     components: {
         MainWindow,

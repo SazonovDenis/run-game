@@ -4,7 +4,7 @@
 
         <div v-for="plan in plans"
              class="game-plan-item"
-             @click="planTaskStatistic(plan.plan)">
+             @click="gameStart(plan.plan)">
             {{ plan.planText }} ({{ plan.count }})
 
             <TasksStatistic :tasksStatistic="plan.tasksStatistic"/>
@@ -38,11 +38,14 @@ export default {
     },
 
     methods: {
-        planTaskStatistic(plan) {
+        async gameStart(idPlan) {
+            await gameplay.gameStart(idPlan)
+
             apx.showFrame({
-                frame: '/plan', props: {idPlan: plan}
+                frame: '/game', props: {}
             })
         },
+
     },
 
     async mounted() {

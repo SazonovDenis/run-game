@@ -31,7 +31,7 @@
                     <div
                         class="q-scrollarea__container scroll relative-position fit hide-scrollbar">
                         <div class="q-scrollarea__content absolute"><!---->
-                            <div class="q-item__label q-item__label--header"
+                            <div class="q-mt-md q-item__label q-item__label--header"
                                  @click="onMain()">Главная страница
                             </div>
                             <div class="q-item__label q-item__label--header"
@@ -41,57 +41,55 @@
                                  @click="onLevels()">Уровни
                             </div>
                             <div class="text-grey" style="padding: 25px 16px 16px;">
+                                <!--
                                 <p><em>Right Drawer has intended scroll</em></p>
                                 <p><em>Right Drawer has intended scroll</em></p>
-                                <!--                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
-                                                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
+                                <p><em>Right Drawer has intended scroll</em></p>
                                 -->
-                                <p><em>Right Drawer has intended scroll</em></p>
                             </div>
                         </div><!----></div><!---->
                     <div

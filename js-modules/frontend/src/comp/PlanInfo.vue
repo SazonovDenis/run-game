@@ -52,7 +52,7 @@ export default {
     }
 
     &__rating {
-        font-size: 5em;
+        font-size: 4em;
         color: #5b9e3a;
     }
 

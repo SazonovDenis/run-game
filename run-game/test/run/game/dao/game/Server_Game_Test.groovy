@@ -145,7 +145,7 @@ class Server_Game_Test extends RgmBase_Test {
         printTaskStatisticByPlan(idPlan)
 
         // Игра
-        doGameProcess(idPlan)
+        doGameProcess(idPlan, false, true)
 
         // Обновленная статистика по уровню
         printTaskStatisticByPlan(idPlan)
@@ -177,23 +177,6 @@ class Server_Game_Test extends RgmBase_Test {
 
         // Итоговая статистика по уровню
         printTaskStatisticByPlan(idPlan)
-    }
-
-
-    @Test
-    void testGameProcess_3() {
-        //
-        doGameProcess(1000)
-
-        doGameProcess(1001)
-        doGameProcess(1001)
-        doGameProcess(1001)
-
-        doGameProcess(1002)
-        doGameProcess(1002)
-        doGameProcess(1002)
-
-        doGameProcess(1003, true)
     }
 
     @Test
@@ -232,14 +215,14 @@ class Server_Game_Test extends RgmBase_Test {
     @Test
     void testGameProcess_1000_bad() {
         for (int i = 1; i <= 10; i++) {
-            doGameProcess(1000, true)
+            doGameProcess(1000, false, true)
         }
     }
 
     @Test
     void testGameProcess_1000_good() {
         for (int i = 1; i <= 10; i++) {
-            doGameProcess(1000, true)
+            doGameProcess(1000, true, false)
         }
     }
 
@@ -273,10 +256,10 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     long doGameProcess(long idPlan) {
-        return doGameProcess(idPlan, false)
+        return doGameProcess(idPlan, false, false)
     }
 
-    long doGameProcess(long idPlan, boolean allTaskOk) {
+    long doGameProcess(long idPlan, boolean allTaskOk, boolean allTaskErr) {
         Server upd = mdb.create(ServerImpl)
 
         // Закроем все игры
@@ -314,6 +297,11 @@ class Server_Game_Test extends RgmBase_Test {
             boolean wasHint = rnd.bool(1, 3)
             if (allTaskOk) {
                 wasTrue = true
+                wasFalse = !wasTrue
+                wasSkip = false
+                wasHint = rnd.bool(1, 10)
+            } else if (allTaskErr) {
+                wasTrue = false
                 wasFalse = !wasTrue
                 wasSkip = false
                 wasHint = rnd.bool(1, 10)

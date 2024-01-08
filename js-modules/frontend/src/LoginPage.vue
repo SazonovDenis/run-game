@@ -6,7 +6,7 @@
                 <!-- loginType==='full' -->
 
                 <q-card v-if="loginType==='full'"
-                        style="min-width: 25rem; _box-shadow: none">
+                        style="min-width: 25rem; box-shadow: none">
 
                     <LogoGame/>
 
@@ -71,7 +71,7 @@
                 <!-- loginType==='localOneUser' -->
 
                 <q-card v-if="loginType==='localOneUser'"
-                        style="min-width: 25rem; _box-shadow: none">
+                        style="min-width: 25rem; box-shadow: none">
 
                     <LogoGame/>
 
@@ -139,7 +139,7 @@
                 <!-- loginType==='localUserList' -->
 
                 <q-card v-if="loginType==='localUserList'"
-                        style="min-width: 25rem; _box-shadow: none">
+                        style="min-width: 25rem; box-shadow: none">
 
                     <LogoGame/>
 

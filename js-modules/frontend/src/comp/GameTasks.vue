@@ -25,6 +25,7 @@
 import GameTask from "./GameTask"
 
 /**
+ * СТАРЫЙ !!!!!!!
  * Состояние заданий в игре (в виде закрашенных кружков)
  */
 export default {

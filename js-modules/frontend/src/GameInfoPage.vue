@@ -17,77 +17,86 @@
                 :statistic="localState.statistic"
             />
 
-            <div v-if="localState.game.done" class="game-tasks row"
-                 style="padding-top: 0.5em">
-                <GameTasks :gameTasks="localState.gameTasks"/>
-            </div>
-
 
             <template v-if="localState.game">
 
-                <div v-if="!localState.game.done">
-                    <jc-btn kind="primary" label="Продолжить игру"
-                            style="min-width: 15em;"
-                            @click="continueActiveGame()">
-                    </jc-btn>
-                </div>
+                <div class="row">
 
-                <div v-if="!localState.game.done">
-                    <jc-btn kind="secondary" label="Выйти из игры"
-                            style="min-width: 15em;"
-                            @click="closeActiveGame()">
-                    </jc-btn>
-                </div>
 
-                <div
-                    v-if="localState.game.plan && localState.game.done">
-                    <jc-btn kind="secondary" label="Играть уровень еще раз"
-                            style="min-width: 15em;"
-                            @click="startNewGame()">
-                    </jc-btn>
-                </div>
+                    <div class="q-ma-sm" v-if="!localState.game.done">
+                        <jc-btn kind="primary" label="Продолжить игру"
+                                style="min-width: 12em;"
+                                @click="continueActiveGame()">
+                        </jc-btn>
+                    </div>
 
-                <div
-                    v-if="localState.game.plan && localState.game.done">
-                    <jc-btn kind="secondary" label="Редактировать уровень"
-                            style="min-width: 15em;"
-                            @click="planTaskStatistic(localState.game.plan)">
-                    </jc-btn>
-                </div>
+                    <div class="q-ma-sm" v-if="!localState.game.done">
+                        <jc-btn kind="secondary" label="Выйти из игры"
+                                style="min-width: 12em;"
+                                @click="closeActiveGame()">
+                        </jc-btn>
+                    </div>
 
-                <div
-                    v-if="localState.game.plan && !localState.game.done">
-                    <jc-btn kind="secondary" label="Выбрать другой уровень"
-                            style="min-width: 15em;"
-                            @click="onSelectLevel()">
-                    </jc-btn>
-                </div>
+                    <div class="q-ma-sm"
+                         v-if="localState.game.plan && localState.game.done">
+                        <jc-btn kind="secondary" label="Играть уровень еще раз"
+                                style="min-width: 12em;"
+                                @click="startNewGame()">
+                        </jc-btn>
+                    </div>
 
-                <div
-                    v-if="localState.game.plan && localState.game.done">
-                    <jc-btn kind="primary" label="Выбрать другой уровень"
-                            style="min-width: 15em;"
-                            @click="onSelectLevel()">
-                    </jc-btn>
-                </div>
+                    <div class="q-ma-sm"
+                         v-if="localState.game.plan && localState.game.done">
+                        <jc-btn kind="secondary" label="Редактировать уровень"
+                                style="min-width: 12em;"
+                                @click="planTaskStatistic(localState.game.plan)">
+                        </jc-btn>
+                    </div>
 
-                <div v-if="!localState.game.plan">
-                    <jc-btn kind="primary" label="Выбрать уровень"
-                            style="min-width: 15em;"
-                            @click="onSelectLevel()">
-                    </jc-btn>
+                    <div class="q-ma-sm"
+                         v-if="localState.game.plan && !localState.game.done">
+                        <jc-btn kind="secondary" label="Играть другой уровень"
+                                style="min-width: 12em;"
+                                @click="onSelectLevel()">
+                        </jc-btn>
+                    </div>
+
+                    <div class="q-ma-sm"
+                         v-if="localState.game.plan && localState.game.done">
+                        <jc-btn kind="primary" label="Играть другой уровень"
+                                style="min-width: 12em;"
+                                @click="onSelectLevel()">
+                        </jc-btn>
+                    </div>
+
+                    <div class="q-ma-sm" v-if="!localState.game.plan">
+                        <jc-btn kind="primary" label="Выбрать уровень"
+                                style="min-width: 12em;"
+                                @click="onSelectLevel()">
+                        </jc-btn>
+                    </div>
+
                 </div>
 
             </template>
 
             <template v-else>
+
                 <div>
                     <jc-btn kind="primary" label="Выбрать другой уровень"
-                            style="min-width: 15em;"
+                            style="min-width: 12em;"
                             @click="onSelectLevel()">
                     </jc-btn>
                 </div>
+
             </template>
+
+
+            <TaskList
+                v-if="localState.game.done"
+                :showAnswerResult="true"
+                :planTasks="localState.gameTasks"/>
+
 
         </div>
 
@@ -104,11 +113,11 @@ import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
 import GameInfo from "./comp/GameInfo"
 import PlanInfo from "./comp/PlanInfo"
-import GameTasks from "./comp/GameTasks"
+import TaskList from "./comp/TaskList"
 
 export default {
     name: "GameInfoPage",
-    components: {MenuContainer, GameInfo, PlanInfo, GameTasks},
+    components: {MenuContainer, GameInfo, PlanInfo, TaskList},
 
     data() {
         return {
@@ -148,7 +157,7 @@ export default {
             await gameplay.closeActiveGame()
 
             apx.showFrame({
-                frame: '/LevelChoice',
+                frame: '/levelChoice',
             })
         },
 
@@ -200,7 +209,7 @@ export default {
 <style lang="less" scoped>
 
 .game-tasks {
-    font-size: 1.5em;
+    _font-size: 1.2em;
 }
 
 hr {

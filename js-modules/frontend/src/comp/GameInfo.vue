@@ -17,7 +17,7 @@
             </span>
             <span class="">, потеряно:&nbsp;</span>
             <span class="game-info__rating-dec">
-                    {{ statistic.ratingDec }}&nbsp;{{ ratingText(statistic.ratingDec) }}
+                    {{ -statistic.ratingDec }}&nbsp;{{ ratingText(-statistic.ratingDec) }}
             </span>
         </div>
 

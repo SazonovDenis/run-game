@@ -3,8 +3,25 @@
     <MenuContainer :title="title">
 
         <div v-if="dataLoaded" class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
-            <GameInfo :game="localState.game" :gameTasks="localState.gameTasks" :statistic="localState.statistic">
-            </GameInfo>
+            <PlanInfo :planText="localState.game.planText"
+                      :rating="localState.statistic.rating0"
+                      :ratingQuickness="localState.statistic.ratingQuickness0"
+                      :ratingMax="localState.statistic.ratingMax"
+            />
+
+            <q-separator/>
+
+            <GameInfo
+                :game="localState.game"
+                :gameTasks="localState.gameTasks"
+                :statistic="localState.statistic"
+            />
+
+            <div v-if="localState.game.done" class="game-tasks row"
+                 style="padding-top: 0.5em">
+                <GameTasks :gameTasks="localState.gameTasks"/>
+            </div>
+
 
             <template v-if="localState.game">
 
@@ -82,19 +99,20 @@
 <script>
 
 import {apx} from "./vendor"
-import gameplay from "./gameplay"
-import GameInfo from "./comp/GameInfo"
-import MenuContainer from "./comp/MenuContainer"
 import auth from "run-game-frontend/src/auth"
+import gameplay from "./gameplay"
+import MenuContainer from "./comp/MenuContainer"
+import GameInfo from "./comp/GameInfo"
+import PlanInfo from "./comp/PlanInfo"
+import GameTasks from "./comp/GameTasks"
 
 export default {
     name: "GameInfoPage",
-    components: {MenuContainer, GameInfo},
+    components: {MenuContainer, GameInfo, PlanInfo, GameTasks},
 
     data() {
         return {
             localState: {},
-            //globalState: ctx.getGlobalState(),
             dataLoaded: false,
         }
     },
@@ -178,3 +196,15 @@ export default {
 }
 
 </script>
+
+<style lang="less" scoped>
+
+.game-tasks {
+    font-size: 1.5em;
+}
+
+hr {
+    margin: 1em 0;
+}
+
+</style>

@@ -1,16 +1,6 @@
 <template>
     <div v-if="game.id" class="game-info">
-        <div class="game-info__text">{{ game.planText }}</div>
 
-
-        <div class="game-info__count" style="padding-top: 0.5em">
-            Всего баллов: {{ statistic.rating0 }} из {{ statistic.ratingMax }}
-        </div>
-        <div class="game-info__count">
-            Баллы за скорость: {{ statistic.ratingQuickness0 }}
-        </div>
-
-        <q-separator/>
 
         <div class="game-info__duration">
             <span>Игра начата {{ dbeg }}</span>
@@ -21,25 +11,21 @@
             <span class="">
                 За игру заработано:
             </span>
-            <span class="game-info__ratingInc">
+            <span class="game-info__rating-inc">
                 {{ statistic.ratingInc }}
                 {{ ratingText(statistic.ratingInc) }}
             </span>
             <span class="">, потеряно:&nbsp;</span>
-            <span class="game-info__ratingDec">{{ statistic.ratingDec }}&nbsp;{{
-                    ratingText(statistic.ratingDec)
-                }}
+            <span class="game-info__rating-dec">
+                    {{ statistic.ratingDec }}&nbsp;{{ ratingText(statistic.ratingDec) }}
             </span>
         </div>
 
-        <div v-if="game.done" class="game-tasks row" style="padding-top: 0.5em">
-            <GameTasks :gameTasks="gameTasks"/>
-        </div>
-
     </div>
+
     <div v-else class="game-info">
         <LogoGame/>
-        <div class="no-data-text">Нет данных об игре</div>
+        <div class="game-info__no-data">Нет данных об игре</div>
     </div>
 
 </template>
@@ -47,7 +33,6 @@
 <script>
 
 import {apx} from '../vendor'
-import GameTasks from "./GameTasks"
 import LogoGame from "./LogoGame"
 
 
@@ -59,13 +44,11 @@ export default {
     name: "GameInfo",
 
     components: {
-        GameTasks,
         LogoGame,
     },
 
     props: {
         game: {},
-        gameTasks: {},
         statistic: {},
     },
 
@@ -96,23 +79,16 @@ export default {
 
 <style lang="less" scoped>
 
-.game-tasks {
-    justify-content: center;
-}
-
-hr {
-    margin: 1em 0;
-}
-
-.no-data-text {
-    margin: 1em;
-    font-size: 1em;
-    color: #6c6c6c;
-}
 
 .game-info {
     font-size: 1.5em;
     text-align: center;
+
+    &__no-data {
+        margin: 1em;
+        font-size: 1em;
+        color: #6c6c6c;
+    }
 
     &__text {
         font-size: 1.5em;
@@ -123,17 +99,6 @@ hr {
         color: #6c6c6c;
     }
 
-    &__count {
-        color: #4c4c4c;
-    }
-
-    &__ratingDec {
-        color: #850000;
-    }
-
-    &__ratingInc {
-        color: #5b9e3a;
-    }
 }
 
 </style>

@@ -2,18 +2,11 @@
 
     <MenuContainer title="Уровень">
 
-        <div class="game-info">
-
-            <div class="game-info__text">{{ plan.planText }}</div>
-
-            <div class="game-info__count" style="padding-top: 0.5em">
-                Всего баллов: {{ statistic.rating }} из {{ statistic.ratingMax }}
-            </div>
-            <div class="game-info__count">
-                Баллы за скорость: {{ statistic.ratingQuickness }}
-            </div>
-
-        </div>
+        <PlanInfo :planText="plan.planText"
+                  :rating="statistic.rating"
+                  :ratingQuickness="statistic.ratingQuickness"
+                  :ratingMax="statistic.ratingMax"
+        />
 
         <q-separator/>
 
@@ -25,7 +18,7 @@
 
         <q-separator/>
 
-        <div v-for="planTask in planTasks" class="plan-info">
+        <div v-for="planTask in planTasks" class="plan-tasks">
 
             <div class="row">
 
@@ -52,7 +45,10 @@ import ctx from "./gameplayCtx"
 import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
 import GameTask from "./comp/GameTask"
+import PlanInfo from "./comp/PlanInfo"
+/*
 import GameInfo from "./comp/GameInfo"
+*/
 
 export default {
     name: "PlanPage",
@@ -62,7 +58,7 @@ export default {
     },
 
     components: {
-        MenuContainer, GameTask, GameInfo
+        MenuContainer, GameTask, PlanInfo, /*GameInfo*/
     },
 
     computed: {},
@@ -127,39 +123,17 @@ export default {
 
 <style lang="less" scoped>
 
-.plan-info {
-    font-size: 1.5em;
-}
-
-
 hr {
     margin: 1em 0;
+}
+
+.plan-tasks {
+    font-size: 1.5em;
 }
 
 .game-info {
     font-size: 1.5em;
     text-align: center;
-
-    &__text {
-        font-size: 1.5em;
-        color: #34558b;
-    }
-
-    &__duration {
-        color: #6c6c6c;
-    }
-
-    &__count {
-        color: #4c4c4c;
-    }
-
-    &__ratingDec {
-        color: #850000;
-    }
-
-    &__ratingInc {
-        color: #5b9e3a;
-    }
 }
 
 </style>

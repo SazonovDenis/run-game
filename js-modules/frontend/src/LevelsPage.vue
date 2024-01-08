@@ -20,8 +20,8 @@
 import {apx} from './vendor'
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
-import MenuContainer from "./comp/MenuContainer"
 import auth from "./auth"
+import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
 
 export default {

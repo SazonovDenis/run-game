@@ -221,6 +221,12 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //Store res = mdb.createStore("Plan.list")
         Store res = mdb.createStore("Plan.list.statistic")
 
+        long idUsr = getCurrentUserId()
+
+        //
+        mdb.loadQuery(res, sqlPlans(), [usr: idUsr])
+
+/*
         //
         StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
         Store st = statisticManager.getPlansStatistic()
@@ -233,6 +239,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         res.sort("progress")
+*/
 
         //
         return res
@@ -728,6 +735,34 @@ where
 order by    
     Game.dbeg,
     Game.id
+"""
+    }
+
+    private String sqlPlans() {
+        return """
+with Tab_UsrPlanStatistic as (
+
+select 
+    PlanTask.plan,
+    count(*) count
+  
+from
+    PlanTask
+  
+group by
+    PlanTask.plan 
+)
+
+
+select
+    Plan.id,
+    Plan.id plan,
+    Plan.text planText,
+    Tab_UsrPlanStatistic.count
+    
+from
+    Plan
+    join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
 """
     }
 

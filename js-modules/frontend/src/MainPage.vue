@@ -7,20 +7,59 @@
         </template>
 
 
-        <div class="q-gutter-md">
+        <div class="col q-gutter-md">
 
             <LogoGame/>
 
-            <div class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
-                <div>
+
+            <q-separator/>
+
+
+            <div class="col q-gutter-md doc-text">
+                <h3>
+                    Игровой тренажер &laquo;Word&nbsp;strike&raquo;
+                </h3>
+
+                <div class="">
+                    Слова собраны в уровни разного размера и сложности.
+                    Ваша цель &ndash; набрать максимальное количество очков для каждого
+                    уровня.
+                </div>
+
+                <div class="">
+                    Игра делится на раунды по 10 заданий, по итогам которого вы можете
+                    заработать или потерять очки.
+                    Три правильных ответа в разных раундах принесут вам одно очко на
+                    каждое слово.
+                </div>
+
+<!--
+                <div style="margin-top: 1.5em;">
+
+                </div>
+-->
+
+                <div class="">
+                    Нужно сыграть уровень несколько раз, чтобы набрать в нем максимальное число очков.
+                </div>
+            </div>
+
+
+            <q-separator/>
+
+
+            <div class="row" style="margin-top: 1.5em;">
+
+                <div class="q-pa-sm">
                     <jc-btn kind="secondary" label="Последняя игра"
+                            style="min-width: 12em;"
                             @click="gameInfo()">
                     </jc-btn>
                 </div>
 
-                <div>
+                <div class="q-pa-sm">
                     <jc-btn kind="primary" label="Выбрать уровень"
-                            style="min-width: 15em;"
+                            style="min-width: 12em;"
                             @click="levels()">
                     </jc-btn>
                 </div>
@@ -110,3 +149,22 @@ export default {
 
 </script>
 
+<style lang="less" scoped>
+
+.doc-text {
+
+    h3 {
+        font-size: 2em;
+    }
+
+    div {
+        font-size: 1.2em;
+    }
+}
+
+hr {
+    margin: 1.5em 0;
+}
+
+
+</style>

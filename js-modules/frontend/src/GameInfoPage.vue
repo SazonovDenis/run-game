@@ -2,11 +2,15 @@
 
     <MenuContainer :title="title">
 
-        <div v-if="dataLoaded" class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
-            <PlanInfo :planText="localState.game.planText"
-                      :rating="localState.statistic.rating0"
-                      :ratingQuickness="localState.statistic.ratingQuickness0"
-                      :ratingMax="localState.statistic.ratingMax"
+        <div v-if="dataLoaded"
+             class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
+
+            <PlanInfo
+                v-if="localState.game"
+                :planText="localState.game.planText"
+                :rating="localState.statistic.rating0"
+                :ratingQuickness="localState.statistic.ratingQuickness0"
+                :ratingMax="localState.statistic.ratingMax"
             />
 
             <q-separator/>
@@ -93,7 +97,7 @@
 
 
             <TaskList
-                v-if="localState.game.done"
+                v-if="localState.game && localState.game.done"
                 :showAnswerResult="true"
                 :planTasks="localState.gameTasks"/>
 

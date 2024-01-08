@@ -2,14 +2,38 @@
 
     <MenuContainer title="Уровни">
 
-        <div v-for="plan in plans"
-             class="game-plan-item"
-             @click="planTaskStatistic(plan.plan)">
-            {{ plan.planText }} ({{ plan.count }})
+        <q-list bordered separator>
 
-            <TasksStatistic :tasksStatistic="plan.tasksStatistic"/>
+            <template v-for="plan in plans">
 
-        </div>
+                <q-item clickable @click="planTaskStatistic(plan.plan)">
+
+                    <q-item-section top avatar>
+                        <q-avatar icon="folder" color="grey-4" text-color="white"/>
+                    </q-item-section>
+
+                    <q-item-section>
+                        {{ plan.planText }}
+                    </q-item-section>
+
+                    <q-item-section top side>
+
+                        <div clas="row">
+
+                            <q-badge
+                                color="green-5"
+                                :label="'0 / ' + plan.count"/>
+
+                        </div>
+
+                    </q-item-section>
+
+                </q-item>
+
+            </template>
+
+        </q-list>
+
 
     </MenuContainer>
 

@@ -12,7 +12,7 @@
                 </q-item-section>
 
                 <q-item-section>
-                    <q-item-label _overline class="question">
+                    <q-item-label overline class="question">
                         <TaskValue :task="planTask.question" :doShowText="true"/>
                     </q-item-label>
 

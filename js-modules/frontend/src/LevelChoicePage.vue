@@ -1,7 +1,40 @@
 <template>
 
-    <MenuContainer title="Уровни">
+    <MenuContainer title="Выбор уровня">
 
+        <q-list bordered separator>
+
+            <template v-for="plan in plans">
+
+                <q-item clickable @click="gameStart(plan.plan)">
+
+                    <q-item-section top avatar>
+                        <q-avatar icon="folder" color="grey-4" text-color="white"/>
+                    </q-item-section>
+
+                    <q-item-section>
+                        {{ plan.planText }}
+                    </q-item-section>
+
+                    <q-item-section top side>
+
+                        <div clas="row">
+
+                            <q-badge
+                                color="green-5"
+                                :label="'0 / ' + plan.count"/>
+
+                        </div>
+
+                    </q-item-section>
+
+                </q-item>
+
+            </template>
+
+        </q-list>
+        
+<!--
         <div v-for="plan in plans"
              class="game-plan-item"
              @click="gameStart(plan.plan)">
@@ -10,6 +43,7 @@
             <TasksStatistic :tasksStatistic="plan.tasksStatistic"/>
 
         </div>
+-->
 
     </MenuContainer>
 

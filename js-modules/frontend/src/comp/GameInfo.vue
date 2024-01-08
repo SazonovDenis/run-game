@@ -1,5 +1,5 @@
 <template>
-    <div v-if="game.id" class="game-info">
+    <div v-if="game" class="game-info">
 
 
         <div class="game-info__duration">

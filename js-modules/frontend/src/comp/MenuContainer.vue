@@ -38,7 +38,7 @@
                                  @click="onGameInfo()">Текущая игра
                             </div>
                             <div class="q-item__label q-item__label--header"
-                                 @click="onLevels()">Уровни
+                                 @click="onLevels()">Мои уровни
                             </div>
                             <div class="text-grey" style="padding: 25px 16px 16px;">
                                 <!--

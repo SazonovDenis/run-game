@@ -102,11 +102,11 @@ export default {
 
     methods: {
         getRatingColor(rating) {
-            if (rating > 0.8) {
+            if (rating >= 0.8) {
                 return "green-8"
-            } else if (rating > 0.4) {
+            } else if (rating >= 0.5) {
                 return "green-3"
-            } else if (rating > 0.1) {
+            } else if (rating >= 0.1) {
                 return "yellow-5"
             } else {
                 return "blue-grey-1"
@@ -114,11 +114,11 @@ export default {
         },
 
         getRatingTextColor(rating) {
-            if (rating > 0.8) {
+            if (rating >= 0.8) {
                 return "white"
-            } else if (rating > 0.4) {
+            } else if (rating >= 0.5) {
                 return "black"
-            } else if (rating > 0.1) {
+            } else if (rating >= 0.1) {
                 return "black"
             } else {
                 return "black"

@@ -1,6 +1,6 @@
 <template>
 
-    <MenuContainer title="Уровни">
+    <MenuContainer title="Мои уровни">
 
         <q-list bordered separator>
 

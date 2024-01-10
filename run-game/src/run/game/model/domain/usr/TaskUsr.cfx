@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="TaskUsr" parent="tab.id" tag.db="true"
+            title="Пометки пользователя к заданию">
+        <!--@
+        -->
+        <field name="task" parent="Task/ref"/>
+        <field name="usr" parent="Usr/ref"/>
+
+        <field name="hidden" parent="boolean" title="Задание скрыто"/>
+        <field name="starred" parent="boolean" title="Задание выделено"/>
+
+        <!-- Обеспечим уникальность ссылки -->
+        <dbindex name="main" fields="task,usr" unique="true"/>
+    </domain>
+
+
+</root>

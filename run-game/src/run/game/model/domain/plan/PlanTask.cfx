@@ -9,6 +9,9 @@
         -->
         <field name="plan" parent="Plan/ref"/>
         <field name="task" parent="Task/ref"/>
+
+        <!-- Обеспечим уникальность ссылки -->
+        <dbindex name="main" fields="plan,task" unique="true"/>
     </domain>
 
 

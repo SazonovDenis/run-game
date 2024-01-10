@@ -3,8 +3,10 @@
 
 
     <domain name="PlanTag" parent="tab.id" tag.db="true"
-            title="Теги, на основе которых сформирован план">
+            title="Теги (свойства) плана">
         <!--@
+        Включает себя теги, на основе которых сформирован план,
+        а также различные характеристики плана, например права доступа.
         -->
         <field name="plan" parent="Plan/ref"/>
         <field name="tag" parent="Tag/ref"/>

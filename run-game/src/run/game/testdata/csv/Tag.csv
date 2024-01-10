@@ -1,4 +1,6 @@
 tagType	value
+access	public
+access	private
 level-grade	A1 (Beginner)
 level-grade	A2 (Elementary)
 level-grade	B1 (Pre-Intermediate)

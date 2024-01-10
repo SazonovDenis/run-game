@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="PlanUsr" parent="tab.id" tag.db="true"
+            title="Информация о доступе пользователя к плану">
+        <!--@
+        Используется в связке с тэгом доступа для плана.
+        -->
+        <field name="plan" parent="Plan/ref"/>
+        <field name="usr" parent="Usr/ref"/>
+
+        <field name="allowed" parent="boolean" title="Разрешен доступ"/>
+        <field name="forbidden" parent="boolean" title="Запрещен доступ"/>
+
+        <!-- Обеспечим уникальность ссылки -->
+        <dbindex name="main" fields="plan,usr" unique="true"/>
+    </domain>
+
+
+</root>

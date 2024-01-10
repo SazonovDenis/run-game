@@ -34,6 +34,14 @@
     </diagram>
 
 
+    <diagram name="task" title="Задания и варианты ответов">
+        <domain name="Task"/>
+        <domain name="TaskOption"/>
+        <domain name="TaskQuestion"/>
+        <domain name="Fact" showfields="false"/>
+    </diagram>
+
+
     <diagram name="plan" title="Планы обучения (уровни, карты)">
         <domain name="Plan"/>
         <domain name="PlanTag"/>
@@ -43,11 +51,13 @@
     </diagram>
 
 
-    <diagram name="task" title="Задания и варианты ответов">
-        <domain name="Task"/>
-        <domain name="TaskOption"/>
-        <domain name="TaskQuestion"/>
-        <domain name="Fact" showfields="false"/>
+     <diagram name="usrMark" title="Связь пользователей с планами и заданиями">
+        <domain name="Plan" showfields="false"/>
+        <domain name="PlanTask" showfields="false"/>
+        <domain name="Task" showfields="false"/>
+
+        <domain name="PlanUsr"/>
+        <domain name="TaskUsr"/>
     </diagram>
 
 

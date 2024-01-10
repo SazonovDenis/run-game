@@ -7,6 +7,9 @@ public class RgmDbConst {
     public static long DataType_word_sound = 1003;
     public static long DataType_word_picture = 1004;
 
+    public static long Tag_access_private = 100;
+    public static long Tag_access_public = 101;
+
 /*
     public static String DataType_CODE_word_spelling = "word-spelling";
     public static String DataType_CODE_word_translate = "word-translate";

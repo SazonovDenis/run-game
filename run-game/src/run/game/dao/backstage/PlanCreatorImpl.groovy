@@ -66,6 +66,9 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         long idPlan = mdb.insertRec("Plan", plan)
 
         //
+        mdb.insertRec("PlanTag", [plan: idPlan, tag: RgmDbConst.Tag_access_public])
+
+        //
         Task_upd upd = mdb.create(Task_upd)
         for (DataBox task : tasks) {
             long idTask = upd.saveTask(task)

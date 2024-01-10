@@ -8,6 +8,9 @@
         -->
         <field name="usr" parent="Usr/ref"/>
         <field name="game" parent="Game/ref"/>
+
+        <!-- Обеспечим уникальность ссылки -->
+        <dbindex name="main" fields="game,usr" unique="true"/>
     </domain>
 
 

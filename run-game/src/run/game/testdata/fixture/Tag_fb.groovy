@@ -18,7 +18,7 @@ class Tag_fb extends BaseFixtureBuilder {
         utils.addFromCsv(stTagCsv, "res:run/game/testdata/csv/Tag.csv")
 
         //
-        long id = 0
+        long id = 1000
         Store stTag = fxTag.getStore()
         StoreIndex idxTagType = mdb.loadQuery("select * from TagType").getIndex("code")
         for (StoreRecord recTagCsv : stTagCsv) {

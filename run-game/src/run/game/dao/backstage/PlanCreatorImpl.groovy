@@ -9,28 +9,17 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
 
     long createPlan(String planName, Collection<Long> idItems, Collection<Long> idItemsFalse, long dataTypeQuestion, long dataTypeAnswer, int limit) {
-        //DataBox res = new DataBox()
-
-
-        //
         StoreRecord recPlan = mdb.createStoreRecord("Plan")
         recPlan.setValue("text", planName)
-        //
-        //res.put("plan", recPlan)
-
 
         //
         Collection<DataBox> tasks = createTasks(idItems, idItemsFalse, dataTypeQuestion, dataTypeAnswer, limit)
-        //
-        //res.put("planTask", tasks)
-
 
         //
         long idPlan = savePlan(recPlan, tasks)
 
         //
         return idPlan
-        //return res
     }
 
 

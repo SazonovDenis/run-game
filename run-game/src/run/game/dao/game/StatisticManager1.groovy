@@ -306,12 +306,6 @@ limit 1
     protected String sqlGameTask() {
         return """
 select 
-    -- Plan.id as planId,
-    -- PlanTask.id as planTaskId,
-    -- GameTask.id as gameTaskId,
-    -- Game.id as gameId,
-    -- Game.dbeg as gameDbeg,
-    
     PlanTask.plan,
     PlanTask.task,
     GameTask.*

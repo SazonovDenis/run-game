@@ -57,7 +57,11 @@
     Тело задания (вопрос и ответ) +
     Рейтинг задания и изменения рейтинга
     -->
-    <domain name="GameTask.list.statistic" parent="GameTask.list">
+    <domain name="GameTask.list.statistic" parent="GameTask">
+        <!-- Свойства задания -->
+        <field name="hidden" parent="TaskUsr/hidden"/>
+        <field name="starred" parent="TaskUsr/starred"/>
+
         <!-- Тело задания (вопрос и ответ) -->
         <field name="question" parent="object" title="Вопрос (струтура - Task.fields)"/>
         <field name="answer" parent="object" title="Ответ (струтура - Task.fields)"/>
@@ -78,7 +82,10 @@
     Рейтинг задания
     -->
     <domain name="PlanTask.list.statistic" parent="id">
+        <!-- Свойства задания -->
         <field name="task" parent="Task/ref"/>
+        <field name="hidden" parent="TaskUsr/hidden"/>
+        <field name="starred" parent="TaskUsr/starred"/>
 
         <!-- Тело задания (вопрос и ответ) -->
         <field name="question" parent="object" title="Вопрос (струтура - Task.fields)"/>

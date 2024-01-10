@@ -199,6 +199,13 @@ export default {
         ctx.globalState.tasksResult = resGameTask.tasksResult
     },
 
+    async api_saveTaskUsr(idTask, params) {
+        let resApi = await daoApi.loadStore('m/Game/saveTaskUsr',
+            [idTask, {hidden: params.hidden, starred: params.starred}]
+        )
+        return ctx.gameplay.parseResApiGame(resApi)
+    },
+
     async api_gameStart(idPlan) {
         let resApi = await daoApi.loadStore('m/Game/gameStart', [idPlan])
         return ctx.gameplay.parseResApiGame(resApi)

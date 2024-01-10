@@ -232,20 +232,24 @@ class Server_Game_Test extends RgmBase_Test {
 
         // Есть текущая игра?
         DataBox game = upd.getActiveGame()
-        StoreRecord recActiveGame = game.get("game")
-        if (recActiveGame != null) {
-            long idGame = recActiveGame.getLong("id")
-            long idUsr = getCurrentUserId()
-            game = upd.loadAndPrepareGame(idGame, idUsr)
-            recActiveGame = game.get("game")
-
+        if (game == null) {
+            game = upd.getLastGame()
+        }
+        if (game != null) {
             // Текущая игра
             println()
-            println("Current ActiveGame")
-            mdb.outTable(recActiveGame)
+            println("game")
+            mdb.outTable(game.get("game"))
+            println()
+            println("gameTasks")
+            mdb.outTable(game.get("gameTasks"))
+            println()
+            println("statistic")
+            mdb.outTable(game.get("statistic"))
+
         } else {
             println()
-            println("No current ActiveGame")
+            println("No active game")
         }
     }
 
@@ -290,6 +294,12 @@ class Server_Game_Test extends RgmBase_Test {
             }
 
             StoreRecord recTask = task.get("task")
+
+            if (recTask == null) {
+                println("Задания кончились")
+                break
+            }
+
             long idGameTask = recTask.getLong("id")
             boolean wasTrue
             boolean wasFalse

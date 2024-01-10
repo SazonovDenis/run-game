@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
@@ -27,6 +28,7 @@ class Task_upd extends RgmMdbUtils {
         return res
     }
 
+
     public long saveTask(DataBox task) {
         StoreRecord recTask = mdb.createStoreRecord("Task", task.get("task"))
         Store stTaskOption = task.get("taskOption")
@@ -53,6 +55,38 @@ class Task_upd extends RgmMdbUtils {
 
         //
         return idTask
+    }
+
+
+    @DaoMethod
+    void saveTaskUsr(long idTask, Map taskUsr) {
+        long idUsr = getCurrentUserId()
+
+        if (isEmptyTaskUsr(taskUsr)) {
+            mdb.deleteRec("TaskUsr", [usr: idUsr, task: idTask])
+            return
+        }
+
+        StoreRecord recTaskUsrNow = mdb.loadQueryRecord(
+                "select * from TaskUsr where usr = :usr and task = :task",
+                [usr: idUsr, task: idTask],
+                false
+        )
+        if (recTaskUsrNow == null) {
+            taskUsr.put("id", null)
+            taskUsr.put("usr", idUsr)
+            taskUsr.put("task", idTask)
+            mdb.insertRec("TaskUsr", taskUsr)
+        } else {
+            taskUsr.put("id", recTaskUsrNow.getLong("id"))
+            taskUsr.put("usr", idUsr)
+            taskUsr.put("task", idTask)
+            mdb.updateRec("TaskUsr", taskUsr)
+        }
+    }
+
+    boolean isEmptyTaskUsr(Map taskUsr) {
+        return taskUsr == null || (!taskUsr.get("hidden") && !taskUsr.get("starred"))
     }
 
 

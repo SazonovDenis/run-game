@@ -53,7 +53,6 @@ class StatisticManager1_Test extends RgmBase_Test {
         //
         StatisticManager1 sm = mdb.create(StatisticManager1)
         Store st = sm.getStatisticForPlanInternal(idPlan, idUsr, dbeg, dend)
-        mdb.resolveDicts(st)
 
         //
         println()

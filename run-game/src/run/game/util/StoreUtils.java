@@ -104,6 +104,18 @@ public class StoreUtils {
 
         return res;
     }
+    
+    public static long getCount(Store store, String compareField, Object compareValue) {
+        long res = 0;
+
+        for (StoreRecord rec : store) {
+            if (rec.getValue(compareField).equals(compareValue)) {
+                res = res + 1;
+            }
+        }
+
+        return res;
+    }
 
     /**
      * Обновляет поле fieldName в store по значениям из source

@@ -1,7 +1,6 @@
 package run.game.dao.game
 
 
-import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
@@ -15,6 +14,7 @@ import run.game.util.*
 public class ServerImpl extends RgmMdbUtils implements Server {
 
     private long MAX_TASK_FOR_GAME = 10
+    private double RATING_DECREASE_FOR_STARRED = 0.25
 
     private Rnd rnd = new RndImpl()
 
@@ -103,11 +103,33 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             recTask.setValue("rating", recTask.getDouble("rating") + progressSeed)
         }
 
+        // Откорректируем рейтинг - от помеченных как "любимые" отнимем немного баллов,
+        // чтобы они с большей вероятностью выпадали
+
+        // Задания в плане
+        Store stPlanTasks = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan, usr: idUsr])
+        StoreIndex idxPlanTasks = stPlanTasks.getIndex("task")
+        for (StoreRecord recTask : stTask) {
+            // Найдем задание
+            StoreRecord recPlanTask = idxPlanTasks.get(recTask.getLong("task"))
+            // Задание помечено как "starred"?
+            if (recPlanTask.getBoolean("starred")) {
+                recTask.setValue("rating", recTask.getDouble("rating") - RATING_DECREASE_FOR_STARRED)
+            }
+        }
+
         // Теперь выберем задания на игру по рейтингу
         stTask.sort("rating")
         //
         long taskForGameCount = 0
         for (StoreRecord recTask : stTask) {
+            // Скрытые задания не выдаем
+            StoreRecord recPlanTask = idxPlanTasks.get(recTask.getLong("task"))
+            if (recPlanTask.getBoolean("hidden")) {
+                continue
+            }
+
+            //
             mdb.insertRec("GameTask", [
                     game: idGame,
                     usr : idUsr,
@@ -258,7 +280,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Задания в плане - список
         Store stPlanTasks = mdb.createStore("PlanTask.list.statistic")
-        mdb.loadQuery(stPlanTasks, sqlPlanTasks(), [plan: idPlan])
+        mdb.loadQuery(stPlanTasks, sqlPlanTasks(), [plan: idPlan, usr: idUsr])
 
 
         // Задания плана - данные вопроса и ответа
@@ -286,6 +308,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // По всем заданиям игры - сумма баллов и т.д.
         Map statisticAggretated = statisticManager.aggregateStatistic(stTasksStatistic)
 
+        // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
+        long countHidden = StoreUtils.getCount(stPlanTasks, "hidden", true)
+        statisticAggretated.put("ratingMax", stPlanTasks.size() - countHidden)
+
 
         //
         res.put("plan", recPlan)
@@ -294,11 +320,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         return res
-
-        //
-        return stPlanTasks
     }
 
+
+    @DaoMethod
+    void saveTaskUsr(long idTask, Map taskUsr) {
+        Task_upd upd = mdb.create(Task_upd)
+        upd.saveTaskUsr(idTask, taskUsr)
+    }
 
     DataBox loadAndPrepareGame_Short(long idGame, long idUsr) {
         DataBox res = new DataBox()
@@ -345,15 +374,20 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StatisticManager1 statisticManager = mdb.create(StatisticManager1)
         Store stTasksStatistic = statisticManager.compareStatisticForGamePrior(idGame)
 
-        // По всем заданиям игры - сумма баллов и т.д.
-        Map statisticAggretated = statisticManager.aggregateStatistic0(stTasksStatistic)
-
         // Дополним задания игры статистикой
         StoreUtils.join(stGameTasks, stTasksStatistic, "task", [
                 rating0  : "rating",
                 ratingInc: "ratingInc",
                 ratingDec: "ratingDec"
         ], false)
+
+
+        // По всем заданиям игры - сумма баллов и т.д.
+        Map statisticAggretated = statisticManager.aggregateStatistic0(stTasksStatistic)
+
+        // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
+        long countHidden = StoreUtils.getCount(stGameTasks, "hidden", true)
+        statisticAggretated.put("ratingMax", stGameTasks.size() - countHidden)
 
 
         //
@@ -684,10 +718,13 @@ limit 1
     private String sqlPlanTasks() {
         return """
 select
-    PlanTask.*
+    PlanTask.*,
+    TaskUsr.hidden,
+    TaskUsr.starred
 
 from
     PlanTask
+    left join TaskUsr on (PlanTask.id = TaskUsr.task and TaskUsr.usr = :usr)
 
 where
     PlanTask.plan = :plan
@@ -711,6 +748,7 @@ select
 
 from
     GameTask
+    left join TaskUsr on (GameTask.task = TaskUsr.task and TaskUsr.usr = :usr)
 
 where
     GameTask.usr = :usr and
@@ -744,10 +782,12 @@ with Tab_UsrPlanStatistic as (
 
 select 
     PlanTask.plan,
-    count(*) count
+    count(*) count,
+    sum(case when TaskUsr.hidden = 1 then 0 else 1 end) countFull
   
 from
     PlanTask
+    left join TaskUsr on (PlanTask.id = TaskUsr.task and TaskUsr.usr = :usr)
   
 group by
     PlanTask.plan 
@@ -758,11 +798,20 @@ select
     Plan.id,
     Plan.id plan,
     Plan.text planText,
-    Tab_UsrPlanStatistic.count
+    PlanTag.tag public,
+    (case when PlanTag.tag is null then 0 else 1 end) isPublic,
+    (case when PlanUsr.usr is null then 0 else 1 end) isUsr,
+    Tab_UsrPlanStatistic.count,
+    Tab_UsrPlanStatistic.countFull
     
 from
     Plan
+    left join PlanUsr on (Plan.id = PlanUsr.plan and PlanUsr.usr = :usr)
+    left join PlanTag on (Plan.id = PlanTag.plan and PlanTag.tag = ${RgmDbConst.Tag_access_public})
     join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
+
+where
+    (PlanTag.tag = ${RgmDbConst.Tag_access_public} or PlanUsr.usr = :usr)
 """
     }
 

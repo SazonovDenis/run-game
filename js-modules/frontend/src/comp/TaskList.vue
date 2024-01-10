@@ -84,6 +84,7 @@
 <script>
 
 import TaskValue from "./TaskValue"
+import ctx from "../gameplayCtx"
 
 export default {
     name: "TaskList",
@@ -166,6 +167,7 @@ export default {
             if (task.hidden && task.starred) {
                 task.starred = false
             }
+            ctx.gameplay.api_saveTaskUsr(task.id, task)
         },
 
         itemStarredToggle(task) {
@@ -173,6 +175,7 @@ export default {
             if (task.starred && task.hidden) {
                 task.hidden = false
             }
+            ctx.gameplay.api_saveTaskUsr(task.id, task)
         },
 
     },

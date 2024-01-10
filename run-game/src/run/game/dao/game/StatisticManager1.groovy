@@ -99,7 +99,8 @@ class StatisticManager1 extends RgmMdbUtils {
                 //
                 Double duration = null
                 if (!UtDateTime.isEmpty(recGameTask.getDateTime("dtAnswer"))) {
-                    duration = recGameTask.getDateTime("dtAnswer").diffMSec(recGameTask.getDateTime("dtTask"))
+                    double durationMsec = recGameTask.getDateTime("dtAnswer").diffMSec(recGameTask.getDateTime("dtTask"))
+                    duration = durationMsec / 1000
                 }
                 taskAnswersDuration.add(duration)
             }
@@ -333,7 +334,6 @@ from
      
 where
     Plan.id = :plan
---    and PlanTask.task <= 1005
      
 order by
     PlanTask.task,
@@ -376,7 +376,6 @@ order by
                 ratingQuickness1  : ratingQuickness1,
                 ratingQuicknessInc: ratingQuicknessInc,
                 ratingQuicknessDec: ratingQuicknessDec,
-                ratingMax         : stStatistic.size(),
         ]
 
         //
@@ -399,7 +398,6 @@ order by
         Map aggretate = [
                 rating         : rating,
                 ratingQuickness: ratingQuickness,
-                ratingMax      : stStatistic.size(),
         ]
 
         //

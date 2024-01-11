@@ -17,7 +17,9 @@
             </span>
             <span class="">, потеряно:&nbsp;</span>
             <span class="game-info__rating-dec">
-                    {{ -statistic.ratingDec }}&nbsp;{{ ratingText(-statistic.ratingDec) }}
+                    {{
+                    -statistic.ratingDec
+                }}&nbsp;{{ ratingText(-statistic.ratingDec) }}
             </span>
         </div>
 
@@ -34,6 +36,7 @@
 
 import {apx} from '../vendor'
 import LogoGame from "./LogoGame"
+import utils from "../utils"
 
 
 /**
@@ -63,16 +66,10 @@ export default {
 
     methods: {
         ratingText(rating) {
-            let r = rating % 10
-            if (r === 1) {
-                return "балл"
-            } else if (r === 2 || r === 3 || r === 4) {
-                return "балла"
-            } else {
-                return "баллов"
-            }
+            return utils.ratingText(rating)
         }
     }
+
 }
 
 </script>
@@ -83,6 +80,7 @@ export default {
 .game-info {
     font-size: 1.5em;
     text-align: center;
+    margin: 0 2rem;
 
     &__no-data {
         margin: 1em;

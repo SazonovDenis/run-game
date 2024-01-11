@@ -3,7 +3,7 @@
     <MenuContainer :title="title">
 
         <div v-if="dataLoaded"
-             class="col justify-center q-mt-lg q-mb-lg11 q-gutter-md">
+             class="col justify-center _q-mt-lg _q-mb-lg11 _q-gutter-md">
 
             <PlanInfo
                 v-if="localState.game"

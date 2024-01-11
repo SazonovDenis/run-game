@@ -2,101 +2,103 @@
 
     <MenuContainer title="Уровень">
 
-        <PlanInfo :planText="plan.planText"
-                  :rating="statistic.rating"
-                  :ratingQuickness="statistic.ratingQuickness"
-                  :ratingMax="statistic.ratingMax"
-        />
+        <div v-if="dataLoaded">
 
-        <q-separator/>
+            <PlanInfo :planText="plan.planText"
+                      :rating="statistic.rating"
+                      :ratingQuickness="statistic.ratingQuickness"
+                      :ratingMax="statistic.ratingMax"
+            />
+
+            <q-separator/>
 
 
-        <div class="row">
-            <jc-btn class="q-ma-sm"
-                    kind="primary"
-                    label="Играть уровень"
-                    style="min-width: 10em;"
-                    @click="gameStart()">
-            </jc-btn>
+            <div class="row">
+                <jc-btn class="q-ma-sm"
+                        kind="primary"
+                        label="Играть уровень"
+                        style="min-width: 10em;"
+                        @click="gameStart()">
+                </jc-btn>
 
-            <jc-btn class="q-ma-sm"
-                    kind="secondary"
-                    label="Выбрать другой уровень"
-                    style="min-width: 12em;"
-                    @click="onSelectLevel()">
-            </jc-btn>
-        </div>
+                <jc-btn class="q-ma-sm"
+                        kind="secondary"
+                        label="Выбрать другой уровень"
+                        style="min-width: 12em;"
+                        @click="onSelectLevel()">
+                </jc-btn>
+            </div>
 
-        <q-separator/>
+            <q-separator/>
 
-        <div class="row q-mb-sm">
+            <div class="row q-mb-sm">
 
-            <div class="q-mr-sm">
+                <div class="q-mr-sm">
 
-                <q-input
-                    style="max-width: 9em"
-                    dense outlined clearable
-                    v-model="filterText"
-                    placeholder="Поиск"
+                    <q-input
+                        style="max-width: 9em"
+                        dense outlined clearable
+                        v-model="filterText"
+                        placeholder="Поиск"
+                    >
+
+                        <template v-slot:append v-if="!filterText">
+                            <q-icon name="search"/>
+                        </template>
+
+                    </q-input>
+
+                </div>
+
+                <q-btn-dropdown
+                    @click="sortFieldMenu=true"
+                    v-model="sortFieldMenu"
+                    style="width: 10em;"
+                    color="grey-2"
+                    text-color="black"
+                    no-caps
+                    split
+                    align="left"
+                    :icon="sortFieldIcon[sortField]"
+                    :label="sortFieldText[sortField]"
                 >
+                    <q-list class="q-pa-sm">
 
-                    <template v-slot:append v-if="!filterText">
-                        <q-icon name="search"/>
-                    </template>
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='question'">
+                            Слово
+                        </q-item>
 
-                </q-input>
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='answer'">
+                            Перевод
+                        </q-item>
+
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='ratingDesc'">
+                            Лучшие
+                        </q-item>
+
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='ratingAsc'">
+                            Худшие
+                        </q-item>
+
+                    </q-list>
+                </q-btn-dropdown>
+
+
+                <q-toggle v-model="showHidden" label="Скрытые"/>
 
             </div>
 
-            <q-btn-dropdown
-                @click="sortFieldMenu=true"
-                v-model="sortFieldMenu"
-                style="width: 10em;"
-                color="grey-2"
-                text-color="black"
-                no-caps
-                split
-                align="left"
-                :icon="sortFieldIcon[sortField]"
-                :label="sortFieldText[sortField]"
-            >
-                <q-list class="q-pa-sm">
 
-                    <q-item class="q-py-md" clickable v-close-popup
-                            @click="sortField='question'">
-                        Слово
-                    </q-item>
-
-                    <q-item class="q-py-md" clickable v-close-popup
-                            @click="sortField='answer'">
-                        Перевод
-                    </q-item>
-
-                    <q-item class="q-py-md" clickable v-close-popup
-                            @click="sortField='ratingDesc'">
-                        Лучшие
-                    </q-item>
-
-                    <q-item class="q-py-md" clickable v-close-popup
-                            @click="sortField='ratingAsc'">
-                        Худшие
-                    </q-item>
-
-                </q-list>
-            </q-btn-dropdown>
-
-
-            <q-toggle v-model="showHidden" label="Скрытые"/>
-
+            <TaskList
+                :showEdit="true"
+                :planTasks="planTasks"
+                :filter="filter"/>
 
         </div>
-
-
-        <TaskList
-            :showEdit="true"
-            :planTasks="planTasks"
-            :filter="filter"/>
-
 
     </MenuContainer>
 
@@ -131,7 +133,9 @@ export default {
             plan: {},
             planTasks: {},
             statistic: {},
+
             globalState: ctx.getGlobalState(),
+            dataLoaded: false,
 
             sortFieldMenu: false,
             sortField: "",
@@ -283,6 +287,9 @@ export default {
         }
 
         //
+        this.dataLoaded = false
+
+        //
         let res = await ctx.gameplay.api_getPlanTasks(this.idPlan)
 
         //
@@ -291,7 +298,9 @@ export default {
         this.statistic = res.statistic
 
         this.sortField = "question"
-        //this.rows = res.planTasks
+
+        //
+        this.dataLoaded = true
     },
 
     unmounted() {
@@ -319,44 +328,3 @@ hr {
 
 </style>
 
-<!--
-<style lang="less">
-
-.my-sticky-header-table {
-
-    /* height or max-height is important */
-    height: 20rem;
-
-    .q-table__top,
-    .q-table__bottom,
-    thead tr:first-child th {
-        /* bg color is important for th; just specify one */
-        background-color: #ebebeb;
-        _background-color: white;
-    }
-
-    thead tr th {
-        position: sticky;
-        z-index: 1;
-    }
-
-    thead tr:first-child th {
-        top: 0;
-    }
-
-    /* this is when the loading indicator appears */
-
-    &.q-table&#45;&#45;loading thead tr:last-child th {
-        /* height of all previous header rows */
-        top: 48px;
-    }
-
-    /* prevent scrolling behind sticky top row on focus */
-
-    tbody {
-        /* height of all previous header rows */
-        scroll-margin-top: 48px;
-    }
-}
-
-</style>-->

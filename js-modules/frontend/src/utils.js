@@ -136,4 +136,16 @@ export default {
         return apx.url.ref("sound/" + task.valueSound)
     },
 
+    ratingText(rating) {
+        let r = rating % 10
+        if (r === 1) {
+            return "балл"
+        } else if (r === 2 || r === 3 || r === 4) {
+            return "балла"
+        } else {
+            return "баллов"
+        }
+    }
+
+
 }

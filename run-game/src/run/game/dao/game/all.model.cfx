@@ -53,11 +53,18 @@
         </domain>
     -->
 
+    <domain name="Plan.list" parent="Plan">
+        <field name="count" parent="long" title="Количество слов"/>
+        <field name="isPublic" parent="long"/>
+        <field name="isUsr" parent="long"/>
+    </domain>
+
     <domain name="Plan.list.statistic" parent="id">
         <field name="plan" parent="Plan/ref"/>
         <field name="planText" parent="Plan/text"/>
         <field name="count" parent="long" title="Количество слов"/>
-        <field name="countFull" parent="long" title="Общее количество слов (включая скрытые)"/>
+        <field name="countFull" parent="long"
+               title="Общее количество слов (включая скрытые)"/>
         <field name="isPublic" parent="long"/>
         <field name="isUsr" parent="long"/>
         <!--

@@ -1,7 +1,7 @@
 package run.game.dao.game
 
-
 import jandcode.commons.datetime.*
+import jandcode.commons.error.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
@@ -234,19 +234,18 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     /**
-     * Список уровней с рейтингом,
-     * сортированный по некоторому критерию, например по самому отстающему
+     * Список планов (уровней) пользователя.
+     * С рейтингом, сортированный по некоторому критерию, например по самому отстающему
      * или по запланированному учителем.
      */
     @DaoMethod
-    Store getPlans() {
-        //Store res = mdb.createStore("Plan.list")
+    Store getPlansUsr() {
         Store res = mdb.createStore("Plan.list.statistic")
 
         long idUsr = getCurrentUserId()
 
         //
-        mdb.loadQuery(res, sqlPlans(), [usr: idUsr])
+        mdb.loadQuery(res, sqlPlansUsr(), [usr: idUsr])
 
 /*
         //
@@ -265,6 +264,60 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         return res
+    }
+
+
+    /**
+     * Список общедоступных планов (уровней),
+     * не еще не добавленных к списку планов пользователя.
+     */
+    @DaoMethod
+    Store getPlansPublic() {
+        Store res = mdb.createStore("Plan.list")
+
+        //
+        long idUsr = getCurrentUserId()
+
+        //
+        mdb.loadQuery(res, sqlPlansPublic(), [usr: idUsr])
+
+        //
+        return res
+    }
+
+
+    /**
+     * Добавить план к списку планов пользователя.
+     */
+    @DaoMethod
+    void addPlan(long idPlan) {
+        long idUsr = getCurrentUserId()
+        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        //
+        if (rec != null) {
+            throw new XError("План уже добавлен к списку")
+        }
+
+        //
+        mdb.insertRec("PlanUsr", [plan: idPlan, usr: idUsr])
+    }
+
+
+    /**
+     * Исключить план из списка планов пользователя.
+     */
+    @DaoMethod
+    void delPlan(long idPlan) {
+        long idUsr = getCurrentUserId()
+        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        if (rec == null) {
+            throw new XError("План не был добавлен к списку")
+        }
+
+        //
+        mdb.deleteRec("PlanUsr", rec.getLong("id"))
     }
 
 
@@ -776,7 +829,7 @@ order by
 """
     }
 
-    private String sqlPlans() {
+    private String sqlPlansUsr() {
         return """
 with Tab_UsrPlanStatistic as (
 
@@ -798,7 +851,7 @@ select
     Plan.id,
     Plan.id plan,
     Plan.text planText,
-    PlanTag.tag public,
+    --PlanTag.tag public,
     (case when PlanTag.tag is null then 0 else 1 end) isPublic,
     (case when PlanUsr.usr is null then 0 else 1 end) isUsr,
     Tab_UsrPlanStatistic.count,
@@ -811,7 +864,54 @@ from
     join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
 
 where
-    (PlanTag.tag = ${RgmDbConst.Tag_access_public} or PlanUsr.usr = :usr)
+    PlanUsr.usr = :usr
+"""
+    }
+
+    private String sqlPlansPublic() {
+        return """
+with Tab_UsrPlanStatistic as (
+
+select 
+    PlanTask.plan,
+    count(*) count
+  
+from
+    PlanTask
+  
+group by
+    PlanTask.plan 
+)
+
+
+select
+    Plan.*,
+    (case when PlanTag.tag is null then 0 else 1 end) isPublic,
+    (case when PlanUsr.usr is null then 0 else 1 end) isUsr,
+    Tab_UsrPlanStatistic.count
+    
+from
+    Plan
+    left join PlanUsr on (Plan.id = PlanUsr.plan and PlanUsr.usr = :usr)
+    join PlanTag on (Plan.id = PlanTag.plan and PlanTag.tag = ${RgmDbConst.Tag_access_public})
+    join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
+
+where
+    PlanUsr.usr is null
+"""
+    }
+
+    private String sqlUsrPlan() {
+        return """
+select
+    Plan.*
+    
+from
+    Plan
+    join PlanUsr on (Plan.id = PlanUsr.plan and PlanUsr.usr = :usr)
+
+where
+    Plan.id = :plan
 """
     }
 

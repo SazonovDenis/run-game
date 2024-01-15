@@ -35,6 +35,31 @@
         </q-list>
 
 
+        <q-page-sticky
+            position="bottom-right"
+            :offset="[18, 18]">
+            <q-fab style="height: 4em; width: 4em;"
+                   color="purple"
+                   _text-color="black"
+                   icon="add"
+                   vertical-actions-align="right"
+                   direction="up">
+                <q-fab-action style="height: 4em; _width: 4em;"
+                              color="secondary"
+                              _text-color="black"
+                              label="Создать свой уровень" square icon="mail"
+                              @click="onCreateLevel"
+                />
+                <q-fab-action style="height: 4em; _width: 4em;"
+                              color="amber-10"
+                              text-color="black"
+                              label="Подключить из библиотеки" square icon="alarm"
+                              @click="onAddLevel"
+                />
+            </q-fab>
+        </q-page-sticky>
+
+
     </MenuContainer>
 
 </template>
@@ -67,6 +92,15 @@ export default {
                 frame: '/plan', props: {idPlan: plan}
             })
         },
+
+        onCreateLevel() {
+            console.log("onCreateLevel")
+        },
+
+        onAddLevel() {
+            console.log("onAddLevel")
+        },
+
     },
 
     async mounted() {

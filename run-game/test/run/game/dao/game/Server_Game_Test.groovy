@@ -15,10 +15,57 @@ class Server_Game_Test extends RgmBase_Test {
     void getPlans() {
         //
         Server srv = mdb.create(ServerImpl)
-        Store st = srv.getPlans()
+        Store st = srv.getPlansUsr()
 
         //
         println()
+        println("Plans")
+        mdb.outTable(st)
+    }
+
+
+    @Test
+    void getPlanList() {
+        Server srv = mdb.create(ServerImpl)
+        Store stUsr
+        Store st
+
+        //
+        stUsr = srv.getPlansUsr()
+        st = srv.getPlansPublic()
+        //
+        println()
+        println("Plans usr")
+        mdb.outTable(stUsr)
+        println("Plans")
+        mdb.outTable(st)
+
+        // ---
+        long idPlan = st.get(0).getLong("id")
+        srv.addPlan(idPlan)
+
+        // ---
+        stUsr = srv.getPlansUsr()
+        st = srv.getPlansPublic()
+        //
+        println()
+        println("Plans usr")
+        mdb.outTable(stUsr)
+        println("Plans")
+        mdb.outTable(st)
+
+
+        // ---
+        srv.delPlan(idPlan)
+
+
+        // ---
+        stUsr = srv.getPlansUsr()
+        st = srv.getPlansPublic()
+        //
+        println()
+        println("Plans usr")
+        mdb.outTable(stUsr)
         println("Plans")
         mdb.outTable(st)
     }

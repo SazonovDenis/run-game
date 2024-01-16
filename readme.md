@@ -59,3 +59,40 @@ cd data/web-grab/kz.sozdik.soyle.kz
 ```
 
 Сработает соответствующая фикстура.
+
+
+### Установка как сервис
+
+
+1.
+Разместить файл `/data/product/wordstrike.me.service` в `/etc/systemd/system/`
+
+
+2.
+Проверить, что файл `app-run-serve.sh` расположен там, где указано в файле `wordstrike.me.service`, в секции `Service`, параметр `ExecStart`:
+
+```
+[Service]
+ExecStart=/home/wordstrike.me/product/app-run-serve.sh
+```
+
+
+3.
+Установить как сервис
+
+```
+systemctl daemon-reload
+
+systemctl enable wordstrike.me
+```
+
+
+4.
+Запустить и проверить статус
+
+```
+systemctl start wordstrike.me
+
+systemctl status wordstrike.me
+```
+

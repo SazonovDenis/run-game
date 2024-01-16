@@ -292,7 +292,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     @DaoMethod
     void addPlan(long idPlan) {
         long idUsr = getCurrentUserId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+        StoreRecord rec = mdb.loadQueryRecord(sqlPlanUsr(), [usr: idUsr, plan: idPlan], false)
 
         //
         if (rec != null) {
@@ -310,7 +310,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     @DaoMethod
     void delPlan(long idPlan) {
         long idUsr = getCurrentUserId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+        StoreRecord rec = mdb.loadQueryRecord(sqlPlanUsr(), [usr: idUsr, plan: idPlan], false)
 
         if (rec == null) {
             throw new XError("План не был добавлен к списку")
@@ -901,17 +901,15 @@ where
 """
     }
 
-    private String sqlUsrPlan() {
+    private String sqlPlanUsr() {
         return """
 select
-    Plan.*
-    
+    PlanUsr.*
 from
-    Plan
-    join PlanUsr on (Plan.id = PlanUsr.plan and PlanUsr.usr = :usr)
-
+    PlanUsr
 where
-    Plan.id = :plan
+    PlanUsr.plan = :plan and
+    PlanUsr.usr = :usr
 """
     }
 

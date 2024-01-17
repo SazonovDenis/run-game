@@ -1,1 +1,0 @@
-./app-run.sh serve -p 80 -c game

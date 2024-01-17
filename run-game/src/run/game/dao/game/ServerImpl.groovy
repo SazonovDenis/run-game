@@ -1,7 +1,9 @@
 package run.game.dao.game
 
+import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
+import jandcode.commons.process.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
@@ -9,6 +11,7 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
+import run.game.testdata.fixture.*
 import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
@@ -17,6 +20,82 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     private double RATING_DECREASE_FOR_STARRED = 0.25
 
     private Rnd rnd = new RndImpl()
+
+
+    @DaoMethod
+    public List parseStill(String imgBase64) {
+        long idUsr = getCurrentUserId()
+
+        //
+        int pos = imgBase64.indexOf(",") + 1
+        String imgStr = imgBase64.substring(pos)
+        byte[] img = UtString.decodeBase64(imgStr)
+
+        //
+        File inFile = File.createTempFile("rgm", ".png")
+        FileOutputStream strm = new FileOutputStream(inFile);
+        strm.write(img)
+        strm.close()
+
+        //
+        String text = tesseract(inFile.getAbsolutePath(), "eng+rus")
+
+        //
+        //inFile.delete()
+
+        // Частота встречаемости eng
+        String dirBase = "data/web-grab/"
+        Map<String, Integer> wordFrequencyMap_eng = ItemFact_fb.loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
+
+        List res = new ArrayList()
+
+        //////////////////////////
+        res.add(text)
+        res.add("\r\n")
+        res.add("===================")
+        res.add("\r\n")
+        //////////////////////////
+
+        //
+        String[] textArr = text.split(" ")
+        for (String word : textArr) {
+            word = word.toLowerCase().trim()
+            if (word.length() > 1 && wordFrequencyMap_eng.containsKey(word)) {
+                res.add(word)
+            }
+        }
+
+        //
+        return res
+    }
+
+    String tesseract(String inFileName, String lang) {
+        String outFileName = UtFile.removeExt(inFileName)
+
+        //
+        String exeFile = "tesseract ${inFileName} ${outFileName} -l ${lang} --tessdata-dir /usr/local/share/tessdata/"
+
+        //
+        RunCmd runCmd = new RunCmd()
+        runCmd.setShowout(false)
+        runCmd.setSaveout(true)
+        runCmd.setCmd(exeFile)
+        runCmd.run()
+        if (runCmd.getExitCode() > 0) {
+            String r = UtString.join(runCmd.getOut(), "\n")
+            throw new XError("error in {0}:\n{1}", exeFile, r)
+        }
+
+        //
+        outFileName = outFileName + ".txt"
+        String text = UtFile.loadString(outFileName)
+
+        //
+        //new File(outFileName).delete()
+
+        //
+        return text
+    }
 
 
     @DaoMethod
@@ -290,7 +369,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
      * Добавить план к списку планов пользователя.
      */
     @DaoMethod
-    void addPlan(long idPlan) {
+    void addPlanUsr(long idPlan) {
         long idUsr = getCurrentUserId()
         StoreRecord rec = mdb.loadQueryRecord(sqlPlanUsr(), [usr: idUsr, plan: idPlan], false)
 

@@ -75,21 +75,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
         Store stCsvBad = mdb.createStore("dat.csv.bad")
 
         // Частота встречаемости eng
-        Map<String, Integer> wordFrequencyMap_eng = new HashMap<>()
-        BufferedReader br = new BufferedReader(new FileReader(new File(dirBase + "eng_top-50000.txt")))
-        String s
-        int pos = 0
-        while ((s = br.readLine()) != null) {
-            String[] ss = s.split(" ")
-            String eng = ss[0]
-            if (isAlphasEng(eng)) {
-                long frVal = Long.valueOf(ss[1])
-                wordFrequencyMap_eng.put(eng, pos)
-                pos = pos + 1
-            }
-        }
-        br.close()
-
+        Map<String, Integer> wordFrequencyMap_eng = loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
 
         // Уникальность значений
         Set<String> tagValueSet = new HashSet<>()
@@ -719,5 +705,28 @@ from
             }
         }
     }
+
+    public static Map<String, Integer> loadWordFrequencyMap(String fileName) {
+        Map<String, Integer> wordFrequencyMap = new HashMap<>()
+
+        //
+        BufferedReader br = new BufferedReader(new FileReader(new File(fileName)))
+        String line
+        int pos = 0
+        while ((line = br.readLine()) != null) {
+            String[] ss = line.split(" ")
+            String eng = ss[0]
+            if (isAlphasEng(eng)) {
+                long frVal = Long.valueOf(ss[1])
+                wordFrequencyMap.put(eng, pos)
+                pos = pos + 1
+            }
+        }
+        br.close()
+
+        //
+        return wordFrequencyMap
+    }
+
 
 }

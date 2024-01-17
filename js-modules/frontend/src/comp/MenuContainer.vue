@@ -40,6 +40,12 @@
                             <div class="q-item__label q-item__label--header"
                                  @click="onLevels()">Мои уровни
                             </div>
+                            <div class="q-item__label q-item__label--header"
+                                 @click="onStill()">Still
+                            </div>
+                            <div class="q-item__label q-item__label--header"
+                                 @click="onStill1()">Still1
+                            </div>
                             <div class="text-grey" style="padding: 25px 16px 16px;">
                                 <!--
                                 <p><em>Right Drawer has intended scroll</em></p>
@@ -222,6 +228,16 @@ export default {
         onLevels: function() {
             apx.showFrame({
                 frame: '/levels',
+            })
+        },
+        onStill: function() {
+            apx.showFrame({
+                frame: '/still',
+            })
+        },
+        onStill1: function() {
+            apx.showFrame({
+                frame: '/still1',
             })
         },
         onGameInfo: function() {

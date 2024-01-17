@@ -61,7 +61,7 @@ cd data/web-grab/kz.sozdik.soyle.kz
 Сработает соответствующая фикстура.
 
 
-### Установка как сервис
+## Установка как сервис
 
 
 1.
@@ -96,3 +96,43 @@ systemctl start wordstrike.me
 systemctl status wordstrike.me
 ```
 
+
+### Установка tesseract
+
+
+1.
+Установка
+
+```
+sudo apt-get install tesseract-ocr
+```
+
+2.
+Скачиваем языки (`https://github.com/tesseract-ocr/tessdata`).
+Файлы `eng.traineddata` и `rus.traineddata` разместить в `/usr/local/share/tessdata`
+
+
+3.
+Проверяем
+
+```
+tesseract /home/dvsa/1.jpeg /home/dvsa/t2.txt -l eng --tessdata-dir /usr/local/share/tessdata/
+```
+
+
+### Настройка nginx
+
+1.
+
+Чтобы можно было отправлять большие запросы нужно в nginx настроить размер запроса, см. `nginx.conf`
+
+```
+http {
+    
+    ...
+    
+    client_max_body_size 20M;
+
+    ...
+}
+```

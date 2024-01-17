@@ -1,9 +1,9 @@
 import {apx} from './vendor'
 import App from './App'
-import Home from './HomePage'
-
 import theme from 'theme/default'
 import icons from 'all/icons'
+
+import Home from './HomePage'
 
 export function run() {
     apx.jcBase.applyTheme(theme)
@@ -18,6 +18,8 @@ export function run() {
         {path: '/gameInfo', frame: import('./GameInfoPage')},
         {path: '/user', frame: import('./UserInfoPage')},
         {path: '/plan', frame: import('./PlanPage')},
+        {path: '/still', frame: import('./StillPage')},
+        {path: '/still1', frame: import('./StillPage1')},
     ]
 
     apx.app.onBeforeRun(async () => {

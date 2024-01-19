@@ -17,7 +17,30 @@
                     </q-item-label>
 
                     <q-item-label class="answer">
-                        <TaskValue :task="planTask.answer" :doShowText="true"/>
+                        <div class="row">
+
+                            <TaskValue :task="planTask.answer" :doShowText="true"/>
+
+                            <q-icon name="del" style="padding-left: 1em"
+                                    size="1em"
+                                    @click="itemHiddenToggle(planTask)"
+                            />
+
+                        </div>
+                    </q-item-label>
+
+                    <q-item-label class="answer">
+                        <div class="row">
+
+                            <TaskValue :task="planTask.answer" :doShowText="true"/>
+
+                            <q-icon name="del" style="padding-left: 1em"
+                                    size="1em"
+                                    @click="itemHiddenToggle(planTask)"
+                            />
+
+                        </div>
+
                     </q-item-label>
                 </q-item-section>
 
@@ -31,6 +54,9 @@
                                icon="star"
                                :color="getStarredColor(planTask.starred)"
                                @click="itemStarredToggle(planTask)"/>
+                        <q-btn flat dense round
+                               icon="more-h"
+                        />
                     </div>
                 </q-item-section>
 

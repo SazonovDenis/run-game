@@ -38,7 +38,10 @@
                                  @click="onGameInfo()">Текущая игра
                             </div>
                             <div class="q-item__label q-item__label--header"
-                                 @click="onLevels()">Мои уровни
+                                 @click="onLevels()">Уровни
+                            </div>
+                           <div class="q-item__label q-item__label--header"
+                                 @click="onMyLevels()">Мои уровни
                             </div>
                             <div class="q-item__label q-item__label--header"
                                  @click="onStill()">Still
@@ -226,6 +229,11 @@ export default {
             }
         },
         onLevels: function() {
+            apx.showFrame({
+                frame: '/planList',
+            })
+        },
+       onMyLevels: function() {
             apx.showFrame({
                 frame: '/levels',
             })

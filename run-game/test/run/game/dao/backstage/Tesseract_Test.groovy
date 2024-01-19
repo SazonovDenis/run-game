@@ -12,6 +12,7 @@ class Tesseract_Test extends RgmBase_Test {
     String outFileName = ""
     String outFileNameCL = ""
     String lang = "eng"
+    String outFormat = ""
 
     @Test
     void t1() {
@@ -32,10 +33,15 @@ class Tesseract_Test extends RgmBase_Test {
     @Test
     void t11() {
         inFileName = "test/run/game/dao/backstage/11-00.jpg"
-        outFileName = "temp/11-0.txt"
-        outFileNameCL = "temp/11-0"
+        outFileName = "temp/11-00.txt"
+        outFileNameCL = "temp/11-00"
         lang = "eng+rus"
         t()
+
+        println()
+        println("-------------------")
+        println()
+
         inFileName = "test/run/game/dao/backstage/11-90.jpg"
         outFileName = "temp/11-90.txt"
         outFileNameCL = "temp/11-90"
@@ -43,8 +49,28 @@ class Tesseract_Test extends RgmBase_Test {
         t()
     }
 
+    @Test
+    void t11_00_tsv() {
+        inFileName = "test/run/game/dao/backstage/11-00.jpg"
+        outFileName = "temp/11-00.tsv"
+        outFileNameCL = "temp/11-00"
+        lang = "eng+rus"
+        outFormat = "tsv"
+        t()
+    }
+
+    @Test
+    void t12_00_tsv() {
+        inFileName = "test/run/game/dao/backstage/12-00.jpg"
+        outFileName = "temp/12-00.tsv"
+        outFileNameCL = "temp/12-00"
+        lang = "eng+rus"
+        outFormat = "tsv"
+        t()
+    }
+
     void t() {
-        String exeFile = "tesseract ${inFileName} ${outFileNameCL} -l ${lang} --tessdata-dir /usr/local/share/tessdata/"
+        String exeFile = "tesseract ${inFileName} ${outFileNameCL} -l ${lang} ${outFormat} --tessdata-dir /usr/local/share/tessdata/"
 
         RunCmd runCmd = new RunCmd()
         //runCmd.setDir(getApp().getAppdir())

@@ -20,6 +20,7 @@ export function run() {
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/still', frame: import('./StillPage')},
         {path: '/still1', frame: import('./StillPage1')},
+        {path: '/planList', frame: import('./PlanList')},
     ]
 
     apx.app.onBeforeRun(async () => {

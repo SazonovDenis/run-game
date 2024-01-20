@@ -167,12 +167,18 @@ export default {
 
 <style>
 
+
 .plans {
     display: grid;
     grid-template-columns: 1fr 1fr;
     __grid-template-columns: repeat(auto-fill, minmax(10em, 25em));
 }
 
+@media (max-width: 360px) {
+    .plans {
+        grid-template-columns: 1fr;
+    }
+}
 
 .plan-item {
     justify-self: stretch;

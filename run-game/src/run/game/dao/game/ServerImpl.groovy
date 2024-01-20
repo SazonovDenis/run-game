@@ -21,7 +21,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     private Rnd rnd = new RndImpl()
 
-
+    // todo: не сюда этот метод
     @DaoMethod
     public List parseStill(String imgBase64) {
         long idUsr = getCurrentUserId()
@@ -168,43 +168,37 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Отберем подходящие задания на игру.
         // Задание выбирается с учетом статистики пользователя.
-        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
-        Store stTask = statisticManager.getStatisticForGame(idGame)
-        //stTask.sort("rating")
+
+        // Задания в плане
+        Store stPlanTasks = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan, usr: idUsr])
 
         // Слегка рандомизируем рейтинг -
         // иначе для для заданий без рейтинга (например, которые никогда не выдавали)
         // рейтинг перестает быть хорошим выбором порядка - получается список идущих подряд
         // одних тех же слов (потому, что задания сортируются по номеру факта,
         // а для одного факта несколько заданий)
-        for (StoreRecord recTask : stTask) {
+        for (StoreRecord recTask : stPlanTasks) {
             double progressSeed = rnd.num(-1000, 1000) / 10000
-            recTask.setValue("rating", recTask.getDouble("rating") + progressSeed)
+            recTask.setValue("ratingTask", recTask.getDouble("ratingTask") + progressSeed)
         }
 
         // Откорректируем рейтинг - от помеченных как "любимые" отнимем немного баллов,
         // чтобы они с большей вероятностью выпадали
-
-        // Задания в плане
-        Store stPlanTasks = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan, usr: idUsr])
-        StoreIndex idxPlanTasks = stPlanTasks.getIndex("task")
-        for (StoreRecord recTask : stTask) {
-            // Найдем задание
-            StoreRecord recPlanTask = idxPlanTasks.get(recTask.getLong("task"))
+        for (StoreRecord recTask : stPlanTasks) {
             // Задание помечено как "starred"?
-            if (recPlanTask.getBoolean("starred")) {
+            if (recTask.getBoolean("starred")) {
                 recTask.setValue("rating", recTask.getDouble("rating") - RATING_DECREASE_FOR_STARRED)
             }
         }
 
-        // Теперь выберем задания на игру по рейтингу
-        stTask.sort("rating")
-        //
+        // Сортируем задания по рейтингу
+        stPlanTasks.sort("ratingTask,ratingQuickness")
+
+        // Теперь выберем задания на игру
         long taskForGameCount = 0
-        for (StoreRecord recTask : stTask) {
-            // Скрытые задания не выдаем
-            StoreRecord recPlanTask = idxPlanTasks.get(recTask.getLong("task"))
-            if (recPlanTask.getBoolean("hidden")) {
+        for (StoreRecord recTask : stPlanTasks) {
+            // Скрытые задания (помечено как "hidden") не выдаем
+            if (recTask.getBoolean("hidden")) {
                 continue
             }
 
@@ -852,17 +846,25 @@ limit 1
 select
     PlanTask.*,
     TaskUsr.hidden,
-    TaskUsr.starred
+    TaskUsr.starred,
+    Cube_UsrFact.ratingTask,
+    Cube_UsrFact.ratingQuickness
 
 from
     PlanTask
-    left join TaskUsr on (PlanTask.id = TaskUsr.task and TaskUsr.usr = :usr)
+    join Task on (PlanTask.task = Task.id)
+    left join TaskUsr on (
+        PlanTask.id = TaskUsr.task and 
+        TaskUsr.usr = :usr
+    )
+    left join Cube_UsrFact on (
+        Cube_UsrFact.factQuestion = Task.factQuestion and
+        Cube_UsrFact.factAnswer = Task.factAnswer and
+        Cube_UsrFact.usr = :usr
+    )
 
 where
     PlanTask.plan = :plan
-
-order by
-    PlanTask.id
 """
     }
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <cube name="Cube_UsrFactStatistic"
+          title="Статистика прохождения уровня пользователем"
+          space="Space_UsrFact"
+          class="kis.molap.ntbd.model.cubes.Cube_UsrFactStatistic">
+
+        <!-- Поля -->
+        <field name="ratingTask"/>
+        <field name="ratingQuickness"/>
+
+        <!-- Зависит от таблиц -->
+        <depend name="GameTask"/>
+
+        <!-- Зависит от кубов -->
+
+    </cube>
+
+    <!-- Дополнение физической таблицы для space -->
+    <domain name="Cube_UsrFact">
+
+        <field name="ratingTask" parent="double" title="Рейтинг за ответы"/>
+        <field name="ratingQuickness" parent="double" title="Рейтинг за скорость"/>
+
+    </domain>
+
+</root>

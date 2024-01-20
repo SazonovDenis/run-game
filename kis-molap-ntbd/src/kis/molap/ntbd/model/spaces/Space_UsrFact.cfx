@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <!-- Пространство usr, factQuestion, factAnswer -->
+    <space name="Space_UsrFact"
+           title="Пространство: пользователь + факты"
+           table="Cube_UsrFact"
+           class="kis.molap.ntbd.model.spaces.Space_UsrFact">
+
+        <!-- Координаты -->
+        <coord name="usr"/>
+        <coord name="factQuestion"/>
+        <coord name="factAnswer"/>
+
+    </space>
+
+
+    <!-- Физическая таблица пространства -->
+    <domain name="Cube_UsrFact" parent="base" tag.db="true">
+
+        <!-- Координаты -->
+        <field name="usr" parent="long" title="Пользователь"/>
+        <field name="factQuestion" parent="long" title="Факт - вопрос"/>
+        <field name="factAnswer" parent="long" title="Факт - ответ на вопрос"/>
+
+         <!-- Индекс для координат -->
+        <dbindex name="main" fields="usr,factQuestion,factAnswer" unique="true"/>
+
+    </domain>
+
+
+</root>

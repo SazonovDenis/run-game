@@ -1,38 +1,66 @@
 <template>
 
-    <MenuContainer title="Главная">
-        <div class="q-pa-md row items-start q-gutter-md">
+    <MenuContainer title="Добавление уровней">
 
-            <div v-for="plan in plans" class="plan">
 
-                <q-card class="my-card">
+        <div class="plans q-pa-sm q-gutter-md">
+
+            <template v-for="plan in plans">
+
+                <q-card class="plan-item" @click="onClickStar(plan)">
                     <q-img :src="imgSrc(plan.img)">
+                        <template v-slot:error>
+                            <div
+                                class="absolute-full flex flex-center bg-grey-2 text-black">
+                                Cannot load image
+                            </div>
+                        </template>
+                        <template v-slot:loading>
+                            <div>&nbsp;</div>
+                        </template>
                     </q-img>
 
-                    <div class="absolute-top text-h3">
-                        <q-icon color="red"  style="margin: 0.6em" name="mail"/>
+
+                    <div class="row absolute-bottom plan-item-info">
+                        <div class="plan-item-added-info">
+                            <rgm-icon v-if="plan.added"
+                                      bg-color="white"
+                                      color="green"
+                                      name="star"
+                                      text="Добавлен"
+                            />
+                            <rgm-icon v-if="!plan.added"
+                                      bg-color="white"
+                                      color="grey-5"
+                                      name="star"
+                            />
+                        </div>
+
+                        <div class="row plan-item-added-rating">
+                            <q-badge v-if="plan.raiting"
+                                     color="green-5"
+                                     :label="plan.raiting + ' / ' + plan.count"
+                            />
+                            <q-badge v-if="!plan.raiting"
+                                     color="grey-8"
+                                     :label="plan.count"
+                            />
+                        </div>
+
                     </div>
 
-                    <div class="absolute-top text-right text-h3">
-                        <q-badge color="green-5" style="margin: 0.6em"
-                                 :label="plan.raiting"
-                                 v-if="plan.raiting"/>
-                    </div>
 
-                    <div class="plan-text absolute-bottom text-h5">
+                    <q-card-section class="plan-item-text text-h4">
                         {{ plan.text }}
-                    </div>
+                    </q-card-section>
 
-                    <div class="absolute-bottom text-right text-h3">
-                        <q-badge color="gray-10"  style="margin: 0.6em"
-                                 :label="plan.count"/>
-                    </div>
 
                 </q-card>
 
-            </div>
+            </template>
 
         </div>
+
 
     </MenuContainer>
 
@@ -45,13 +73,14 @@ import ctx from "./gameplayCtx"
 import gameplay from "./gameplay"
 import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
+import RgmIcon from "./comp/RgmIcon"
 
 export default {
 
     name: "PlanList",
 
     components: {
-        MenuContainer, gameplay, auth, ctx
+        MenuContainer, RgmIcon, gameplay, auth, ctx
     },
 
     methods: {
@@ -62,6 +91,15 @@ export default {
                 return apx.url.ref("run/game/web/img/plans/no-image.png")
             }
         },
+
+        onClickStar(plan) {
+            if (plan.added) {
+                plan.added = false
+            } else {
+                plan.added = true
+            }
+        },
+
     },
 
     data() {
@@ -76,19 +114,22 @@ export default {
                 },
                 {
                     img: "materials",
-                    text: "Материалы",
+                    text: "Материалы, отходы и технологические процессы",
+                    added: true,
                     count: 21,
                     raiting: 1.3,
                 },
                 {
                     img: null,
                     text: "Части тела",
+                    added: true,
                     count: 38,
                     raiting: 3,
                 },
                 {
                     img: "products",
                     text: "Продукты",
+                    added: true,
                     count: 17,
                     raiting: 3.5,
                 },
@@ -114,10 +155,9 @@ export default {
                     img: null,
                     text: "Dumb ways to die",
                     count: 200,
-                    raiting: 12,
+                    raiting: 112.5,
                 },
             ]
-
         }
     }
 
@@ -125,22 +165,48 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
 
-.plan {
-    max-width: 20em;
-    min-width: 10em;
-    width: 100% !important;
+.plans {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    __grid-template-columns: repeat(auto-fill, minmax(10em, 25em));
+}
+
+
+.plan-item {
+    justify-self: stretch;
+    align-self: stretch;
+    aspect-ratio: 1;
 }
 
 .plan-img img {
     _width: 8em;
 }
 
-.plan-text {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 0.8em 0.6em;
+.plan-item-info {
+    top: -1em;
+    position: relative;
 }
+
+.plan-item-added-info {
+    flex-grow: 100;
+    margin-left: 0.3em;
+}
+
+.plan-item-added-rating {
+    font-size: 1.5em;
+    width: 3em;
+    align-content: center;
+    justify-content: end;
+    margin-right: 0.3em
+}
+
+.plan-item-text {
+    top: -1em;
+    position: relative;
+    padding-bottom: 0;
+}
+
 
 </style>

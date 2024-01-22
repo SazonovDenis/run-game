@@ -9,8 +9,7 @@ import run.game.util.*
  */
 class WordDistance_fb extends BaseFixtureBuilder {
 
-    //
-    int maxMatchSize = 20
+    String dirBase = "data/web-grab/"
 
     //
     protected void onBuild() {
@@ -19,27 +18,7 @@ class WordDistance_fb extends BaseFixtureBuilder {
 
         // Заполним из наших csv
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)
-        utils.addFromCsv(stWordDistance, "res:run/game/testdata/csv/WordDistance.csv")
-
-        //
-        long id = 0
-        for (StoreRecord rec : stWordDistance) {
-            id = id + 1
-            //rec.setValue("id", id)
-        }
-    }
-
-    //
-    protected void onBuild1() {
-        FixtureTable fxWordDistance = fx.table("WordDistance")
-        Store stWordDistance = fxWordDistance.getStore()
-
-        //
-        WordDistance_list list = mdb.create(WordDistance_list)
-        list.maxMatchSize = maxMatchSize
-
-        //
-        list.fillStore(stWordDistance)
+        utils.addFromCsv(stWordDistance, dirBase + "word_distance.csv")
     }
 
 }

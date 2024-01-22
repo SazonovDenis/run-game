@@ -48,17 +48,18 @@ class TestData_Test extends Apx_Test {
     public void fill_WordDistance() throws Exception {
         utils.logOn()
         WordDistance_fb fb = new WordDistance_fb()
-        fb.maxMatchSize = 10
+        fb.dirBase = "../data/web-grab/"
         Fixture fx = fb.build(model)
         utils.outTableList(fx.stores, 10)
     }
 
     @Test
+    @Disabled
     public void fill_WordDistance_toCsvFile() throws Exception {
         utils.logOn()
-        WordDistance_list list = mdb.create(WordDistance_list)
-        list.maxMatchSize = 25
-        list.toCsvFile(new File("temp/WordDistance.csv"))
+        UtWordDistance ut = mdb.create(UtWordDistance)
+        ut.maxMatchSize = 25
+        ut.toCsvFile(new File("temp/word_distance.csv"))
     }
 
 }

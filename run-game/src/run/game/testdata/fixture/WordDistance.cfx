@@ -2,7 +2,7 @@
 <root>
 
 
-    <domain name="WordDistance.csv" parent="WordDistance">
+    <domain name="WordDistance.list" parent="WordDistance">
         <field name="matches" parent="string"/>
     </domain>
 

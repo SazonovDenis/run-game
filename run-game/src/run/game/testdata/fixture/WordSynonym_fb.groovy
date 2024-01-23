@@ -32,7 +32,7 @@ class WordSynonym_fb extends BaseFixtureBuilder {
         Map<String, Set<String>> mapSynonyms = new HashMap<>()
 
         //
-        File fileFr = new File(dirBase + "rus_synonyms.txt")
+        File fileFr = new File(dirBase + "word_synonyms.rus.txt")
         BufferedReader br = new BufferedReader(new FileReader(fileFr))
         String s
         while ((s = br.readLine()) != null) {

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <dao>
+        <holder name="api">
+
+            <item name="m/Ocr">
+
+                <item name="i" method="*"
+                      class="run.game.dao.ocr.Ocr"/>
+
+            </item>
+
+        </holder>
+    </dao>
+
+</root>

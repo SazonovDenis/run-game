@@ -11,7 +11,7 @@ import run.game.util.*
 /**
  * Для каждого слова расчитывает ближашие слова.
  * Алгоритм имеет квадратичную сложность, поэтому запускается из тестов единожды,
- * результат его работы  записиваетсмя в файл "WordDistance.csv",
+ * результат его работы  записываетсмя в файл "WordDistance.csv",
  * и в дальнейшем используется именно этот файл.
  */
 class UtWordDistance extends BaseMdbUtils {
@@ -34,6 +34,10 @@ class UtWordDistance extends BaseMdbUtils {
         // Fact типа "перевод на русский" (word-translate) имеется в двух записях,
         // а нам дубликаты слов не нужны
         Store stWordRus = mdb.loadQuery("select distinct value from Fact where dataType = " + RgmDbConst.DataType_word_translate)
+        //
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+        utils.saveToCsv(stWordRus, new File("temp/stWordRus.csv"))
+
         // Рассчитаем расстояние до синонимов
         fillStore_internal(stWordRus, "rus", stWordDistance)
 

@@ -1,4 +1,4 @@
-package run.game.dao.backstage
+package run.game.dao.ocr
 
 import jandcode.commons.*
 import jandcode.commons.error.*
@@ -16,7 +16,7 @@ class Tesseract_Test extends RgmBase_Test {
 
     @Test
     void t1() {
-        inFileName = "test/run/game/dao/backstage/1.jpg"
+        inFileName = "test/run/game/dao/ocr/1.jpg"
         outFileName = "temp/1.txt"
         outFileNameCL = "temp/1"
         t()
@@ -24,7 +24,7 @@ class Tesseract_Test extends RgmBase_Test {
 
     @Test
     void t2() {
-        inFileName = "test/run/game/dao/backstage/2.jpg"
+        inFileName = "test/run/game/dao/ocr/2.jpg"
         outFileName = "temp/2.txt"
         outFileNameCL = "temp/2"
         t()
@@ -32,7 +32,7 @@ class Tesseract_Test extends RgmBase_Test {
 
     @Test
     void t11() {
-        inFileName = "test/run/game/dao/backstage/11-00.jpg"
+        inFileName = "test/run/game/dao/ocr/11-00.jpg"
         outFileName = "temp/11-00.txt"
         outFileNameCL = "temp/11-00"
         lang = "eng+rus"
@@ -42,7 +42,7 @@ class Tesseract_Test extends RgmBase_Test {
         println("-------------------")
         println()
 
-        inFileName = "test/run/game/dao/backstage/11-90.jpg"
+        inFileName = "test/run/game/dao/ocr/11-90.jpg"
         outFileName = "temp/11-90.txt"
         outFileNameCL = "temp/11-90"
         lang = "eng+rus"
@@ -51,7 +51,7 @@ class Tesseract_Test extends RgmBase_Test {
 
     @Test
     void t11_00_tsv() {
-        inFileName = "test/run/game/dao/backstage/11-00.jpg"
+        inFileName = "test/run/game/dao/ocr/11-00.jpg"
         outFileName = "temp/11-00.tsv"
         outFileNameCL = "temp/11-00"
         lang = "eng+rus"
@@ -61,7 +61,7 @@ class Tesseract_Test extends RgmBase_Test {
 
     @Test
     void t12_00_tsv() {
-        inFileName = "test/run/game/dao/backstage/12-00.jpg"
+        inFileName = "test/run/game/dao/ocr/12-00.jpg"
         outFileName = "temp/12-00.tsv"
         outFileNameCL = "temp/12-00"
         lang = "eng+rus"

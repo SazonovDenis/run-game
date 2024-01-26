@@ -1,6 +1,5 @@
 package run.game.dao.backstage
 
-
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
 
@@ -15,6 +14,18 @@ class Fact_list extends BaseMdbUtils {
     public Store loadFactsByDataType(long dataType) {
         Store st = mdb.createStore("Fact.list")
         mdb.loadQuery(st, sqlFactByDataType(), [dataType: dataType])
+        return st
+    }
+
+    public Store loadFactsByValueDataType(String value, long dataType) {
+        Store st = mdb.createStore("Fact.list")
+        mdb.loadQuery(st, sqlFactsByValueDataType(), [value: value, dataType: dataType])
+        return st
+    }
+
+    public Store findFactsByValueDataType(String value, long dataType) {
+        Store st = mdb.createStore("Fact.list")
+        mdb.loadQuery(st, sqlFactsByValueDataTypeLike(), [value: "%" + value + "%", dataType: dataType])
         return st
     }
 
@@ -108,6 +119,52 @@ from
     join Fact on (Fact.item = Item.id)
 
 where
+    Fact.dataType = :dataType
+
+order by
+    Fact.id
+"""
+    }
+
+    String sqlFactsByValueDataType() {
+        return """
+select
+    Item.id item,
+    Item.value itemValue,
+    
+    Fact.id,
+    Fact.dataType factDataType,
+    Fact.value factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+
+where
+    Fact.value = :value and
+    Fact.dataType = :dataType
+
+order by
+    Fact.id
+"""
+    }
+
+    String sqlFactsByValueDataTypeLike() {
+        return """
+select
+    Item.id item,
+    Item.value itemValue,
+    
+    Fact.id,
+    Fact.dataType factDataType,
+    Fact.value factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+
+where
+    Fact.value like :value and
     Fact.dataType = :dataType
 
 order by

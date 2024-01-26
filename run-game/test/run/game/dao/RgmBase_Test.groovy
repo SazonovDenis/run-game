@@ -70,13 +70,6 @@ class RgmBase_Test extends Apx_Test {
         //
         println("taskOption")
         utils.outTable(task.get("taskOption"))
-        //
-        println("game")
-        if (task.containsKey("game")) {
-            utils.outTable(task.get("game"))
-        } else {
-            println("<null>")
-        }
     }
 
     void printTaskOneLine(DataBox task) {

@@ -27,10 +27,10 @@ public interface Server {
     /**
      * Начать игру (раунд) по указанному плану
      *
-     * @param idPaln план
+     * @param idPlan план
      * @return игра
      */
-    DataBox gameStart(long idPaln);
+    DataBox gameStart(long idPlan);
 
 
     /**

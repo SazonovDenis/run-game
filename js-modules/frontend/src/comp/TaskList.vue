@@ -193,7 +193,7 @@ export default {
             if (task.hidden && task.starred) {
                 task.starred = false
             }
-            ctx.gameplay.api_saveTaskUsr(task.id, task)
+            ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },
 
         itemStarredToggle(task) {
@@ -201,7 +201,7 @@ export default {
             if (task.starred && task.hidden) {
                 task.hidden = false
             }
-            ctx.gameplay.api_saveTaskUsr(task.id, task)
+            ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },
 
     },

@@ -59,34 +59,36 @@ class Task_upd extends RgmMdbUtils {
 
 
     @DaoMethod
-    void saveTaskUsr(long idTask, Map taskUsr) {
+    void saveUsrFact(long factQuestion, long factAnswer, Map dataUsrFact) {
         long idUsr = getCurrentUserId()
 
-        if (isEmptyTaskUsr(taskUsr)) {
-            mdb.deleteRec("TaskUsr", [usr: idUsr, task: idTask])
+        if (isEmptyUsrFact(dataUsrFact)) {
+            mdb.deleteRec("UsrFact", [usr: idUsr, factQuestion: factQuestion, factAnswer: factAnswer])
             return
         }
 
-        StoreRecord recTaskUsrNow = mdb.loadQueryRecord(
-                "select * from TaskUsr where usr = :usr and task = :task",
-                [usr: idUsr, task: idTask],
+        StoreRecord recUsrFactNow = mdb.loadQueryRecord(
+                "select * from UsrFact where usr = :usr and factQuestion = :factQuestion and factAnswer = :factAnswertask",
+                [usr: idUsr, factQuestion: factQuestion, factAnswer: factAnswer],
                 false
         )
-        if (recTaskUsrNow == null) {
-            taskUsr.put("id", null)
-            taskUsr.put("usr", idUsr)
-            taskUsr.put("task", idTask)
-            mdb.insertRec("TaskUsr", taskUsr)
+        if (recUsrFactNow == null) {
+            dataUsrFact.put("id", null)
+            dataUsrFact.put("usr", idUsr)
+            dataUsrFact.put("factQuestion", factQuestion)
+            dataUsrFact.put("factAnswer", factAnswer)
+            mdb.insertRec("UsrFact", dataUsrFact)
         } else {
-            taskUsr.put("id", recTaskUsrNow.getLong("id"))
-            taskUsr.put("usr", idUsr)
-            taskUsr.put("task", idTask)
-            mdb.updateRec("TaskUsr", taskUsr)
+            dataUsrFact.put("id", recUsrFactNow.getLong("id"))
+            dataUsrFact.put("usr", idUsr)
+            dataUsrFact.put("factQuestion", factQuestion)
+            dataUsrFact.put("factAnswer", factAnswer)
+            mdb.updateRec("UsrFact", dataUsrFact)
         }
     }
 
-    boolean isEmptyTaskUsr(Map taskUsr) {
-        return taskUsr == null || (!taskUsr.get("hidden") && !taskUsr.get("starred"))
+    boolean isEmptyUsrFact(Map dataUsrFact) {
+        return dataUsrFact == null || (!dataUsrFact.get("hidden") && !dataUsrFact.get("starred"))
     }
 
 

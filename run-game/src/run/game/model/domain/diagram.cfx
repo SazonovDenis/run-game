@@ -46,18 +46,17 @@
         <domain name="Plan"/>
         <domain name="PlanTag"/>
         <domain name="PlanTask"/>
+        <domain name="PlanFact"/>
         <domain name="Tag" showfields="false"/>
         <domain name="Task" showfields="false"/>
     </diagram>
 
-
-     <diagram name="usrMark" title="Связь пользователей с планами и заданиями">
+    <diagram name="usrFact" title="Связь пользователей с планами и фактами">
         <domain name="Plan" showfields="false"/>
-        <domain name="PlanTask" showfields="false"/>
-        <domain name="Task" showfields="false"/>
+        <domain name="Fact" showfields="false"/>
 
-        <domain name="PlanUsr"/>
-        <domain name="TaskUsr"/>
+        <domain name="UsrPlan"/>
+        <domain name="UsrFact"/>
     </diagram>
 
 

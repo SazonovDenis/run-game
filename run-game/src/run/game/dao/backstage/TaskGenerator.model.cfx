@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="FactCombinations">
+        <!--@ Комбинации фактов вопроса и ответа (factQuestion и factAnswer) для сущности -->
+
+        <field name="factQuestion" parent="Fact/ref"/>
+        <field name="factAnswer" parent="Fact/ref"/>
+        <field name="factValueQuestion" parent="Fact/value"/>
+        <field name="factValueAnswer" parent="Fact/value"/>
+
+    </domain>
+
+
+</root>

@@ -9,7 +9,8 @@ import org.slf4j.*
 import run.game.util.*
 
 /**
- *
+ * Выполняет разбор и загрузку словарей: слова и их переводы, звуки.
+ * Получаются сущности и факты, а также их тэги.
  */
 class ItemFact_fb extends BaseFixtureBuilder {
 
@@ -75,7 +76,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
         Store stCsvBad = mdb.createStore("dat.csv.bad")
 
         // Частота встречаемости eng
-        Map<String, Integer> wordFrequencyMap_eng = loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
+        Map<String, Long> wordFrequencyMap_eng = loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
 
         // Уникальность значений
         Set<String> tagValueSet = new HashSet<>()
@@ -306,7 +307,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                         StoreRecord recFactTag = stFactTag.add()
                                         recFactTag.setValue("id", genIdFactTag)
                                         recFactTag.setValue("fact", recFact_1.getLong("id"))
-                                        recFactTag.setValue("tag", getOrCreateTag("word-sound-info", soundSource))
+                                        recFactTag.setValue("tag", getTagOrCreate("word-sound-info", soundSource))
                                     }
                                 }
                             }
@@ -361,24 +362,11 @@ from
     }
 
 
-    public static boolean isAlphasEng(String s) {
-        return s != null && s.matches("^[a-zA-Z )(/’!-]*\$")
-    }
-
-    public static boolean isAlphasRus(String s) {
-        return s != null && s.matches("^[а-яА-Я .,)(/ё-]*[?!]?\$")
-    }
-
-    public static boolean isAlphasKaz(String s) {
-        return s != null && s.matches("^[а-яА-Я .,ӘҒҚҢӨҰҮҺІIәғқңөұүһіi)(/ё-]*[?!]?\$")
-    }
-
-
     void validateEng(String eng) {
         if (UtCnv.isEmpty(eng)) {
             throw new XError("validate eng, isEmpty")
         }
-        if (!isAlphasEng(eng)) {
+        if (!UtWord.isAlphasEng(eng)) {
             throw new XError("validate eng, isAlphasEng: " + eng)
         }
     }
@@ -388,7 +376,7 @@ from
         if (UtCnv.isEmpty(rus)) {
             //throw new XError("validate rus, isEmpty")
         }
-        if (!isAlphasRus(rus)) {
+        if (!UtWord.isAlphasRus(rus)) {
             throw new XError("validate rus, isAlphasRus: " + rus)
         }
     }
@@ -397,7 +385,7 @@ from
         if (UtCnv.isEmpty(kaz)) {
             //throw new XError("validate rus, isEmpty")
         }
-        if (!isAlphasKaz(kaz)) {
+        if (!UtWord.isAlphasKaz(kaz)) {
             throw new XError("validate kaz, isAlphasKaz: " + kaz)
         }
     }
@@ -423,8 +411,8 @@ from
     }
 
 
-    long getOrCreateTag(String tagType_code, String value) {
-        String key = tagType_code + '_' + value
+    long getTagOrCreate(String tagType_code, String tagValue) {
+        String key = tagType_code + '_' + tagValue
         StoreRecord recTag = this.idxTag.get(key)
         //
         if (recTag == null) {
@@ -433,13 +421,13 @@ from
             recTag = stTagNew.add()
             recTag.setValue("id", genIdTag)
             recTag.setValue("tagType", idxTagType.get(tagType_code).getLong("id"))
-            recTag.setValue("value", value)
+            recTag.setValue("value", tagValue)
             //
             StoreRecord recTagNow = stTagNow.add()
             recTagNow.setValue("id", genIdTag)
             recTagNow.setValue("key", key)
             recTagNow.setValue("tagType", idxTagType.get(tagType_code).getLong("id"))
-            recTagNow.setValue("value", value)
+            recTagNow.setValue("value", tagValue)
             this.idxTag = stTagNow.getIndex("key")
 
         }
@@ -447,13 +435,13 @@ from
         return recTag.getLong("id")
     }
 
-    long getTag(String tagType, String value) {
-        String key = tagType + '_' + value
+    long getTag(String tagType_code, String tagValue) {
+        String key = tagType_code + '_' + tagValue
         StoreRecord recTag = this.idxTag.get(key)
         //
         if (recTag == null) {
-            notFoundThing.add(tagType + "\t" + value)
-            throw new XError("not found tagType: " + tagType + ", value: " + value)
+            notFoundThing.add(tagType_code + "\t" + tagValue)
+            throw new XError("not found tagType: " + tagType_code + ", value: " + tagValue)
         }
         //
         return recTag.getLong("id")
@@ -716,7 +704,7 @@ from
         while ((line = br.readLine()) != null) {
             String[] ss = line.split(" ")
             String eng = ss[0]
-            if (isAlphasEng(eng)) {
+            if (UtWord.isAlphasEng(eng)) {
                 long frVal = Long.valueOf(ss[1])
                 wordFrequencyMap.put(eng, pos)
                 pos = pos + 1

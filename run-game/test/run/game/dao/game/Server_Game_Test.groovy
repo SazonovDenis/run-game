@@ -15,12 +15,15 @@ class Server_Game_Test extends RgmBase_Test {
     void getPlans() {
         //
         Server srv = mdb.create(ServerImpl)
-        Store st = srv.getPlansUsr()
-
+        //
+        Store stUsr = srv.getPlansUsr()
+        Store stPublic = srv.getPlansPublic()
         //
         println()
-        println("Plans")
-        mdb.outTable(st)
+        println("Plans usr")
+        mdb.outTable(stUsr)
+        println("Plans public")
+        mdb.outTable(stPublic)
     }
 
 
@@ -28,33 +31,33 @@ class Server_Game_Test extends RgmBase_Test {
     void usrPlanList() {
         Server srv = mdb.create(ServerImpl)
         Store stUsr
-        Store st
+        Store stPublic
 
         //
         stUsr = srv.getPlansUsr()
-        st = srv.getPlansPublic()
+        stPublic = srv.getPlansPublic()
         //
         println()
         println("Plans usr")
         mdb.outTable(stUsr)
         println("Plans public")
-        mdb.outTable(st)
+        mdb.outTable(stPublic)
 
         // ---
         println()
         println("addPlan")
-        long idPlan = st.get(0).getLong("id")
-        srv.addPlanUsr(idPlan)
+        long idPlan = stPublic.get(0).getLong("id")
+        srv.addUsrPlan(idPlan)
 
         // ---
         stUsr = srv.getPlansUsr()
-        st = srv.getPlansPublic()
+        stPublic = srv.getPlansPublic()
         //
         println()
         println("Plans usr")
         mdb.outTable(stUsr)
         println("Plans public")
-        mdb.outTable(st)
+        mdb.outTable(stPublic)
 
 
         // ---
@@ -65,13 +68,13 @@ class Server_Game_Test extends RgmBase_Test {
 
         // ---
         stUsr = srv.getPlansUsr()
-        st = srv.getPlansPublic()
+        stPublic = srv.getPlansPublic()
         //
         println()
         println("Plans usr")
         mdb.outTable(stUsr)
         println("Plans public")
-        mdb.outTable(st)
+        mdb.outTable(stPublic)
     }
 
 

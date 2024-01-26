@@ -184,7 +184,7 @@ export default {
                 photo.setAttribute('src', dataImage);
 
                 // -----------------
-                let res = await daoApi.invoke('m/Game/ParseStill', [dataImage])
+                let res = await daoApi.invoke('m/Ocr/ParseStill', [dataImage])
                 th.words = res
             };
 

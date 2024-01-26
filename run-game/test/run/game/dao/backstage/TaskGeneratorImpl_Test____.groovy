@@ -5,7 +5,7 @@ import jandcode.core.dbm.std.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 
-class TaskGeneratorImpl_Test extends RgmBase_Test {
+class TaskGeneratorImpl_Test____ extends RgmBase_Test {
 
     long idItem2 = 1030
 

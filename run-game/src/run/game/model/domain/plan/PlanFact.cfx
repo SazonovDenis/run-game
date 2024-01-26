@@ -2,15 +2,17 @@
 <root>
 
 
-    <domain name="Task" parent="tab.id" tag.db="true"
-            title="Тестовое задание">
+    <domain name="PlanFact" parent="tab.id" tag.db="true"
+            title="Состав плана обучения">
         <!--@
-        К каждому тестовому заданию готовятся вопрос (TaskQuestion) и варианты ответов (TaskOption)
+        Для плана отобран набор фактов (пар), которые надо выучить в рамках плана.
         -->
+        <field name="plan" parent="Plan/ref"/>
 
 <!--
         <field name="item" parent="Item/ref" title="Проверяли знание об этой сущности"/>
 -->
+
         <field name="factQuestion" parent="Fact/ref" title="Факт - вопрос">
             <!--@
             Показывали этот факт
@@ -22,6 +24,9 @@
             Проверяли знание этого факта. Показывали среди вариантов ответа
             -->
         </field>
+
+        <!-- Обеспечим уникальность ссылки -->
+        <dbindex name="main" fields="plan,factQuestion,factAnswer" unique="true"/>
     </domain>
 
 

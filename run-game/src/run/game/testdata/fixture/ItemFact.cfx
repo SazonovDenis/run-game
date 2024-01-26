@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
-
+    <!--
+    Все файлы словарей (*.csv) составлены по этому шаблону
+    -->
     <domain name="dat.csv">
         <field name="kaz" parent="string"/>
         <field name="eng" parent="string"/>

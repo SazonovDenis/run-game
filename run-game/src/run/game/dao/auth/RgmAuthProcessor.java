@@ -49,21 +49,6 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         attrs.put("login", login);
         attrs.put("text", text);
 
-/*
-        if ("user1010".equals(login)) {
-            attrs.put("color", "red");
-
-        } else if ("user1011".equals(login)) {
-            attrs.put("color", "yellow");
-
-        } else if ("user1012".equals(login)) {
-            attrs.put("color", "green");
-
-        } else {
-            attrs.put("color", "black");
-        }
-*/
-
         return new DefaultAuthUser(attrs);
     }
 

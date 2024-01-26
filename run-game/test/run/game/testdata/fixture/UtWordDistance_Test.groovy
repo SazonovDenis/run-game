@@ -1,9 +1,10 @@
-package run.game.dao.backstage
+package run.game.testdata.fixture
 
 import jandcode.commons.datetime.*
 import jandcode.core.apx.test.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
+import run.game.dao.*
 
 class UtWordDistance_Test extends Apx_Test {
 
@@ -22,7 +23,6 @@ class UtWordDistance_Test extends Apx_Test {
         Map<String, Map<String, Double>> distancesAll = new HashMap<>()
 
         //
-        //Store st = mdb.loadQuery("select * from Item limit 1000")
         Store st = mdb.loadQuery("select * from Item")
 
         //
@@ -70,11 +70,8 @@ class UtWordDistance_Test extends Apx_Test {
 
     @Test
     void jaroWinklerDistance() {
-        Store stDataType = mdb.loadQuery("select * from DataType")
-        StoreIndex idxDataType = stDataType.getIndex("code")
-
-        Store st_rus = mdb.loadQuery("select * from Fact where dataType = " + idxDataType.get("word-translate").getLong("id") + " --limit 1000")
-        Store st_eng = mdb.loadQuery("select * from Fact where dataType = " + idxDataType.get("word-spelling").getLong("id") + " --limit 1000")
+        Store st_rus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate + " --limit 1000")
+        Store st_eng = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_spelling + " --limit 1000")
 
         //
         println("=== start: " + XDateTime.now())

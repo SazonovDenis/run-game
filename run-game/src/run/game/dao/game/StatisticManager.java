@@ -21,7 +21,7 @@ public interface StatisticManager {
 
 
     /**
-     * Выдает статистику и успехи каждого Paln.
+     * Выдает статистику и успехи каждого Plan.
      */
     Store getPlansStatistic();
 

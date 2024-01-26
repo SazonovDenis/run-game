@@ -200,7 +200,7 @@ export default {
                 ///////////////////////////////
 
                 // -----------------
-                let res = await daoApi.invoke('m/Game/ParseStill', [dataImage])
+                let res = await daoApi.invoke('m/Ocr/ParseStill', [dataImage])
                 this.words = res
                 // -----------------
                 /*
@@ -210,7 +210,7 @@ export default {
                                 let url = apx.url.ref("api")
                                 let data = {
                                     //id: id,
-                                    method: "m/Game/ParseStill",
+                                    method: "m/Ocr/ParseStill",
                                     params: [dataImage],
                                 }
 

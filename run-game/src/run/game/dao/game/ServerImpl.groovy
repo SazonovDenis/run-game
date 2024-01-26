@@ -1,9 +1,8 @@
 package run.game.dao.game
 
-import jandcode.commons.*
+
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
-import jandcode.commons.process.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
@@ -11,7 +10,6 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
-import run.game.testdata.fixture.*
 import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
@@ -20,82 +18,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     private double RATING_DECREASE_FOR_STARRED = 0.25
 
     private Rnd rnd = new RndImpl()
-
-    // todo: не сюда этот метод
-    @DaoMethod
-    public List parseStill(String imgBase64) {
-        long idUsr = getCurrentUserId()
-
-        //
-        int pos = imgBase64.indexOf(",") + 1
-        String imgStr = imgBase64.substring(pos)
-        byte[] img = UtString.decodeBase64(imgStr)
-
-        //
-        File inFile = File.createTempFile("rgm", ".png")
-        FileOutputStream strm = new FileOutputStream(inFile);
-        strm.write(img)
-        strm.close()
-
-        //
-        String text = tesseract(inFile.getAbsolutePath(), "eng+rus")
-
-        //
-        //inFile.delete()
-
-        // Частота встречаемости eng
-        String dirBase = "data/web-grab/"
-        Map<String, Integer> wordFrequencyMap_eng = ItemFact_fb.loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
-
-        List res = new ArrayList()
-
-        //////////////////////////
-        res.add(text)
-        res.add("\r\n")
-        res.add("===================")
-        res.add("\r\n")
-        //////////////////////////
-
-        //
-        String[] textArr = text.split(" ")
-        for (String word : textArr) {
-            word = word.toLowerCase().trim()
-            if (word.length() > 1 && wordFrequencyMap_eng.containsKey(word)) {
-                res.add(word)
-            }
-        }
-
-        //
-        return res
-    }
-
-    String tesseract(String inFileName, String lang) {
-        String outFileName = UtFile.removeExt(inFileName)
-
-        //
-        String exeFile = "tesseract ${inFileName} ${outFileName} -l ${lang} --tessdata-dir /usr/local/share/tessdata/"
-
-        //
-        RunCmd runCmd = new RunCmd()
-        runCmd.setShowout(false)
-        runCmd.setSaveout(true)
-        runCmd.setCmd(exeFile)
-        runCmd.run()
-        if (runCmd.getExitCode() > 0) {
-            String r = UtString.join(runCmd.getOut(), "\n")
-            throw new XError("error in {0}:\n{1}", exeFile, r)
-        }
-
-        //
-        outFileName = outFileName + ".txt"
-        String text = UtFile.loadString(outFileName)
-
-        //
-        //new File(outFileName).delete()
-
-        //
-        return text
-    }
 
 
     @DaoMethod
@@ -363,9 +285,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
      * Добавить план к списку планов пользователя.
      */
     @DaoMethod
-    void addPlanUsr(long idPlan) {
+    void addUsrPlan(long idPlan) {
         long idUsr = getCurrentUserId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlPlanUsr(), [usr: idUsr, plan: idPlan], false)
+        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         //
         if (rec != null) {
@@ -373,7 +295,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         }
 
         //
-        mdb.insertRec("PlanUsr", [plan: idPlan, usr: idUsr])
+        mdb.insertRec("UsrPlan", [plan: idPlan, usr: idUsr])
     }
 
 
@@ -383,14 +305,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     @DaoMethod
     void delPlan(long idPlan) {
         long idUsr = getCurrentUserId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlPlanUsr(), [usr: idUsr, plan: idPlan], false)
+        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         if (rec == null) {
             throw new XError("План не был добавлен к списку")
         }
 
         //
-        mdb.deleteRec("PlanUsr", rec.getLong("id"))
+        mdb.deleteRec("UsrPlan", rec.getLong("id"))
     }
 
 
@@ -450,9 +372,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    void saveTaskUsr(long idTask, Map taskUsr) {
+    void saveUsrFact(long factQuestion, long factAnswer, Map dataUsrFact) {
         Task_upd upd = mdb.create(Task_upd)
-        upd.saveTaskUsr(idTask, taskUsr)
+        upd.saveUsrFact(factQuestion, factAnswer, dataUsrFact)
     }
 
     DataBox loadAndPrepareGame_Short(long idGame, long idUsr) {
@@ -845,17 +767,18 @@ limit 1
         return """
 select
     PlanTask.*,
-    TaskUsr.hidden,
-    TaskUsr.starred,
+    UsrFact.hidden,
+    UsrFact.starred,
     Cube_UsrFact.ratingTask,
     Cube_UsrFact.ratingQuickness
 
 from
     PlanTask
     join Task on (PlanTask.task = Task.id)
-    left join TaskUsr on (
-        PlanTask.id = TaskUsr.task and 
-        TaskUsr.usr = :usr
+    left join UsrFact on (
+        Task.factQuestion = UsrFact.factQuestion and 
+        Task.factAnswer = UsrFact.factAnswer and 
+        UsrFact.usr = :usr
     )
     left join Cube_UsrFact on (
         Cube_UsrFact.factQuestion = Task.factQuestion and
@@ -873,6 +796,9 @@ where
 select
     GameTask.task,
 
+    UsrFact.hidden,
+    UsrFact.starred,
+
     GameTask.dtTask,
     GameTask.dtAnswer,
     GameTask.wasTrue,
@@ -882,7 +808,12 @@ select
 
 from
     GameTask
-    left join TaskUsr on (GameTask.task = TaskUsr.task and TaskUsr.usr = :usr)
+    join Task on (GameTask.task = Task.id)
+    left join UsrFact on (
+        Task.factQuestion = UsrFact.factQuestion and 
+        Task.factAnswer = UsrFact.factAnswer and 
+        UsrFact.usr = :usr
+    )
 
 where
     GameTask.usr = :usr and
@@ -915,16 +846,20 @@ order by
 with Tab_UsrPlanStatistic as (
 
 select 
-    PlanTask.plan,
+    PlanFact.plan,
     count(*) count,
-    sum(case when TaskUsr.hidden = 1 then 0 else 1 end) countFull
+    sum(case when UsrFact.hidden = 1 then 0 else 1 end) countFull
   
 from
-    PlanTask
-    left join TaskUsr on (PlanTask.id = TaskUsr.task and TaskUsr.usr = :usr)
+    PlanFact
+    left join UsrFact on (
+        PlanFact.factQuestion = UsrFact.factQuestion and 
+        PlanFact.factAnswer = UsrFact.factAnswer and 
+        UsrFact.usr = :usr
+    )
   
 group by
-    PlanTask.plan 
+    PlanFact.plan 
 )
 
 
@@ -934,18 +869,18 @@ select
     Plan.text planText,
     --PlanTag.tag public,
     (case when PlanTag.tag is null then 0 else 1 end) isPublic,
-    (case when PlanUsr.usr is null then 0 else 1 end) isUsr,
+    (case when UsrPlan.usr is null then 0 else 1 end) isUsr,
     Tab_UsrPlanStatistic.count,
     Tab_UsrPlanStatistic.countFull
     
 from
     Plan
-    left join PlanUsr on (Plan.id = PlanUsr.plan and PlanUsr.usr = :usr)
+    left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
     left join PlanTag on (Plan.id = PlanTag.plan and PlanTag.tag = ${RgmDbConst.Tag_access_public})
     join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
 
 where
-    PlanUsr.usr = :usr
+    UsrPlan.usr = :usr
 """
     }
 
@@ -954,43 +889,43 @@ where
 with Tab_UsrPlanStatistic as (
 
 select 
-    PlanTask.plan,
+    PlanFact.plan,
     count(*) count
   
 from
-    PlanTask
+    PlanFact
   
 group by
-    PlanTask.plan 
+    PlanFact.plan 
 )
 
 
 select
     Plan.*,
     (case when PlanTag.tag is null then 0 else 1 end) isPublic,
-    (case when PlanUsr.usr is null then 0 else 1 end) isUsr,
+    (case when UsrPlan.usr is null then 0 else 1 end) isUsr,
     Tab_UsrPlanStatistic.count
     
 from
     Plan
-    left join PlanUsr on (Plan.id = PlanUsr.plan and PlanUsr.usr = :usr)
+    left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
     join PlanTag on (Plan.id = PlanTag.plan and PlanTag.tag = ${RgmDbConst.Tag_access_public})
     join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
 
 where
-    PlanUsr.usr is null
+    UsrPlan.usr is null
 """
     }
 
-    private String sqlPlanUsr() {
+    private String sqlUsrPlan() {
         return """
 select
-    PlanUsr.*
+    UsrPlan.*
 from
-    PlanUsr
+    UsrPlan
 where
-    PlanUsr.plan = :plan and
-    PlanUsr.usr = :usr
+    UsrPlan.plan = :plan and
+    UsrPlan.usr = :usr
 """
     }
 

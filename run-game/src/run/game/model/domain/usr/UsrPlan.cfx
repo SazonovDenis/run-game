@@ -10,11 +10,12 @@
         <field name="plan" parent="Plan/ref"/>
         <field name="usr" parent="Usr/ref"/>
 
-        <field name="allowed" parent="boolean" title="Разрешен доступ"/>
-        <field name="forbidden" parent="boolean" title="Запрещен доступ"/>
+        <field name="isAuthor" parent="boolean" title="Пользователь является автором"/>
+        <field name="isHidden" parent="boolean" title="План скрыт"/>
+        <field name="isAllowed" parent="boolean" title="Разрешен доступ"/>
 
-        <!-- Обеспечим уникальность ссылки -->
-        <dbindex name="main" fields="plan,usr" unique="true"/>
+        <!-- Обеспечим уникальность -->
+        <dbindex name="main" fields="usr,plan" unique="true"/>
     </domain>
 
 

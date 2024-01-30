@@ -2,20 +2,22 @@
 <root>
 
 
-    <domain name="PlanTask.Server" parent="GameTask">
-        <field name="task" parent="Task/ref"/>
+    <!--
+        <domain name="PlanTask.Server" parent="GameTask">
+            <field name="task" parent="Task/ref"/>
 
-        <field name="textQuestion" parent="TaskQuestion/value"/>
-        <field name="soundQuestion" parent="TaskQuestion/value"/>
-        <field name="textAnswer" parent="TaskOption/value"/>
+            <field name="textQuestion" parent="TaskQuestion/value"/>
+            <field name="soundQuestion" parent="TaskQuestion/value"/>
+            <field name="textAnswer" parent="TaskOption/value"/>
 
-        <field name="factQuestion" parent="Task/factQuestion"/>
-        <field name="factAnswer" parent="Task/factAnswer"/>
-        <field name="factQuestionDataType" parent="Fact/dataType"/>
-        <field name="factQuestionValue" parent="Fact/value"/>
-        <field name="factAnswerDataType" parent="Fact/dataType"/>
-        <field name="factAnswerValue" parent="Fact/value"/>
-    </domain>
+            <field name="factQuestion" parent="Task/factQuestion"/>
+            <field name="factAnswer" parent="Task/factAnswer"/>
+            <field name="factQuestionDataType" parent="Fact/dataType"/>
+            <field name="factQuestionValue" parent="Fact/value"/>
+            <field name="factAnswerDataType" parent="Fact/dataType"/>
+            <field name="factAnswerValue" parent="Fact/value"/>
+        </domain>
+    -->
 
     <domain name="GameTask.Server" parent="GameTask">
         <field name="task" parent="Task/ref"/>
@@ -53,25 +55,21 @@
         </domain>
     -->
 
-    <domain name="Plan.list" parent="Plan">
-        <field name="count" parent="long" title="Количество слов"/>
-        <field name="isPublic" parent="long"/>
-        <field name="isUsr" parent="long"/>
-    </domain>
-
     <domain name="Plan.list.statistic" parent="id">
-        <field name="plan" parent="Plan/ref"/>
-        <field name="planText" parent="Plan/text"/>
+        <field name="text" parent="Plan/text"/>
+
+        <field name="isAuthor" parent="boolean" title="Пользователь является автором"/>
+        <field name="isHidden" parent="boolean" title="План скрыт"/>
+        <field name="isAllowed" parent="boolean" title="Разрешен доступ"/>
+
+        <field name="isPublic" parent="boolean"/>
+
         <field name="count" parent="long" title="Количество слов"/>
         <field name="countFull" parent="long"
                title="Общее количество слов (включая скрытые)"/>
-        <field name="isPublic" parent="long"/>
-        <field name="isUsr" parent="long"/>
-        <!--
-        <field name="progress" parent="double" title="Степень выученности слов, средняя"/>
-        <field name="tasksStatistic" parent="object"
-               title="Степень выученности слов, по процентилям"/>
--->
+        <field name="ratingTask" parent="double" title="Рейтинг за ответы"/>
+        <field name="ratingQuickness" parent="double" title="Рейтинг за скорость"/>
+
     </domain>
 
     <domain name="Game.list.statistic" parent="Game">

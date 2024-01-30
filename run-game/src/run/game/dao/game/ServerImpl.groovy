@@ -1,8 +1,6 @@
 package run.game.dao.game
 
-
 import jandcode.commons.datetime.*
-import jandcode.commons.error.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
@@ -69,7 +67,21 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         XDateTime dt = XDateTime.now()
         mdb.execQuery(sqlCloseActiveGame(), [usr: idUsr, dt: dt])
     }
-
+/*
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+/////////////////////
+        ^c переписать Cube_UsrPlanStatistic,
+    Спискок слов в плане, не есть список заданий, а список фактов!!!
+*/
 
     @DaoMethod
     public DataBox gameStart(long idPlan) {
@@ -79,20 +91,23 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         recGame.setValue("dbeg", dt)
         recGame.setValue("plan", idPlan)
 
-        //
+
+        // ---
+        // Game
         long idGame = mdb.insertRec("Game", recGame)
 
 
+        // ---
         // Добавим участника игры
         long idUsr = getCurrentUserId()
         mdb.insertRec("GameUsr", [usr: idUsr, game: idGame])
 
 
-        // Отберем подходящие задания на игру.
-        // Задание выбирается с учетом статистики пользователя.
+        // ---
+        // Отберем подходящие задания на игру (с учетом статистики пользователя)
 
         // Задания в плане
-        Store stPlanTasks = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan, usr: idUsr])
+        Store stPlanTasks = mdb.loadQuery(sqlPlanTasksStatistic(), [plan: idPlan, usr: idUsr])
 
         // Слегка рандомизируем рейтинг -
         // иначе для для заданий без рейтинга (например, которые никогда не выдавали)
@@ -108,7 +123,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // чтобы они с большей вероятностью выпадали
         for (StoreRecord recTask : stPlanTasks) {
             // Задание помечено как "starred"?
-            if (recTask.getBoolean("starred")) {
+            if (recTask.getBoolean("isKnownBad")) {
                 recTask.setValue("rating", recTask.getDouble("rating") - RATING_DECREASE_FOR_STARRED)
             }
         }
@@ -120,7 +135,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long taskForGameCount = 0
         for (StoreRecord recTask : stPlanTasks) {
             // Скрытые задания (помечено как "hidden") не выдаем
-            if (recTask.getBoolean("hidden")) {
+            if (recTask.getBoolean("isHidden")) {
                 continue
             }
 
@@ -137,6 +152,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
                 break
             }
         }
+
 
         //
         return loadAndPrepareGame_Short(idGame, idUsr)
@@ -228,94 +244,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    /**
-     * Список планов (уровней) пользователя.
-     * С рейтингом, сортированный по некоторому критерию, например по самому отстающему
-     * или по запланированному учителем.
-     */
-    @DaoMethod
-    Store getPlansUsr() {
-        Store res = mdb.createStore("Plan.list.statistic")
-
-        long idUsr = getCurrentUserId()
-
-        //
-        mdb.loadQuery(res, sqlPlansUsr(), [usr: idUsr])
-
-/*
-        //
-        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store st = statisticManager.getPlansStatistic()
-
-        //
-        st.copyTo(res)
-        for (StoreRecord rec : res) {
-            rec.setValue("tasksStatistic", UtJson.fromJson(rec.getString("tasksStatistic")))
-        }
-
-        //
-        res.sort("progress")
-*/
-
-        //
-        return res
-    }
-
-
-    /**
-     * Список общедоступных планов (уровней),
-     * не еще не добавленных к списку планов пользователя.
-     */
-    @DaoMethod
-    Store getPlansPublic() {
-        Store res = mdb.createStore("Plan.list")
-
-        //
-        long idUsr = getCurrentUserId()
-
-        //
-        mdb.loadQuery(res, sqlPlansPublic(), [usr: idUsr])
-
-        //
-        return res
-    }
-
-
-    /**
-     * Добавить план к списку планов пользователя.
-     */
-    @DaoMethod
-    void addUsrPlan(long idPlan) {
-        long idUsr = getCurrentUserId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
-
-        //
-        if (rec != null) {
-            throw new XError("План уже добавлен к списку")
-        }
-
-        //
-        mdb.insertRec("UsrPlan", [plan: idPlan, usr: idUsr])
-    }
-
-
-    /**
-     * Исключить план из списка планов пользователя.
-     */
-    @DaoMethod
-    void delPlan(long idPlan) {
-        long idUsr = getCurrentUserId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
-
-        if (rec == null) {
-            throw new XError("План не был добавлен к списку")
-        }
-
-        //
-        mdb.deleteRec("UsrPlan", rec.getLong("id"))
-    }
-
-
     @DaoMethod
     DataBox getPlanTaskStatistic(long idPlan) {
         DataBox res = new DataBox()
@@ -328,7 +256,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Задания в плане - список
         Store stPlanTasks = mdb.createStore("PlanTask.list.statistic")
-        mdb.loadQuery(stPlanTasks, sqlPlanTasks(), [plan: idPlan, usr: idUsr])
+        mdb.loadQuery(stPlanTasks, sqlPlanTasksStatistic(), [plan: idPlan, usr: idUsr])
 
 
         // Задания плана - данные вопроса и ответа
@@ -685,6 +613,44 @@ where
     }
 
 
+    private String sqlPlanTasksStatistic() {
+        return """ 
+-- Задания для каждой пары фактов в плане
+select 
+    PlanFact.plan,
+    PlanFact.factQuestion, 
+    PlanFact.factAnswer, 
+    Task.id task,
+    UsrFact.isHidden,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownBad,
+    Cube_UsrFact.ratingTask,
+    Cube_UsrFact.ratingQuickness
+
+from
+    PlanFact
+    left join Task on (
+        PlanFact.factQuestion = Task.factQuestion and 
+        PlanFact.factAnswer = Task.factAnswer
+    )
+    left join UsrFact on (
+        PlanFact.factQuestion = UsrFact.factQuestion and 
+        PlanFact.factAnswer = UsrFact.factAnswer and
+        UsrFact.usr = :usr
+    )
+    left join Cube_UsrFact on (
+        PlanFact.factQuestion = Cube_UsrFact.factQuestion and 
+        PlanFact.factAnswer = Cube_UsrFact.factAnswer and
+        UsrFact.usr = :usr
+    )
+    
+where
+    PlanFact.plan = :plan    
+"""
+    }
+
+
     private String sqlChoiceTask() {
         return """
 select
@@ -763,41 +729,15 @@ limit 1
 """
     }
 
-    private String sqlPlanTasks() {
-        return """
-select
-    PlanTask.*,
-    UsrFact.hidden,
-    UsrFact.starred,
-    Cube_UsrFact.ratingTask,
-    Cube_UsrFact.ratingQuickness
-
-from
-    PlanTask
-    join Task on (PlanTask.task = Task.id)
-    left join UsrFact on (
-        Task.factQuestion = UsrFact.factQuestion and 
-        Task.factAnswer = UsrFact.factAnswer and 
-        UsrFact.usr = :usr
-    )
-    left join Cube_UsrFact on (
-        Cube_UsrFact.factQuestion = Task.factQuestion and
-        Cube_UsrFact.factAnswer = Task.factAnswer and
-        Cube_UsrFact.usr = :usr
-    )
-
-where
-    PlanTask.plan = :plan
-"""
-    }
 
     private String sqlGameTasks() {
         return """
 select
     GameTask.task,
 
-    UsrFact.hidden,
-    UsrFact.starred,
+    UsrFact.isHidden,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownBad,
 
     GameTask.dtTask,
     GameTask.dtAnswer,
@@ -838,94 +778,6 @@ where
 order by    
     Game.dbeg,
     Game.id
-"""
-    }
-
-    private String sqlPlansUsr() {
-        return """
-with Tab_UsrPlanStatistic as (
-
-select 
-    PlanFact.plan,
-    count(*) count,
-    sum(case when UsrFact.hidden = 1 then 0 else 1 end) countFull
-  
-from
-    PlanFact
-    left join UsrFact on (
-        PlanFact.factQuestion = UsrFact.factQuestion and 
-        PlanFact.factAnswer = UsrFact.factAnswer and 
-        UsrFact.usr = :usr
-    )
-  
-group by
-    PlanFact.plan 
-)
-
-
-select
-    Plan.id,
-    Plan.id plan,
-    Plan.text planText,
-    --PlanTag.tag public,
-    (case when PlanTag.tag is null then 0 else 1 end) isPublic,
-    (case when UsrPlan.usr is null then 0 else 1 end) isUsr,
-    Tab_UsrPlanStatistic.count,
-    Tab_UsrPlanStatistic.countFull
-    
-from
-    Plan
-    left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
-    left join PlanTag on (Plan.id = PlanTag.plan and PlanTag.tag = ${RgmDbConst.Tag_access_public})
-    join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
-
-where
-    UsrPlan.usr = :usr
-"""
-    }
-
-    private String sqlPlansPublic() {
-        return """
-with Tab_UsrPlanStatistic as (
-
-select 
-    PlanFact.plan,
-    count(*) count
-  
-from
-    PlanFact
-  
-group by
-    PlanFact.plan 
-)
-
-
-select
-    Plan.*,
-    (case when PlanTag.tag is null then 0 else 1 end) isPublic,
-    (case when UsrPlan.usr is null then 0 else 1 end) isUsr,
-    Tab_UsrPlanStatistic.count
-    
-from
-    Plan
-    left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
-    join PlanTag on (Plan.id = PlanTag.plan and PlanTag.tag = ${RgmDbConst.Tag_access_public})
-    join Tab_UsrPlanStatistic on (Plan.id = Tab_UsrPlanStatistic.plan)
-
-where
-    UsrPlan.usr is null
-"""
-    }
-
-    private String sqlUsrPlan() {
-        return """
-select
-    UsrPlan.*
-from
-    UsrPlan
-where
-    UsrPlan.plan = :plan and
-    UsrPlan.usr = :usr
 """
     }
 

@@ -10,11 +10,12 @@
         <field name="factAnswer" parent="Fact/ref"/>
         <field name="usr" parent="Usr/ref"/>
 
-        <field name="hidden" parent="boolean" title="Факты скрыты"/>
-        <field name="starred" parent="boolean" title="Факты выделены"/>
+        <field name="isHidden" parent="boolean" title="Факты скрыты"/>
+        <field name="isKnownGood" parent="boolean" title="Факты отмечены как хорошо известные"/>
+        <field name="isKnownBad" parent="boolean" title="Факты отмечены как плохо известные"/>
 
-        <!-- Обеспечим уникальность ссылки -->
-        <dbindex name="main" fields="factQuestion,factAnswer,usr" unique="true"/>
+        <!-- Обеспечим уникальность -->
+        <dbindex name="main" fields="usr,factQuestion,factAnswer" unique="true"/>
     </domain>
 
 

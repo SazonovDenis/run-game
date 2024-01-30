@@ -6,14 +6,14 @@
 
             <template v-for="plan in plans">
 
-                <q-item clickable @click="gameStart(plan.plan)">
+                <q-item clickable @click="gameStart(plan.id)">
 
                     <q-item-section top avatar>
                         <q-avatar icon="folder" color="grey-4" text-color="white"/>
                     </q-item-section>
 
                     <q-item-section>
-                        {{ plan.planText }}
+                        {{ plan.text }}
                     </q-item-section>
 
                     <q-item-section top side>

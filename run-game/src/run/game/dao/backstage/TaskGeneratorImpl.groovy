@@ -1,6 +1,5 @@
 package run.game.dao.backstage
 
-
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.rnd.*
@@ -9,6 +8,7 @@ import jandcode.core.dbm.mdb.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.testdata.fixture.*
 
 //@CompileStatic
 public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
@@ -105,9 +105,9 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             }
             StoreRecord recWordSynonym = mdb.loadQueryRecord("select * from WordSynonym where word = :word", [word: valueTrueWord], false)
             if (recWordSynonym != null) {
-                String strJson = new String(recWordSynonym.getValue("synonyms"), "utf-8")
-                Collection collection = (Collection) UtJson.fromJson(strJson)
-                synonymsSet.addAll(collection)
+                String synonymsJson = new String(recWordSynonym.getValue("synonyms"), "utf-8")
+                Collection synonymsList = (Collection) UtJson.fromJson(synonymsJson)
+                synonymsSet.addAll(synonymsList)
             }
         }
 
@@ -301,9 +301,9 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             }
             StoreRecord recWordSynonym = mdb.loadQueryRecord("select * from WordSynonym where word = :word", [word: valueTrueWord], false)
             if (recWordSynonym != null) {
-                String strJson = new String(recWordSynonym.getValue("synonyms"), "utf-8")
-                Collection collection = (Collection) UtJson.fromJson(strJson)
-                synonymsSet.addAll(collection)
+                String synonymsJson = new String(recWordSynonym.getValue("synonyms"), "utf-8")
+                Collection synonymsList = (Collection) UtJson.fromJson(synonymsJson)
+                synonymsSet.addAll(synonymsList)
             }
         }
 
@@ -530,15 +530,32 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Выберем сами среди похожих слов, опираясь на таблицу WordDistance
         Set<String> valuesFalseSet = new HashSet<>()
 
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        ///////////////////////////////////
+        // ^c
+        //генерация недостающих заданий при создании плана - вынести из создания плана и перенести в код более верхненго уровня
+
+        // todo: язык слова надо передавать, а не угадывать
+        String lang
+        if (UtWord.isAlphasEng(valueTrue)) {
+            lang = "eng"
+        } else if (UtWord.isAlphasRus(valueTrue)) {
+            lang = "rus"
+        } else {
+            lang = "kaz"
+        }
         //
         StoreRecord recWordDistance = mdb.loadQueryRecord(
-                "select * from WordDistance where word = :word",
-                [word: valueTrue],
+                "select * from WordDistance where word = :word and lang = :lang",
+                [word: valueTrue, lang: lang],
                 false)
         if (recWordDistance != null) {
-            String strJson = new String(recWordDistance.getValue("matches"), "utf-8")
-            Map map = (Map) UtJson.fromJson(strJson)
-            valuesFalseSet.addAll(map.keySet())
+            String matchesJson = new String(recWordDistance.getValue("matches"), "utf-8")
+            Map matchesMap = (Map) UtJson.fromJson(matchesJson)
+            valuesFalseSet.addAll(matchesMap.keySet())
         }
 
         //

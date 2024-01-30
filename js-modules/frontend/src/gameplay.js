@@ -227,7 +227,7 @@ export default {
 
     async api_getPlans() {
         let resApi = await daoApi.loadStore(
-            "m/Game/getPlansUsr", {}
+            "m/Plan/getPlansUsr", {}
         )
 
         return resApi.records
@@ -235,7 +235,7 @@ export default {
 
     async api_getPlansPublic() {
         let resApi = await daoApi.loadStore(
-            "m/Game/getPlansPublic", {}
+            "m/Plan/getPlansPublic", {}
         )
 
         return resApi.records

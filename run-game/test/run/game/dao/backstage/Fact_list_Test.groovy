@@ -59,11 +59,31 @@ class Fact_list_Test extends RgmBase_Test {
         Fact_list list = mdb.create(Fact_list)
 
         //
-        Store st = list.loadFactsByTagValue(idItem1, "word-category", "top-100")
+        Store st = list.loadFactsByTagValue(idItem1, "top-100", "word-category")
 
         //
         println()
         printFacts(st)
+    }
+
+    @Test
+    void loadFactsByTagValue() {
+        Fact_list list = mdb.create(Fact_list)
+
+        //
+        Store st = list.loadFactsByTagValue("kaz-rus", RgmDbConst.TagType_word_translate_direction)
+        println()
+        utils.outTable(st, 10)
+
+        //
+        st = list.loadFactsByTagValue("rus-eng", RgmDbConst.TagType_word_translate_direction)
+        println()
+        utils.outTable(st, 10)
+
+        //
+        st = list.loadFactsByTagValue("eng-rus", RgmDbConst.TagType_word_translate_direction)
+        println()
+        utils.outTable(st, 10)
     }
 
 

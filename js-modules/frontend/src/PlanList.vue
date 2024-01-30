@@ -103,7 +103,13 @@ export default {
     },
 
     data() {
+        return {
+            plans: []
+        }
 
+        ////////////////////////////////////////
+        ////////////////////////////////////////
+        ////////////////////////////////////////
         return {
             plans: [
                 {
@@ -159,7 +165,19 @@ export default {
                 },
             ]
         }
-    }
+    },
+
+    async mounted() {
+        if (!auth.isAuth()) {
+            apx.showFrame({
+                frame: '/login',
+            })
+            return
+        }
+
+        //
+        this.plans = await gameplay.api_getPlansPublic()
+    },
 
 }
 

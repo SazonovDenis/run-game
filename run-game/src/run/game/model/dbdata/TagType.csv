@@ -1,9 +1,10 @@
 id,text,code
-1001,Тема слова,word-category
-1002,Уровень сложности,level-grade
-1003,Направление перевода слова,word-translate-direction
-1004,Часть речи,word-part-of-speech
-1005,Пример использования слова,word-use-sample
-1006,Топ ххх слов,top-list
-1007,Свойства звукового файла,word-sound-info
+1001,Язык слова,word-lang
+1002,Направление перевода слова,word-translate-direction
+1003,Часть речи,word-part-of-speech
+1004,Пример использования слова,word-use-sample
+1005,Тема слова,word-category
+1006,Уровень сложности,level-grade
+1007,Топ ххх слов,top-list
+1008,Свойства звукового файла,word-sound-info
 2000,Уровень доступа,access

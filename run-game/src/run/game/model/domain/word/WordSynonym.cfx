@@ -10,6 +10,9 @@
         <field name="lang" parent="string" size="50" title="Язык слова"/>
         <field name="word" parent="string" size="200" title="Слово"/>
         <field name="synonyms" parent="blob" title="Синонимы слова"/>
+
+        <!-- Обеспечим уникальность -->
+        <dbindex name="main" fields="word,lang" unique="true"/>
     </domain>
 
 

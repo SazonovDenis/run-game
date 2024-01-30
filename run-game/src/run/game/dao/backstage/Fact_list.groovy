@@ -29,7 +29,14 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
-    public Store loadFactsByTagValue(long idItem, String tagType, String tagValue) {
+    public Store loadFactsByTagValue(String tagValue, long tagType) {
+        TagType_list tagTypeList = mdb.create(TagType_list)
+        StoreRecord recTag = tagTypeList.loadTagByValue(tagValue, tagType)
+        Store st = mdb.loadQuery(sqlFactsByTagValue(), [tag: recTag.getLong("id")])
+        return st
+    }
+
+    public Store loadFactsByTagValue(long idItem, String tagValue, String tagType) {
         Store st = mdb.loadQuery(sqlFactByTagValue(), [id: idItem, tagType: tagType, tagValue: tagValue])
         return st
     }
@@ -172,6 +179,32 @@ order by
 """
     }
 
+    String sqlFactsByTagValue() {
+        return """
+select
+    Item.id item,
+    Item.value itemValue,
+    
+    Fact.id,
+    Fact.dataType factDataType,
+    Fact.value factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+    join FactTag on (FactTag.fact = Fact.id)
+
+where
+    FactTag.tag = :tag
+
+order by
+    Item.id,
+    Fact.dataType,
+    Fact.id,
+    FactTag.tag
+"""
+    }
+
     String sqlFactByTagValue() {
         return """
 select
@@ -185,10 +218,7 @@ select
 from
     Item
     join Fact on (Fact.item = Item.id)
-
     join FactTag on (FactTag.fact = Fact.id)
-    left join Tag FactTag_Tag on (FactTag.tag = FactTag_Tag.id)
-    left join TagType FactTag_TagType on (FactTag_Tag.tagType = FactTag_TagType.id)
 
 where
     Item.id = :id and

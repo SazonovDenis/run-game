@@ -26,36 +26,55 @@ class UtWordDistance extends BaseMdbUtils {
     int id = 1
 
 
-    public void fillStore(Store stWordDistance) {
-        // Получим список слов
+    public void fillStore(Store stWordDistance, Store stWordDistanceErrors) {
+        logger.logStepSize = 10
+
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+
+        // Получим список слов.
         // В запросе distinct написан из-за наличия возможных синонимов среди переводимых слов.
         // Например, в словарях есть два английских слова: "watermelon" и "water melon",
-        // которые переводятся одинаково "арбуз", из-за чего
-        // Fact типа "перевод на русский" (word-translate) имеется в двух записях,
-        // а нам дубликаты слов не нужны
-        Store stWordRus = mdb.loadQuery("select distinct value from Fact where dataType = " + RgmDbConst.DataType_word_translate)
+        // которые переводятся одинаково "арбуз", из-за чего Fact типа "перевод на русский"
+        // (word-translate) имеется в двух записях, а для построения синонимов дубликаты не нужны.
+
+        // Получим список слов - rus
+        Store stWordRus = mdb.loadQuery(sqlFactsByTag([RgmDbConst.Tag_word_translate_direction_eng_rus, RgmDbConst.Tag_word_translate_direction_kaz_rus]))
         //
-        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
         utils.saveToCsv(stWordRus, new File("temp/stWordRus.csv"))
 
         // Рассчитаем расстояние до синонимов
-        fillStore_internal(stWordRus, "rus", stWordDistance)
+        fillStore_internal(stWordRus, "rus", stWordDistance, stWordDistanceErrors)
 
-        // Получим список слов
-        Store stWordEng = mdb.loadQuery("select distinct value from Fact where dataType = " + RgmDbConst.DataType_word_spelling)
+
+        // Получим список слов - kaz
+        Store stWordKaz = mdb.loadQuery(sqlItemsByTag([RgmDbConst.Tag_word_lang_kaz]))
+        //
+        utils.saveToCsv(stWordKaz, new File("temp/stWordKaz.csv"))
+
         // Рассчитаем расстояние до синонимов
-        fillStore_internal(stWordEng, "eng", stWordDistance)
+        fillStore_internal(stWordKaz, "kaz", stWordDistance, stWordDistanceErrors)
 
-        //RgmCsvUtils.saveToCsv(stWordRus, new File("temp/stWordRus.csv"))
-        //RgmCsvUtils.saveToCsv(stWordEng, new File("temp/stWordEng.csv"))
+
+        // Получим список слов - eng
+        Store stWordEng = mdb.loadQuery(sqlItemsByTag([RgmDbConst.Tag_word_lang_eng]))
+        //
+        RgmCsvUtils.saveToCsv(stWordEng, new File("temp/stWordEng.csv"))
+
+        // Рассчитаем расстояние до синонимов
+        fillStore_internal(stWordEng, "eng", stWordDistance, stWordDistanceErrors)
+
+
+        //
+        utils.saveToCsv(stWordDistanceErrors, new File("temp/stWordDistanceErrors.csv"))
     }
 
 
     public void toCsvFile(File file) {
         Store stWordDistance = mdb.createStore("WordDistance.list")
+        Store stWordDistanceErrors = mdb.createStore("WordDistance.errors")
 
         //
-        fillStore(stWordDistance)
+        fillStore(stWordDistance, stWordDistanceErrors)
 
         //
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)
@@ -123,8 +142,8 @@ class UtWordDistance extends BaseMdbUtils {
     /**
      * Рассчитаем расстояние до синонимов для каждого слова из stWords
      */
-    void fillStore_internal(Store stWords, String lang, Store stWordDistance) {
-        logger.logStepStart(stWords.size())
+    void fillStore_internal(Store stWords, String lang, Store stWordDistance, Store stWordDistanceErrors) {
+        logger.logStepStart(stWords.size(), lang)
 
         //
         for (StoreRecord rec : stWords) {
@@ -134,12 +153,56 @@ class UtWordDistance extends BaseMdbUtils {
             Map<String, Double> distances = getJaroWinklerMatch(word, stWords, maxMatchSize)
 
             //
-            stWordDistance.add([id: id, word: word, lang: lang, matches: UtJson.toJson(distances)])
-            id = id + 1
+            if (distances.size() < maxMatchSize) {
+                String error = "distances.size < " + maxMatchSize + ", distances.size: " + distances.size()
+                stWordDistanceErrors.add([word: word, lang: lang, error: error])
+            }
+            if (distances.size() > 0) {
+                stWordDistance.add([id: id, word: word, lang: lang, matches: UtJson.toJson(distances)])
+                id = id + 1
+            }
 
             //
             logger.logStepStep()
         }
+    }
+
+
+    String sqlItemsByTag(Collection tags) {
+        return """
+select
+    distinct
+    Item.value
+
+from
+    Item
+    join ItemTag on (ItemTag.item = Item.id)
+
+where
+    ItemTag.tag in (${tags.join(",")})
+
+order by
+    Item.value
+"""
+    }
+
+
+    String sqlFactsByTag(Collection tags) {
+        return """
+select
+    distinct
+    Fact.value
+
+from
+    Fact
+    join FactTag on (FactTag.fact = Fact.id)
+
+where
+    FactTag.tag in (${tags.join(",")})
+
+order by
+    Fact.value
+"""
     }
 
 

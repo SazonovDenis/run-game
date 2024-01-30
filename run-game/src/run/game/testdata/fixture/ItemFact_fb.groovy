@@ -50,6 +50,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
             "200-puzzle-english" : 200,
     ]
 
+    // Уникальность значений
+    Set<String> tagValueSet = new HashSet<>()
+    Map<String, StoreRecord> itemsMap = new HashMap<>()
 
     protected void onBuild() {
         FixtureTable fxTag = fx.table("Tag")
@@ -78,15 +81,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
         // Частота встречаемости eng
         Map<String, Long> wordFrequencyMap_eng = loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
 
-        // Уникальность значений
-        Set<String> tagValueSet = new HashSet<>()
-        Map<String, StoreRecord> itemsMap = new HashMap<>()
-
         //
         long genIdItem = 0
-        long genIdItemTag = 0
         long genIdFact = 0
-        long genIdFactTag = 0
         genIdTag = mdb.loadQueryRecord(sqlTagMaxId()).getLong("maxId")
 
         //
@@ -153,6 +150,10 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         //
                         List<String> soundFilesArr = getSoundFiles(dirBase + dir + "/mp3/", dirsSound, word_1)
 
+                        if (word_1.equals("апельсин")) {
+                            println("")
+                        }
+
                         // Первый раз встретили слово?
                         StoreRecord recItem = itemsMap.get(word_1)
                         if (recItem == null) {
@@ -166,16 +167,13 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             //
                             idItem = recItem.getLong("id")
 
+                            // Добавляем ItemTag:word-lang
+                            addItemTag(idItem, "word-lang", wordLang_1, stItemTag)
+
                             // Добавляем ItemTag:top-list (пробуем вычислить его автоматически)
                             String topList = getTopList(wordFrequencyMap_eng, dir, word_1)
                             if (!UtCnv.isEmpty(topList)) {
-                                key = idItem + "_top-list_" + topList
-                                tagValueSet.add(key)
-                                genIdItemTag = genIdItemTag + 1
-                                StoreRecord recItemTag = stItemTag.add()
-                                recItemTag.setValue("id", genIdItemTag)
-                                recItemTag.setValue("item", idItem)
-                                recItemTag.setValue("tag", getTag("top-list", topList))
+                                addItemTag(idItem, "top-list", topList, stItemTag)
                             }
                         } else {
                             idItem = recItem.getLong("id")
@@ -185,16 +183,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         String topList = recCsv.getString("top-list")
                         topList = topList.trim().toLowerCase()
                         if (!UtCnv.isEmpty(topList)) {
-                            // С обеспечением уникальности
-                            key = idItem + "_top-list_" + topList
-                            if (!tagValueSet.contains(key)) {
-                                tagValueSet.add(key)
-                                genIdItemTag = genIdItemTag + 1
-                                StoreRecord recItemTag = stItemTag.add()
-                                recItemTag.setValue("id", genIdItemTag)
-                                recItemTag.setValue("item", idItem)
-                                recItemTag.setValue("tag", getTag("top-list", topList))
-                            }
+                            addItemTag(idItem, "top-list", topList, stItemTag)
                         }
 
                         // Добавляем ItemTag:word-category
@@ -202,16 +191,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             String category = recCsv.getString("category" + n)
                             category = category.trim().toLowerCase()
                             if (!UtCnv.isEmpty(category)) {
-                                // С обеспечением уникальности
-                                key = idItem + "_word-category_" + category
-                                if (!tagValueSet.contains(key)) {
-                                    tagValueSet.add(key)
-                                    genIdItemTag = genIdItemTag + 1
-                                    StoreRecord recItemTag = stItemTag.add()
-                                    recItemTag.setValue("id", genIdItemTag)
-                                    recItemTag.setValue("item", idItem)
-                                    recItemTag.setValue("tag", getTag("word-category", category))
-                                }
+                                addItemTag(idItem, "word-category", category, stItemTag)
                             }
                         }
 
@@ -219,16 +199,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         String grade = recCsv.getString("grade")
                         grade = grade.trim().toLowerCase()
                         if (!UtCnv.isEmpty(grade)) {
-                            key = idItem + "_level-grade_" + grade
-                            if (!tagValueSet.contains(key)) {
-                                tagValueSet.add(key)
-                                //
-                                genIdItemTag = genIdItemTag + 1
-                                StoreRecord recItemTag = stItemTag.add()
-                                recItemTag.setValue("id", genIdItemTag)
-                                recItemTag.setValue("item", idItem)
-                                recItemTag.setValue("tag", getTag("level-grade", grade))
-                            }
+                            addItemTag(idItem, "level-grade", grade, stItemTag)
                         }
 
                         // Добавляем Fact:word-spelling
@@ -275,11 +246,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     recFact_1.setValue("dataType", getDataType("word-translate"))
                                     recFact_1.setValue("value", translate)
                                     // Добавляем FactTag
-                                    genIdFactTag = genIdFactTag + 1
-                                    StoreRecord recFactTag = stFactTag.add()
-                                    recFactTag.setValue("id", genIdFactTag)
-                                    recFactTag.setValue("fact", recFact_1.getLong("id"))
-                                    recFactTag.setValue("tag", getTag("word-translate-direction", "en-ru"))
+                                    String direction = wordLang_1 + "-" + wordLang_2
+                                    addFactTag(genIdFact, "word-translate-direction", direction, stFactTag)
                                 }
                             }
                         }
@@ -303,10 +271,11 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     if (!soundSourceArr[soundSourceArr.length - 2].equals("mp3")) {
                                         String soundSource = soundSourceArr[soundSourceArr.length - 2]
                                         soundSource = soundSource.trim().toLowerCase()
-                                        genIdFactTag = genIdFactTag + 1
+                                        //
+                                        long genIdFactTag = stFactTag.size() + 1
                                         StoreRecord recFactTag = stFactTag.add()
                                         recFactTag.setValue("id", genIdFactTag)
-                                        recFactTag.setValue("fact", recFact_1.getLong("id"))
+                                        recFactTag.setValue("fact", genIdFact)
                                         recFactTag.setValue("tag", getTagOrCreate("word-sound-info", soundSource))
                                     }
                                 }
@@ -714,6 +683,33 @@ from
 
         //
         return wordFrequencyMap
+    }
+
+
+    void addItemTag(long idItem, String tagType, String tagValue, stItemTag) {
+        long tag = getTag(tagType, tagValue)
+
+        // С обеспечением уникальности значения тэга для idItem
+        String key = idItem + "_" + tagType + "_" + tagValue
+        if (!tagValueSet.contains(key)) {
+            tagValueSet.add(key)
+            long idItemTag = stItemTag.size() + 1
+            StoreRecord recItemTag = stItemTag.add()
+            recItemTag.setValue("id", idItemTag)
+            recItemTag.setValue("item", idItem)
+            recItemTag.setValue("tag", tag)
+        }
+
+    }
+
+    void addFactTag(long idFact, String tagType, String tagValue, stItemTag) {
+        long tag = getTag(tagType, tagValue)
+
+        long idItemTag = stItemTag.size() + 1
+        StoreRecord recItemTag = stItemTag.add()
+        recItemTag.setValue("id", idItemTag)
+        recItemTag.setValue("fact", idFact)
+        recItemTag.setValue("tag", tag)
     }
 
 

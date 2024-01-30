@@ -20,6 +20,10 @@ class TestData_Test extends Apx_Test {
         fb.badCsv = "../temp/bad.csv"
         Fixture fx = fb.build(model)
         utils.outTableList(fx.stores, 10)
+
+        // File file = new File("temp/FactTag.csv")
+        // RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+        // utils.saveToCsv(fx.stores.get("FactTag"), file)
     }
 
     @Test

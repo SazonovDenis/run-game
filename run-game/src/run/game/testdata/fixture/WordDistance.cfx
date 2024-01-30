@@ -6,5 +6,9 @@
         <field name="matches" parent="string"/>
     </domain>
 
+    <domain name="WordDistance.errors" parent="WordDistance">
+        <field name="error" parent="string"/>
+    </domain>
+
 
 </root>

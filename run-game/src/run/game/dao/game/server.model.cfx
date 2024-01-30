@@ -59,8 +59,9 @@
     -->
     <domain name="GameTask.list.statistic" parent="GameTask">
         <!-- Свойства задания -->
-        <field name="hidden" parent="UsrFact/hidden"/>
-        <field name="starred" parent="UsrFact/starred"/>
+        <field name="isHidden" parent="UsrFact/isHidden"/>
+        <field name="isKnownGood" parent="UsrFact/isKnownGood"/>
+        <field name="isKnownBad" parent="UsrFact/isKnownBad"/>
 
         <!-- Тело задания (вопрос и ответ) -->
         <field name="question" parent="object" title="Вопрос (струтура - Task.fields)"/>
@@ -82,10 +83,13 @@
     Рейтинг задания
     -->
     <domain name="PlanTask.list.statistic" parent="id">
-        <!-- Свойства задания -->
+        <!-- -->
         <field name="task" parent="Task/ref"/>
-        <field name="hidden" parent="UsrFact/hidden"/>
-        <field name="starred" parent="UsrFact/starred"/>
+
+        <!-- Свойства задания -->
+        <field name="isHidden" parent="UsrFact/isHidden"/>
+        <field name="isKnownGood" parent="UsrFact/isKnownGood"/>
+        <field name="isKnownBad" parent="UsrFact/isKnownBad"/>
 
         <!-- Тело задания (вопрос и ответ) -->
         <field name="question" parent="object" title="Вопрос (струтура - Task.fields)"/>

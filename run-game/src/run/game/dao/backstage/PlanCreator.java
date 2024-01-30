@@ -1,6 +1,5 @@
 package run.game.dao.backstage;
 
-import jandcode.core.dbm.std.*;
 import jandcode.core.store.*;
 
 import java.util.*;
@@ -19,19 +18,8 @@ public interface PlanCreator {
     /**
      * Создает план обучения для набора слов по типам фактов
      */
-    long createPlan(String planName, Collection<Long> idItems, Collection<Long> idItemsFalse, long dataTypeQuestion, long dataTypeAnswer, int limit);
+    //long createPlan(String planName, Collection<Long> idItems, Collection<Long> idItemsFalse, long dataTypeQuestion, long dataTypeAnswer, int limit);
 
-
-    /**
-     * Сохраняет план обучения
-     */
-    long savePlan(StoreRecord plan, Collection<DataBox> tasks);
-
-
-    /**
-     * Удаляет план обучения
-     */
-    void deletePlan(long id);
 
 
 }

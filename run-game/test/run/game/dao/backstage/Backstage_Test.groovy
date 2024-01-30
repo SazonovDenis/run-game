@@ -2,6 +2,7 @@ package run.game.dao.backstage
 
 
 import jandcode.commons.datetime.*
+import jandcode.core.auth.std.DefaultUserPasswdAuthToken
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
@@ -75,6 +76,10 @@ class Backstage_Test extends RgmBase_Test {
 
     @Test
     void createPlan() {
+        //
+        setCurrentUser(new DefaultUserPasswdAuthToken("user1010", null))
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+
         // ---
         // Найдем сущности по тексту
         Item_list itemsList = mdb.create(Item_list)
@@ -120,7 +125,7 @@ class Backstage_Test extends RgmBase_Test {
         String planName = "test-" + XDateTime.now().toString().substring(0, 19).replace(":", "-")
         recPlan.setValue("text", planName)
         stItemFactCombinations.copyTo(stPlanFact)
-        stPlanTag.add([tag: RgmDbConst.Tag_access_public])
+        stPlanTag.add([tag: RgmDbConst.Tag_access_private])
         //
         planUpd.ins(recPlan, stPlanFact, stPlanTag)
     }

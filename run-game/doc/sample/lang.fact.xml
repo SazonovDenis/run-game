@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <!-- Пример набора сущностей и их фактов для игры "Заучивание слов" -->
+
+
+    <!-- сущность "dog: собака"-->
+    <item>
+        <tag type="word-category" value="animal"/>
+        <tag type="level-grade" value="base"/>
+
+        <fact type="word-spelling" value="dog">
+        </fact>
+
+
+        <fact type="word-translate" value="собака, пёс">
+            <tag type="word-part-of-speech" value="n"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="base"/>
+        </fact>
+
+        <fact type="word-translate" value="парень, малый">
+            <tag type="word-part-of-speech" value="n"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="up"/>
+            <tag type="word-use-sample"
+                 value="cunning /sly/ dog - хитрая штучка, хитрец; прохиндей, шельма, хитрая бестия, лиса"/>
+        </fact>
+
+        <fact type="word-sound"
+              value="aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdl
+                    LCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=">
+            <tag type="level-grade" value="base"/>
+        </fact>
+
+    </item>
+
+
+    <!-- сущность "run: бежать" -->
+    <item>
+        <tag type="word-category" value="action"/>
+        <tag type="level-grade" value="base"/>
+
+        <fact type="word-spelling" value="run">
+        </fact>
+
+
+        <fact type="word-sound"
+              value="uIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0
+                    c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0
+                    aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdl
+                    LCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=">
+
+            <tag type="level-grade" value="up"/>
+        </fact>
+
+        <fact type="word-sound"
+              value="cmVyeXBlcHlvaTJ1aztsZXJydGsyNDA5Nm9wb2RnaGZncmh3cWV0a2g7bGFkZmJrcFxveGNr
+                    YmxtcWUneWx0Ow==">
+
+            <tag type="level-grade" value="up"/>
+        </fact>
+
+        <fact type="word-sound"
+              value="ZVhCbGNIbHZhVEoxYXp0c1pYSnlkR3N5TkRBNU5tOXdiMlJuYUdabmNtaDNjV1YwYTJnN2JHRmta
+                    bUpyY0Z4dmVHTnIKICAgICAgICAgICAgICAgICAgICBZbXh0Y1dVbmVXeDBPdz09Ij4KICAgICAg
+                    ICAgICAgPHRhZyB0ZXh0PSJsZXZlbDp1cCIvPgogICAgICAgIDwvZmFjdD4=">
+
+            <tag type="level-grade" value="up"/>
+        </fact>
+
+        <fact type="word-translate" value="бег, пробег">
+            <tag type="word-part-of-speech" value="n"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="base"/>
+
+            <tag type="word-use-sample" value="at a run - бегом"/>
+            <tag type="word-use-sample" value="to come up at a run - подбежать"/>
+            <tag type="word-use-sample" value="on the run - а) на ходу, в движении б) второпях"/>
+        </fact>
+
+        <fact type="word-translate" value="рейс, маршрут">
+            <tag type="word-part-of-speech" value="n"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="up"/>
+
+            <tag type="word-use-sample" value="ship's run - маршрут /рейс/ корабля"/>
+        </fact>
+
+        <fact type="word-translate" value="жидкий; расплавленный; растопленный">
+            <tag type="word-part-of-speech" value="n"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="up"/>
+
+            <tag type="word-use-sample" value="run butter - топлёное масло"/>
+        </fact>
+
+        <fact type="word-translate" value="период, отрезок (времени), полоса">
+            <tag type="word-part-of-speech" value="n"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="up"/>
+
+            <tag type="word-use-sample"
+                 value="a run of success [of good luck] - полоса успеха [везения /удачи/]"/>
+            <tag type="word-use-sample"
+                 value="a run of ill luck - несчастливая полоса, полоса невезения"/>
+            <tag type="word-use-sample" value="a long run of power - долгое пребывание у власти"/>
+            <tag type="word-use-sample" value="to have a long run - долго идти (на сцене)"/>
+            <tag type="word-use-sample" value="the play had a short run - эта пьеса шла недолго"/>
+        </fact>
+
+        <fact type="word-translate" value="бежать, бегать">
+            <tag type="word-part-of-speech" value="v"/>
+            <tag type="word-translate-direction" value="en-ru"/>
+            <tag type="level-grade" value="base"/>
+
+            <tag type="word-use-sample"
+                 value="to run fast [slowly, as hard as one can, like a deer] — бегать быстро [медленно, изо всех сил, как олень]"/>
+            <tag type="word-use-sample" value="to run a mile — пробежать милю"/>
+        </fact>
+
+    </item>
+
+</root>

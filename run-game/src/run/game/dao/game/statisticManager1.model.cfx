@@ -36,6 +36,7 @@
     </domain>
 
 
+<!--
     <domain name="PlanTask.statistic" parent="GameTask.statistic">
         <field name="textQuestion" parent="TaskQuestion/value"/>
         <field name="soundQuestion" parent="TaskQuestion/value"/>
@@ -48,6 +49,7 @@
         <field name="factAnswerDataType" parent="Fact/dataType"/>
         <field name="factAnswerValue" parent="Fact/value"/>
     </domain>
+-->
 
 
 </root>

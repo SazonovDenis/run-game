@@ -5,6 +5,7 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
+import run.game.dao.backstage.*
 
 class Server_Game_Test extends RgmBase_Test {
 
@@ -12,12 +13,51 @@ class Server_Game_Test extends RgmBase_Test {
     boolean doPauseBeforeGame = true
 
     @Test
-    void getPlans() {
-        //
+    void usrPlan_AddDel() {
         Server srv = mdb.create(ServerImpl)
+        Plan_list list = mdb.create(Plan_list)
+        Plan_upd upd = mdb.create(Plan_upd)
+
         //
-        Store stUsr = srv.getPlansUsr()
-        Store stPublic = srv.getPlansPublic()
+        Store stUsr
+        Store stPublic
+
+        //
+        stUsr = list.getPlansUsr()
+        stPublic = list.getPlansPublic()
+        //
+        println()
+        println("Plans usr")
+        mdb.outTable(stUsr)
+        println("Plans public")
+        mdb.outTable(stPublic)
+
+        // ---
+        long idPlan = stPublic.get(0).getLong("id")
+        upd.addUsrPlan(idPlan)
+        println()
+        println("addPlan, idPlan: " + idPlan)
+
+        // ---
+        stUsr = list.getPlansUsr()
+        stPublic = list.getPlansPublic()
+        //
+        println()
+        println("Plans usr")
+        mdb.outTable(stUsr)
+        println("Plans public")
+        mdb.outTable(stPublic)
+
+
+        // ---
+        upd.delUsrPlan(idPlan)
+        println()
+        println("delPlan, idPlan: " + idPlan)
+
+
+        // ---
+        stUsr = list.getPlansUsr()
+        stPublic = list.getPlansPublic()
         //
         println()
         println("Plans usr")
@@ -26,16 +66,18 @@ class Server_Game_Test extends RgmBase_Test {
         mdb.outTable(stPublic)
     }
 
-
     @Test
-    void usrPlanList() {
-        Server srv = mdb.create(ServerImpl)
+    void usrPlan_hide() {
+        Plan_list list = mdb.create(Plan_list)
+        Plan_upd upd = mdb.create(Plan_upd)
+
+        //
         Store stUsr
         Store stPublic
 
         //
-        stUsr = srv.getPlansUsr()
-        stPublic = srv.getPlansPublic()
+        stUsr = list.getPlansUsr()
+        stPublic = list.getPlansPublic()
         //
         println()
         println("Plans usr")
@@ -44,14 +86,14 @@ class Server_Game_Test extends RgmBase_Test {
         mdb.outTable(stPublic)
 
         // ---
+        long idPlan = stUsr.get(0).getLong("id")
+        upd.hideUsrPlan(idPlan)
         println()
-        println("addPlan")
-        long idPlan = stPublic.get(0).getLong("id")
-        srv.addUsrPlan(idPlan)
+        println("hideUsrPlan, idPlan: " + idPlan)
 
         // ---
-        stUsr = srv.getPlansUsr()
-        stPublic = srv.getPlansPublic()
+        stUsr = list.getPlansUsr()
+        stPublic = list.getPlansPublic()
         //
         println()
         println("Plans usr")
@@ -61,14 +103,14 @@ class Server_Game_Test extends RgmBase_Test {
 
 
         // ---
+        upd.unhideUsrPlan(idPlan)
         println()
-        println("delPlan")
-        srv.delPlan(idPlan)
+        println("unhideUsrPlan, idPlan: " + idPlan)
 
 
         // ---
-        stUsr = srv.getPlansUsr()
-        stPublic = srv.getPlansPublic()
+        stUsr = list.getPlansUsr()
+        stPublic = list.getPlansPublic()
         //
         println()
         println("Plans usr")

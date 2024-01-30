@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <dao>
+        <holder name="api">
+
+            <item name="m/Plan">
+
+                <item name="i" method="*"
+                      class="run.game.dao.backstage.Plan_list"/>
+                <item name="i" method="*"
+                      class="run.game.dao.backstage.Plan_upd"/>
+
+            </item>
+
+        </holder>
+    </dao>
+
+</root>

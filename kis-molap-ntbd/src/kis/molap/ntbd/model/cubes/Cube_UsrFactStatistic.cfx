@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
     <cube name="Cube_UsrFactStatistic"
-          title="Статистика прохождения уровня пользователем"
+          title="Статистика знания фактов пользователем"
           space="Space_UsrFact"
           class="kis.molap.ntbd.model.cubes.Cube_UsrFactStatistic">
 

@@ -91,7 +91,7 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
             params.put("usr", usr)
             params.put("factQuestion", factQuestion)
             params.put("factAnswer", factAnswer)
-            Store stGameTask = mdb.loadQuery(sqlGameTask(), params)
+            Store stGameTask = mdb.loadQuery(sqlGameTaskByFact(), params)
             //mdb.outTable(stGameTask)
 
             //
@@ -191,7 +191,7 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
     StoreRecord getTaskByGameTask(long usr, long game, long task, HashMap<String, StoreIndex> cacheTaskByGame) {
         String key = usr + "_" + game
         if (!cacheTaskByGame.containsKey(key)) {
-            Store stTasks = mdb.loadQuery(sqlTasks(), [usr: usr, game: game])
+            Store stTasks = mdb.loadQuery(sqlGameTaskByGame(), [usr: usr, game: game])
             cacheTaskByGame.put(key, stTasks.getIndex("id"))
         }
 
@@ -242,7 +242,7 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
         return ratingQuickness
     }
 
-    String sqlTasks() {
+    String sqlGameTaskByGame() {
         """
 select
     Task.* 
@@ -250,19 +250,19 @@ from
     GameTask 
     join Task on (GameTask.task = Task.id)
 where
-    GameTask.game = :game and
-    GameTask.usr = :usr
+    GameTask.usr = :usr and
+    GameTask.game = :game
 """
     }
 
 
-    String sqlGameTask() {
+    String sqlGameTaskByFact() {
         """
 select
     GameTask.*,
-    Task.item,
     Task.factQuestion,
     Task.factAnswer
+
 from
     GameTask
     join Task on (GameTask.task = Task.id)

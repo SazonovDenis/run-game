@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <cube name="Cube_UsrPlanStatistic"
+          title="Статистика прохождения уровня пользователем"
+          space="Space_UsrPlan"
+          class="kis.molap.ntbd.model.cubes.Cube_UsrPlanStatistic">
+
+        <!-- Поля -->
+        <field name="count"/>
+        <field name="countFull"/>
+        <field name="ratingTask"/>
+        <field name="ratingQuickness"/>
+
+        <!-- Зависит от таблиц -->
+<!--
+        <depend name="GameTask"/>
+-->
+
+        <!-- Зависит от кубов -->
+        <dependCube name="Cube_UsrFactStatistic"/>
+    </cube>
+
+    <!-- Дополнение физической таблицы для space -->
+    <domain name="Cube_UsrPlan">
+
+        <field name="count" parent="long" title="Количество слов"/>
+        <field name="countFull" parent="long"
+               title="Общее количество слов (включая скрытые)"/>
+        <field name="ratingTask" parent="double" title="Рейтинг за ответы"/>
+        <field name="ratingQuickness" parent="double" title="Рейтинг за скорость"/>
+
+    </domain>
+
+</root>

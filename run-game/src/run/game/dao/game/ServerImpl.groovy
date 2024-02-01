@@ -6,6 +6,10 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
+import kis.molap.model.coord.*
+import kis.molap.model.cube.*
+import kis.molap.model.service.*
+import kis.molap.model.value.impl.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 import run.game.util.*
@@ -46,6 +50,41 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     @DaoMethod
     public DataBox getActiveGame() {
         long idUsr = getCurrentUserId()
+
+        //
+        StoreRecord recGame = loadActiveGameRec()
+        long idGame = recGame.getLong("id")
+
+        //
+        return loadAndPrepareGame(idGame, idUsr)
+    }
+
+    @DaoMethod
+    public void closeActiveGame() {
+        // Закроем игру
+        long idUsr = getCurrentUserId()
+
+        //
+        StoreRecord recGame = loadActiveGameRec()
+        if (recGame == null) {
+            return
+        }
+
+        //
+        long idGame = recGame.getLong("id")
+
+        //
+        XDateTime dt = XDateTime.now()
+        mdb.execQuery(sqlCloseGame(), [game: idGame, dt: dt])
+
+        // Пересчитаем кубы
+        long idPlan = recGame.getLong("plan")
+        cubesRecalc(idUsr, idGame, idPlan)
+    }
+
+
+    protected StoreRecord loadActiveGameRec() {
+        long idUsr = getCurrentUserId()
         Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
 
         //
@@ -55,33 +94,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         StoreRecord recGame = stGames.get(0)
-        long idGame = recGame.getLong("id")
 
         //
-        return loadAndPrepareGame(idGame, idUsr)
+        return recGame
     }
 
-    @DaoMethod
-    public void closeActiveGame() {
-        long idUsr = getCurrentUserId()
-        XDateTime dt = XDateTime.now()
-        mdb.execQuery(sqlCloseActiveGame(), [usr: idUsr, dt: dt])
-    }
-/*
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-/////////////////////
-        ^c переписать Cube_UsrPlanStatistic,
-    Спискок слов в плане, не есть список заданий, а список фактов!!!
-*/
 
     @DaoMethod
     public DataBox gameStart(long idPlan) {
@@ -261,7 +278,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Задания плана - данные вопроса и ответа
         Store stTaskQuestion = mdb.loadQuery(sqlPlanTaskQuestion(), [plan: idPlan])
-        Store stTaskAnswer = mdb.loadQuery(sqlPlanTaskAnswer(), [plan: idPlan])
+        Store stTaskAnswer = mdb.loadQuery(sqlPlanTaskOption(), [plan: idPlan])
 
         // Дополним задания плана данными вопроса и ответа
         fillTaskBody(stPlanTasks, stTaskQuestion, stTaskAnswer)
@@ -362,7 +379,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Map statisticAggretated = statisticManager.aggregateStatistic0(stTasksStatistic)
 
         // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
-        long countHidden = StoreUtils.getCount(stGameTasks, "hidden", true)
+        long countHidden = StoreUtils.getCount(stGameTasks, "isHidden", true)
         statisticAggretated.put("ratingMax", stGameTasks.size() - countHidden)
 
 
@@ -418,7 +435,7 @@ where
     }
 
 
-    String sqlPlanTaskAnswer() {
+    String sqlPlanTaskOption() {
         return """
 select 
     PlanTask.*,
@@ -613,7 +630,7 @@ where
     }
 
 
-    private String sqlPlanTasksStatistic() {
+    public static String sqlPlanTasksStatistic() {
         return """ 
 -- Задания для каждой пары фактов в плане
 select 
@@ -635,14 +652,14 @@ from
         PlanFact.factAnswer = Task.factAnswer
     )
     left join UsrFact on (
+        UsrFact.usr = :usr and
         PlanFact.factQuestion = UsrFact.factQuestion and 
-        PlanFact.factAnswer = UsrFact.factAnswer and
-        UsrFact.usr = :usr
+        PlanFact.factAnswer = UsrFact.factAnswer
     )
     left join Cube_UsrFact on (
+        UsrFact.usr = :usr and
         PlanFact.factQuestion = Cube_UsrFact.factQuestion and 
-        PlanFact.factAnswer = Cube_UsrFact.factAnswer and
-        UsrFact.usr = :usr
+        PlanFact.factAnswer = Cube_UsrFact.factAnswer
     )
     
 where
@@ -750,9 +767,9 @@ from
     GameTask
     join Task on (GameTask.task = Task.id)
     left join UsrFact on (
+        UsrFact.usr = :usr and
         Task.factQuestion = UsrFact.factQuestion and 
-        Task.factAnswer = UsrFact.factAnswer and 
-        UsrFact.usr = :usr
+        Task.factAnswer = UsrFact.factAnswer 
     )
 
 where
@@ -809,7 +826,7 @@ where
 """
     }
 
-    private String sqlCloseActiveGame() {
+    private String sqlCloseGame() {
         return """
 update
     Game
@@ -817,16 +834,67 @@ set
     dend = :dt
 where
     Game.dend is null and
-    Game.id in (
-        select
-            GameUsr.game 
-        from 
-            GameUsr
-        where
-            GameUsr.usr = :usr
-    )
+    Game.id = :game
 """
     }
 
+
+    void cubesRecalc(long idUsr, long idGame, long idPlan) {
+        // Что считаем
+        Store stPlanFact = mdb.loadQuery("select factQuestion, factAnswer, :usr usr from PlanFact where plan = :plan", [usr: idUsr, plan: idPlan])
+        CoordList coordsUsrFact = createCoords(stPlanFact, ["usr", "factQuestion", "factAnswer"])
+        CoordList coordsUsrGame = createCoords([usr: idUsr, game: idGame])
+        CoordList coordsUsrPlan = createCoords([usr: idUsr, plan: idPlan])
+
+        //
+        cubeRecalc("Cube_UsrFactStatistic", coordsUsrFact)
+        cubeRecalc("Cube_UsrGameStatistic", coordsUsrGame)
+        cubeRecalc("Cube_UsrPlanStatistic", coordsUsrPlan)
+    }
+
+
+    void cubeRecalc(String cubeName, CoordList coords) {
+        // Создаем куб
+        CubeService cubeService = getModel().bean(CubeService)
+        Cube cube = cubeService.createCube(cubeName, mdb)
+
+        // Результат будем писать в БД
+        CalcResultStreamDb res = new CalcResultStreamDb(mdb, cube.getInfo())
+        res.open()
+
+        // Расчет и запись
+        cube.calc(coords, null, null, res)
+
+        // Запись остатка
+        res.close()
+
+    }
+
+
+    CoordList createCoords(Map values) {
+        CoordList coords = CoordList.create()
+
+        Coord coord = Coord.create()
+        for (String field : values.keySet()) {
+            coord.put(field, values.get(field))
+        }
+        coords.add(coord)
+
+        return coords
+    }
+
+    CoordList createCoords(Store st, ArrayList<String> fields) {
+        CoordList coords = CoordList.create()
+
+        for (StoreRecord rec : st) {
+            Coord coord = Coord.create()
+            for (String field : fields) {
+                coord.put(field, rec.getValue(field))
+            }
+            coords.add(coord)
+        }
+
+        return coords
+    }
 
 }

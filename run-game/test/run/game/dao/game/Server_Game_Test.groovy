@@ -241,7 +241,7 @@ class Server_Game_Test extends RgmBase_Test {
         printTaskStatisticByPlan(idPlan)
 
         // Игра
-        doGameProcess(idPlan, false, true)
+        doGameProcess(idPlan)
 
         // Обновленная статистика по уровню
         printTaskStatisticByPlan(idPlan)
@@ -249,8 +249,8 @@ class Server_Game_Test extends RgmBase_Test {
 
     @Test
     void testGameProcess_xN() {
-        int countN = 10
         long idPlan = 1000
+        int countN = 10
 
         // Статистика по уровню
         printTaskStatisticByPlan(idPlan)
@@ -311,14 +311,14 @@ class Server_Game_Test extends RgmBase_Test {
     @Test
     void testGameProcess_1000_bad() {
         for (int i = 1; i <= 10; i++) {
-            doGameProcess(1000, false, true)
+            doGameProcess_internal(1000, false, true)
         }
     }
 
     @Test
     void testGameProcess_1000_good() {
         for (int i = 1; i <= 10; i++) {
-            doGameProcess(1000, true, false)
+            doGameProcess_internal(1000, true, false)
         }
     }
 
@@ -356,10 +356,10 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     long doGameProcess(long idPlan) {
-        return doGameProcess(idPlan, false, false)
+        return doGameProcess_internal(idPlan, false, false)
     }
 
-    long doGameProcess(long idPlan, boolean allTaskOk, boolean allTaskErr) {
+    long doGameProcess_internal(long idPlan, boolean allTaskOk, boolean allTaskErr) {
         Server upd = mdb.create(ServerImpl)
 
         // Закроем все игры

@@ -1,13 +1,13 @@
 package run.game.dao.backstage
 
-
 import jandcode.commons.datetime.*
-import jandcode.core.auth.std.DefaultUserPasswdAuthToken
+import jandcode.core.auth.std.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 
+@Disabled
 class Backstage_Test extends RgmBase_Test {
 
     long item = 1030
@@ -75,11 +75,25 @@ class Backstage_Test extends RgmBase_Test {
 
 
     @Test
-    void createPlan() {
+    void createPlan_1000() {
+        setCurrentUser(new DefaultUserPasswdAuthToken("admin", "111"))
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
         //
+        createPlan()
+    }
+
+
+    @Test
+    void createPlan_1010() {
         setCurrentUser(new DefaultUserPasswdAuthToken("user1010", null))
         println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+        //
+        createPlan()
+    }
 
+
+    @Test
+    void createPlan() {
         // ---
         // Найдем сущности по тексту
         Item_list itemsList = mdb.create(Item_list)

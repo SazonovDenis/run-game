@@ -1,6 +1,7 @@
 package run.game.dao.game
 
 import jandcode.commons.datetime.*
+import jandcode.core.auth.std.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.*
@@ -39,6 +40,22 @@ class StatisticManager1_Test extends RgmBase_Test {
         idGame = idGame - 1
         println()
         compareStatisticForGames(idGame, 0)
+    }
+
+    @Test
+    void getGameStatisticByGame() {
+        long idGame = 1004
+        //
+        setCurrentUser(new DefaultUserPasswdAuthToken("user1010", ""))
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+
+        //
+        StatisticManager1 sm = mdb.create(StatisticManager1)
+        Store stStatistic = sm.getStatisticForGame(idGame)
+
+        //
+        println()
+        mdb.outTable(stStatistic)
     }
 
     @Test

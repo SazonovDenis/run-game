@@ -1,5 +1,6 @@
 package kis.molap.ntbd.model.cubes
 
+import groovy.transform.*
 import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
@@ -18,15 +19,8 @@ import kis.molap.model.value.*
  * Для отслеживания изменений в статистике для пары вопрос+ответ для пользователя
  * достаточно отследить только добавления в GameTask.
  */
+@CompileStatic
 public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
-
-
-    // Расчет рейтингов: вес результата текущего, предыдущего и пред-предыдущего ответа
-    protected double[] ratingWeight = [0.5, 0.3, 0.2]
-
-    // Расчет рейтинга за скорость: время ответа и баллы за него
-    protected double[] ratingDurationGrade = [2, 3, 5, 8]
-    protected double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
 
 
     public CoordList getDirtyCoords(long auditAgeFrom, long auditAgeTo) throws Exception {
@@ -82,6 +76,10 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
             logCube.logStepStart()
         }
 
+        //
+        UtCubeRating utCubeRating = new UtCubeRating()
+
+        //
         for (Coord coord : coords) {
             long usr = UtCnv.toLong(coord.get("usr"))
             long factQuestion = UtCnv.toLong(coord.get("factQuestion"))
@@ -94,6 +92,37 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
             Store stGameTask = mdb.loadQuery(sqlGameTaskByFact(), params)
             //mdb.outTable(stGameTask)
 
+            int pos = 0
+            while (pos < stGameTask.size()) {
+                Map resMap = new HashMap()
+                pos = utCubeRating.stepCollectRaiting(stGameTask, pos, resMap)
+
+                // ---
+                // Возвращаем calcResult
+                CalcResult calcResult = new CalcResult()
+
+                //
+                Coord newCoord = Coord.create()
+                newCoord.put("usr", usr)
+                newCoord.put("factQuestion", factQuestion)
+                newCoord.put("factAnswer", factAnswer)
+                calcResult.coord = newCoord
+
+                //
+                ValueSingle valueSingle = ValueSingle.create()
+                valueSingle.put("ratingTask", resMap.get("ratingTask"))
+                valueSingle.put("ratingQuickness", resMap.get("ratingQuickness"))
+                calcResult.value = valueSingle
+
+                //
+                res.addValue(calcResult)
+
+
+                // ---
+                logCube.logStepStep()
+            }
+
+/*
             //
             List<Boolean> taskAnswers = []
             List<Double> taskAnswersDuration = []
@@ -129,7 +158,6 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
                 ) {
                     // ---
                     // Считаем рейтинг
-
 
                     // Если не хватает последних ответов (мало раз выполнено task) -
                     // считаем, что предыдущие были отвечены неправильно
@@ -180,6 +208,7 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
                     logCube.logStepStep()
                 }
             }
+*/
 
         }
     }
@@ -205,41 +234,6 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
 
         //
         return recTask
-    }
-
-    /**
-     * Бал за ответ
-     * @param taskAnswer результат ответа
-     * @return Значение от 0 до 1
-     */
-    protected double getRatingAnswer(boolean taskAnswer) {
-        if (taskAnswer == true) {
-            return 1
-        } else {
-            return 0
-        }
-    }
-
-    /**
-     * Бал за скорость
-     * @param taskAnswerDuration время ответа
-     * @return Значение от 0 до 1
-     */
-    protected double getRatingQuickness(Double taskAnswerDuration) {
-        double ratingQuickness = 0
-
-        if (taskAnswerDuration == null) {
-            return ratingQuickness
-        }
-
-        for (int i = 0; i < ratingDurationGrade.size(); i++) {
-            if (taskAnswerDuration <= ratingDurationGrade[i]) {
-                ratingQuickness = ratingDurationWeight[i]
-                break
-            }
-        }
-
-        return ratingQuickness
     }
 
     String sqlGameTaskByGame() {

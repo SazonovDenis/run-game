@@ -7,6 +7,7 @@ import jandcode.commons.error.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.*
+import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.util.*
 
@@ -34,7 +35,7 @@ class StatisticManager1 extends RgmMdbUtils {
         XDateTime dend = recGame.getDateTime("dend")
         XDateTime dbeg = recGame.getDateTime("dbeg")
         // Период заданий - за сутки от начала
-        dbeg = dbeg.addDays(-1)
+        dbeg = dbeg.addDays(-1000)
         // Для неазаконченной игры dend
         if (UtDateTime.isEmpty(dend)) {
             dend = UtDateTime.EMPTY_DATETIME_END
@@ -72,11 +73,28 @@ class StatisticManager1 extends RgmMdbUtils {
     Store getStatisticForPlanInternal(long idPlan, long idUsr, XDateTime dbeg, XDateTime dend) {
         Map params = [dbeg: dbeg, dend: dend, "usr": idUsr, plan: idPlan]
         Store stGameTask = mdb.loadQuery(sqlGameTask(), params)
-        //mdb.outTable(stGameTask)
+        mdb.outTable(stGameTask)
 
         // Сгруппируем по task
         Store stTaskStatistic = mdb.createStore("GameTask.statistic")
 
+        //
+        UtCubeRating utCubeRating = new UtCubeRating()
+
+        //
+        int pos = 0
+        while (pos < stGameTask.size()) {
+            Map resMap = new HashMap()
+            pos = utCubeRating.stepCollectRaiting(stGameTask, pos, resMap)
+
+            //
+            StoreRecord recPlanTaskStatistic = stTaskStatistic.add()
+            recPlanTaskStatistic.setValue("task", resMap.get("task"))
+            recPlanTaskStatistic.setValue("rating", resMap.get("rating"))
+            recPlanTaskStatistic.setValue("ratingQuickness", resMap.get("ratingQuickness"))
+        }
+
+/*
         //
         List<Boolean> taskAnswers = []
         List<Double> taskAnswersDuration = []
@@ -106,7 +124,9 @@ class StatisticManager1 extends RgmMdbUtils {
             }
 
             // Накопление по очередному task закончено
-            if (recGameTaskNext == null || recGameTaskNext.getLong("task") != recGameTask.getLong("task")) {
+            if (recGameTaskNext == null ||
+                    recGameTaskNext.getLong("task") != recGameTask.getLong("task")
+            ) {
                 // Если не хватает последних rating (мало раз выполнено task) -
                 // считаем, что предыдущие были отвечены неправильно
                 while (taskAnswers.size() < ratingWeight.size()) {
@@ -138,6 +158,7 @@ class StatisticManager1 extends RgmMdbUtils {
                 taskAnswersDuration = []
             }
         }
+*/
 
 
         //
@@ -224,7 +245,7 @@ class StatisticManager1 extends RgmMdbUtils {
      * @param taskAnswer результат ответа
      * @return Значение от 0 до 1
      */
-    protected double getRatingAnswer(boolean taskAnswer) {
+    private double getRatingAnswer(boolean taskAnswer) {
         if (taskAnswer == true) {
             return 1
         } else {
@@ -237,7 +258,7 @@ class StatisticManager1 extends RgmMdbUtils {
      * @param taskAnswerDuration время ответа
      * @return Значение от 0 до 1
      */
-    protected double getRatingQuickness(Double taskAnswerDuration) {
+    private double getRatingQuickness(Double taskAnswerDuration) {
         double ratingQuickness = 0
 
         if (taskAnswerDuration == null) {
@@ -305,32 +326,29 @@ limit 1
 
     protected String sqlGameTask() {
         return """
-select 
-    PlanTask.plan,
-    PlanTask.task,
-    GameTask.*
+select
+    GameTask.*,
+    Task.factQuestion,
+    Task.factAnswer
      
 from 
-    Plan
-    join PlanTask on (
-        PlanTask.plan = Plan.id
-    )
-    left join GameTask on (
-        GameTask.task = PlanTask.task and
+    Game
+    join GameTask on (
+        GameTask.game = Game.id and
         GameTask.usr = :usr and
         GameTask.dtTask >= :dbeg and 
         GameTask.dtTask < :dend
     )
-    left join Game on (
-        Game.id = GameTask.game and
-        Game.plan = Plan.id 
+    join Task on (
+        GameTask.task = Task.id
     ) 
      
 where
-    Plan.id = :plan
+    Game.plan = :plan
      
 order by
-    PlanTask.task,
+    Task.factQuestion,
+    Task.factAnswer,
     GameTask.dtTask desc,
     GameTask.game desc
 """
@@ -397,5 +415,6 @@ order by
         //
         return aggretate
     }
+
 
 }

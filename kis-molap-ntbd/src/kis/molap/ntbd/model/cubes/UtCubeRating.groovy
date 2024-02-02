@@ -15,6 +15,15 @@ class UtCubeRating {
     protected double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
 
 
+    /**
+     * Выполняет анализ списка GameTask, расчитывает рейтинг для каждого factQuestion+factAnswer
+     *
+     * @param stGameTask список GameTask+factQuestion+factAnswer (по определенным критериям)
+     * Список должен быть отсортированн по factQuestion+factAnswer а внутри них - по дате выдачи.
+     * @param pos начальная позиция
+     * @param res
+     * @return новая позиция
+     */
     public int stepCollectRaiting(Store stGameTask, int pos, HashMap res) {
         List<Boolean> taskAnswers = []
         List<Double> taskAnswersDuration = []

@@ -23,6 +23,8 @@ import kis.molap.model.value.*
 public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
 
 
+    public static int RAITING_ANALYZE_DAYS_DIFF = 10
+
     public CoordList getDirtyCoords(long auditAgeFrom, long auditAgeTo) throws Exception {
         CoordList coords = CoordList.create()
 
@@ -54,7 +56,7 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
     public void calc(Iterable<Coord> coords, XDate intervalDbeg, XDate intervalDend, ICalcResultStream res) throws Exception {
         // Период анализа ответов - за некоторое количество дней от начала
         XDateTime dend = XDateTime.today().addDays(1)
-        XDateTime dbeg = dend.addDays(-10)
+        XDateTime dbeg = dend.addDays(-RAITING_ANALYZE_DAYS_DIFF)
         Map params = UtCnv.toMap(
                 "dbeg", dbeg,
                 "dend", dend
@@ -121,95 +123,6 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
                 // ---
                 logCube.logStepStep()
             }
-
-/*
-            //
-            List<Boolean> taskAnswers = []
-            List<Double> taskAnswersDuration = []
-            //
-            for (int n = 0; n < stGameTask.size(); n++) {
-                // Текущая и следующая запись
-                StoreRecord recGameTask = stGameTask.get(n)
-                StoreRecord recGameTaskNext = null
-                if (n < stGameTask.size() - 1) {
-                    recGameTaskNext = stGameTask.get(n + 1)
-                }
-
-                // Накопление rating по очередному GameTask
-                if (taskAnswers.size() < ratingWeight.size()) {
-                    if (recGameTask.getLong("wasTrue")) {
-                        taskAnswers.add(true)
-                    } else {
-                        taskAnswers.add(false)
-                    }
-                    //
-                    Double duration = null
-                    if (!UtDateTime.isEmpty(recGameTask.getDateTime("dtAnswer"))) {
-                        double durationMsec = recGameTask.getDateTime("dtAnswer").diffMSec(recGameTask.getDateTime("dtTask"))
-                        duration = durationMsec / 1000
-                    }
-                    taskAnswersDuration.add(duration)
-                }
-
-                // Накопление по очередному task закончено
-                if (recGameTaskNext == null ||
-                        recGameTaskNext.getLong("factQuestion") != recGameTask.getLong("factQuestion") ||
-                        recGameTaskNext.getLong("factAnswer") != recGameTask.getLong("factAnswer")
-                ) {
-                    // ---
-                    // Считаем рейтинг
-
-                    // Если не хватает последних ответов (мало раз выполнено task) -
-                    // считаем, что предыдущие были отвечены неправильно
-                    while (taskAnswers.size() < ratingWeight.size()) {
-                        taskAnswers.add(false)
-                        taskAnswersDuration.add(null)
-                    }
-
-                    //
-                    double ratingTask = 0
-                    for (int i = 0; i < ratingWeight.size(); i++) {
-                        double ratingAnswer = getRatingAnswer(taskAnswers.get(i))
-                        ratingTask = ratingTask + ratingAnswer * ratingWeight[i]
-                    }
-                    //
-                    double ratingQuickness = 0
-                    for (int i = 0; i < ratingWeight.size(); i++) {
-                        double ratingQuicknessAnswer = getRatingQuickness(taskAnswersDuration.get(i))
-                        ratingQuickness = ratingQuickness + ratingQuicknessAnswer * ratingWeight[i]
-                    }
-
-                    //
-                    taskAnswers = []
-                    taskAnswersDuration = []
-
-
-                    // ---
-                    // Возвращаем calcResult
-                    CalcResult calcResult = new CalcResult()
-
-                    //
-                    Coord newCoord = Coord.create()
-                    newCoord.put("usr", usr)
-                    newCoord.put("factQuestion", factQuestion)
-                    newCoord.put("factAnswer", factAnswer)
-                    calcResult.coord = newCoord
-
-                    //
-                    ValueSingle valueSingle = ValueSingle.create()
-                    valueSingle.put("ratingTask", ratingTask)
-                    valueSingle.put("ratingQuickness", ratingQuickness)
-                    calcResult.value = valueSingle
-
-                    //
-                    res.addValue(calcResult)
-
-                    //
-                    logCube.logStepStep()
-                }
-            }
-*/
-
         }
     }
 
@@ -263,10 +176,10 @@ from
 
 where
     GameTask.usr = :usr and
-    GameTask.dtTask >= :dbeg and
-    GameTask.dtTask < :dend and
     Task.factQuestion = :factQuestion and
-    Task.factAnswer = :factAnswer
+    Task.factAnswer = :factAnswer and
+    GameTask.dtTask >= :dbeg and
+    GameTask.dtTask < :dend
 
 order by
     Task.factQuestion,

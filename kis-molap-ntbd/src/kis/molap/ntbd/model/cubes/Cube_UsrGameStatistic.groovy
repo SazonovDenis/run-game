@@ -9,6 +9,7 @@ import kis.molap.model.cube.*
 import kis.molap.model.cube.impl.*
 import kis.molap.model.service.*
 import kis.molap.model.value.*
+import kis.molap.ntbd.model.*
 
 /**
  * Зависимости от GameUsr нет, а только от GameTask, т.к. предполагаем, что
@@ -74,17 +75,62 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
             params.put("usr", usr)
             params.put("game", game)
 
-
-            List taskStatistic = new ArrayList()
-            //mdb.outTable(rec)
-
-            StoreRecord recGameTask = mdb.loadQueryRecord(sqlGameTaskCount(), params)
-            //mdb.outTable(recGameTask)
+            //
+            StoreRecord recGameRec = mdb.loadQueryRecord(sqlGameRec(), params)
+            XDateTime gameDbeg = recGameRec.getDateTime("dbeg")
+            XDateTime gameDend = recGameRec.getDateTime("dend")
 
             //
-            //Store stGameTask = mdb.loadQuery(sqlGameTasks(), params)
-            //mdb.outTable(stGameTask)
-            taskStatistic.add([xxx: "sdds", yyy: 302.4])
+            StoreRecord recGameTaskCount = mdb.loadQueryRecord(sqlGameTaskCount(), params)
+
+            // Период анализа ответов за игру game - от некоторого количества дней назад до конца игры
+            params.put("dbeg", gameDend.addDays(-Cube_UsrFactStatistic.RAITING_ANALYZE_DAYS_DIFF))
+            params.put("dend", gameDend)
+            Store stGameTask = mdb.loadQuery(sqlGameTasks(), params)
+
+            // Период анализа ответов ДО игры game - от некоторого количества дней назад до НАЧАЛА игры
+            params.put("dbeg", gameDbeg.addDays(-Cube_UsrFactStatistic.RAITING_ANALYZE_DAYS_DIFF))
+            params.put("dend", gameDbeg)
+            Store stGameTaskPrior = mdb.loadQuery(sqlGameTasks(), params)
+
+            // Собираем рейтинг фактов в игре
+            UtCubeRating utCubeRating = new UtCubeRating()
+
+            // Рейтинг фактов в ТЕКУЩЕЙ игре
+            Map<String, Map> taskStatistic = new HashMap<>()
+            int pos = 0
+            while (pos < stGameTask.size()) {
+                Map resMap = new HashMap()
+                pos = utCubeRating.stepCollectRaiting(stGameTask, pos, resMap)
+                //
+                String key = resMap.get("factQuestion") + "_" + resMap.get("factAnswer")
+                taskStatistic.put(key, resMap)
+            }
+
+            // Рейтинг фактов в ПРЕДЫДУЩЕЙ игре
+            Map<String, Map> taskStatisticPrior = new HashMap<>()
+            pos = 0
+            while (pos < stGameTaskPrior.size()) {
+                Map resMap = new HashMap()
+                pos = utCubeRating.stepCollectRaiting(stGameTaskPrior, pos, resMap)
+                //
+                String key = resMap.get("factQuestion") + "_" + resMap.get("factAnswer")
+                taskStatisticPrior.put(key, resMap)
+            }
+
+            // Сравниваем рейтинг ДО и ПОСЛЕ игры
+            for (String key : taskStatistic.keySet()) {
+                Map resMap = taskStatistic.get(key)
+                Map resMapPrior = taskStatisticPrior.get(key)
+                if (resMapPrior != null) {
+                    double ratingTask = UtCnv.toDouble(resMap.get("ratingTask"))
+                    double ratingTaskPrior = UtCnv.toDouble(resMapPrior.get("ratingTask"))
+                    double ratingQuickness = UtCnv.toDouble(resMap.get("ratingQuickness"))
+                    double ratingQuicknessPrior = UtCnv.toDouble(resMapPrior.get("ratingQuickness"))
+                    resMap.put("ratingTaskInc", CubeUtils.discardExtraDigits(ratingTask - ratingTaskPrior))
+                    resMap.put("ratingQuicknessInc", CubeUtils.discardExtraDigits(ratingQuickness - ratingQuicknessPrior))
+                }
+            }
 
 
             // ---
@@ -98,14 +144,14 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
 
             //
             ValueSingle valueSingle = ValueSingle.create()
-            valueSingle.put("cntTask", recGameTask.getLong("cntTask"))
-            valueSingle.put("cntAsked", recGameTask.getLong("cntAsked"))
-            valueSingle.put("cntAnswered", recGameTask.getLong("cntAnswered"))
-            valueSingle.put("cntTrue", recGameTask.getLong("cntTrue"))
-            valueSingle.put("cntFalse", recGameTask.getLong("cntFalse"))
-            valueSingle.put("cntHint", recGameTask.getLong("cntHint"))
-            valueSingle.put("cntSkip", recGameTask.getLong("cntSkip"))
-            valueSingle.put("taskStatistic", UtJson.toJson(taskStatistic))
+            valueSingle.put("cntTask", recGameTaskCount.getLong("cntTask"))
+            valueSingle.put("cntAsked", recGameTaskCount.getLong("cntAsked"))
+            valueSingle.put("cntAnswered", recGameTaskCount.getLong("cntAnswered"))
+            valueSingle.put("cntTrue", recGameTaskCount.getLong("cntTrue"))
+            valueSingle.put("cntFalse", recGameTaskCount.getLong("cntFalse"))
+            valueSingle.put("cntHint", recGameTaskCount.getLong("cntHint"))
+            valueSingle.put("cntSkip", recGameTaskCount.getLong("cntSkip"))
+            valueSingle.put("taskStatistic", UtJson.toJson(taskStatistic.values()))
             calcResult.value = valueSingle
 
             //
@@ -121,10 +167,25 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
     }
 
 
+    String sqlGameRec() {
+        return """
+select
+    Game.*
+from
+    Game
+    join GameUsr on (Game.id = GameUsr.game)
+where
+    Game.id = :game and
+    GameUsr.usr = :usr
+"""
+    }
+
     String sqlGameTaskCount() {
         """                                       
--- Список заданий в плане
-with Tab_GameTaskList as (
+with 
+
+-- Список заданий в игре
+Tab_GameTaskList as (
  
 select
     GameTask.*,
@@ -145,7 +206,7 @@ order by
 )
 
   
--- Статистика по всем заданиям
+-- Статистика по заданиям игры
 select 
     count(Tab_GameTaskList.id) cntTask,
     sum(Tab_GameTaskList.wasAsked) cntAsked,
@@ -158,6 +219,67 @@ select
 
 from
     Tab_GameTaskList
+"""
+    }
+
+    String sqlGameFacts() {
+        return """
+-- Список заданий в игре
+select
+    Task.factQuestion,
+    Task.factAnswer
+     
+from 
+    GameTask
+    join Task on (
+        GameTask.task = Task.id
+    ) 
+     
+where
+    GameTask.game = :game and
+    GameTask.usr = :usr
+     
+group by
+    Task.factQuestion,
+    Task.factAnswer
+"""
+    }
+
+    String sqlGameTasks() {
+        return """          
+with 
+
+Tab_GameTasks as (
+${sqlGameFacts()}
+)
+
+
+-- Список заданий из разных игр, для фактов из игры
+select
+    GameTask.*,
+    Task.factQuestion,
+    Task.factAnswer
+     
+from 
+    Tab_GameTasks
+    join Task on (
+        Task.factQuestion = Tab_GameTasks.factQuestion and
+        Task.factAnswer = Tab_GameTasks.factAnswer
+    )
+    join GameTask on (
+        GameTask.task = Task.id
+    )
+     
+where
+    GameTask.usr = :usr and
+    GameTask.dtTask >= :dbeg and 
+    GameTask.dtTask < :dend
+     
+order by
+    Task.factQuestion,
+    Task.factAnswer,
+    GameTask.dtTask desc,
+    GameTask.game desc
 """
     }
 

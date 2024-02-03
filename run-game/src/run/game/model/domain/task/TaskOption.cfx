@@ -5,6 +5,9 @@
     <domain name="TaskOption" parent="tab.id" tag.db="true"
             title="Вариант ответа на задание">
         <!--@
+        На один task - несколько записей.
+        Из них одна - это правильный ответ (isTrue = true)
+        и несколько неправильных (isTrue = false).
         -->
         <field name="task" parent="Task/ref" title="На какое задание"/>
         <field name="isTrue" parent="boolean"

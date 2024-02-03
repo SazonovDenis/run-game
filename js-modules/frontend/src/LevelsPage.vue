@@ -22,7 +22,7 @@
 
                             <q-badge
                                 color="green-5"
-                                :label="'0 / ' + plan.count"/>
+                                :label="plan.ratingTask + ' / ' + plan.count"/>
 
                         </div>
 

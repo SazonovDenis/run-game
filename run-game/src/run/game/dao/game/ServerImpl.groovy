@@ -1,5 +1,6 @@
 package run.game.dao.game
 
+import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
@@ -10,6 +11,7 @@ import kis.molap.model.coord.*
 import kis.molap.model.cube.*
 import kis.molap.model.service.*
 import kis.molap.model.value.impl.*
+import kis.molap.ntbd.model.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 import run.game.util.*
@@ -53,6 +55,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         StoreRecord recGame = loadActiveGameRec()
+        if (recGame == null) {
+            return
+        }
+
+        //
         long idGame = recGame.getLong("id")
 
         //
@@ -123,23 +130,23 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // ---
         // Отберем подходящие задания на игру (с учетом статистики пользователя)
 
-        // Задания в плане
-        Store stPlanTasks = mdb.loadQuery(sqlPlanTasksStatistic(), [plan: idPlan, usr: idUsr])
+        // Задания для плана
+        Store stPlanTasks = mdb.loadQuery(sqlPlanTaskStatistic(), [plan: idPlan, usr: idUsr])
 
-        // Слегка рандомизируем рейтинг -
-        // иначе для для заданий без рейтинга (например, которые никогда не выдавали)
-        // рейтинг перестает быть хорошим выбором порядка - получается список идущих подряд
-        // одних тех же слов (потому, что задания сортируются по номеру факта,
-        // а для одного факта несколько заданий)
-        for (StoreRecord recTask : stPlanTasks) {
+        // Слегка рандомизируем рейтинг - иначе для для фактов без рейтинга (например,
+        // для которых никогда не выдавали заданий) рейтинг перестает быть
+        // хорошим выбором порядка - получается список идущих подряд одних тех же слов
+        // (потому, что задания сортируются по номеру факта, а для одного факта -
+        // несколько заданий).
+        for (StoreRecord recPlanTask : stPlanTasks) {
             double progressSeed = rnd.num(-1000, 1000) / 10000
-            recTask.setValue("ratingTask", recTask.getDouble("ratingTask") + progressSeed)
+            recPlanTask.setValue("ratingTask", recPlanTask.getDouble("ratingTask") + progressSeed)
         }
 
         // Откорректируем рейтинг - от помеченных как "любимые" отнимем немного баллов,
         // чтобы они с большей вероятностью выпадали
         for (StoreRecord recTask : stPlanTasks) {
-            // Задание помечено как "starred"?
+            // Факт помечен как "starred"?
             if (recTask.getBoolean("isKnownBad")) {
                 recTask.setValue("rating", recTask.getDouble("rating") - RATING_DECREASE_FOR_STARRED)
             }
@@ -147,11 +154,12 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Сортируем задания по рейтингу
         stPlanTasks.sort("ratingTask,ratingQuickness")
+        mdb.outTable(stPlanTasks)
 
         // Теперь выберем задания на игру
         long taskForGameCount = 0
         for (StoreRecord recTask : stPlanTasks) {
-            // Скрытые задания (помечено как "hidden") не выдаем
+            // Скрытые факты не выдаем
             if (recTask.getBoolean("isHidden")) {
                 continue
             }
@@ -262,7 +270,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    DataBox getPlanTaskStatistic(long idPlan) {
+    DataBox getPlanTasks(long idPlan) {
         DataBox res = new DataBox()
 
         //
@@ -271,44 +279,25 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // План
         StoreRecord recPlan = loadPlanServerRecInternal(idPlan)
 
-        // Задания в плане - список
-        Store stPlanTasks = mdb.createStore("PlanTask.list.statistic")
-        mdb.loadQuery(stPlanTasks, sqlPlanTasksStatistic(), [plan: idPlan, usr: idUsr])
+        // Факты в плане - список
+        Store stPlanFacts = mdb.createStore("PlanFact.list")
+        mdb.loadQuery(stPlanFacts, sqlPlanFactsStatistic(), [plan: idPlan, usr: idUsr])
 
+        // Дополним факты в плане данными вопроса и ответа
+        fillTaskBody(stPlanFacts, idPlan)
 
-        // Задания плана - данные вопроса и ответа
-        Store stTaskQuestion = mdb.loadQuery(sqlPlanTaskQuestion(), [plan: idPlan])
-        Store stTaskAnswer = mdb.loadQuery(sqlPlanTaskOption(), [plan: idPlan])
-
-        // Дополним задания плана данными вопроса и ответа
-        fillTaskBody(stPlanTasks, stTaskQuestion, stTaskAnswer)
-
-
-        // По каждому заданию плана - последние баллы
-        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
-        // Период заданий - за несколько дней
-        XDateTime dend = XDateTime.now()
-        XDateTime dbeg = dend.addDays(-7)
-        // Статистика по заданиям
-        Store stTasksStatistic = statisticManager.getStatisticForPlanInternal(idPlan, idUsr, dbeg, dend)
-
-        // Дополним задания игры статистикой
-        StoreUtils.join(stPlanTasks, stTasksStatistic, "task", [
-                "rating",
-                "ratingQuickness"
-        ])
 
         // По всем заданиям игры - сумма баллов и т.д.
-        Map statisticAggretated = statisticManager.aggregateStatistic(stTasksStatistic)
+        Map statisticAggretated = getSum(stPlanFacts, ["ratingTask", "ratingQuickness"])
 
         // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
-        long countHidden = StoreUtils.getCount(stPlanTasks, "hidden", true)
-        statisticAggretated.put("ratingMax", stPlanTasks.size() - countHidden)
+        long countHidden = StoreUtils.getCount(stPlanFacts, "isHidden", true)
+        statisticAggretated.put("ratingMax", stPlanFacts.size() - countHidden)
 
 
         //
         res.put("plan", recPlan)
-        res.put("planTasks", stPlanTasks)
+        res.put("tasks", stPlanFacts)
         res.put("statistic", statisticAggretated)
 
         //
@@ -329,9 +318,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
         res.put("game", recGame)
 
-        // Задания игры - список + результат ответа на каждое задание
-        Store stGameTasksResult = mdb.createStore("GameTask.list")
-        mdb.loadQuery(stGameTasksResult, sqlGameTasks(), [game: idGame, usr: idUsr])
+        // Задания игры
+        Store stGameTasksResult = mdb.createStore("GameTask")
+        mdb.loadQuery(stGameTasksResult, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
         res.put("tasksResult", stGameTasksResult)
 
         //
@@ -347,49 +336,68 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         if (recGame == null) {
             return null
         }
-
+        long idPlan = recGame.getLong("plan")
 
         // Задания игры - список + результат ответа на каждое задание
-        Store stGameTasks = mdb.createStore("GameTask.list.statistic")
-        mdb.loadQuery(stGameTasks, sqlGameTasks(), [game: idGame, usr: idUsr])
+        Store stGameTasks = mdb.createStore("GameTask.list")
+        mdb.loadQuery(stGameTasks, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
 
+        // Дополним факты игры данными вопроса и ответа
+        fillTaskBody(stGameTasks, idPlan)
 
-        // Задания игры - данные вопроса и ответа
-        long idPlan = recGame.getLong("plan")
-        Store stTaskQuestion = mdb.loadQuery(sqlPlanTaskQuestion(), [plan: idPlan])
-        Store stTaskAnswer = mdb.loadQuery(sqlPlanTaskAnswer(), [plan: idPlan])
-
-        // Дополним задания игры данными вопроса и ответа
-        fillTaskBody(stGameTasks, stTaskQuestion, stTaskAnswer)
-
-
-        // По каждому заданию игры - баллы по текущей и прошлой игре, заработанные и проигранные баллы
-        StatisticManager1 statisticManager = mdb.create(StatisticManager1)
-        Store stTasksStatistic = statisticManager.compareStatisticForGamePrior(idGame)
-
-        // Дополним задания игры статистикой
-        StoreUtils.join(stGameTasks, stTasksStatistic, "task", [
-                rating0  : "rating",
-                ratingInc: "ratingInc",
-                ratingDec: "ratingDec"
-        ], false)
+        // Дополним факты игры статистикой
+        fillGameTaskStaistic(stGameTasks, idGame, idUsr)
 
 
         // По всем заданиям игры - сумма баллов и т.д.
-        Map statisticAggretated = statisticManager.aggregateStatistic0(stTasksStatistic)
+        Map statisticAggretated = getSum(stGameTasks, ["ratingTask", "ratingQuickness", "ratingTaskInc", "ratingQuicknessInc"])
 
         // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
         long countHidden = StoreUtils.getCount(stGameTasks, "isHidden", true)
         statisticAggretated.put("ratingMax", stGameTasks.size() - countHidden)
 
 
+        // Сумма заработанных и проигранных баллов - по отдельности
+        double ratingInc = 0
+        double ratingDec = 0
+        for (StoreRecord recRes : stGameTasks) {
+            double ratingTaskDiff = recRes.getDouble("ratingTaskInc")
+
+            // Увеличение рейтинга
+            if (ratingTaskDiff > 0) {
+                ratingInc = ratingInc + ratingTaskDiff
+            }
+
+            // Уменьшение рейтинга
+            if (ratingTaskDiff < 0) {
+                ratingDec = ratingDec + ratingTaskDiff
+            }
+        }
+        // Прибавка к рейтингу
+        statisticAggretated.put("ratingInc", ratingInc)
+        // Потери рейтинга
+        statisticAggretated.put("ratingDec", ratingDec)
+
+
         //
         res.put("game", recGame)
-        res.put("gameTasks", stGameTasks)
+        res.put("tasks", stGameTasks)
         res.put("statistic", statisticAggretated)
 
         //
         return res
+    }
+
+    public static Map<String, Double> getSum(Store store, Collection<String> fields) {
+        Map<String, Double> res = new HashMap<>();
+
+        for (String field : fields) {
+            double sum = StoreUtils.getSum(store, field)
+            sum = CubeUtils.discardExtraDigits(sum)
+            res.put(field, sum);
+        }
+
+        return res;
     }
 
 
@@ -416,41 +424,44 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    String sqlPlanTaskQuestion() {
+    String sqlFactQuestion() {
         return """
 select 
-    PlanTask.*,
-    TaskQuestion.dataType,
-    TaskQuestion.value
+    PlanFact.factQuestion, 
+    PlanFact.factAnswer, 
+    
+    Fact.dataType,
+    Fact.value
 
 from 
-    PlanTask
-    join TaskQuestion on (
-        TaskQuestion.task = PlanTask.task
+    PlanFact
+    join Fact on (
+        PlanFact.factQuestion = Fact.id
     )
 
 where
-    PlanTask.plan = :plan 
+    PlanFact.plan = :plan 
 """
     }
 
 
-    String sqlPlanTaskOption() {
+    String sqlFactAnswer() {
         return """
 select 
-    PlanTask.*,
-    TaskOption.dataType,
-    TaskOption.value
+    PlanFact.factQuestion, 
+    PlanFact.factAnswer, 
+    
+    Fact.dataType,
+    Fact.value
 
 from 
-    PlanTask
-    join TaskOption on (
-        TaskOption.task = PlanTask.task and 
-        TaskOption.isTrue = 1 
+    PlanFact
+    join Fact on (
+        PlanFact.factAnswer = Fact.id
     )
 
 where
-    PlanTask.plan = :plan 
+    PlanFact.plan = :plan 
 """
     }
 
@@ -493,9 +504,7 @@ where
     }
 
     /**
-     * Преобразуем задание по требованиям frontend-api
-     * Превращает списки stTaskQuestion и stTaskOption в пару плоских записей,
-     * где имеем valueText, valueSound, valueImage и т.д.
+     * Загружаем задание и преобразуем по требованиям frontend-api.
      */
     protected DataBox loadTask(long idTask) {
         // --- Грузим задание
@@ -513,9 +522,10 @@ where
         resTask.setValue("dataType", recTask.getLong("dataTypeQuestion"))
 
         // Делаем плоскую запись на основе значений задания и их типам
+        // Превращаем списки stTaskQuestion и stTaskOption в пару плоских записей (см. Task.fields)
         Store stTaskQuestion = task.get("taskQuestion")
         for (StoreRecord recTaskQuestion : stTaskQuestion) {
-            convert(recTaskQuestion, resTask)
+            convertFactToFlatRecord(recTaskQuestion, resTask)
         }
 
         // Варианты ответа
@@ -524,7 +534,7 @@ where
             StoreRecord recTaskOption = resTaskOption.add()
             recTaskOption.setValue("id", rec.getValue("id"))
             recTaskOption.setValue("isTrue", rec.getValue("isTrue"))
-            convert(rec, recTaskOption)
+            convertFactToFlatRecord(rec, recTaskOption)
         }
 
 
@@ -539,7 +549,12 @@ where
     }
 
 
-    void convert(StoreRecord recTaskSource, StoreRecord resTask) {
+    /**
+     * Запись recTaskSource раскладываем в "плоскую" запись на основе recTaskSource.dataType.
+     * В зависимости от recTaskSource.dataType заполняет соответствующее поле
+     * (valueSound, valueTranslate, valueSpelling или valuePicture)
+     */
+    void convertFactToFlatRecord(StoreRecord recTaskSource, StoreRecord resTask) {
         //resTask.setValue("dataType", recTaskSource.getValue("dataType"))
 
         // Звук
@@ -561,28 +576,82 @@ where
     }
 
     /**
-     * Дополним задания игры данными вопроса и ответа,
-     * т.е. заполним поля question и answer
+     * Дополним факты данными вопроса и ответа,
+     * т.е. заполним поля question и answer.
+     *
+     * Расчитываем, что в stTaskSrc есть поля factQuestion и factAnswer.
      */
-    void fillTaskBody(Store stGameTasks, Store stTaskQuestion, Store stTaskAnswer) {
-        Map<Object, List<StoreRecord>> mapTaskQuestion = StoreUtils.collectGroupBy_records(stTaskQuestion, "task")
-        Map<Object, List<StoreRecord>> mapTaskAnswer = StoreUtils.collectGroupBy_records(stTaskAnswer, "task")
+    void fillTaskBody(Store stTaskSrc, long idPlan) {
+        // Данные вопроса и ответа
+        Store stFactQuestion = mdb.loadQuery(sqlFactQuestion(), [plan: idPlan])
+        Store stFactAnswer = mdb.loadQuery(sqlFactAnswer(), [plan: idPlan])
+
         //
-        for (StoreRecord recGameTask : stGameTasks) {
-            StoreRecord recQuestion = mdb.createStoreRecord("Task.fields")
-            List<StoreRecord> lstTaskQuestion = mapTaskQuestion.get(recGameTask.getLong("task"))
-            for (StoreRecord recTaskQuestion : lstTaskQuestion) {
-                convert(recTaskQuestion, recQuestion)
-            }
-            recGameTask.setValue("question", recQuestion.getValues())
+        Map<Object, List<StoreRecord>> mapFactQuestion = StoreUtils.collectGroupBy_records(stFactQuestion, ["factQuestion", "factAnswer"])
+        Map<Object, List<StoreRecord>> mapFactAnswer = StoreUtils.collectGroupBy_records(stFactAnswer, ["factQuestion", "factAnswer"])
+
+        //
+        for (StoreRecord recTaskSrc : stTaskSrc) {
+            String key = recTaskSrc.getLong("factQuestion") + "_" + recTaskSrc.getLong("factAnswer")
 
             //
-            StoreRecord recAnswer = mdb.createStoreRecord("Task.fields")
-            List<StoreRecord> lstTaskAnswer = mapTaskAnswer.get(recGameTask.getLong("task"))
-            for (StoreRecord recTaskAnswer : lstTaskAnswer) {
-                convert(recTaskAnswer, recAnswer)
+            StoreRecord recTaskQuestion = mdb.createStoreRecord("Task.fields")
+            List<StoreRecord> lstQuestion = mapFactQuestion.get(key)
+            for (StoreRecord recQuestion : lstQuestion) {
+                convertFactToFlatRecord(recQuestion, recTaskQuestion)
             }
-            recGameTask.setValue("answer", recAnswer.getValues())
+            recTaskSrc.setValue("question", recTaskQuestion.getValues())
+
+            //
+            StoreRecord recTaskAnswer = mdb.createStoreRecord("Task.fields")
+            List<StoreRecord> lstAnswer = mapFactAnswer.get(key)
+            for (StoreRecord recAnswer : lstAnswer) {
+                convertFactToFlatRecord(recAnswer, recTaskAnswer)
+            }
+            recTaskSrc.setValue("answer", recTaskAnswer.getValues())
+        }
+    }
+
+
+    void fillGameTaskStaistic(Store stGameTasks, long idGame, long idUsr) {
+        // --- Находим запись о статистике игры
+
+        // Грузим запись
+        StoreRecord recUsrGameStatistic = mdb.loadQueryRecord(sqlUsrGameStatistic(), [
+                usr : idUsr,
+                game: idGame,
+        ], false)
+
+        // Нет статистики
+        if (recUsrGameStatistic == null) {
+            return
+        }
+
+        // Извлекаем из BLOB
+        List<Map> listTaskStatistic = UtJson.fromJson(new String(recUsrGameStatistic.getValue("taskStatistic"), "utf-8"))
+
+
+        // --- Разносим статистику из BLOB по записям stGameTasks
+
+        // В Map, где ключ - пара фактов (factQuestion+factAnswer)
+        Map<String, Map> mapTaskStatistic = new HashMap<>()
+        for (Map taskStatistic : listTaskStatistic) {
+            long factQuestion = UtCnv.toLong(taskStatistic.get("factQuestion"))
+            long factAnswer = UtCnv.toLong(taskStatistic.get("factAnswer"))
+            String key = factQuestion + "_" + factAnswer
+            mapTaskStatistic.put(key, taskStatistic)
+        }
+
+        // Map по записям
+        for (StoreRecord recGameTask : stGameTasks) {
+            String key = recGameTask.getLong("factQuestion") + "_" + recGameTask.getLong("factAnswer")
+            Map taskStatistic = mapTaskStatistic.get(key)
+            if (taskStatistic != null) {
+                recGameTask.setValue("ratingTask", taskStatistic.get("ratingTask"))
+                recGameTask.setValue("ratingQuickness", taskStatistic.get("ratingQuickness"))
+                recGameTask.setValue("ratingTaskInc", taskStatistic.get("ratingTaskInc"))
+                recGameTask.setValue("ratingQuicknessInc", taskStatistic.get("ratingQuicknessInc"))
+            }
         }
     }
 
@@ -630,40 +699,141 @@ where
     }
 
 
-    public static String sqlPlanTasksStatistic() {
+    String sqlPlanTaskStatistic() {
         return """ 
--- Задания для каждой пары фактов в плане
+-- Подбор заданий для каждой пары фактов в плане
 select 
-    PlanFact.plan,
+    PlanFact.id, 
+    
     PlanFact.factQuestion, 
     PlanFact.factAnswer, 
+    
     Task.id task,
+    
     UsrFact.isHidden,
     UsrFact.isKnownGood,
-    UsrFact.isKnownGood,
     UsrFact.isKnownBad,
+    
     Cube_UsrFact.ratingTask,
     Cube_UsrFact.ratingQuickness
 
 from
     PlanFact
     left join Task on (
-        PlanFact.factQuestion = Task.factQuestion and 
-        PlanFact.factAnswer = Task.factAnswer
+        Task.factQuestion = PlanFact.factQuestion and 
+        Task.factAnswer = PlanFact.factAnswer 
     )
     left join UsrFact on (
         UsrFact.usr = :usr and
-        PlanFact.factQuestion = UsrFact.factQuestion and 
-        PlanFact.factAnswer = UsrFact.factAnswer
+        UsrFact.factQuestion = PlanFact.factQuestion and 
+        UsrFact.factAnswer = PlanFact.factAnswer 
     )
     left join Cube_UsrFact on (
-        UsrFact.usr = :usr and
-        PlanFact.factQuestion = Cube_UsrFact.factQuestion and 
-        PlanFact.factAnswer = Cube_UsrFact.factAnswer
+        Cube_UsrFact.usr = :usr and 
+        Cube_UsrFact.factQuestion = PlanFact.factQuestion and 
+        Cube_UsrFact.factAnswer = PlanFact.factAnswer
     )
     
 where
     PlanFact.plan = :plan    
+"""
+    }
+
+
+    String sqlPlanFactsStatistic() {
+        return """ 
+-- Пары фактов в плане
+select 
+    PlanFact.id, 
+    
+    PlanFact.factQuestion, 
+    PlanFact.factAnswer, 
+    
+    UsrFact.isHidden,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownBad,
+    
+    Cube_UsrFact.ratingTask,
+    Cube_UsrFact.ratingQuickness
+
+from
+    PlanFact
+    left join UsrFact on (
+        UsrFact.usr = :usr and
+        UsrFact.factQuestion = PlanFact.factQuestion and 
+        UsrFact.factAnswer = PlanFact.factAnswer 
+    )
+    left join Cube_UsrFact on (
+        Cube_UsrFact.usr = :usr and 
+        Cube_UsrFact.factQuestion = PlanFact.factQuestion and 
+        Cube_UsrFact.factAnswer = PlanFact.factAnswer
+    )
+    
+where
+    PlanFact.plan = :plan    
+"""
+    }
+
+
+    private String sqlUsrGameStatistic() {
+        return """
+select 
+    Cube_UsrGame.*
+
+from
+    Cube_UsrGame
+    
+where
+    Cube_UsrGame.usr = :usr and
+    Cube_UsrGame.game = :game
+"""
+    }
+
+    private String sqlGameTasksStatistic() {
+        return """
+select
+    GameTask.id,
+    
+    GameTask.dtTask,
+    GameTask.dtAnswer,
+    GameTask.wasTrue,
+    GameTask.wasFalse,
+    GameTask.wasHint,
+    GameTask.wasSkip,
+    
+    Task.factQuestion, 
+    Task.factAnswer, 
+
+    UsrFact.isHidden,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownBad,
+
+    Cube_UsrFact.ratingTask,
+    Cube_UsrFact.ratingQuickness
+
+from
+    GameTask
+    join Task on (
+        GameTask.task = Task.id
+    )
+    left join UsrFact on (
+        UsrFact.usr = :usr and
+        UsrFact.factQuestion = Task.factQuestion and 
+        UsrFact.factAnswer = Task.factAnswer 
+    )
+    left join Cube_UsrFact on (
+        Cube_UsrFact.usr = :usr and 
+        Cube_UsrFact.factQuestion = Task.factQuestion and 
+        Cube_UsrFact.factAnswer = Task.factAnswer
+    )
+
+where
+    GameTask.usr = :usr and
+    GameTask.game = :game
+
+order by
+    GameTask.dtTask,
+    GameTask.id
 """
     }
 
@@ -746,41 +916,6 @@ limit 1
 """
     }
 
-
-    private String sqlGameTasks() {
-        return """
-select
-    GameTask.task,
-
-    UsrFact.isHidden,
-    UsrFact.isKnownGood,
-    UsrFact.isKnownBad,
-
-    GameTask.dtTask,
-    GameTask.dtAnswer,
-    GameTask.wasTrue,
-    GameTask.wasFalse,
-    GameTask.wasHint,
-    GameTask.wasSkip
-
-from
-    GameTask
-    join Task on (GameTask.task = Task.id)
-    left join UsrFact on (
-        UsrFact.usr = :usr and
-        Task.factQuestion = UsrFact.factQuestion and 
-        Task.factAnswer = UsrFact.factAnswer 
-    )
-
-where
-    GameTask.usr = :usr and
-    GameTask.game = :game
-
-order by
-    GameTask.dtTask,
-    GameTask.id
-"""
-    }
 
     private String sqlActiveGames() {
         return """

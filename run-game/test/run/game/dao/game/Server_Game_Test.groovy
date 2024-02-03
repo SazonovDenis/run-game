@@ -127,7 +127,7 @@ class Server_Game_Test extends RgmBase_Test {
         //utils.logOn()
         //
         Server srv = mdb.create(ServerImpl)
-        DataBox box = srv.getPlanTaskStatistic(idPlan)
+        DataBox box = srv.getPlanTasks(idPlan)
         mdb.resolveDicts(box)
 
         //
@@ -338,7 +338,7 @@ class Server_Game_Test extends RgmBase_Test {
             mdb.outTable(game.get("game"))
             println()
             println("gameTasks")
-            mdb.outTable(game.get("gameTasks"))
+            mdb.outTable(game.get("tasks"))
             println()
             println("statistic")
             mdb.outTable(game.get("statistic"))
@@ -350,9 +350,9 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     void printTaskStatisticByPlan(long idPlan) {
-        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store stTask = statisticManager.getTaskStatisticByPlan(idPlan)
-        mdb.outTable(stTask)
+        Server srv = mdb.create(ServerImpl)
+        DataBox box = srv.getPlanTasks(idPlan)
+        mdb.outTable(box.get("tasks"))
     }
 
     long doGameProcess(long idPlan) {

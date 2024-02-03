@@ -29,7 +29,10 @@
         <domain name="FactTag"/>
         <domain name="Item" showfields="false"/>
         <domain name="ItemTag"/>
-        <domain name="Tag" showfields="false"/>
+        <domain name="Plan" showfields="false" showrefs="false"/>
+        <domain name="PlanTag"/>
+
+        <domain name="Tag"/>
         <domain name="TagType" showfields="false"/>
     </diagram>
 
@@ -42,17 +45,33 @@
     </diagram>
 
 
-    <diagram name="plan" title="Планы обучения (уровни, карты)">
-        <domain name="Plan"/>
-        <domain name="PlanTag"/>
-        <domain name="PlanFact"/>
-        <domain name="Tag" showfields="false"/>
-        <domain name="Task" showfields="false"/>
-    </diagram>
+    <!--
+        <diagram name="plan" title="Планы обучения (уровни, карты)">
+            <domain name="Plan"/>
+            <domain name="PlanTag"/>
+            <domain name="PlanFact"/>
+            <domain name="Tag" showfields="false"/>
+        </diagram>
+    -->
 
-    <diagram name="usrFact" title="Связь пользователей с планами и фактами">
-        <domain name="Plan" showfields="false"/>
-        <domain name="Fact" showfields="false"/>
+    <!--
+        <diagram name="usrFact" title="Связь пользователей с планами и фактами">
+            <domain name="Plan" showfields="false"/>
+            <domain name="Fact" showfields="false"/>
+
+            <domain name="UsrPlan"/>
+            <domain name="UsrFact"/>
+        </diagram>
+    -->
+
+    <diagram name="planFactUsr" title="Планы, задания, факты">
+        <domain name="Task"/>
+        <domain name="TaskOption" showfields="false"/>
+        <domain name="TaskQuestion" showfields="false"/>
+
+        <domain name="Plan"/>
+        <domain name="Fact"/>
+        <domain name="PlanFact"/>
 
         <domain name="UsrPlan"/>
         <domain name="UsrFact"/>

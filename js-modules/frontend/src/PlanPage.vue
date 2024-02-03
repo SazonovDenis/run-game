@@ -5,7 +5,7 @@
         <div v-if="dataLoaded">
 
             <PlanInfo :planText="plan.planText"
-                      :rating="statistic.rating"
+                      :ratingTask="statistic.ratingTask"
                       :ratingQuickness="statistic.ratingQuickness"
                       :ratingMax="statistic.ratingMax"
             />
@@ -95,7 +95,7 @@
 
             <TaskList
                 :showEdit="true"
-                :planTasks="planTasks"
+                :tasks="tasks"
                 :filter="filter"/>
 
         </div>
@@ -131,7 +131,7 @@ export default {
     data() {
         return {
             plan: {},
-            planTasks: {},
+            tasks: {},
             statistic: {},
 
             globalState: ctx.getGlobalState(),
@@ -159,7 +159,7 @@ export default {
 
     watch: {
         sortField: function(value, old) {
-            this.planTasks.sort(this.compare)
+            this.tasks.sort(this.compare)
         }
     },
 
@@ -294,7 +294,7 @@ export default {
 
         //
         this.plan = res.plan
-        this.planTasks = res.planTasks
+        this.tasks = res.tasks
         this.statistic = res.statistic
 
         this.sortField = "question"

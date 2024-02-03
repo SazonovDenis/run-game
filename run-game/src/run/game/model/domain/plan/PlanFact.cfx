@@ -5,13 +5,9 @@
     <domain name="PlanFact" parent="tab.id" tag.db="true"
             title="Состав плана обучения">
         <!--@
-        Для плана отобран набор фактов (пар), которые надо выучить в рамках плана.
+        Для плана отобран набор пар фактов (вопрос+ответ), которые надо выучить в рамках плана.
         -->
         <field name="plan" parent="Plan/ref"/>
-
-<!--
-        <field name="item" parent="Item/ref" title="Проверяли знание об этой сущности"/>
--->
 
         <field name="factQuestion" parent="Fact/ref" title="Факт - вопрос">
             <!--@
@@ -25,7 +21,7 @@
             -->
         </field>
 
-        <!-- Обеспечим уникальность ссылки -->
+        <!-- Обеспечим уникальность пары фактов в плане -->
         <dbindex name="main" fields="plan,factQuestion,factAnswer" unique="true"/>
     </domain>
 

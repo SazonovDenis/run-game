@@ -1,29 +1,29 @@
 <template>
 
     <q-list bordered separator>
-        <template v-for="planTask in planTasks">
+        <template v-for="taskItem in tasks">
 
-            <q-item clickable v-ripple v-if="isItemShown(planTask)">
+            <q-item clickable v-ripple v-if="isItemShown(taskItem)">
 
                 <q-item-section top avatar v-if="showAnswerResult">
                     <div
-                        :class="getClassAnswerResult(planTask) + ' task-state-state'">
+                        :class="getClassAnswerResult(taskItem) + ' task-state-state'">
                     </div>
                 </q-item-section>
 
                 <q-item-section>
                     <q-item-label overline class="question">
-                        <TaskValue :task="planTask.question" :doShowText="true"/>
+                        <TaskValue :task="taskItem.question" :doShowText="true"/>
                     </q-item-label>
 
                     <q-item-label class="answer">
                         <div class="row">
 
-                            <TaskValue :task="planTask.answer" :doShowText="true"/>
+                            <TaskValue :task="taskItem.answer" :doShowText="true"/>
 
                             <q-icon name="del" style="padding-left: 1em"
                                     size="1em"
-                                    @click="itemHiddenToggle(planTask)"
+                                    @click="itemHiddenToggle(taskItem)"
                             />
 
                         </div>
@@ -32,11 +32,11 @@
                     <q-item-label class="answer">
                         <div class="row">
 
-                            <TaskValue :task="planTask.answer" :doShowText="true"/>
+                            <TaskValue :task="taskItem.answer" :doShowText="true"/>
 
                             <q-icon name="del" style="padding-left: 1em"
                                     size="1em"
-                                    @click="itemHiddenToggle(planTask)"
+                                    @click="itemHiddenToggle(taskItem)"
                             />
 
                         </div>
@@ -48,12 +48,12 @@
                     <div class="text-grey-8 q-gutter-xs">
                         <q-btn flat dense round
                                icon="del"
-                               :color="getHiddenColor(planTask.hidden)"
-                               @click="itemHiddenToggle(planTask)"/>
+                               :color="getHiddenColor(taskItem.isHidden)"
+                               @click="itemHiddenToggle(taskItem)"/>
                         <q-btn flat dense round
                                icon="star"
-                               :color="getStarredColor(planTask.starred)"
-                               @click="itemStarredToggle(planTask)"/>
+                               :color="getStarredColor(taskItem.isStarred)"
+                               @click="itemStarredToggle(taskItem)"/>
                         <q-btn flat dense round
                                icon="more-h"
                         />
@@ -65,35 +65,22 @@
                     <div v-if="showAnswerResult" style="min-width: 2em">
 
                         <q-badge
-                            v-if="planTask.ratingInc > 0"
+                            v-if="taskItem.ratingTaskInc > 0"
                             color="green-5"
-                            :label="'+'+planTask.ratingInc"/>
+                            :label="'+'+taskItem.ratingTaskInc"/>
 
                         <q-badge
-                            v-if="planTask.ratingDec < 0"
+                            v-if="taskItem.ratingTaskInc < 0"
                             color="red-5"
-                            :label="planTask.ratingDec"/>
-
-                        <!--
-                            <div class="row">
-                                <q-item-label caption>5 min ago</q-item-label>
-                            </div>
-                        -->
+                            :label="taskItem.ratingTaskInc"/>
                     </div>
 
                     <div v-else style="min-width: 2em">
 
                         <q-badge
-                            :text-color="getRatingTextColor(planTask.rating)"
-                            :color="getRatingColor(planTask.rating)"
-                            :label="planTask.rating"/>
-
-
-                        <!--
-                            <div class="row">
-                                <q-item-label caption>5 min ago</q-item-label>
-                            </div>
-                        -->
+                            :text-color="getRatingTextColor(taskItem.ratingTask)"
+                            :color="getRatingColor(taskItem.ratingTask)"
+                            :label="taskItem.ratingTask"/>
                     </div>
 
 
@@ -122,7 +109,7 @@ export default {
     props: {
         showAnswerResult: false,
         showEdit: false,
-        planTasks: null,
+        tasks: null,
         filter: null,
     },
 
@@ -151,16 +138,16 @@ export default {
             }
         },
 
-        getStarredColor(starred) {
-            if (starred) {
+        getStarredColor(isStarred) {
+            if (isStarred) {
                 return "yellow-8"
             } else {
                 return "grey-5"
             }
         },
 
-        getHiddenColor(hidden) {
-            if (hidden) {
+        getHiddenColor(isHidden) {
+            if (isHidden) {
                 return "red-6"
             } else {
                 return "grey-7"
@@ -189,17 +176,17 @@ export default {
         },
 
         itemHiddenToggle(task) {
-            task.hidden = !task.hidden
-            if (task.hidden && task.starred) {
-                task.starred = false
+            task.isHidden = !task.isHidden
+            if (task.isHidden && task.isStarred) {
+                task.isStarred = false
             }
             ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },
 
         itemStarredToggle(task) {
-            task.starred = !task.starred
-            if (task.starred && task.hidden) {
-                task.hidden = false
+            task.isStarred = !task.isStarred
+            if (task.isStarred && task.isHidden) {
+                task.isHidden = false
             }
             ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },

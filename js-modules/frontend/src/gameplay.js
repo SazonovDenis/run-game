@@ -201,7 +201,7 @@ export default {
 
     async api_saveUsrFact(factQuestion, factAnswer, params) {
         let resApi = await daoApi.loadStore('m/Game/saveUsrFact',
-            [factQuestion, factAnswer, {hidden: params.hidden, starred: params.starred}]
+            [factQuestion, factAnswer, {isHidden: params.isHidden, isStarred: params.isStarred}]
         )
         return ctx.gameplay.parseResApiGame(resApi)
     },
@@ -243,12 +243,12 @@ export default {
 
     async api_getPlanTasks(plan) {
         let resApi = await daoApi.loadStore(
-            'm/Game/getPlanTaskStatistic', [plan]
+            'm/Game/getPlanTasks', [plan]
         )
 
         let res = {
             plan: resApi.plan.records[0],
-            planTasks: resApi.planTasks.records,
+            tasks: resApi.tasks.records,
             statistic: resApi.statistic,
         }
 
@@ -299,10 +299,10 @@ export default {
         }
 
         // Если пришел расширенный ответ - со списком с подробными заданиями и ответами
-        if (resApi.gameTasks) {
-            res.gameTasks = resApi.gameTasks.records
+        if (resApi.tasks) {
+            res.tasks = resApi.tasks.records
         } else {
-            res.gameTasks = null
+            res.tasks = null
         }
 
         //

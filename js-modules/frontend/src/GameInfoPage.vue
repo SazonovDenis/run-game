@@ -8,8 +8,8 @@
             <PlanInfo
                 v-if="localState.game"
                 :planText="localState.game.planText"
-                :rating="localState.statistic.rating0"
-                :ratingQuickness="localState.statistic.ratingQuickness0"
+                :ratingTask="localState.statistic.ratingTask"
+                :ratingQuickness="localState.statistic.ratingQuickness"
                 :ratingMax="localState.statistic.ratingMax"
             />
 
@@ -99,7 +99,7 @@
             <TaskList
                 v-if="localState.game && localState.game.done"
                 :showAnswerResult="true"
-                :planTasks="localState.gameTasks"/>
+                :tasks="localState.tasks"/>
 
 
         </div>

@@ -104,7 +104,7 @@ public class StoreUtils {
 
         return res;
     }
-    
+
     public static long getCount(Store store, String compareField, Object compareValue) {
         long res = 0;
 
@@ -271,6 +271,38 @@ public class StoreUtils {
 
         for (StoreRecord rec : store) {
             Object keyValue = rec.getValue(keyField);
+
+            //
+            List<StoreRecord> listRecords = res.get(keyValue);
+
+            //
+            if (listRecords == null) {
+                listRecords = new ArrayList<>();
+                res.put(keyValue, listRecords);
+            }
+
+            //
+            listRecords.add(rec);
+        }
+
+        return res;
+    }
+
+    /**
+     * Для каждого значения ключевого поля keyField собирает из store список записей.
+     *
+     * @param store     источник значений
+     * @param keyFields ключевые поля для группировки
+     * @return Map<значение ключевого поля, список с собранными записями>
+     */
+    public static Map<Object, List<StoreRecord>> collectGroupBy_records(Store store, Collection<String> keyFields) {
+        Map<Object, List<StoreRecord>> res = new HashMap<>();
+
+        for (StoreRecord rec : store) {
+            String keyValue = "";
+            for (String keyField : keyFields) {
+                keyValue = keyValue + "_" + rec.getValue(keyField);
+            }
 
             //
             List<StoreRecord> listRecords = res.get(keyValue);

@@ -19,8 +19,6 @@
         <field name="wasHint" parent="boolean" title="Пользователь просил подсказку"/>
         <field name="wasSkip" parent="boolean" title="Пользователь пропустил задание"/>
 
-        <!-- Обеспечим уникальность ссылки -->
-        <dbindex name="main" fields="game,usr,task" unique="true"/>
     </domain>
 
 

@@ -64,21 +64,6 @@ class Plan_list extends RgmMdbUtils {
 
         filter.load(res)
 
-/*
-        //
-        StatisticManager statisticManager = mdb.create(StatisticManagerImpl)
-        Store st = statisticManager.getPlansStatistic()
-
-        //
-        st.copyTo(res)
-        for (StoreRecord rec : res) {
-            rec.setValue("tasksStatistic", UtJson.fromJson(rec.getString("tasksStatistic")))
-        }
-
-        //
-        res.sort("progress")
-*/
-
         //
         return res
     }

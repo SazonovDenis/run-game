@@ -11,19 +11,19 @@
                 rounded
                 size="10rem"
                 font-size="1rem"
-                :value="100*rating/ratingMax"
-                :thickness="0.22"
+                :value="100*ratingTask/ratingMax"
+                :thickness="0.2"
                 color="green-7"
                 track-color="grey-3"
                 class="q-ma-md game-info__rating-info"
             >
                 <div class="col">
                     <div>
-                        <span class="game-info__rating-value">{{ rating }}</span>
+                        <span class="game-info__rating-value">{{ ratingTask }}</span>
                     </div>
                     <div>
                         <span class="game-info__rating-text">
-                            {{ ratingText(rating) }}
+                            {{ ratingText(ratingTask) }}
                         </span>
                     </div>
                     <div>
@@ -68,7 +68,7 @@ export default {
     props: {
         planText: null,
         ratingMax: null,
-        rating: null,
+        ratingTask: null,
         ratingQuickness: null,
     },
 
@@ -100,11 +100,12 @@ export default {
 
     &__rating-value {
         font-size: 4em;
-        color: #5b9e3a;
+        color: #43a047;
+        font-weight: bold;
     }
 
     &__rating-text {
-        color: #5b9e3a;
+        color: #43a047;
     }
 
     &__rating-max {
@@ -123,7 +124,7 @@ export default {
 
     &__rating-inc {
         font-size: 1.5em;
-        color: #5b9e3a;
+        color: #43a047;
     }
 
     &__rating-dec {

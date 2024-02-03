@@ -9,7 +9,7 @@
         <field name="usr" parent="Usr/ref"/>
         <field name="game" parent="Game/ref"/>
 
-        <!-- Обеспечим уникальность ссылки -->
+        <!-- Обеспечим уникальность игрока в игре -->
         <dbindex name="main" fields="game,usr" unique="true"/>
     </domain>
 

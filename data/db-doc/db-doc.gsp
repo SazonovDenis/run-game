@@ -49,20 +49,20 @@
 
 <h2>Содержание</h2>
 <ul>
-  <li><a href="#__toc_diagram">Диаграммы</a></li>
-  <li><a href="#__toc_tab">Таблицы</a></li>
-  <%
-    if (dbUtils.domains.size() - domainsInDiag.size() == 0) {
-  %>
-  Нет таблиц, не попавших на диаграммы
-  <%
-    } else {
-  %>
-  <li><a href="#__toc_tab_not_in_diagram">Таблицы, не попавшие на диаграммы (${
-      dbUtils.domains.size() - domainsInDiag.size()})</a></li>
-  <%
-    }
-  %>
+    <li><a href="#__toc_diagram">Диаграммы</a></li>
+    <li><a href="#__toc_tab">Таблицы</a></li>
+    <%
+        if (dbUtils.domains.size() - domainsInDiag.size() == 0) {
+    %>
+    Нет таблиц, не попавших на диаграммы
+    <%
+        } else {
+    %>
+    <li><a href="#__toc_tab_not_in_diagram">Таблицы, не попавшие на диаграммы (${
+            dbUtils.domains.size() - domainsInDiag.size()})</a></li>
+    <%
+        }
+    %>
 </ul>
 
 %{--
@@ -72,7 +72,7 @@
 --}%
 <h2><a id="__toc_diagram"></a>Диаграммы</h2>
 <ul>
-  <% for (d in diags) { %>
+    <% for (d in diags) { %>
     <li><a href="#${d.name}__diagram">${d.title}</a></li>
     <% } %>
 </ul>

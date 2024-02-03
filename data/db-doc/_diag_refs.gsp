@@ -1,15 +1,15 @@
 <%@ page import="jandcode.core.dbm.doc.*; jandcode.core.dbm.domain.*; jandcode.core.dbm.dbstruct.*; jandcode.core.dbm.*; jandcode.jc.*" %>
 <%
-  GspScript th = this
+    GspScript th = this
 
-  /**
-   * Генерация диаграм ссылок
-   */
-  th.vars.gen_diag_refs = {
-    List<DomainRefs> domainRefs = th.args.domainRefs
+    /**
+     * Генерация диаграм ссылок
+     */
+    th.vars.gen_diag_refs = {
+        List<DomainRefs> domainRefs = th.args.domainRefs
 
-    for (dr in domainRefs) {
-      th.pushFile("images/${dr.domain.dbTableName}__refs.puml")
+        for (dr in domainRefs) {
+            th.pushFile("images/${dr.domain.dbTableName}__refs.puml")
 %>
 @startuml
 hide circle
@@ -32,15 +32,15 @@ class ${d.dbTableName} [[../index.html#${d.dbTableName}]] {
 }
 <% } %>
 <%
-    // ссылки
-    for (r in dr.refs) {
-      out("""${r.from.dbTableName} --> ${r.to.dbTableName} : ${r.field.name}""")
-      out("\n")
-    }
+        // ссылки
+        for (r in dr.refs) {
+            out("""${r.from.dbTableName} --> ${r.to.dbTableName} : ${r.field.name}""")
+            out("\n")
+        }
 %>
 @enduml
 <%
-      th.popFile()
+            th.popFile()
+        }
     }
-  }
 %>

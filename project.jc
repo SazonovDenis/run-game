@@ -1,3 +1,4 @@
+import jandcode.core.dbm.jc.DbDocProject
 import jandcode.core.jc.*
 import jandcode.core.nodejs.jc.*
 import jandcode.jc.*
@@ -32,6 +33,11 @@ class P extends ProjectScript {
                     "js-modules/*/package.json",
             )
             mainModule = "js-modules/frontend"
+        }
+
+        //
+        include(DbDocProject).with {
+            srcScript = "data/db-doc/db-doc.gsp"
         }
     }
 

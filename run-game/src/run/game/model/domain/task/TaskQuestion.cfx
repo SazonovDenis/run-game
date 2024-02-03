@@ -5,16 +5,17 @@
     <domain name="TaskQuestion" parent="tab.id" tag.db="true"
             title="Значения для показа вопроса">
         <!--@
-        Для одного задания могут быть сформулированы несколько TaskQuestion.
-        Для заданий, где у факта factQuestion значение dataType == "word-spelling",
+        Для одного задания могут быть сформулированы несколько TaskQuestion,
+        с разными значенями dataType.
+
+        Для заданий, где у факта factQuestion dataType == "word-spelling",
         формируется дополнительная запись на основе факта, где dataType == "word-sound"
-        (если такой факт имеется в базе)
+        (если такой факт имеется в базе).
         -->
         <field name="task" parent="Task/ref" title="На какое задание"/>
 
         <field name="dataType" parent="DataType/ref"/>
-        <field name="value" parent="string" size="500"
-               title="Значение"/>
+        <field name="value" parent="string" size="500" title="Значение"/>
     </domain>
 
 

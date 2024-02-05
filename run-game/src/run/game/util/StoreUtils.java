@@ -301,7 +301,10 @@ public class StoreUtils {
         for (StoreRecord rec : store) {
             String keyValue = "";
             for (String keyField : keyFields) {
-                keyValue = keyValue + "_" + rec.getValue(keyField);
+                if (keyValue.length() != 0) {
+                    keyValue = keyValue + "_";
+                }
+                keyValue = keyValue + rec.getValue(keyField);
             }
 
             //

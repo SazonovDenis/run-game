@@ -1,7 +1,7 @@
 <template>
 
     <q-list bordered separator>
-        <template v-for="taskItem in tasks">
+        <template v-for="(taskItem, index) in tasks">
 
             <q-item clickable v-ripple v-if="isItemShown(taskItem)">
 
@@ -13,19 +13,9 @@
 
                 <q-item-section>
                     <q-item-label overline class="question">
-                        <TaskValue :task="taskItem.question" :doShowText="true"/>
-                    </q-item-label>
-
-                    <q-item-label class="answer">
-                        <div class="row">
-
-                            <TaskValue :task="taskItem.answer" :doShowText="true"/>
-
-                            <q-icon name="del" style="padding-left: 1em"
-                                    size="1em"
-                                    @click="itemHiddenToggle(taskItem)"
-                            />
-
+                        <div
+                            v-if="index===0 || tasks[index-1].factQuestion !== taskItem.factQuestion">
+                            <TaskValue :task="taskItem.question" :doShowText="true"/>
                         </div>
                     </q-item-label>
 
@@ -34,29 +24,53 @@
 
                             <TaskValue :task="taskItem.answer" :doShowText="true"/>
 
+<!--
                             <q-icon name="del" style="padding-left: 1em"
                                     size="1em"
                                     @click="itemHiddenToggle(taskItem)"
                             />
+-->
 
                         </div>
-
                     </q-item-label>
+
+                    <!--
+                                        <q-item-label class="answer">
+                                            <div class="row">
+
+                                                <TaskValue :task="taskItem.answer" :doShowText="true"/>
+
+                                                <q-icon name="del" style="padding-left: 1em"
+                                                        size="1em"
+                                                        @click="itemHiddenToggle(taskItem)"
+                                                />
+
+                                            </div>
+
+                                        </q-item-label>
+                    -->
+
                 </q-item-section>
 
                 <q-item-section top side v-if="showEdit">
                     <div class="text-grey-8 q-gutter-xs">
-                        <q-btn flat dense round
-                               icon="del"
-                               :color="getHiddenColor(taskItem.isHidden)"
-                               @click="itemHiddenToggle(taskItem)"/>
-                        <q-btn flat dense round
-                               icon="star"
-                               :color="getStarredColor(taskItem.isStarred)"
-                               @click="itemStarredToggle(taskItem)"/>
-                        <q-btn flat dense round
-                               icon="more-h"
+                        <q-icon name="del"
+                                size="1.2em"
+                                :color="getHiddenColor(taskItem.isHidden)"
+                                @click="itemHiddenToggle(taskItem)"
                         />
+
+
+                        <q-icon name="more-h" _style="padding-left: 1em"
+                                size="1.2em"
+                        />
+
+                        <!--
+                                                <q-btn size="xs" flat dense round
+                                                       icon="more-h"
+                                                />
+                        -->
+
                     </div>
                 </q-item-section>
 
@@ -138,8 +152,16 @@ export default {
             }
         },
 
-        getStarredColor(isStarred) {
-            if (isStarred) {
+        getKnownBadColor(isKnownBad) {
+            if (isKnownBad) {
+                return "yellow-8"
+            } else {
+                return "grey-5"
+            }
+        },
+
+        getKnownGoodColor(isKnownGood) {
+            if (isKnownGood) {
                 return "yellow-8"
             } else {
                 return "grey-5"
@@ -177,16 +199,27 @@ export default {
 
         itemHiddenToggle(task) {
             task.isHidden = !task.isHidden
-            if (task.isHidden && task.isStarred) {
-                task.isStarred = false
+            if (task.isHidden) {
+                task.isKnownGood = false
+                task.isKnownBad = false
             }
             ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },
 
-        itemStarredToggle(task) {
-            task.isStarred = !task.isStarred
-            if (task.isStarred && task.isHidden) {
+        itemKnownBadToggle(task) {
+            task.isKnownBad = !task.isKnownBad
+            if (task.isKnownBad) {
                 task.isHidden = false
+                task.isKnownGood = false
+            }
+            ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
+        },
+
+        itemKnownGoodToggle(task) {
+            task.isKnownGood = !isKnownGood
+            if (task.isKnownGood) {
+                task.isHidden = false
+                task.isKnownBad = false
             }
             ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },

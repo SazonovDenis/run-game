@@ -146,7 +146,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Откорректируем рейтинг - от помеченных как "любимые" отнимем немного баллов,
         // чтобы они с большей вероятностью выпадали
         for (StoreRecord recTask : stPlanTasks) {
-            // Факт помечен как "starred"?
+            // Факт помечен как "isKnownBad"?
             if (recTask.getBoolean("isKnownBad")) {
                 recTask.setValue("rating", recTask.getDouble("rating") - RATING_DECREASE_FOR_STARRED)
             }
@@ -430,13 +430,20 @@ select
     PlanFact.factQuestion, 
     PlanFact.factAnswer, 
     
+    Fact.item,
     Fact.dataType,
     Fact.value
 
 from 
     PlanFact
+    -- Факт того типа, который привязан к PlanFact
+    join Fact PlanFact_Fact on (
+        PlanFact.factQuestion = PlanFact_Fact.id
+    )
+    -- Факты всех типов данных для Fact.item
     join Fact on (
-        PlanFact.factQuestion = Fact.id
+        PlanFact_Fact.item = Fact.item and
+        Fact.dataType in (${RgmDbConst.DataType_word_spelling + "," + RgmDbConst.DataType_word_sound})
     )
 
 where
@@ -753,8 +760,8 @@ select
     UsrFact.isKnownGood,
     UsrFact.isKnownBad,
     
-    Cube_UsrFact.ratingTask,
-    Cube_UsrFact.ratingQuickness
+    coalesce(Cube_UsrFact.ratingTask, 0) ratingTask,
+    coalesce(Cube_UsrFact.ratingQuickness, 0) ratingQuickness
 
 from
     PlanFact

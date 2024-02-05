@@ -56,6 +56,7 @@
     -->
 
     <domain name="Plan.list.statistic" parent="id">
+        <field name="plan" parent="Plan/ref"/>
         <field name="text" parent="Plan/text"/>
 
         <field name="isAuthor" parent="boolean" title="Пользователь является автором"/>

@@ -88,7 +88,7 @@ class Task_upd extends RgmMdbUtils {
     }
 
     boolean isEmptyUsrFact(Map dataUsrFact) {
-        return dataUsrFact == null || (!dataUsrFact.get("isHidden") && !dataUsrFact.get("isStarred"))
+        return dataUsrFact == null || (!dataUsrFact.get("isHidden") && !dataUsrFact.get("isKnownGood") && !dataUsrFact.get("isKnownBad"))
     }
 
 

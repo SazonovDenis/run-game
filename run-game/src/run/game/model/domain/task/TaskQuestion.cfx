@@ -8,8 +8,8 @@
         Для одного задания могут быть сформулированы несколько TaskQuestion,
         с разными значенями dataType.
 
-        Для заданий, где у факта factQuestion dataType == "word-spelling",
-        формируется дополнительная запись на основе факта, где dataType == "word-sound"
+        Для заданий, где у факта factQuestion dataType = "word-spelling",
+        формируется дополнительная запись на основе факта, где dataType = "word-sound"
         (если такой факт имеется в базе).
         -->
         <field name="task" parent="Task/ref" title="На какое задание"/>

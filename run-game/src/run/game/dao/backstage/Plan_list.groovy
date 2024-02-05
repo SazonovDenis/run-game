@@ -15,7 +15,7 @@ class Plan_list extends RgmMdbUtils {
     @DaoMethod
     Store getPlans() {
         Map params = [isPrivate: true, isHidden: false]
-        return getPlansUsr(params)
+        return getPlansInternal(params)
     }
 
     /**
@@ -26,7 +26,7 @@ class Plan_list extends RgmMdbUtils {
     @DaoMethod
     Store getPlansUsr() {
         Map params = [isPrivate: true, isHidden: false]
-        return getPlansUsr(params)
+        return getPlansInternal(params)
     }
 
     /**
@@ -36,11 +36,11 @@ class Plan_list extends RgmMdbUtils {
     @DaoMethod
     Store getPlansPublic() {
         Map params = [isPublic: true, isHidden: false]
-        return getPlansUsr(params)
+        return getPlansInternal(params)
     }
 
 
-    Store getPlansUsr(Map params) {
+    Store getPlansInternal(Map params) {
         Store res = mdb.createStore("Plan.list.statistic")
 
         //
@@ -77,15 +77,16 @@ Tab_Plans as (
 
 select
     Plan.id,
+    Plan.id plan,
     Plan.text, 
     coalesce(UsrPlan.isAuthor, 0) isAuthor,
     coalesce(UsrPlan.isHidden, 0) isHidden,
     coalesce(UsrPlan.isAllowed, 0) isAllowed,
     (case when PlanTag_access_public.tag is null then 0 else 1 end) isPublic,
-    Cube_UsrPlan.count,
-    Cube_UsrPlan.countFull,
-    Cube_UsrPlan.ratingTask,
-    Cube_UsrPlan.ratingQuickness
+    coalesce(Cube_UsrPlan.count, 0) count,
+    coalesce(Cube_UsrPlan.countFull, 0) countFull,
+    coalesce(Cube_UsrPlan.ratingTask, 0) ratingTask,
+    coalesce(Cube_UsrPlan.ratingQuickness, 0) ratingQuickness
     
 from
     Plan
@@ -104,18 +105,6 @@ where
     /*part:accessMode*/    
 """
     }
-
-/*
-    (
-    UsrPlan.isHidden is null or
-    UsrPlan.isHidden = 0
-    ) and
-    (
-    PlanTag_access_public.tag is not null or
-    UsrPlan.isAuthor = 1 or
-    UsrPlan.isAllowed = 1
-    )
-*/
 
 
 }

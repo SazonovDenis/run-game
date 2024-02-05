@@ -159,7 +159,9 @@ export default {
 
     watch: {
         sortField: function(value, old) {
+            console.info("sortField set")
             this.tasks.sort(this.compare)
+            console.info("sortField set - ok")
         }
     },
 
@@ -183,23 +185,34 @@ export default {
                     return 0
                 }
             } else if (this.sortField === "ratingAsc") {
-                if (v1.rating > v2.rating) {
+                if (v1.ratingTaskForSort > v2.ratingTaskForSort) {
                     return 1
-                } else if (v1.rating < v2.rating) {
+                } else if (v1.ratingTaskForSort < v2.ratingTaskForSort) {
                     return -1
                 } else {
                     return 0
                 }
             } else if (this.sortField === "ratingDesc") {
-                if (v1.rating < v2.rating) {
+                if (v1.ratingTaskForSort < v2.ratingTaskForSort) {
                     return 1
-                } else if (v1.rating > v2.rating) {
+                } else if (v1.ratingTaskForSort > v2.ratingTaskForSort) {
                     return -1
                 } else {
                     return 0
                 }
             } else {
-                return v1 > v2
+                // По умолчанию сортируем по коду факта-вопроса, а потом по рейтингу
+                if (v1.factQuestion > v2.factQuestion) {
+                    return 1
+                } else if (v1.factQuestion < v2.factQuestion) {
+                    return -1
+                } else if (v1.factQuestion === v2.factQuestion && v1.ratingTask > v2.ratingTask) {
+                    return 1
+                } else if (v1.factQuestion === v2.factQuestion && v1.ratingTask < v2.ratingTask) {
+                    return -1
+                } else {
+                    return 0
+                }
             }
         },
 
@@ -272,6 +285,13 @@ export default {
             console.info("planTask: ", task)
         },
 
+        getRatingTaskForSort(ratingTaskGroup, taskItem) {
+            return "" +
+                (ratingTaskGroup * 1000 + "_").padStart(6, "0") +
+                taskItem.factQuestion + "_" +
+                (taskItem.ratingTask * 1000 + "_").padStart(6, "0")
+        },
+
 
     },
 
@@ -297,6 +317,29 @@ export default {
         this.tasks = res.tasks
         this.statistic = res.statistic
 
+
+        // --- Подготовим возможность сортировки и группировки
+
+        // Сортировка по группе, а потом по худшему рейтингу в группе
+        // (группу образуют факт-вопрос и несколько фактов ответа)
+        this.sortField = ""
+        this.tasks.sort(this.compare)
+
+        // Сделам "сортировочный" рейтинг одинаковым внутри группы "факт-вопрос"
+        // Это для того, чтобы при сортировке по рейтингу члены группы двигались вместе
+        let ratingTaskGroup
+        for (let i = 0; i < this.tasks.length; i++) {
+            let task = this.tasks[i]
+
+            if (i === 0 || task.factQuestion !== this.tasks[i - 1].factQuestion) {
+                ratingTaskGroup = task.ratingTask
+            }
+
+            task.ratingTaskForSort = this.getRatingTaskForSort(ratingTaskGroup, task)
+        }
+
+
+        // --- Сортировка по умолчанию
         this.sortField = "question"
 
         //

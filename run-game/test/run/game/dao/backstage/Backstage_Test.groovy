@@ -128,7 +128,7 @@ class Backstage_Test extends RgmBase_Test {
 
 
         // ---
-        // Создаем план (без комбинации фактов)
+        // Создаем план (без заданий)
 
         //
         Plan_upd planUpd = mdb.create(Plan_upd)
@@ -157,6 +157,11 @@ class Backstage_Test extends RgmBase_Test {
         println("Items by value '" + itemsText + "'")
         mdb.outTable(stItem)
 
+        //
+        StoreRecord recPlan = mdb.createStoreRecord("Plan")
+        Store stPlanFact = mdb.createStore("PlanFact")
+        Store stPlanTag = mdb.createStore("PlanTag")
+
 
         // ---
         // Найдем комбинации фактов для каждой сущности
@@ -172,29 +177,51 @@ class Backstage_Test extends RgmBase_Test {
             println("Item: '" + recItem.getValue("value") + "', ItemFactCombinations: word_spelling -> word_translate")
             mdb.outTable(stItemFactCombinations)
 
-
-            // ---
-            // Для каждой комбинации фактов создадим по одному заданию
-
             //
-            for (StoreRecord recFactCombinations : stItemFactCombinations) {
-                try {
-                    long idFactQuestion = recFactCombinations.getLong("factQuestion")
-                    long idFactAnswer = recFactCombinations.getLong("factAnswer")
-                    DataBox task = tg.generateTask(idFactQuestion, idFactAnswer, null)
+            stItemFactCombinations.copyTo(stPlanFact)
+        }
 
-                    //
-                    println()
-                    printTask(task)
 
-                    taskUpd.saveTask(task)
-                } catch (Exception e) {
-                    println()
-                    println("Error:")
-                    println(e.message)
-                }
+        //
+        println()
+        println("PlanFact:")
+        mdb.outTable(stPlanFact)
+
+
+        // ---
+        // Для каждой комбинации фактов создадим по одному заданию
+
+        //
+        for (StoreRecord recFactCombinations : stPlanFact) {
+            try {
+                long idFactQuestion = recFactCombinations.getLong("factQuestion")
+                long idFactAnswer = recFactCombinations.getLong("factAnswer")
+                DataBox task = tg.generateTask(idFactQuestion, idFactAnswer, null)
+
+                //
+                //println()
+                //printTask(task)
+
+                taskUpd.saveTask(task)
+            } catch (Exception e) {
+                println()
+                println("Error:")
+                println(e.message)
             }
         }
+
+
+        // ---
+        // Создаем план
+
+        //
+        Plan_upd planUpd = mdb.create(Plan_upd)
+        //
+        String planName = "test-" + XDateTime.now().toString().substring(0, 19).replace(":", "-")
+        recPlan.setValue("text", planName)
+        stPlanTag.add([tag: RgmDbConst.Tag_access_private])
+        //
+        planUpd.ins(recPlan, stPlanFact, stPlanTag)
 
     }
 

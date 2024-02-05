@@ -122,7 +122,7 @@ class Server_Game_Test extends RgmBase_Test {
 
     @Test
     void getPlanTaskStatistic() {
-        long idPlan = 1000
+        long idPlan = 1003
 
         //utils.logOn()
         //
@@ -137,8 +137,8 @@ class Server_Game_Test extends RgmBase_Test {
         println("plan")
         mdb.outTable(box.get("plan"))
         println()
-        println("planTasks")
-        mdb.outTable(box.get("planTasks"))
+        println("tasks")
+        mdb.outTable(box.get("tasks"))
         println()
         println("statistic")
         mdb.outTable(box.get("statistic"))

@@ -201,7 +201,7 @@ export default {
 
     async api_saveUsrFact(factQuestion, factAnswer, params) {
         let resApi = await daoApi.loadStore('m/Game/saveUsrFact',
-            [factQuestion, factAnswer, {isHidden: params.isHidden, isStarred: params.isStarred}]
+            [factQuestion, factAnswer, {isHidden: params.isHidden, isKnownGood: params.isKnownBad}]
         )
         return ctx.gameplay.parseResApiGame(resApi)
     },

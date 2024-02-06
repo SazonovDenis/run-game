@@ -149,9 +149,10 @@ public class StoreUtils {
 
     /**
      * Объеденяет несколько полей в одно поле
-     * // |----|----|----|     |--------------|
-     * // |Мама|Папа|  Я |  -> |Мама, Папа, Я |
-     * // |----|----|----|     |--------------|
+     * <p>
+     * |----|----|----|     |--------------|
+     * |Мама|Папа|  Я |  -> |Мама, Папа, Я |
+     * |----|----|----|     |--------------|
      *
      * @param store       что обновляем
      * @param resultField имя поля в которое записываем итоговое значение
@@ -194,6 +195,19 @@ public class StoreUtils {
                 }
             }
         }
+    }
+
+    public static String concatenateFields(StoreRecord rec, Collection<String> keyFields) {
+        StringBuilder keyValue = new StringBuilder();
+
+        for (String keyField : keyFields) {
+            if (keyValue.length() != 0) {
+                keyValue.append("_");
+            }
+            keyValue.append(rec.getValue(keyField));
+        }
+
+        return keyValue.toString();
     }
 
     /**
@@ -299,13 +313,7 @@ public class StoreUtils {
         Map<Object, List<StoreRecord>> res = new HashMap<>();
 
         for (StoreRecord rec : store) {
-            String keyValue = "";
-            for (String keyField : keyFields) {
-                if (keyValue.length() != 0) {
-                    keyValue = keyValue + "_";
-                }
-                keyValue = keyValue + rec.getValue(keyField);
-            }
+            String keyValue = concatenateFields(rec, keyFields);
 
             //
             List<StoreRecord> listRecords = res.get(keyValue);

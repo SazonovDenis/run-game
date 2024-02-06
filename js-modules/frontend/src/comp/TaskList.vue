@@ -35,25 +35,23 @@
 
 
                 <q-item-section top side v-if="showEdit">
+
                     <div class="text-grey-8 q-gutter-xs">
-                        <q-icon name="del"
-                                size="1.2em"
-                                :color="getHiddenColor(taskItem.isHidden)"
-                                @click="itemHiddenToggle(taskItem)"
+
+                        <q-btn flat dense round
+                               icon="del"
+                               size="1.2em"
+                               :color="getHiddenColor(taskItem.isHidden)"
+                               @click="itemHiddenToggle(taskItem)"
                         />
 
-
-                        <q-icon name="more-h" _style="padding-left: 1em"
-                                size="1.2em"
-                        />
-
-                        <!--
-                        <q-btn size="xs" flat dense round
+                        <q-btn flat dense round
                                icon="more-h"
+                               size="1.0em"
                         />
-                        -->
 
                     </div>
+
                 </q-item-section>
 
 

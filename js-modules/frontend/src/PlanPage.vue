@@ -217,7 +217,7 @@ export default {
         },
 
         filter(planTask) {
-            if (planTask.hidden && !this.showHidden) {
+            if (planTask.isHidden && !this.showHidden) {
                 return false
             }
 

@@ -276,24 +276,9 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     @Test
-    void testGameStatistic() {
-        long idPlan = 1000
-        long idGame = doGameProcess(idPlan)
-
-        Server upd = mdb.create(ServerImpl)
-        DataBox res = upd.getGame(idGame)
-
-        println()
-        println("getGame")
-        mdb.outTable(res)
-    }
-
-    @Test
     void getGame() {
-        long idGame = 1009
-
         Server upd = mdb.create(ServerImpl)
-        DataBox res = upd.getGame(idGame)
+        DataBox res = upd.getLastGame()
 
         println()
         println("game")

@@ -82,7 +82,7 @@
         <field name="taskQuestion" parent="object"
                title="Данные вопроса в задании (TaskQuestion.*, структура - Task.fields)"/>
         <field name="taskAnswer" parent="object"
-               title="Данные ответа в задании (TaskOption.*, структура - Task.fields)"/>
+               title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
 
         <!-- Изменение рейтинга факта (по сравнению с предыдущей игрой) -->
         <field name="ratingTaskInc" parent="double" scale="3"

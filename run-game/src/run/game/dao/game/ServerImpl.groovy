@@ -131,7 +131,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Отберем подходящие задания на игру (с учетом статистики пользователя)
 
         // Задания для плана
-        Store stPlanTasks = mdb.loadQuery(sqlPlanTaskStatistic(), [plan: idPlan, usr: idUsr])
+        Store stPlanTasks = mdb.loadQuery(sqlPlanFact_TaskCombinations(), [plan: idPlan, usr: idUsr])
 
         // Слегка рандомизируем рейтинг - иначе для для фактов без рейтинга (например,
         // для которых никогда не выдавали заданий) рейтинг перестает быть
@@ -342,8 +342,11 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Store stGameTasks = mdb.createStore("GameTask.list")
         mdb.loadQuery(stGameTasks, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
 
-        // Дополним факты игры данными вопроса и ответа
+        // Дополним ФАКТЫ игры данными вопроса и ответа
         fillTaskBody(stGameTasks, idPlan)
+
+        // Дополним ЗАДАНИЯ игры данными вопроса и ответа
+        fillGameTaskBody(stGameTasks, idGame, idUsr)
 
         // Дополним факты игры статистикой
         fillGameTaskStaistic(stGameTasks, idGame, idUsr)
@@ -473,6 +476,47 @@ where
     }
 
 
+    String sqlGameTaskQuestion() {
+        return """
+select 
+    GameTask.*,
+    TaskQuestion.dataType,
+    TaskQuestion.value
+
+from 
+    GameTask
+    join TaskQuestion on (
+        TaskQuestion.task = GameTask.task
+    )
+
+where
+    GameTask.usr = :usr and 
+    GameTask.game = :game 
+"""
+    }
+
+
+    String sqlGameTaskAnswer() {
+        return """
+select 
+    GameTask.*,
+    TaskOption.dataType,
+    TaskOption.value
+
+from 
+    GameTask
+    join TaskOption on (
+        TaskOption.task = GameTask.task and 
+        TaskOption.isTrue = 1 
+    )
+
+where
+    GameTask.usr = :usr and 
+    GameTask.game = :game 
+"""
+    }
+
+
     protected DataBox loadAndPrepareGameTask(long idGame, StoreRecord recGameTask) {
         DataBox res = new DataBox()
 
@@ -557,13 +601,12 @@ where
 
 
     /**
-     * Запись recTaskSource раскладываем в "плоскую" запись на основе recTaskSource.dataType.
-     * В зависимости от recTaskSource.dataType заполняет соответствующее поле
-     * (valueSound, valueTranslate, valueSpelling или valuePicture)
+     * Запись типа Fact раскладываем в "плоскую" запись.
+     * Берем пару полей recTaskSource.dataType+recTaskSource.value и заполняем
+     * соответствующее поле (valueSound, valueTranslate, valueSpelling или valuePicture),
+     * в зависимости от recTaskSource.dataType.
      */
     void convertFactToFlatRecord(StoreRecord recTaskSource, StoreRecord resTask) {
-        //resTask.setValue("dataType", recTaskSource.getValue("dataType"))
-
         // Звук
         if (recTaskSource.getLong("dataType") == RgmDbConst.DataType_word_sound) {
             resTask.setValue("valueSound", recTaskSource.getValue("value"))
@@ -586,20 +629,34 @@ where
      * Дополним факты данными вопроса и ответа,
      * т.е. заполним поля question и answer.
      *
-     * Расчитываем, что в stTaskSrc есть поля factQuestion и factAnswer.
+     * Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
      */
-    void fillTaskBody(Store stTaskSrc, long idPlan) {
+    void fillTaskBody(Store stTasks, long idPlan) {
         // Данные вопроса и ответа
         Store stFactQuestion = mdb.loadQuery(sqlFactQuestion(), [plan: idPlan])
         Store stFactAnswer = mdb.loadQuery(sqlFactAnswer(), [plan: idPlan])
 
-        //
-        Map<Object, List<StoreRecord>> mapFactQuestion = StoreUtils.collectGroupBy_records(stFactQuestion, ["factQuestion", "factAnswer"])
-        Map<Object, List<StoreRecord>> mapFactAnswer = StoreUtils.collectGroupBy_records(stFactAnswer, ["factQuestion", "factAnswer"])
+        // Размажем
+        convertFactsToFlatRecord(stFactQuestion, ["factQuestion", "factAnswer"], stTasks, "question")
+        convertFactsToFlatRecord(stFactAnswer, ["factQuestion", "factAnswer"], stTasks, "answer")
+    }
+
+    void fillGameTaskBody(Store stTasks, long idGame, long idUsr) {
+        // Данные вопроса и ответа
+        Store stFactQuestion = mdb.loadQuery(sqlGameTaskQuestion(), [game: idGame, usr: idUsr])
+        Store stFactAnswer = mdb.loadQuery(sqlGameTaskAnswer(), [game: idGame, usr: idUsr])
+
+        // Размажем
+        convertFactsToFlatRecord(stFactQuestion, ["task"], stTasks, "taskQuestion")
+        convertFactsToFlatRecord(stFactAnswer, ["task"], stTasks, "taskAnswer")
+    }
+
+    void convertFactsToFlatRecord(Store stFactData, Collection<String> keyFields, Store stDest, String fieldDest) {
+        Map<Object, List<StoreRecord>> mapFactQuestion = StoreUtils.collectGroupBy_records(stFactData, keyFields)
 
         //
-        for (StoreRecord recTaskSrc : stTaskSrc) {
-            String key = recTaskSrc.getLong("factQuestion") + "_" + recTaskSrc.getLong("factAnswer")
+        for (StoreRecord recTask : stDest) {
+            String key = StoreUtils.concatenateFields(recTask, keyFields)
 
             //
             StoreRecord recTaskQuestion = mdb.createStoreRecord("Task.fields")
@@ -607,18 +664,10 @@ where
             for (StoreRecord recQuestion : lstQuestion) {
                 convertFactToFlatRecord(recQuestion, recTaskQuestion)
             }
-            recTaskSrc.setValue("question", recTaskQuestion.getValues())
-
-            //
-            StoreRecord recTaskAnswer = mdb.createStoreRecord("Task.fields")
-            List<StoreRecord> lstAnswer = mapFactAnswer.get(key)
-            for (StoreRecord recAnswer : lstAnswer) {
-                convertFactToFlatRecord(recAnswer, recTaskAnswer)
-            }
-            recTaskSrc.setValue("answer", recTaskAnswer.getValues())
+            recTask.setValue(fieldDest, recTaskQuestion.getValues())
         }
-    }
 
+    }
 
     void fillGameTaskStaistic(Store stGameTasks, long idGame, long idUsr) {
         // --- Находим запись о статистике игры
@@ -706,9 +755,9 @@ where
     }
 
 
-    String sqlPlanTaskStatistic() {
+    String sqlPlanFact_TaskCombinations() {
         return """ 
--- Подбор заданий для каждой пары фактов в плане
+-- Подбор всех комбинаций заданий для каждой пары фактов в плане
 select 
     PlanFact.id, 
     
@@ -751,10 +800,7 @@ where
         return """ 
 -- Пары фактов в плане
 select 
-    PlanFact.id, 
-    
-    PlanFact.factQuestion, 
-    PlanFact.factAnswer, 
+    PlanFact.*, 
     
     UsrFact.isHidden,
     UsrFact.isKnownGood,
@@ -799,14 +845,7 @@ where
     private String sqlGameTasksStatistic() {
         return """
 select
-    GameTask.id,
-    
-    GameTask.dtTask,
-    GameTask.dtAnswer,
-    GameTask.wasTrue,
-    GameTask.wasFalse,
-    GameTask.wasHint,
-    GameTask.wasSkip,
+    GameTask.*,
     
     Task.factQuestion, 
     Task.factAnswer, 

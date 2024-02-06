@@ -11,46 +11,28 @@
                     </div>
                 </q-item-section>
 
+
                 <q-item-section>
+
                     <q-item-label overline class="question">
-                        <div
-                            v-if="index===0 || tasks[index-1].factQuestion !== taskItem.factQuestion">
+
+                        <div>
                             <TaskValue :task="taskItem.question" :doShowText="true"/>
                         </div>
+
                     </q-item-label>
+
 
                     <q-item-label class="answer">
+
                         <div class="row">
-
                             <TaskValue :task="taskItem.answer" :doShowText="true"/>
-
-<!--
-                            <q-icon name="del" style="padding-left: 1em"
-                                    size="1em"
-                                    @click="itemHiddenToggle(taskItem)"
-                            />
--->
-
                         </div>
+
                     </q-item-label>
 
-                    <!--
-                                        <q-item-label class="answer">
-                                            <div class="row">
-
-                                                <TaskValue :task="taskItem.answer" :doShowText="true"/>
-
-                                                <q-icon name="del" style="padding-left: 1em"
-                                                        size="1em"
-                                                        @click="itemHiddenToggle(taskItem)"
-                                                />
-
-                                            </div>
-
-                                        </q-item-label>
-                    -->
-
                 </q-item-section>
+
 
                 <q-item-section top side v-if="showEdit">
                     <div class="text-grey-8 q-gutter-xs">
@@ -66,13 +48,14 @@
                         />
 
                         <!--
-                                                <q-btn size="xs" flat dense round
-                                                       icon="more-h"
-                                                />
+                        <q-btn size="xs" flat dense round
+                               icon="more-h"
+                        />
                         -->
 
                     </div>
                 </q-item-section>
+
 
                 <q-item-section top side>
 
@@ -96,7 +79,6 @@
                             :color="getRatingColor(taskItem.ratingTask)"
                             :label="taskItem.ratingTask"/>
                     </div>
-
 
                 </q-item-section>
 

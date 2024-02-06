@@ -2,7 +2,6 @@
 <root>
 
     <cube name="Cube_UsrGameStatistic"
-          enabled="false"
           title="Статистика прохождения игры пользователем"
           space="Space_UsrGame"
           class="kis.molap.ntbd.model.cubes.Cube_UsrGameStatistic">

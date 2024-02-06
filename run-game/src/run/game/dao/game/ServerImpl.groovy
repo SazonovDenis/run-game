@@ -56,7 +56,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //
         StoreRecord recGame = loadActiveGameRec()
         if (recGame == null) {
-            return
+            return null
         }
 
         //
@@ -276,8 +276,12 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //
         long idUsr = getCurrentUserId()
 
+        //
+        StoreRecord recPlanRaw = mdb.loadQueryRecord(sqlPlanStatistic(), [plan: idPlan, usr: idUsr])
+
         // План
-        StoreRecord recPlan = loadPlanServerRecInternal(idPlan)
+        StoreRecord recPlan = mdb.createStoreRecord("Plan.server")
+        recPlan.setValues(recPlanRaw.getValues())
 
         // Факты в плане - список
         Store stPlanFacts = mdb.createStore("PlanFact.list")
@@ -288,17 +292,18 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // По всем заданиям игры - сумма баллов и т.д.
-        Map statisticAggretated = getSum(stPlanFacts, ["ratingTask", "ratingQuickness"])
+        StoreRecord recPlanStatistic = mdb.createStoreRecord("Plan.statistic")
+        recPlanStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
+        recPlanStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
 
-        // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
-        long countHidden = StoreUtils.getCount(stPlanFacts, "isHidden", true)
-        statisticAggretated.put("ratingMax", stPlanFacts.size() - countHidden)
+        // Максимальный балл берем на основе количества нескрытых заданий в плане
+        recPlanStatistic.setValue("ratingMax", recPlanRaw.getValue("count"))
 
 
         //
         res.put("plan", recPlan)
         res.put("tasks", stPlanFacts)
-        res.put("statistic", statisticAggretated)
+        res.put("statistic", recPlanStatistic.getValues())
 
         //
         return res
@@ -315,7 +320,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         DataBox res = new DataBox()
 
         // Данные по игре
-        StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
+        StoreRecord recGame = mdb.createStoreRecord("Game.server")
+        mdb.loadQueryRecord(recGame, sqlGameStatistic(), [game: idGame, usr: idUsr])
         res.put("game", recGame)
 
         // Задания игры
@@ -332,10 +338,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         DataBox res = new DataBox()
 
         //
-        StoreRecord recGame = loadGameServerRecInternal(idGame, idUsr)
-        if (recGame == null) {
-            return null
-        }
+        StoreRecord recGameRaw = mdb.loadQueryRecord(sqlGameStatistic(), [game: idGame, usr: idUsr])
+
+        // Игра
+        StoreRecord recGame = mdb.createStoreRecord("Game.server")
+        recGame.setValues(recGameRaw.getValues())
+
+        //
         long idPlan = recGame.getLong("plan")
 
         // Задания игры - список + результат ответа на каждое задание
@@ -353,77 +362,54 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // По всем заданиям игры - сумма баллов и т.д.
-        Map statisticAggretated = getSum(stGameTasks, ["ratingTask", "ratingQuickness", "ratingTaskInc", "ratingQuicknessInc"])
+        StoreRecord recGameStatistic = mdb.createStoreRecord("Game.statistic")
+        Map mapStatisticAggretated = getSum(stGameTasks, ["ratingTask", "ratingQuickness", "ratingTaskDiff", "ratingQuicknessDiff"])
+        recGameStatistic.setValues(mapStatisticAggretated)
 
-        // todo: максимальный балл надо брать из запроса к плану и возвращать в recPlan (а точнее - из будущего куба). Пока так
-        long countHidden = StoreUtils.getCount(stGameTasks, "isHidden", true)
-        statisticAggretated.put("ratingMax", stGameTasks.size() - countHidden)
+        // Максимальный балл берем на основе количества нескрытых заданий в плане
+        recGameStatistic.setValue("ratingMax", recGameRaw.getLong("count"))
 
 
         // Сумма заработанных и проигранных баллов - по отдельности
-        double ratingInc = 0
-        double ratingDec = 0
+        double ratingTaskInc = 0
+        double ratingTaskDec = 0
         for (StoreRecord recRes : stGameTasks) {
-            double ratingTaskDiff = recRes.getDouble("ratingTaskInc")
+            double ratingTaskDiff = recRes.getDouble("ratingTaskDiff")
 
             // Увеличение рейтинга
             if (ratingTaskDiff > 0) {
-                ratingInc = ratingInc + ratingTaskDiff
+                ratingTaskInc = ratingTaskInc + ratingTaskDiff
             }
 
             // Уменьшение рейтинга
             if (ratingTaskDiff < 0) {
-                ratingDec = ratingDec + ratingTaskDiff
+                ratingTaskDec = ratingTaskDec + ratingTaskDiff
             }
         }
-        // Прибавка к рейтингу
-        statisticAggretated.put("ratingInc", ratingInc)
-        // Потери рейтинга
-        statisticAggretated.put("ratingDec", ratingDec)
+        // Прибавка и потери рейтинга
+        recGameStatistic.setValue("ratingTaskInc", ratingTaskInc)
+        recGameStatistic.setValue("ratingTaskDec", ratingTaskDec)
 
 
         //
         res.put("game", recGame)
         res.put("tasks", stGameTasks)
-        res.put("statistic", statisticAggretated)
+        res.put("statistic", recGameStatistic.getValues())
 
         //
         return res
     }
 
     public static Map<String, Double> getSum(Store store, Collection<String> fields) {
-        Map<String, Double> res = new HashMap<>();
+        Map<String, Double> res = new HashMap<>()
 
         for (String field : fields) {
             double sum = StoreUtils.getSum(store, field)
             sum = CubeUtils.discardExtraDigits(sum)
-            res.put(field, sum);
+            res.put(field, sum)
         }
 
-        return res;
-    }
-
-
-    StoreRecord loadPlanServerRecInternal(long idPlan) {
-        StoreRecord recPlan = mdb.createStoreRecord("Plan.server")
-        //
-        mdb.loadQueryRecord(recPlan, sqlPlan(), [plan: idPlan])
-        if (recPlan.getLong("id") == 0) {
-            return null
-        }
-        //
-        return recPlan
-    }
-
-    StoreRecord loadGameServerRecInternal(long idGame, long idUsr) {
-        StoreRecord recGame = mdb.createStoreRecord("Game.server")
-        //
-        mdb.loadQueryRecord(recGame, sqlGame(), [game: idGame, usr: idUsr])
-        if (recGame.getLong("id") == 0) {
-            return null
-        }
-        //
-        return recGame
+        return res
     }
 
 
@@ -695,6 +681,7 @@ where
             long factQuestion = UtCnv.toLong(taskStatistic.get("factQuestion"))
             long factAnswer = UtCnv.toLong(taskStatistic.get("factAnswer"))
             String key = factQuestion + "_" + factAnswer
+            //
             mapTaskStatistic.put(key, taskStatistic)
         }
 
@@ -705,8 +692,8 @@ where
             if (taskStatistic != null) {
                 recGameTask.setValue("ratingTask", taskStatistic.get("ratingTask"))
                 recGameTask.setValue("ratingQuickness", taskStatistic.get("ratingQuickness"))
-                recGameTask.setValue("ratingTaskInc", taskStatistic.get("ratingTaskInc"))
-                recGameTask.setValue("ratingQuicknessInc", taskStatistic.get("ratingQuicknessInc"))
+                recGameTask.setValue("ratingTaskDiff", taskStatistic.get("ratingTaskDiff"))
+                recGameTask.setValue("ratingQuicknessDiff", taskStatistic.get("ratingQuicknessDiff"))
             }
         }
     }
@@ -931,21 +918,6 @@ where
     }
 
 
-    private String sqlGameTaskOption() {
-        return """
-select
-    TaskOption.*
-from
-    GameTask
-    join Task on (GameTask.task = Task.id)
-    join TaskOption on (Task.id = TaskOption.task)
-where
-    GameTask.id = :id and
-    TaskOption.id = :taskOption
-"""
-    }
-
-
     private String sqlLastGame() {
         return """
 select
@@ -979,31 +951,55 @@ order by
 """
     }
 
-    private String sqlPlan() {
+    private String sqlPlanStatistic() {
         return """
 select
     Plan.id,
     Plan.id plan,
-    Plan.text planText
+    Plan.text planText,
+    
+    Cube_UsrPlan.count,
+    Cube_UsrPlan.countFull,
+    Cube_UsrPlan.ratingTask,
+    Cube_UsrPlan.ratingQuickness
+
 from
     Plan
+    left join Cube_UsrPlan on (
+        Cube_UsrPlan.usr = :usr and 
+        Cube_UsrPlan.plan = Plan.id 
+    )
+
 where
     Plan.id = :plan
 """
     }
 
-    private String sqlGame() {
+    private String sqlGameStatistic() {
         return """
 select
     Game.*,
-    Plan.text planText
+    Plan.text planText,
+    
+    Cube_UsrPlan.count,
+    Cube_UsrPlan.countFull,
+    Cube_UsrPlan.ratingTask,
+    Cube_UsrPlan.ratingQuickness
+
 from
     Game
     join Plan on (Game.plan = Plan.id)
-    join GameUsr on (Game.id = GameUsr.game)
+    join GameUsr on (
+        Game.id = GameUsr.game and
+        GameUsr.usr = :usr 
+    )
+    left join Cube_UsrPlan on (
+        Cube_UsrPlan.usr = :usr and 
+        Cube_UsrPlan.plan = Plan.id 
+    )
+
 where
-    Game.id = :game and
-    GameUsr.usr = :usr
+    Game.id = :game
 """
     }
 

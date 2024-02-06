@@ -127,8 +127,8 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
                     double ratingTaskPrior = UtCnv.toDouble(resMapPrior.get("ratingTask"))
                     double ratingQuickness = UtCnv.toDouble(resMap.get("ratingQuickness"))
                     double ratingQuicknessPrior = UtCnv.toDouble(resMapPrior.get("ratingQuickness"))
-                    resMap.put("ratingTaskInc", CubeUtils.discardExtraDigits(ratingTask - ratingTaskPrior))
-                    resMap.put("ratingQuicknessInc", CubeUtils.discardExtraDigits(ratingQuickness - ratingQuicknessPrior))
+                    resMap.put("ratingTaskDiff", CubeUtils.discardExtraDigits(ratingTask - ratingTaskPrior))
+                    resMap.put("ratingQuicknessDiff", CubeUtils.discardExtraDigits(ratingQuickness - ratingQuicknessPrior))
                 }
             }
 

@@ -121,8 +121,8 @@ class Server_Game_Test extends RgmBase_Test {
 
 
     @Test
-    void getPlanTaskStatistic() {
-        long idPlan = 1003
+    void getPlanTasks() {
+        long idPlan = 1000
 
         //utils.logOn()
         //
@@ -142,6 +142,25 @@ class Server_Game_Test extends RgmBase_Test {
         println()
         println("statistic")
         mdb.outTable(box.get("statistic"))
+    }
+
+
+    @Test
+    void getLastGame() {
+        Server upd = mdb.create(ServerImpl)
+        DataBox res = upd.getLastGame()
+
+        println()
+        println("game")
+        mdb.outTable(res.get("game"))
+
+        println()
+        println("tasks")
+        mdb.outTable(res.get("tasks"))
+
+        println()
+        println("statistic")
+        mdb.outTable(res.get("statistic"))
     }
 
 
@@ -185,7 +204,6 @@ class Server_Game_Test extends RgmBase_Test {
         println()
         printTask(task)
     }
-
 
     @Test
     void testLoadGame() {
@@ -273,24 +291,6 @@ class Server_Game_Test extends RgmBase_Test {
 
         // Итоговая статистика по уровню
         printTaskStatisticByPlan(idPlan)
-    }
-
-    @Test
-    void getGame() {
-        Server upd = mdb.create(ServerImpl)
-        DataBox res = upd.getLastGame()
-
-        println()
-        println("game")
-        mdb.outTable(res.get("game"))
-
-        println()
-        println("tasks")
-        mdb.outTable(res.get("tasks"))
-
-        println()
-        println("statistic")
-        mdb.outTable(res.get("statistic"))
     }
 
     @Test

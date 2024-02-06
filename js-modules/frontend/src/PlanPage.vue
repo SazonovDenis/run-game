@@ -160,14 +160,14 @@ export default {
     watch: {
         sortField: function(value, old) {
             console.info("sortField set")
-            this.tasks.sort(this.compare)
+            this.tasks.sort(this.compareFunction)
             console.info("sortField set - ok")
         }
     },
 
     methods: {
 
-        compare(v1, v2) {
+        compareFunction(v1, v2) {
             if (this.sortField === "question") {
                 if (v1.question.valueSpelling > v2.question.valueSpelling) {
                     return 1
@@ -285,13 +285,6 @@ export default {
             console.info("planTask: ", task)
         },
 
-        getRatingTaskForSort(ratingTaskGroup, taskItem) {
-            return "" +
-                (ratingTaskGroup * 1000 + "_").padStart(6, "0") +
-                taskItem.factQuestion + "_" +
-                (taskItem.ratingTask * 1000 + "_").padStart(6, "0")
-        },
-
 
     },
 
@@ -318,15 +311,22 @@ export default {
         this.statistic = res.statistic
 
 
-        // --- Подготовим возможность сортировки и группировки
+        // --- Подготовим возможность сортировки по рейтингу, но с группировкой по фактам
 
         // Сортировка по группе, а потом по худшему рейтингу в группе
         // (группу образуют факт-вопрос и несколько фактов ответа)
         this.sortField = ""
-        this.tasks.sort(this.compare)
+        this.tasks.sort(this.compareFunction)
 
         // Сделам "сортировочный" рейтинг одинаковым внутри группы "факт-вопрос"
         // Это для того, чтобы при сортировке по рейтингу члены группы двигались вместе
+        let getRatingTaskForSort = function(ratingTaskGroup, taskItem) {
+            return "" +
+                (ratingTaskGroup * 1000 + "_").padStart(6, "0") +
+                taskItem.factQuestion + "_" +
+                (taskItem.ratingTask * 1000 + "_").padStart(6, "0")
+        };
+        //
         let ratingTaskGroup
         for (let i = 0; i < this.tasks.length; i++) {
             let task = this.tasks[i]
@@ -335,7 +335,7 @@ export default {
                 ratingTaskGroup = task.ratingTask
             }
 
-            task.ratingTaskForSort = this.getRatingTaskForSort(ratingTaskGroup, task)
+            task.ratingTaskForSort = getRatingTaskForSort(ratingTaskGroup, task)
         }
 
 

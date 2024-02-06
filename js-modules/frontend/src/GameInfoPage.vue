@@ -201,6 +201,59 @@ export default {
             this.localState = await gameplay.loadLastGame()
         }
 
+
+        // --- Подготовим возможность сортировки по порядку выдачи заданий, но с группировкой по фактам
+
+        // Сортировка по группе, а потом по худшему рейтингу в группе
+        // (группу образуют факт-вопрос и несколько фактов ответа)
+        //this.tasks.sort(this.compare)
+
+        // Сделам "сортировочный" рейтинг одинаковым внутри группы "факт-вопрос"
+        // Это для того, чтобы при сортировке по рейтингу члены группы двигались вместе
+        let getDtTaskForSort = function(ratingTaskGroup, taskItem) {
+            let dtTask = taskItem.dtTask
+            if (!dtTask) {
+                dtTask = "3333-12-31T00:00:00"
+            }
+            return "" +
+                ratingTaskGroup + "_" +
+                taskItem.factQuestion + "_" +
+                taskItem.factAnswer + "_" +
+                dtTask
+        };
+        //
+        let compareFunction = function(v1, v2) {
+            // По умолчанию сортируем по коду факта-вопроса, а потом по рейтингу
+            if (v1.factQuestion > v2.factQuestion) {
+                return 1
+            } else if (v1.factQuestion < v2.factQuestion) {
+                return -1
+            } else if (v1.factQuestion === v2.factQuestion && v1.dtTaskForSort > v2.dtTaskForSort) {
+                return 1
+            } else if (v1.factQuestion === v2.factQuestion && v1.dtTaskForSort < v2.dtTaskForSort) {
+                return -1
+            } else {
+                return 0
+            }
+        }
+        //
+        let dtTaskGroup
+        for (let i = 0; i < this.localState.tasks.length; i++) {
+            let task = this.localState.tasks[i]
+
+            if (i === 0 || task.factQuestion !== this.localState.tasks[i - 1].factQuestion) {
+                dtTaskGroup = task.dtTask
+            }
+
+            task.dtTaskForSort = getDtTaskForSort(dtTaskGroup, task)
+        }
+
+        this.localState.tasks.sort(compareFunction)
+
+        // --- Сортировка по умолчанию
+        //this.sortField = "question"
+
+
         //
         this.dataLoaded = true
     },

@@ -3,22 +3,42 @@
 
 
     <!--
-    Список уровней с рейтингом
+    Уровень с рейтингом
     -->
     <domain name="Plan.server" parent="id">
         <field name="plan" parent="Plan/ref"/>
         <field name="planText" parent="Plan/text"/>
     </domain>
 
+    <domain name="Plan.statistic">
+        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
 
+        <field name="ratingMax" parent="double" scale="3"/>
+    </domain>
+
+
+    <!--
+    Игра с рейтингом
+    -->
     <domain name="Game.server" parent="Game">
         <field name="plan" parent="Plan/ref"/>
         <field name="planText" parent="Plan/text"/>
     </domain>
 
+    <domain name="Game.statistic">
+        <field name="ratingTask" parent="double" scale="3"/>
+        <field name="ratingQuickness" parent="double" scale="3"/>
+
+        <field name="ratingTaskInc" parent="double" scale="3"/>
+        <field name="ratingTaskDec" parent="double" scale="3"/>
+
+        <field name="ratingMax" parent="double" scale="3"/>
+    </domain>
+
 
     <!--
-    Данные задания, "плоская" запись.
+    Данные задания, вопроса или ответа, "плоская" запись.
     В зависимости от dataType заполнено соответствующее поле:
     valueSound, valueTranslate, valueSpelling или valuePicture
     -->
@@ -30,7 +50,6 @@
         <field name="valueImage" parent="string"/>
     </domain>
 
-
     <domain name="Task.server">
         <field name="id" parent="GameTask/ref"/>
         <field name="task" parent="Task/ref"/>
@@ -38,7 +57,6 @@
 
         <include name="Task.fields"/>
     </domain>
-
 
     <domain name="TaskOption.server">
         <field name="id" parent="Task/ref"/>
@@ -85,9 +103,9 @@
                title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
 
         <!-- Изменение рейтинга факта (по сравнению с предыдущей игрой) -->
-        <field name="ratingTaskInc" parent="double" scale="3"
+        <field name="ratingTaskDiff" parent="double" scale="3"
                title="Изменение рейтинга за ответы"/>
-        <field name="ratingQuicknessInc" parent="double" scale="3"
+        <field name="ratingQuicknessDiff" parent="double" scale="3"
                title="Изменение рейтинга за скорость"/>
     </domain>
 

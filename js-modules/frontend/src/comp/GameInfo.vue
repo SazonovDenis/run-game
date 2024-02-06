@@ -12,14 +12,14 @@
                 За игру заработано:
             </span>
             <span class="game-info__rating-inc">
-                {{ statistic.ratingInc }}
-                {{ ratingText(statistic.ratingInc) }}
+                {{ statistic.ratingTaskInc }}
+                {{ ratingText(statistic.ratingTaskInc) }}
             </span>
             <span class="">, потеряно:&nbsp;</span>
             <span class="game-info__rating-dec">
                     {{
-                    -statistic.ratingDec
-                }}&nbsp;{{ ratingText(-statistic.ratingDec) }}
+                    -statistic.ratingTaskDec
+                }}&nbsp;{{ ratingText(-statistic.ratingTaskDec) }}
             </span>
         </div>
 

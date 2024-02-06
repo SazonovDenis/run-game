@@ -60,14 +60,14 @@
                     <div v-if="showAnswerResult" style="min-width: 2em">
 
                         <q-badge
-                            v-if="taskItem.ratingTaskInc > 0"
+                            v-if="taskItem.ratingTaskDiff > 0"
                             color="green-5"
-                            :label="'+'+taskItem.ratingTaskInc"/>
+                            :label="'+'+taskItem.ratingTaskDiff"/>
 
                         <q-badge
-                            v-if="taskItem.ratingTaskInc < 0"
+                            v-if="taskItem.ratingTaskDiff < 0"
                             color="red-5"
-                            :label="taskItem.ratingTaskInc"/>
+                            :label="taskItem.ratingTaskDiff"/>
                     </div>
 
                     <div v-else style="min-width: 2em">

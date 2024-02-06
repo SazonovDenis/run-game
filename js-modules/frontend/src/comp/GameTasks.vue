@@ -6,14 +6,14 @@
 
                 <GameTask :task="task"/>
 
-                <div v-if="task.ratingInc > 0"
-                     class="task-text task-text__ratingInc">
-                    +{{ task.ratingInc }}
+                <div v-if="task.ratingTaskInc > 0"
+                     class="task-text task-text__ratingTaskInc">
+                    +{{ task.ratingTaskInc }}
                 </div>
 
-                <div v-if="task.ratingDec < 0"
-                     class="task-text task-text__ratingDec">
-                    {{ task.ratingDec }}
+                <div v-if="task.ratingTaskDec < 0"
+                     class="task-text task-text__ratingTaskDec">
+                    {{ task.ratingTaskDec }}
                 </div>
             </div>
         </template>
@@ -77,11 +77,11 @@ export default {
     max-width: 80%;
     text-align: left;
 
-    &__ratingDec {
+    &__ratingTaskDec {
         color: #850000;
     }
 
-    &__ratingInc {
+    &__ratingTaskInc {
         color: #5b9e3a;
     }
 

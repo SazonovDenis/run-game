@@ -1,6 +1,7 @@
 package run.game.dao.backstage
 
 import jandcode.commons.*
+import jandcode.core.dao.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
 import run.game.dao.*
@@ -8,6 +9,7 @@ import run.game.testdata.fixture.*
 
 class Item_list extends BaseMdbUtils {
 
+    // todo это костыль, наружу надо белее полезный метод, и именно туда все гораничения
 
     /**
      * Ищем Item по фрагменту написания,
@@ -16,26 +18,46 @@ class Item_list extends BaseMdbUtils {
      * @param itemText фрагмент для поиска
      * @return Store структуры Item
      */
+    @DaoMethod
     Store find(String itemText) {
-        Store stItem = mdb.createStore("Item")
+        Store stFacts = mdb.createStore("Fact.list")
+
+        if (itemText == null || itemText.length() <= 1) {
+            return stFacts
+        }
 
         //
         Fact_list list = mdb.create(Fact_list)
 
+        int MAX_COUNT = 10
+
         //
+        int count = 0
         Store stFact = list.findFactsByValueDataType(itemText, RgmDbConst.DataType_word_spelling)
         for (StoreRecord rec : stFact) {
-            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
+            count++
+            if (count > MAX_COUNT) {
+                break
+            }
+
+            stFacts.add(rec.getValues())
         }
 
         //
+        count = 0
         stFact = list.findFactsByValueDataType(itemText, RgmDbConst.DataType_word_translate)
         for (StoreRecord rec : stFact) {
-            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
+            count++
+            if (count > MAX_COUNT) {
+                break
+            }
+
+            stFacts.add(rec.getValues())
         }
 
+
         //
-        return stItem
+        return stFacts
     }
 
 
@@ -50,7 +72,7 @@ class Item_list extends BaseMdbUtils {
         // Очищаем слова
         Collection<String> itemsTextFiltered = filterAndTransformText(itemsText)
 
-        // Формируем пары
+        // Формируем пары из продряд идущих слов.
         Collection<String> itemsTextPairs = createPairs(itemsTextFiltered)
         itemsTextFiltered.addAll(itemsTextPairs)
 
@@ -71,7 +93,7 @@ class Item_list extends BaseMdbUtils {
         // Грузим слова из файла
         Collection<String> itemsText = readFromFile(fileName)
 
-        // Формируем пары
+        // Формируем пары из продряд идущих слов.
         Collection<String> itemsTextPairs = createPairs(itemsText)
         itemsText.addAll(itemsTextPairs)
 
@@ -93,7 +115,12 @@ class Item_list extends BaseMdbUtils {
 
         // Грузим spelling для всех слов из БД
         Fact_list list = mdb.create(Fact_list)
-        Store stFact = list.loadFactsByDataType(RgmDbConst.DataType_word_spelling)
+        Store stFactSpelling = list.loadFactsByDataType(RgmDbConst.DataType_word_spelling)
+        Store stFactTranslate = list.loadFactsByDataType(RgmDbConst.DataType_word_translate)
+        //
+        Store stFact = mdb.createStore("Fact.list")
+        stFactSpelling.copyTo(stFact)
+        stFactTranslate.copyTo(stFact)
         StoreIndex idxFacts = stFact.getIndex("factValue")
 
 
@@ -200,6 +227,8 @@ class Item_list extends BaseMdbUtils {
             return null
 
         //
+        word = word.replace(",", "")
+        word = word.replace(".", "")
         word = word.replace("/", "")
         word = word.replace("-", "")
         word = word.replace("_", "")

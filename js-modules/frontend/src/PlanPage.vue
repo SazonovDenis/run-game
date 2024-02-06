@@ -98,6 +98,18 @@
                 :tasks="tasks"
                 :filter="filter"/>
 
+
+            <q-page-sticky
+                position="bottom-right"
+                :offset="[10, 10]">
+                <q-btn round
+                       color="green-7"
+                       icon="add"
+                       size="1.2em"
+                       @click="onAddFact"
+                />
+            </q-page-sticky>
+
         </div>
 
     </MenuContainer>
@@ -168,7 +180,11 @@ export default {
     methods: {
 
         compareFunction(v1, v2) {
-            if (this.sortField === "question") {
+            if (!v1.factQuestion) {
+                return 1
+            } else if (!v2.factQuestion) {
+                return -1
+            } else if (this.sortField === "question") {
                 if (v1.question.valueSpelling > v2.question.valueSpelling) {
                     return 1
                 } else if (v1.question.valueSpelling < v2.question.valueSpelling) {
@@ -285,6 +301,11 @@ export default {
             console.info("planTask: ", task)
         },
 
+        onAddFact() {
+            apx.showFrame({
+                frame: '/addFact', props: {plan: this.plan}
+            })
+        },
 
     },
 
@@ -338,6 +359,7 @@ export default {
             task.ratingTaskForSort = getRatingTaskForSort(ratingTaskGroup, task)
         }
 
+        this.tasks.push({})
 
         // --- Сортировка по умолчанию
         this.sortField = "question"

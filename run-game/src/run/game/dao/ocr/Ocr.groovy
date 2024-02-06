@@ -4,8 +4,9 @@ import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.process.*
 import jandcode.core.dao.*
+import jandcode.core.store.*
 import run.game.dao.*
-import run.game.testdata.fixture.*
+import run.game.dao.backstage.*
 
 class Ocr extends RgmMdbUtils {
 
@@ -31,6 +32,7 @@ class Ocr extends RgmMdbUtils {
         //
         //inFile.delete()
 
+/*
         // Частота встречаемости eng
         String dirBase = "data/web-grab/"
         Map<String, Integer> wordFrequencyMap_eng = ItemFact_fb.loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
@@ -44,17 +46,16 @@ class Ocr extends RgmMdbUtils {
         res.add("\r\n")
         //////////////////////////
 
-        //
-        String[] textArr = text.split(" ")
-        for (String word : textArr) {
-            word = word.toLowerCase().trim()
-            if (word.length() > 1 && wordFrequencyMap_eng.containsKey(word)) {
-                res.add(word)
-            }
-        }
+*/
+
+        String[] itemsText = text.split()
 
         //
-        return res
+        Item_list itemsList = mdb.create(Item_list)
+        Store stItem = itemsList.loadBySpelling(itemsText.toList())
+
+        //
+        return stItem.getUniqueValues("value").toList()
     }
 
     String tesseract(String inFileName, String lang) {

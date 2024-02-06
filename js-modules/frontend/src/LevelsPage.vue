@@ -98,7 +98,9 @@ export default {
         },
 
         onAddLevel() {
-            console.log("onAddLevel")
+            apx.showFrame({
+                frame: '/planList'
+            })
         },
 
     },

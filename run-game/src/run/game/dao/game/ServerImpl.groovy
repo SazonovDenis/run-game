@@ -287,7 +287,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Store stPlanFacts = mdb.createStore("PlanFact.list")
         mdb.loadQuery(stPlanFacts, sqlPlanFactsStatistic(), [plan: idPlan, usr: idUsr])
 
-        // Дополним факты в плане данными вопроса и ответа
+        // Дополним факты в плане данными для вопроса и ответа
         fillTaskBody(stPlanFacts, idPlan)
 
 
@@ -307,6 +307,44 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         return res
+    }
+
+
+    @DaoMethod
+    Store findItems(String text) {
+        Store stFacts = mdb.createStore("PlanFact.list")
+
+
+        // Ищем Item по text
+        Item_list itemsList = mdb.create(Item_list)
+        Store stItem = itemsList.find(text)
+
+
+        //
+        long idUsr = getCurrentUserId()
+
+        // Факты в плане - список
+        Store stPlanFactsRaw = mdb.loadQuery(sqlItemFactsStatistic(stItem.getUniqueValues("item")), [usr: idUsr])
+        for (StoreRecord recTaskRaw : stPlanFactsRaw) {
+            // Основные поля
+            StoreRecord recTask = stFacts.add(recTaskRaw.getValues())
+
+            // Дополним факты в плане данными для вопроса и ответа
+            StoreRecord recTaskQuestion = mdb.createStoreRecord("Task.fields")
+            recTaskQuestion.setValue("dataType", recTaskRaw.getValue("dataTypeSpelling"))
+            recTaskQuestion.setValue("valueSpelling", recTaskRaw.getValue("valueSpelling"))
+            //recTaskQuestion.setValue("valueSound", recTaskRaw.getValue("valueSound"))
+            recTask.setValue("question", recTaskQuestion.getValues())
+            //
+            StoreRecord recTaskAnswer = mdb.createStoreRecord("Task.fields")
+            recTaskAnswer.setValue("dataType", recTaskRaw.getValue("dataTypeTranslate"))
+            recTaskAnswer.setValue("valueTranslate", recTaskRaw.getValue("valueTranslate"))
+            recTask.setValue("answer", recTaskAnswer.getValues())
+        }
+
+
+        //
+        return stFacts
     }
 
 
@@ -811,6 +849,61 @@ from
     
 where
     PlanFact.plan = :plan    
+"""
+    }
+
+
+    String sqlItemFactsStatistic(Collection items) {
+        String itemsStr = "0"
+        if (items.size() > 0) {
+            itemsStr = items.join(",")
+        }
+
+        return """ 
+-- Пары фактов в плане
+select 
+    Item.id item,
+    
+    Fact_Spelling.id factQuestion,
+    Fact_Spelling.dataType dataTypeSpelling,
+    Fact_Spelling.value valueSpelling,
+    
+    Fact_Translate.id factAnswer, 
+    Fact_Translate.dataType dataTypeTranslate,
+    Fact_Translate.value valueTranslate,
+    
+    UsrFact.isHidden,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownBad,
+    
+    coalesce(Cube_UsrFact.ratingTask, 0) ratingTask,
+    coalesce(Cube_UsrFact.ratingQuickness, 0) ratingQuickness
+
+from    
+    Item
+    -- Факт типа DataType_word_spelling
+    join Fact Fact_Spelling on (
+        Item.id = Fact_Spelling.item and
+        Fact_Spelling.dataType = ${RgmDbConst.DataType_word_spelling}
+    )
+    -- Факт типа DataType_word_translate 
+    join Fact Fact_Translate on (
+        Item.id = Fact_Translate.item and
+        Fact_Translate.dataType = ${RgmDbConst.DataType_word_translate}
+    )
+    left join UsrFact on (
+        UsrFact.usr = :usr and
+        UsrFact.factQuestion = Fact_Spelling.id and 
+        UsrFact.factAnswer = Fact_Translate.id 
+    )
+    left join Cube_UsrFact on (
+        Cube_UsrFact.usr = :usr and 
+        Cube_UsrFact.factQuestion = Fact_Spelling.id and 
+        Cube_UsrFact.factAnswer = Fact_Translate.id
+    )
+    
+where
+    Item.id in (${itemsStr})    
 """
     }
 

@@ -21,6 +21,7 @@ export function run() {
         {path: '/still', frame: import('./StillPage')},
         {path: '/still1', frame: import('./StillPage1')},
         {path: '/planList', frame: import('./PlanList')},
+        {path: '/addFact', frame: import('./AddFactPage')},
     ]
 
     apx.app.onBeforeRun(async () => {

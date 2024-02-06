@@ -112,7 +112,7 @@
 <script>
 
 import {apx} from "./vendor"
-import auth from "run-game-frontend/src/auth"
+import auth from "./auth"
 import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
 import GameInfo from "./comp/GameInfo"

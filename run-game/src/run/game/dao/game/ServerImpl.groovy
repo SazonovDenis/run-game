@@ -293,18 +293,18 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // По всем заданиям игры - сумма баллов и т.д.
-        StoreRecord recPlanStatistic = mdb.createStoreRecord("Plan.statistic")
-        recPlanStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
-        recPlanStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
+        StoreRecord recStatistic = mdb.createStoreRecord("Plan.statistic.rec")
+        recStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
+        recStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
 
         // Максимальный балл берем на основе количества нескрытых заданий в плане
-        recPlanStatistic.setValue("ratingMax", recPlanRaw.getValue("count"))
+        recStatistic.setValue("ratingMax", recPlanRaw.getValue("count"))
 
 
         //
         res.put("plan", recPlan)
         res.put("tasks", stPlanFacts)
-        res.put("statistic", recPlanStatistic.getValues())
+        res.put("statistic", recStatistic.getValues())
 
         //
         return res

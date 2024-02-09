@@ -10,13 +10,6 @@
         <field name="planText" parent="Plan/text"/>
     </domain>
 
-    <domain name="Plan.statistic">
-        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
-
-        <field name="ratingMax" parent="double" scale="3"/>
-    </domain>
-
 
     <!--
     Игра с рейтингом
@@ -91,6 +84,15 @@
     </domain>
 
 
+    <!-- Структура "Статистика по плану" -->
+    <domain name="Plan.statistic.rec">
+        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
+
+        <field name="ratingMax" parent="double" scale="3"/>
+    </domain>
+
+
     <!-- Список заданий игры + результат их выполнения -->
     <domain name="GameTask.list" parent="GameTask">
         <!-- Факт и его свойства -->
@@ -107,6 +109,24 @@
                title="Изменение рейтинга за ответы"/>
         <field name="ratingQuicknessDiff" parent="double" scale="3"
                title="Изменение рейтинга за скорость"/>
+    </domain>
+
+
+    <!-- Список планов + статистика по зазаниям плана -->
+    <domain name="Plan.list.statistic" parent="id">
+        <field name="plan" parent="Plan/ref"/>
+        <field name="text" parent="Plan/text"/>
+
+        <field name="isAuthor" parent="boolean" title="Пользователь является автором"/>
+        <field name="isHidden" parent="boolean" title="План скрыт"/>
+        <field name="isAllowed" parent="boolean" title="Разрешен доступ"/>
+
+        <field name="isPublic" parent="boolean"/>
+
+        <field name="count" parent="Cube_UsrPlan/count"/>
+        <field name="countFull" parent="Cube_UsrPlan/countFull"/>
+        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
     </domain>
 
 

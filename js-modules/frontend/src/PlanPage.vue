@@ -4,6 +4,11 @@
 
         <div v-if="dataLoaded">
 
+            <q-input
+                dense outlined
+                v-model="plan.planText"
+            />
+
             <PlanInfo :planText="plan.planText"
                       :ratingTask="statistic.ratingTask"
                       :ratingQuickness="statistic.ratingQuickness"
@@ -326,6 +331,20 @@ export default {
             return
         }
 
+        if (!this.planId) {
+            this.plan = {planText: "Уровень новый"}
+            this.tasks = []
+            this.statistic = {}
+
+            this.dataLoaded = true
+
+            // --- Сортировка по умолчанию
+            this.sortField = "question"
+
+            //
+            return
+        }
+
         //
         this.dataLoaded = false
 
@@ -364,8 +383,6 @@ export default {
 
             task.ratingTaskForSort = getRatingTaskForSort(ratingTaskGroup, task)
         }
-
-        this.tasks.push({})
 
         // --- Сортировка по умолчанию
         this.sortField = "question"

@@ -38,22 +38,24 @@
         <q-page-sticky
             position="bottom-right"
             :offset="[18, 18]">
-            <q-fab style="height: 4em; width: 4em;"
+            <q-fab style="height: 4.1em; width: 4.1em;"
                    color="purple"
-                   _text-color="black"
                    icon="add"
                    vertical-actions-align="right"
                    direction="up">
-                <q-fab-action style="height: 4em; _width: 4em;"
+                <q-fab-action style="height: 4em; min-width: 18em;"
                               color="secondary"
-                              _text-color="black"
-                              label="Создать свой уровень" square icon="mail"
+                              label="Создать свой уровень"
+                              square
+                              icon="edit"
                               @click="onCreateLevel"
                 />
-                <q-fab-action style="height: 4em; _width: 4em;"
+                <q-fab-action style="height: 4em; min-width: 18em;"
                               color="amber-10"
                               text-color="black"
-                              label="Подключить из библиотеки" square icon="alarm"
+                              label="Подключить из библиотеки"
+                              square
+                              icon="add"
                               @click="onAddLevel"
                 />
             </q-fab>
@@ -94,7 +96,9 @@ export default {
         },
 
         onCreateLevel() {
-            console.log("onCreateLevel")
+            apx.showFrame({
+                frame: '/plan', props: {doIns: true}
+            })
         },
 
         onAddLevel() {

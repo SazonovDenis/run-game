@@ -137,7 +137,7 @@ export default {
 
     computed: {
         itemStateText() {
-            return "Добавлено: " + this.itemsAdd.length
+            return "Выбрано: " + this.itemsAdd.length
         }
     },
 

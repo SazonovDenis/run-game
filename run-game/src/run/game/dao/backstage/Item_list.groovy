@@ -9,8 +9,6 @@ import run.game.testdata.fixture.*
 
 class Item_list extends BaseMdbUtils {
 
-    // todo это костыль, наружу надо белее полезный метод, и именно туда все гораничения
-
     /**
      * Ищем Item по фрагменту написания,
      * среди наших словарных слов

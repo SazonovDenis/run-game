@@ -24,7 +24,6 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             (RgmDbConst.DataType_word_picture)  : "word_picture",
     ]
 
-    //Set<String> valuesForChoiceFalse = new HashSet<>()
 
     void setMdb(Mdb mdb) {
         super.setMdb(mdb)
@@ -34,7 +33,6 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
     }
 
 
-    // todo: не использованы factTagQuestion, factTagAnswer
     public Store generateItemFactsCombinations(long item, long dataTypeQuestion, long dataTypeAnswer, Collection<Long> factTagQuestion, Collection<Long> factTagAnswer) {
         Store res = mdb.createStore("FactCombinations")
 
@@ -530,7 +528,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Выберем сами среди похожих слов, опираясь на таблицу WordDistance
         Set<String> valuesFalseSet = new HashSet<>()
 
-        // todo: язык слова надо передавать, а не угадывать
+        // Язык слова
         String lang
         if (UtWord.isAlphasEng(valueTrue)) {
             lang = "eng"

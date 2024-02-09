@@ -199,6 +199,7 @@ import MenuContainer from "./comp/MenuContainer"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
 import utils from "./utils"
+import {daoApi} from "run-game-frontend/src/dao"
 
 export default {
     name: "PlanPage",
@@ -426,7 +427,11 @@ export default {
             this.frameReturnProps = {planId: this.planId}
         },
 
-        savePlan() {
+        async savePlan() {
+            let recPlan = {id: this.plan.id, text: this.plan.planText}
+            await daoApi.invoke('m/Plan/upd', [recPlan])
+
+            //
             this.showMode = "view"
             this.frameReturn = null
             this.frameReturnProps = null

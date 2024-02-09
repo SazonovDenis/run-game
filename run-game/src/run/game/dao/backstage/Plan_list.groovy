@@ -7,19 +7,20 @@ import run.game.dao.*
 
 class Plan_list extends RgmMdbUtils {
 
+
     /**
-     * Список планов (уровней) пользователя.
+     * Список собственных планов (уровней) пользователя.
      * С рейтингом, сортированный по некоторому критерию, например по самому отстающему
      * или по запланированному учителем.
      */
     @DaoMethod
-    Store getPlans() {
-        Map params = [isPrivate: true, isHidden: false]
+    Store getPlanUsr(long plan) {
+        Map params = [isPrivate: true, plan: plan]
         return getPlansInternal(params)
     }
 
     /**
-     * Список планов (уровней) пользователя.
+     * Список собственных планов (уровней) пользователя.
      * С рейтингом, сортированный по некоторому критерию, например по самому отстающему
      * или по запланированному учителем.
      */
@@ -51,6 +52,8 @@ class Plan_list extends RgmMdbUtils {
         SqlFilter filter = SqlFilter.create(mdb, sqlPlansUsr(), params)
         //
         filter.addWhere("isHidden", "equal")
+        //
+        filter.addWhere("plan", "equal")
         //
         SqlFilterBuilder part_public = { SqlFilterContext ctx ->
             ctx.addPart("accessMode", "and (isAuthor = 0 and isAllowed = 0 and isPublic = 1)")

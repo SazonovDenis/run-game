@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
@@ -47,18 +48,53 @@ class Plan_upd extends RgmMdbUtils {
     }
 
 
+    /**
+     * Редактирует план обучения
+     *
+     * @param plan план
+     */
+    @DaoMethod
+    void upd(Map plan) {
+        // Проверим, что запись существует и доступна пользователю
+        long idPlan = UtCnv.toLong(plan.get("id"))
+        Plan_list list = mdb.create(Plan_list)
+        list.getPlanUsr(idPlan)
+
+        //
+        StoreRecord recPlan = mdb.createStoreRecord("Plan")
+        recPlan.setValue("id", idPlan)
+        recPlan.setValue("text", plan.get("text"))
+
+        //
+        mdb.updateRec("Plan", plan)
+    }
+
+
     @DaoMethod
     void addFact(long idPlan, List<Map> planFact) {
+        // Проверим, что запись существует и доступна пользователю
+        Plan_list list = mdb.create(Plan_list)
+        list.getPlanUsr(idPlan)
+
+        //
         for (Map mapPlanFact : planFact) {
             StoreRecord rec = mdb.createStoreRecord("PlanFact", mapPlanFact)
             rec.setValue("plan", idPlan)
             mdb.insertRec("PlanFact", rec)
         }
+
+        // Проверим наличие заданий или создадим их
+        checkPlanTasks(idPlan)
     }
 
 
     @DaoMethod
     void delFact(long idPlan, long idPlanFact) {
+        // Проверим, что запись существует и доступна пользователю
+        Plan_list list = mdb.create(Plan_list)
+        list.getPlanUsr(idPlan)
+
+        //
         mdb.execQuery("delete from PlanFact where plan = :plan and id = :idPlanFact",
                 [plan: idPlan, planFact: idPlanFact]
         )
@@ -160,7 +196,7 @@ class Plan_upd extends RgmMdbUtils {
      * Если не хватает - создадим их
      * @param planFact
      */
-    void checkPlanTasks(long idPlan) {
+    private void checkPlanTasks(long idPlan) {
         Store st = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan])
         mdb.outTable(st)
 

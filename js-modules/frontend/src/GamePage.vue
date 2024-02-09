@@ -65,35 +65,12 @@ export default {
     async mounted() {
         ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
 
-        ///////////////////////////////////////
-        /*
-                // Грузим текущую игру (если не загружена)
-                if (!ctx.globalState.game) {
-                    await ctx.gameplay.loadActiveGame()
-                }
-
-                if (!ctx.globalState.game) {
-                    apx.showFrame({
-                        frame: '/', props: {prop1: 1}
-                    })
-                    return
-                }
-
-                if (ctx.globalState.game.done) {
-                    apx.showFrame({
-                        frame: '/gameInfo', props: {prop1: 1}
-                    })
-                }
-        */
-        ///////////////////////////////////////
-
         // Грузим текущее задание (если оно не загружено)
         await ctx.gameplay.loadCurrentOrNextTask()
     },
 
     unmounted() {
         ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
-        //gameplay.shutdown()
     },
 
 }

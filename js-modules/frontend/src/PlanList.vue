@@ -106,65 +106,6 @@ export default {
         return {
             plans: []
         }
-
-        ////////////////////////////////////////
-        ////////////////////////////////////////
-        ////////////////////////////////////////
-        return {
-            plans: [
-                {
-                    img: "fruits",
-                    text: "Овощи и фрукты",
-                    count: 38,
-                    raiting: null,
-                },
-                {
-                    img: "materials",
-                    text: "Материалы, отходы и технологические процессы",
-                    added: true,
-                    count: 21,
-                    raiting: 1.3,
-                },
-                {
-                    img: null,
-                    text: "Части тела",
-                    added: true,
-                    count: 38,
-                    raiting: 3,
-                },
-                {
-                    img: "products",
-                    text: "Продукты",
-                    added: true,
-                    count: 17,
-                    raiting: 3.5,
-                },
-                {
-                    img: "colors",
-                    text: "Цвета и оттенки",
-                    count: 13,
-                    raiting: null,
-                },
-                {
-                    img: "animals",
-                    text: "Животные",
-                    count: 24,
-                    raiting: 12,
-                },
-                {
-                    img: "plants",
-                    text: "Растения",
-                    count: 200,
-                    raiting: 12,
-                },
-                {
-                    img: null,
-                    text: "Dumb ways to die",
-                    count: 200,
-                    raiting: 112.5,
-                },
-            ]
-        }
     },
 
     async mounted() {

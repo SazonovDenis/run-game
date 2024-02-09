@@ -42,27 +42,20 @@
                     <div class="text-grey-8 q-gutter-xs">
 
                         <q-btn v-for="menuItem in itemsMenu"
-
                                flat dense round
                                size="1.2em"
-                               :icon="menuItem.icon"
+                               :icon="itemMenuIcon(menuItem, taskItem)"
                                :color="itemMenuColor(menuItem, taskItem)"
                                @click="itemMenuClick(menuItem, taskItem)"
                         />
 
-                        <!--
-                        <q-btn flat dense round
-                               size="1.2em"
-                               :icon="itemMenu.icon"
-                               :color="getHiddenColor(taskItem.isHidden)"
-                               @click="itemHiddenToggle(taskItem)"
-                        />
-                        -->
 
+                        <!--
                         <q-btn flat dense round
                                icon="more-h"
                                size="1.0em"
                         />
+                        -->
 
                     </div>
 
@@ -124,9 +117,26 @@ export default {
 
     methods: {
 
+        itemMenuIcon(menuItem, taskItem) {
+            if (menuItem.icon) {
+                if (menuItem.icon instanceof Function) {
+                    return menuItem.icon(taskItem)
+                } else {
+                    return menuItem.icon
+                }
+            } else {
+                return null
+            }
+
+        },
+
         itemMenuColor(menuItem, taskItem) {
             if (menuItem.itemMenuColor) {
-                return menuItem.itemMenuColor(taskItem)
+                if (menuItem.itemMenuColor instanceof Function) {
+                    return menuItem.itemMenuColor(taskItem)
+                } else {
+                    return menuItem.itemMenuColor
+                }
             } else {
                 return "black"
             }

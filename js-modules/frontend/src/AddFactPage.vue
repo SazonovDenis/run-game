@@ -5,40 +5,34 @@
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
 
-        <q-layout view="hHh lpR fFf">
 
-            <q-page-container>
+        <div v-if="addMode==='text'">
 
-                <div v-if="addMode==='text'">
+            <TextInputText :itemsAdd="itemsAdd">
 
-                    <TextInputText :itemsAdd="itemsAdd">
+            </TextInputText>
 
-                    </TextInputText>
-
-                </div>
+        </div>
 
 
-                <div v-if="addMode==='photo'">
+        <div v-if="addMode==='photo'">
 
-                    <TextInputPhoto :itemsAdd="itemsAdd">
+            <TextInputPhoto :itemsAdd="itemsAdd">
 
-                    </TextInputPhoto>
+            </TextInputPhoto>
 
-                </div>
+        </div>
 
-                <div v-if="addMode==='viewItemsAdd'">
 
-                    <TaskList
-                        :showEdit="true"
-                        :tasks="itemsAdd"
-                        :itemsMenu="itemsMenu"
-                    />
+        <div v-if="addMode==='viewItemsAdd'">
 
-                </div>
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsAdd"
+                :itemsMenu="itemsMenu"
+            />
 
-            </q-page-container>
-
-        </q-layout>
+        </div>
 
 
         <template v-slot:footer>
@@ -69,7 +63,7 @@
 
                                 <div
                                     class="q-ma-sm"
-                                    style="margin: auto; _padding-left: .2em"
+                                    style="margin: auto;"
                                     @click="clickItemStateText">
                                     <span class="rgm-link-soft"> {{
                                             itemStateText
@@ -107,6 +101,7 @@ import TextInputPhoto from "./comp/TextInputPhoto"
 import TextInputText from "./comp/TextInputText"
 import auth from "./auth"
 import {apx} from "./vendor"
+import utils from "./utils"
 
 export default {
     name: "AddFactPage",
@@ -131,7 +126,7 @@ export default {
                     icon: "clear",
                     itemMenuClick: this.itemDeleteMenuClick,
                 }
-            ]
+            ],
         }
     },
 
@@ -144,7 +139,7 @@ export default {
     methods: {
 
         itemDeleteMenuClick(taskItem) {
-            let p = this.itemPosInItemsAdd(taskItem)
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
                 this.itemsAdd.splice(p, 1)
             }
@@ -154,23 +149,31 @@ export default {
             this.addMode = "viewItemsAdd"
         },
 
-        saveItems() {
-            let res = daoApi.loadStore('m/Game/addItems', [this.itemsAdd])
-
-        },
-
-        itemPosInItemsAdd(taskItem) {
-            for (let p = 0; p < this.itemsAdd.length; p++) {
-                let itemAdd = this.itemsAdd[p]
-                if (itemAdd.factAnswer === taskItem.factAnswer &&
-                    itemAdd.factQuestion === taskItem.factQuestion
-                ) {
-                    return p
-                }
+        async saveItems() {
+            //
+            let recPlan = {text: this.planText}
+            let stPlanFact = []
+            for (let item of this.itemsAdd) {
+                stPlanFact.push({
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
             }
 
-            return -1
+            //
+            let planId = this.planId
+            if (!planId) {
+                planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFact, []])
+            } else {
+                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFact])
+            }
+
+            apx.showFrame({
+                frame: '/plan', props: {planId: planId}
+            })
+
         },
+
     },
 
     async mounted() {

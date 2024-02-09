@@ -55,6 +55,7 @@
 import {daoApi} from "../dao"
 import TaskList from "./TaskList"
 import MenuContainer from "./MenuContainer"
+import utils from "../utils"
 
 export default {
 
@@ -115,7 +116,7 @@ export default {
 
     methods: {
         itemDeleteMenuColor(taskItem) {
-            let p = this.itemPosInItemsAdd(taskItem)
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
                 return "green-6"
             } else {
@@ -124,10 +125,7 @@ export default {
         },
 
         itemDeleteMenuClick(taskItem) {
-            console.info("itemDeletedItemMenuClick", taskItem)
-            console.info("this.itemsAdd", this.itemsAdd)
-
-            let p = this.itemPosInItemsAdd(taskItem)
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
                 this.itemsAdd.splice(p, 1)
             } else {
@@ -135,18 +133,6 @@ export default {
             }
         },
 
-        itemPosInItemsAdd(taskItem) {
-            for (let p = 0; p < this.itemsAdd.length; p++) {
-                let itemAdd = this.itemsAdd[p]
-                if (itemAdd.factAnswer === taskItem.factAnswer &&
-                    itemAdd.factQuestion === taskItem.factQuestion
-                ) {
-                    return p
-                }
-            }
-
-            return -1
-        },
 
         /* =============================== */
 

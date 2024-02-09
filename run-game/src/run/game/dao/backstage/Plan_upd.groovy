@@ -17,18 +17,20 @@ class Plan_upd extends RgmMdbUtils {
      * @return id добавленной записи
      */
     @DaoMethod
-    long ins(StoreRecord plan, Store planFact, Store planTag) {
+    long ins(Map plan, List<Map> planFact, List<Map> planTag) {
         // Plan
         long idPlan = mdb.insertRec("Plan", plan)
 
         // PlanTag
-        for (StoreRecord rec : planTag) {
+        for (Map mapPlanTag : planTag) {
+            StoreRecord rec = mdb.createStoreRecord("PlanTag", mapPlanTag)
             rec.setValue("plan", idPlan)
             mdb.insertRec("PlanTag", rec)
         }
 
         // PlanFact
-        for (StoreRecord rec : planFact) {
+        for (Map mapPlanFact : planFact) {
+            StoreRecord rec = mdb.createStoreRecord("PlanFact", mapPlanFact)
             rec.setValue("plan", idPlan)
             mdb.insertRec("PlanFact", rec)
         }
@@ -37,7 +39,7 @@ class Plan_upd extends RgmMdbUtils {
         long idUsr = getCurrentUserId()
         mdb.insertRec("UsrPlan", [plan: idPlan, usr: idUsr, isAuthor: true])
 
-        // Проверим наличе заданий или создадим их
+        // Проверим наличие заданий или создадим их
         checkPlanTasks(idPlan)
 
         //
@@ -46,8 +48,9 @@ class Plan_upd extends RgmMdbUtils {
 
 
     @DaoMethod
-    void addFact(long idPlan, Store planFact) {
-        for (StoreRecord rec : planFact) {
+    void addFact(long idPlan, List<Map> planFact) {
+        for (Map mapPlanFact : planFact) {
+            StoreRecord rec = mdb.createStoreRecord("PlanFact", mapPlanFact)
             rec.setValue("plan", idPlan)
             mdb.insertRec("PlanFact", rec)
         }

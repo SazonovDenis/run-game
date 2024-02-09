@@ -145,7 +145,19 @@ export default {
         } else {
             return "баллов"
         }
-    }
+    },
 
+    itemPosInItems(item, itemsList) {
+        for (let p = 0; p < itemsList.length; p++) {
+            let itemEl = itemsList[p]
+            if (itemEl.factAnswer === item.factAnswer &&
+                itemEl.factQuestion === item.factQuestion
+            ) {
+                return p
+            }
+        }
+
+        return -1
+    },
 
 }

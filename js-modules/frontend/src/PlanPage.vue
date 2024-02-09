@@ -131,7 +131,7 @@ export default {
     name: "PlanPage",
 
     props: {
-        idPlan: null,
+        planId: null,
     },
 
     components: {
@@ -281,7 +281,7 @@ export default {
         },
 
         async gameStart() {
-            await gameplay.gameStart(this.idPlan)
+            await gameplay.gameStart(this.planId)
 
             apx.showFrame({
                 frame: '/game', props: {}
@@ -303,7 +303,13 @@ export default {
 
         onAddFact() {
             apx.showFrame({
-                frame: '/addFact', props: {plan: this.plan}
+                frame: '/addFact',
+                props: {
+                    planId: this.planId,
+                    planText: this.plan.planText,
+                    frameReturn: "/plan",
+                    frameReturnProps: {planId: this.planId}
+                }
             })
         },
 
@@ -324,7 +330,7 @@ export default {
         this.dataLoaded = false
 
         //
-        let res = await ctx.gameplay.api_getPlanTasks(this.idPlan)
+        let res = await ctx.gameplay.api_getPlanTasks(this.planId)
 
         //
         this.plan = res.plan

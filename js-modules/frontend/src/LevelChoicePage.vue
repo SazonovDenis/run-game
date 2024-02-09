@@ -72,8 +72,8 @@ export default {
     },
 
     methods: {
-        async gameStart(idPlan) {
-            await gameplay.gameStart(idPlan)
+        async gameStart(planId) {
+            await gameplay.gameStart(planId)
 
             apx.showFrame({
                 frame: '/game', props: {}

@@ -2,7 +2,7 @@
 
     <MenuContainer title="Главная">
 
-        <template v-slot:footer>
+        <template v-slot:footerContent>
             <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
         </template>
 

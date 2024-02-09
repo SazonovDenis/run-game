@@ -6,8 +6,10 @@
 
             <item name="m/Ocr">
 
+<!--
                 <item name="i" method="*"
                       class="run.game.dao.ocr.Ocr"/>
+-->
 
             </item>
 

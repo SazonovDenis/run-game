@@ -6,9 +6,9 @@
                 <q-toolbar-title>
                     <q-avatar
                         style="width: 0.8em; height: 0.8em; margin-right: 0.2em"
-                        @click="onMain()"
+                        @click="onTopLeftIcon()"
                     >
-                        <img :src="icon">
+                        <img :src="iconTopLeft">
                     </q-avatar>
                     <span v-if="title">
                         {{ title }}
@@ -40,7 +40,7 @@
                             <div class="q-item__label q-item__label--header"
                                  @click="onLevels()">Уровни
                             </div>
-                           <div class="q-item__label q-item__label--header"
+                            <div class="q-item__label q-item__label--header"
                                  @click="onMyLevels()">Мои уровни
                             </div>
                             <div class="q-item__label q-item__label--header"
@@ -141,6 +141,7 @@
 
         </q-drawer>
 
+
         <q-page-container>
 
             <!-- slot default -->
@@ -151,21 +152,32 @@
 
         </q-page-container>
 
-        <q-footer reveal bordered class="bg-grey-8 text-white">
-            <q-toolbar>
-                <q-toolbar-title>
-                    <q-avatar style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
-                        <img v-bind:src="icon">
-                    </q-avatar>
-                    <div></div>
-                </q-toolbar-title>
 
-                <!-- slot footer -->
-                <slot name="footer"></slot>
-                <!-- -->
+        <q-footer reveal bordered :style="{display: getFooterDisplay}">
 
-            </q-toolbar>
+            <!-- slot footer -->
+            <slot name="footer">
+
+                <q-toolbar class="bg-grey-8 text-white">
+                    <q-toolbar-title>
+
+                        <q-avatar
+                            style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
+                            <img v-bind:src="iconBottomLeft">
+                        </q-avatar>
+
+                    </q-toolbar-title>
+
+                    <!-- slot footerContent -->
+                    <slot name="footerContent"></slot>
+                    <!-- -->
+
+                </q-toolbar>
+
+            </slot>
+
         </q-footer>
+
 
     </q-layout>
 </template>
@@ -188,7 +200,10 @@ export default {
     },
 
     props: {
+        frameReturn: null,
+        frameReturnProps: null,
         title: null,
+        showFooter: false,
         menu: [],
     },
 
@@ -205,7 +220,21 @@ export default {
     },
 
     computed: {
-        icon() {
+        getFooterDisplay() {
+            if (this.showFooter) {
+                return "block"
+            } else {
+                return "none"
+            }
+        },
+        iconTopLeft() {
+            if (this.frameReturn) {
+                return apx.url.ref("run/game/web/img/back-arrow.svg")
+            } else {
+                return apx.url.ref("run/game/web/img/logo-mono-white.svg")
+            }
+        },
+        iconBottomLeft() {
             return apx.url.ref("run/game/web/img/logo-mono-white.svg")
         },
         avatar() {
@@ -217,6 +246,20 @@ export default {
     },
 
     methods: {
+        onTopLeftIcon: function() {
+            if (this.frameReturn) {
+                apx.showFrame({
+                    frame: this.frameReturn,
+                    props: this.frameReturnProps,
+                })
+                return
+            }
+
+            apx.showFrame({
+                frame: '/',
+            })
+        },
+
         onUser: function() {
             if (auth.isAuth()) {
                 apx.showFrame({
@@ -233,7 +276,7 @@ export default {
                 frame: '/planList',
             })
         },
-       onMyLevels: function() {
+        onMyLevels: function() {
             apx.showFrame({
                 frame: '/levels',
             })
@@ -253,11 +296,6 @@ export default {
                 frame: '/gameInfo',
             })
         },
-        onMain: function() {
-            apx.showFrame({
-                frame: '/',
-            })
-        },
     },
 
     setup() {
@@ -270,7 +308,8 @@ export default {
                 rightDrawerOpen.value = !rightDrawerOpen.value
             }
         }
-    }
+    },
+
 }
 </script>
 

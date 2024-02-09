@@ -3,7 +3,6 @@ package run.game.dao.ocr
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.process.*
-import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
@@ -11,8 +10,48 @@ import run.game.dao.backstage.*
 class Ocr extends RgmMdbUtils {
 
 
-    @DaoMethod
     public List parseStill(String imgBase64) {
+        // Строку base64
+        int pos = imgBase64.indexOf(",") + 1
+        String imgStr = imgBase64.substring(pos)
+        byte[] img = UtString.decodeBase64(imgStr)
+
+        // Скинем в файл
+        File inFile = File.createTempFile("rgm", ".png")
+        FileOutputStream strm = new FileOutputStream(inFile);
+        strm.write(img)
+        strm.close()
+
+        // Распарсим
+        String text = tesseract(inFile.getAbsolutePath(), "eng+rus")
+
+        //
+        //inFile.delete()
+
+/*
+        // Частота встречаемости eng
+        String dirBase = "data/web-grab/"
+        Map<String, Integer> wordFrequencyMap_eng = ItemFact_fb.loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
+
+        List res = new ArrayList()
+
+        //////////////////////////
+        res.add(text)
+        res.add("\r\n")
+        res.add("===================")
+        res.add("\r\n")
+        //////////////////////////
+
+*/
+
+        String[] itemsText = text.split()
+
+        //
+        return itemsText.toList()
+    }
+
+
+    public List parseStillToList(String imgBase64) {
         long idUsr = getCurrentUserId()
 
         //
@@ -57,6 +96,7 @@ class Ocr extends RgmMdbUtils {
         //
         return stItem.getUniqueValues("value").toList()
     }
+
 
     String tesseract(String inFileName, String lang) {
         String outFileName = UtFile.removeExt(inFileName)

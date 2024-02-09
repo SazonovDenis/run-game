@@ -1,14 +1,15 @@
 <template>
 
-    <MenuContainer title="Играем!">
+    <MenuContainer title="Играем!" :showFooter="true">
 
-        <template v-slot:footer>
+        <template v-slot:footerContent>
             <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
         </template>
 
         <UserTaskPanel
             v-if="isAuth()"
-            :gameTask="globalState.gameTask" :dataState="globalState.dataState"/>
+            :gameTask="globalState.gameTask" :dataState="globalState.dataState"
+        />
 
     </MenuContainer>
 

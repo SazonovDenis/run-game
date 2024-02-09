@@ -2,8 +2,11 @@
 
     <q-list bordered separator>
         <template v-for="(taskItem, index) in tasks">
+            <q-item v-ripple v-if="!taskItem.factQuestion">
+                <div style="height: 3em">&nbsp;</div>
+            </q-item>
 
-            <q-item clickable v-ripple v-if="isItemShown(taskItem)">
+            <q-item clickable v-ripple v-else-if="isItemShown(taskItem)">
 
                 <q-item-section top avatar v-if="showAnswerResult">
                     <div
@@ -38,12 +41,23 @@
 
                     <div class="text-grey-8 q-gutter-xs">
 
-                        <q-btn flat dense round
-                               icon="del"
+                        <q-btn v-for="menuItem in itemsMenu"
+
+                               flat dense round
                                size="1.2em"
+                               :icon="menuItem.icon"
+                               :color="itemMenuColor(menuItem, taskItem)"
+                               @click="itemMenuClick(menuItem, taskItem)"
+                        />
+
+                        <!--
+                        <q-btn flat dense round
+                               size="1.2em"
+                               :icon="itemMenu.icon"
                                :color="getHiddenColor(taskItem.isHidden)"
                                @click="itemHiddenToggle(taskItem)"
                         />
+                        -->
 
                         <q-btn flat dense round
                                icon="more-h"
@@ -104,10 +118,27 @@ export default {
         showAnswerResult: false,
         showEdit: false,
         tasks: null,
+        itemsMenu: null,
         filter: null,
     },
 
     methods: {
+
+        itemMenuColor(menuItem, taskItem) {
+            if (menuItem.itemMenuColor) {
+                return menuItem.itemMenuColor(taskItem)
+            } else {
+                return "black"
+            }
+
+        },
+
+        itemMenuClick(menuItem, taskItem) {
+            if (menuItem.itemMenuClick) {
+                menuItem.itemMenuClick(taskItem)
+            }
+        },
+
         getRatingColor(rating) {
             if (rating >= 0.8) {
                 return "green-8"

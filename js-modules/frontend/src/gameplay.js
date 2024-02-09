@@ -109,8 +109,8 @@ export default {
         }
     },
 
-    async gameStart(idPlan) {
-        let resGame = await ctx.gameplay.api_gameStart(idPlan)
+    async gameStart(planId) {
+        let resGame = await ctx.gameplay.api_gameStart(planId)
 
         // Игра в глобальном контексте
         ctx.gameplay.globalUse_Game(resGame)
@@ -206,8 +206,8 @@ export default {
         return ctx.gameplay.parseResApiGame(resApi)
     },
 
-    async api_gameStart(idPlan) {
-        let resApi = await daoApi.loadStore('m/Game/gameStart', [idPlan])
+    async api_gameStart(planId) {
+        let resApi = await daoApi.loadStore('m/Game/gameStart', [planId])
         return ctx.gameplay.parseResApiGame(resApi)
     },
 

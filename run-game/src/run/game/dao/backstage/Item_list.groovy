@@ -25,6 +25,7 @@ class Item_list extends BaseMdbUtils {
         if (itemText == null || itemText.length() <= 1) {
             return stFacts
         }
+        itemText = itemText.toLowerCase()
 
         //
         Fact_list list = mdb.create(Fact_list)
@@ -123,21 +124,19 @@ class Item_list extends BaseMdbUtils {
         stFactTranslate.copyTo(stFact)
         StoreIndex idxFacts = stFact.getIndex("factValue")
 
-
-        // Повторы не нужны
+        //
         Set<String> setItemsText = new HashSet<>()
         for (String itemText : itemsText) {
-            itemText = filterWord(itemText)
-            if (itemText != null) {
-                setItemsText.add(itemText)
+            // Повторы не нужны
+            if (setItemsText.contains(itemsText)) {
+                continue
             }
-        }
 
-        //
-        for (String itemText : setItemsText) {
+            //
             StoreRecord rec = idxFacts.get(itemText)
             if (rec != null) {
                 stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
+                setItemsText.add(itemText)
             } else {
                 wordsNotFound.add(itemText)
             }
@@ -203,7 +202,8 @@ class Item_list extends BaseMdbUtils {
 
     /**
      * Формируем пары из продряд идущих слов.
-     * Так можно попытаться найти Item, который состоит из нескольких слов, напимер: "go on", "он екі".
+     * Так можно попытаться найти Item, который состоит из нескольких слов,
+     * напимер: "go on", "он екі".
      *
      * @param words
      * @return сформированные пары

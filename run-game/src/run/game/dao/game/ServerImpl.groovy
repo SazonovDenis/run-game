@@ -14,6 +14,7 @@ import kis.molap.model.value.impl.*
 import kis.molap.ntbd.model.*
 import run.game.dao.*
 import run.game.dao.backstage.*
+import run.game.dao.ocr.*
 import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
@@ -312,19 +313,40 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     Store findItems(String text) {
-        Store stFacts = mdb.createStore("PlanFact.list")
-
-
         // Ищем Item по text
         Item_list itemsList = mdb.create(Item_list)
         Store stItem = itemsList.find(text)
 
+        // Превратим список Item в список пар фактов
+        Set itemIds = stItem.getUniqueValues("item")
+        return loadFactList(itemIds)
+    }
 
-        //
-        long idUsr = getCurrentUserId()
+
+    @DaoMethod
+    Store findStill(String imgBase64) {
+        // Получим список text
+        Ocr ocr = mdb.create(Ocr)
+        List listText = ocr.parseStill(imgBase64)
+
+        // Ищем Item по text
+        Item_list itemsList = mdb.create(Item_list)
+        Store stItem = itemsList.loadBySpelling(listText)
+
+        // Превратим список Item в список пар фактов
+        Set itemIds = stItem.getUniqueValues("id")
+        return loadFactList(itemIds)
+    }
+
+
+    Store loadFactList(Set itemIds) {
+        Store stFacts = mdb.createStore("PlanFact.list")
 
         // Факты в плане - список
-        Store stPlanFactsRaw = mdb.loadQuery(sqlItemFactsStatistic(stItem.getUniqueValues("item")), [usr: idUsr])
+        long idUsr = getCurrentUserId()
+        Store stPlanFactsRaw = mdb.loadQuery(sqlItemFactsStatistic(itemIds), [usr: idUsr])
+
+        //
         for (StoreRecord recTaskRaw : stPlanFactsRaw) {
             // Основные поля
             StoreRecord recTask = stFacts.add(recTaskRaw.getValues())
@@ -342,11 +364,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             recTask.setValue("answer", recTaskAnswer.getValues())
         }
 
-
         //
         return stFacts
     }
-
 
     @DaoMethod
     void saveUsrFact(long factQuestion, long factAnswer, Map dataUsrFact) {

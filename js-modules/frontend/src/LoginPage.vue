@@ -389,13 +389,7 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
 
-.rgm-link-soft {
-    text-decoration: underline;
-    text-decoration-style: dashed;
-    text-decoration-color: rgb(56 134 203);
-    text-underline-offset: 0.3em;
-}
 
 </style>

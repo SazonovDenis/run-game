@@ -68,10 +68,22 @@ class UtWordDistance_Test extends Apx_Test {
         println("  " + distancesAll.get("carrot"))
     }
 
+    //
+    String _word_1 = "собака"
+    String _word_2 = "dog"
+
+    //
+    String word_1 = "изумруд"
+    String word_2 = "изумруд"
+
     @Test
     void jaroWinklerDistance() {
         Store st_rus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate + " --limit 1000")
         Store st_eng = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_spelling + " --limit 1000")
+
+        //
+        println("st_rus.size: " + st_rus.size())
+        println("st_eng.size: " + st_eng.size())
 
         //
         println("=== start: " + XDateTime.now())
@@ -80,11 +92,9 @@ class UtWordDistance_Test extends Apx_Test {
         int maxMatchSize = 15
 
         //
-        String word_1 = "собака"
         Map<String, Double> distances_1 = UtWordDistance.getJaroWinklerMatch(word_1, st_rus, maxMatchSize)
 
         //
-        String word_2 = "dog"
         Map<String, Double> distances_2 = UtWordDistance.getJaroWinklerMatch(word_2, st_eng, maxMatchSize)
 
         //

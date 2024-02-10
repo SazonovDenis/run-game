@@ -11,7 +11,8 @@ import run.game.dao.*
 class Backstage_Test extends RgmBase_Test {
 
     long item = 1030
-    String itemText = "cream"
+    String _itemText = "cream"
+    String itemText = "emerald"
     Collection<String> itemsText = ["orange", "green", "blue"]
 
 
@@ -67,8 +68,7 @@ class Backstage_Test extends RgmBase_Test {
                 printTask(task)
             } catch (Exception e) {
                 println()
-                println("Error:")
-                println(e.message)
+                e.printStackTrace()
             }
         }
     }

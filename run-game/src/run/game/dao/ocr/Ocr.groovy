@@ -3,9 +3,7 @@ package run.game.dao.ocr
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.process.*
-import jandcode.core.store.*
 import run.game.dao.*
-import run.game.dao.backstage.*
 
 class Ocr extends RgmMdbUtils {
 
@@ -26,75 +24,13 @@ class Ocr extends RgmMdbUtils {
         String text = tesseract(inFile.getAbsolutePath(), "eng+rus")
 
         //
-        //inFile.delete()
+        inFile.delete()
 
-/*
-        // Частота встречаемости eng
-        String dirBase = "data/web-grab/"
-        Map<String, Integer> wordFrequencyMap_eng = ItemFact_fb.loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
-
-        List res = new ArrayList()
-
-        //////////////////////////
-        res.add(text)
-        res.add("\r\n")
-        res.add("===================")
-        res.add("\r\n")
-        //////////////////////////
-
-*/
-
+        // Вернем
         String[] itemsText = text.split()
 
         //
         return itemsText.toList()
-    }
-
-
-    public List parseStillToList(String imgBase64) {
-        long idUsr = getCurrentUserId()
-
-        //
-        int pos = imgBase64.indexOf(",") + 1
-        String imgStr = imgBase64.substring(pos)
-        byte[] img = UtString.decodeBase64(imgStr)
-
-        //
-        File inFile = File.createTempFile("rgm", ".png")
-        FileOutputStream strm = new FileOutputStream(inFile);
-        strm.write(img)
-        strm.close()
-
-        //
-        String text = tesseract(inFile.getAbsolutePath(), "eng+rus")
-
-        //
-        //inFile.delete()
-
-/*
-        // Частота встречаемости eng
-        String dirBase = "data/web-grab/"
-        Map<String, Integer> wordFrequencyMap_eng = ItemFact_fb.loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
-
-        List res = new ArrayList()
-
-        //////////////////////////
-        res.add(text)
-        res.add("\r\n")
-        res.add("===================")
-        res.add("\r\n")
-        //////////////////////////
-
-*/
-
-        String[] itemsText = text.split()
-
-        //
-        Item_list itemsList = mdb.create(Item_list)
-        Store stItem = itemsList.loadBySpelling(itemsText.toList())
-
-        //
-        return stItem.getUniqueValues("value").toList()
     }
 
 
@@ -104,7 +40,7 @@ class Ocr extends RgmMdbUtils {
         //
         String exeFile = "tesseract ${inFileName} ${outFileName} -l ${lang} --tessdata-dir /usr/local/share/tessdata/"
 
-        //
+        // Запускаем tesseract
         RunCmd runCmd = new RunCmd()
         runCmd.setShowout(false)
         runCmd.setSaveout(true)
@@ -115,12 +51,13 @@ class Ocr extends RgmMdbUtils {
             throw new XError("error in {0}:\n{1}", exeFile, r)
         }
 
-        //
+        // Читаем ответ
         outFileName = outFileName + ".txt"
+        File outFile = new File(outFileName)
         String text = UtFile.loadString(outFileName)
 
         //
-        //new File(outFileName).delete()
+        outFile.delete()
 
         //
         return text

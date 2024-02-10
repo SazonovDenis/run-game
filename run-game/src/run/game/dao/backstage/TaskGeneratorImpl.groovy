@@ -8,6 +8,7 @@ import jandcode.core.dbm.mdb.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.model.service.*
 import run.game.testdata.fixture.*
 
 //@CompileStatic
@@ -16,6 +17,8 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
     Rnd rnd
 
     int OPTIONS_COUNT = 6
+
+    int VALUES_FALSE_MAX_COUNT = 25
 
     public static Map<Long, String> DataType_CODE = [
             (RgmDbConst.DataType_word_spelling) : "word_spelling",
@@ -525,8 +528,11 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             return answerFalseValues
         }
 
-        // Выберем сами среди похожих слов, опираясь на таблицу WordDistance
+        //
         Set<String> valuesFalseSet = new HashSet<>()
+
+
+        // --- Выберем сами среди похожих слов, опираясь на таблицу WordDistance
 
         // Язык слова
         String lang
@@ -537,6 +543,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         } else {
             lang = "kaz"
         }
+
         //
         StoreRecord recWordDistance = mdb.loadQueryRecord(
                 "select * from WordDistance where word = :word and lang = :lang",
@@ -547,6 +554,21 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             Map matchesMap = (Map) UtJson.fromJson(matchesJson)
             valuesFalseSet.addAll(matchesMap.keySet())
         }
+
+
+        // --- Если не хватает похожих - добъем просто словами
+
+        // Получаем список всех слов
+        WordCacheService wordService = mdb.getModel().bean(WordCacheService)
+        Store stFactTranslate = wordService.getStFactTranslate()
+
+        // Добъем просто словами
+        for (int n = valuesFalseSet.size(); n < VALUES_FALSE_MAX_COUNT; n++) {
+            int p = rnd.num(0, stFactTranslate.size() - 1)
+            StoreRecord rec = stFactTranslate.get(p)
+            valuesFalseSet.add(rec.getString("factValue"))
+        }
+
 
         //
         return valuesFalseSet

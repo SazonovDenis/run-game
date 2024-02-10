@@ -62,7 +62,7 @@ class TestData_Test extends Apx_Test {
     public void fill_WordDistance_toCsvFile() throws Exception {
         utils.logOn()
         UtWordDistance ut = mdb.create(UtWordDistance)
-        ut.maxMatchSize = 25
+        ut.MACH_COUNT_FOR_WORD = 25
         ut.toCsvFile(new File("temp/word_distance.csv"))
     }
 

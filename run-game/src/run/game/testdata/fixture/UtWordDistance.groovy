@@ -17,15 +17,15 @@ import run.game.util.*
 class UtWordDistance extends BaseMdbUtils {
 
     //
-    int maxMatchSize = 25
+    static double DISTANCE_MIN_LEVEL = 0.7
+    static int MACH_COUNT_FOR_WORD = 25
 
+    //
     Logger log = UtLog.getLogConsole()
-
     LogerFiltered logger = new LogerFiltered(log)
 
-    int id = 1
 
-
+    //
     public void fillStore(Store stWordDistance, Store stWordDistanceErrors) {
         logger.logStepSize = 10
 
@@ -93,9 +93,6 @@ class UtWordDistance extends BaseMdbUtils {
         Map<String, Double> distances = new HashMap<>()
 
         //
-        double distanceMinLevelToUse = 0.7
-
-        //
         for (int j = 0; j < stWords.size(); j++) {
             String wordPair = stWords.get(j).getString("value")
             // Самого с собой не сравниваем
@@ -111,7 +108,7 @@ class UtWordDistance extends BaseMdbUtils {
             double distancePair = StringUtils.getJaroWinklerDistance(word, wordPair)
 
             //
-            if (distancePair > distanceMinLevelToUse) {
+            if (distancePair > DISTANCE_MIN_LEVEL) {
                 // Вытесняем самую плохую пару
                 if (distances.size() >= maxMatchSize) {
                     double distanceMin = 1E9
@@ -146,15 +143,18 @@ class UtWordDistance extends BaseMdbUtils {
         logger.logStepStart(stWords.size(), lang)
 
         //
+        int id = 1
+
+        //
         for (StoreRecord rec : stWords) {
             String word = rec.getString("value")
 
             //
-            Map<String, Double> distances = getJaroWinklerMatch(word, stWords, maxMatchSize)
+            Map<String, Double> distances = getJaroWinklerMatch(word, stWords, MACH_COUNT_FOR_WORD)
 
             //
-            if (distances.size() < maxMatchSize) {
-                String error = "distances.size < " + maxMatchSize + ", distances.size: " + distances.size()
+            if (distances.size() < MACH_COUNT_FOR_WORD) {
+                String error = "distances.size < " + MACH_COUNT_FOR_WORD + ", distances.size: " + distances.size()
                 stWordDistanceErrors.add([word: word, lang: lang, error: error])
             }
             if (distances.size() > 0) {

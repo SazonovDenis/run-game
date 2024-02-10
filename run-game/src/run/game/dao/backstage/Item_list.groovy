@@ -5,6 +5,7 @@ import jandcode.core.dao.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.model.service.WordCacheService
 import run.game.testdata.fixture.*
 
 class Item_list extends BaseMdbUtils {
@@ -112,15 +113,9 @@ class Item_list extends BaseMdbUtils {
     Store loadBySpelling(Collection<String> itemsText, Collection<String> wordsNotFound) {
         Store stItem = mdb.createStore("Item")
 
-        // Грузим spelling для всех слов из БД
-        Fact_list list = mdb.create(Fact_list)
-        Store stFactSpelling = list.loadFactsByDataType(RgmDbConst.DataType_word_spelling)
-        Store stFactTranslate = list.loadFactsByDataType(RgmDbConst.DataType_word_translate)
-        //
-        Store stFact = mdb.createStore("Fact.list")
-        stFactSpelling.copyTo(stFact)
-        stFactTranslate.copyTo(stFact)
-        StoreIndex idxFacts = stFact.getIndex("factValue")
+        // Получаем spelling для всех слов
+        WordCacheService wordService = mdb.getModel().bean(WordCacheService)
+        StoreIndex idxFacts = wordService.getIdxFacts()
 
         //
         Set<String> setItemsText = new HashSet<>()

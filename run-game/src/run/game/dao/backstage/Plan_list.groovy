@@ -56,12 +56,12 @@ class Plan_list extends RgmMdbUtils {
         filter.addWhere("plan", "equal")
         //
         SqlFilterBuilder part_public = { SqlFilterContext ctx ->
-            ctx.addPart("accessMode", "and (isAuthor = 0 and isAllowed = 0 and isPublic = 1)")
+            ctx.addPart("accessMode", "and (isOwner = 0 and isAllowed = 0 and isPublic = 1)")
         }
         filter.addWhere("isPublic", part_public)
         //
         SqlFilterBuilder part_private = { SqlFilterContext ctx ->
-            ctx.addPart("accessMode", "and (isAuthor = 1 or isAllowed = 1)")
+            ctx.addPart("accessMode", "and (isOwner = 1 or isAllowed = 1)")
         }
         filter.addWhere("isPrivate", part_private)
 
@@ -82,10 +82,10 @@ select
     Plan.id,
     Plan.id plan,
     Plan.text, 
-    coalesce(UsrPlan.isAuthor, 0) isAuthor,
+    Plan.isPublic,
     coalesce(UsrPlan.isHidden, 0) isHidden,
+    coalesce(UsrPlan.isOwner, 0) isOwner,
     coalesce(UsrPlan.isAllowed, 0) isAllowed,
-    (case when PlanTag_access_public.tag is null then 0 else 1 end) isPublic,
     coalesce(Cube_UsrPlan.count, 0) count,
     coalesce(Cube_UsrPlan.countFull, 0) countFull,
     coalesce(Cube_UsrPlan.ratingTask, 0) ratingTask,
@@ -93,7 +93,6 @@ select
     
 from
     Plan
-    left join PlanTag PlanTag_access_public on (Plan.id = PlanTag_access_public.plan and PlanTag_access_public.tag = ${RgmDbConst.Tag_access_public})
     left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
     left join Cube_UsrPlan on (Plan.id = Cube_UsrPlan.plan and UsrPlan.usr = :usr)
 )
@@ -104,7 +103,7 @@ from
     Tab_Plans
 where
     (1=1) and
-    (isAuthor = 1 or isAllowed = 1 or isPublic = 1)
+    (isOwner = 1 or isAllowed = 1 or isPublic = 1)
     /*part:accessMode*/    
 """
     }

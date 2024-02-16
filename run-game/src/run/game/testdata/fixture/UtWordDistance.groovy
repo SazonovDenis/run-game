@@ -58,7 +58,7 @@ class UtWordDistance extends BaseMdbUtils {
         // Получим список слов - eng
         Store stWordEng = mdb.loadQuery(sqlItemsByTag([RgmDbConst.Tag_word_lang_eng]))
         //
-        RgmCsvUtils.saveToCsv(stWordEng, new File("temp/stWordEng.csv"))
+        utils.saveToCsv(stWordEng, new File("temp/stWordEng.csv"))
 
         // Рассчитаем расстояние до синонимов
         fillStore_internal(stWordEng, "eng", stWordDistance, stWordDistanceErrors)

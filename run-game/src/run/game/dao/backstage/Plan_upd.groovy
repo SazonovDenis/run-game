@@ -19,32 +19,15 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     long ins(Map plan, List<Map> planFact, List<Map> planTag) {
-        // Plan
-        long idPlan = mdb.insertRec("Plan", plan)
+        // План - не публичный
+        plan.put("isPublic", false)
 
-        // PlanTag
-        for (Map mapPlanTag : planTag) {
-            StoreRecord rec = mdb.createStoreRecord("PlanTag", mapPlanTag)
-            rec.setValue("plan", idPlan)
-            mdb.insertRec("PlanTag", rec)
-        }
-
-        // PlanFact
-        for (Map mapPlanFact : planFact) {
-            StoreRecord rec = mdb.createStoreRecord("PlanFact", mapPlanFact)
-            rec.setValue("plan", idPlan)
-            mdb.insertRec("PlanFact", rec)
-        }
-
-        // UsrPlan: автор плана - пользователь
+        // Владелец плана - текущий пользователь
         long idUsr = getCurrentUserId()
-        mdb.insertRec("UsrPlan", [plan: idPlan, usr: idUsr, isAuthor: true])
-
-        // Проверим наличие заданий или создадим их
-        checkPlanTasks(idPlan)
+        Map usrPlan = [usr: idUsr, isOwner: true]
 
         //
-        return idPlan
+        return insInternal(plan, planFact, planTag, usrPlan)
     }
 
 
@@ -119,6 +102,7 @@ class Plan_upd extends RgmMdbUtils {
         mdb.execQuery("delete from Plan where id = :plan", [plan: idPlan])
     }
 
+
     /**
      * Добавить план к списку планов пользователя.
      */
@@ -166,13 +150,14 @@ class Plan_upd extends RgmMdbUtils {
         long idUsr = getCurrentUserId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
-        if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isAuthor"))) {
+        if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isOwner"))) {
             throw new XError("План не был добавлен к списку планов пользователя")
         }
 
         //
         mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isHidden: true])
     }
+
 
     /**
      * Вернуть скрытый план из списка планов пользователя.
@@ -182,12 +167,46 @@ class Plan_upd extends RgmMdbUtils {
         long idUsr = getCurrentUserId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
-        if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isAuthor"))) {
+        if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isOwner"))) {
             throw new XError("План не был добавлен к списку планов пользователя")
         }
 
         //
         mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isHidden: false])
+    }
+
+
+    long insInternal(Map plan, List<Map> planFact, List<Map> planTag, Map usrPlan) {
+        // Plan
+        StoreRecord recPlan = mdb.createStoreRecord("Plan", plan)
+        long idPlan = mdb.insertRec("Plan", recPlan)
+
+        // PlanTag
+        for (Map mapPlanTag : planTag) {
+            StoreRecord rec = mdb.createStoreRecord("PlanTag", mapPlanTag)
+            rec.setValue("plan", idPlan)
+            mdb.insertRec("PlanTag", rec)
+        }
+
+        // PlanFact
+        for (Map mapPlanFact : planFact) {
+            StoreRecord rec = mdb.createStoreRecord("PlanFact", mapPlanFact)
+            rec.setValue("plan", idPlan)
+            mdb.insertRec("PlanFact", rec)
+        }
+
+        // UsrPlan: владелец плана
+        if (usrPlan != null) {
+            StoreRecord recUsrPlan = mdb.createStoreRecord("UsrPlan", usrPlan)
+            recUsrPlan.setValue("plan", idPlan)
+            mdb.insertRec("UsrPlan", recUsrPlan)
+        }
+
+        // Проверим наличие заданий или создадим их
+        checkPlanTasks(idPlan)
+
+        //
+        return idPlan
     }
 
 
@@ -198,7 +217,6 @@ class Plan_upd extends RgmMdbUtils {
      */
     private void checkPlanTasks(long idPlan) {
         Store st = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan])
-        mdb.outTable(st)
 
         // Создадим задания
         Task_upd taskUpd = mdb.create(Task_upd)

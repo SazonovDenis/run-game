@@ -1,6 +1,4 @@
 vegetable
-basil
-eggplant
 bean
 pea
 cabbage
@@ -12,11 +10,8 @@ pepper
 parsley
 tomato
 radish
-beet
 beetroot
 celery
 pumpkin
 dill
-haricot
 garlic
-sorrel

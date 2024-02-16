@@ -6,6 +6,7 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
+import run.game.util.DataUtils
 
 @Disabled
 class Backstage_Test extends RgmBase_Test {
@@ -138,10 +139,10 @@ class Backstage_Test extends RgmBase_Test {
         //
         String planName = "test-" + XDateTime.now().toString().substring(0, 19).replace(":", "-")
         recPlan.setValue("text", planName)
-        stItemFactCombinations.copyTo(stPlanFact)
-        stPlanTag.add([tag: RgmDbConst.Tag_access_private])
         //
-        planUpd.ins(recPlan, stPlanFact, stPlanTag)
+        stItemFactCombinations.copyTo(stPlanFact)
+        //
+        planUpd.ins(recPlan.getValues(), DataUtils.storeToList(stPlanFact), DataUtils.storeToList(stPlanTag))
     }
 
 
@@ -219,9 +220,8 @@ class Backstage_Test extends RgmBase_Test {
         //
         String planName = "test-" + XDateTime.now().toString().substring(0, 19).replace(":", "-")
         recPlan.setValue("text", planName)
-        stPlanTag.add([tag: RgmDbConst.Tag_access_private])
         //
-        planUpd.ins(recPlan, stPlanFact, stPlanTag)
+        planUpd.ins(recPlan.getValues(), DataUtils.storeToList(stPlanFact), DataUtils.storeToList(stPlanTag))
 
     }
 

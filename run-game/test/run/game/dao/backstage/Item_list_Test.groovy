@@ -81,7 +81,7 @@ class Item_list_Test extends RgmBase_Test {
 
         //
         String fileName = "test/run/game/dao/backstage/Item_list_Test.txt"
-        Collection<String> itemsText = itemsList.readFromFile(fileName)
+        Collection<String> itemsText = itemsList.readTextFromFile(fileName)
 
         println()
         println("loadBySpelling, file: '" + fileName + "'")

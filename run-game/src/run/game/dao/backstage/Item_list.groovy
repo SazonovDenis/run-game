@@ -5,8 +5,9 @@ import jandcode.core.dao.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
 import run.game.dao.*
-import run.game.model.service.WordCacheService
+import run.game.model.service.*
 import run.game.testdata.fixture.*
+import run.game.util.*
 
 class Item_list extends BaseMdbUtils {
 
@@ -66,7 +67,7 @@ class Item_list extends BaseMdbUtils {
      * среди наших словарных слов
      *
      * @param itemsText список слов
-     * @return Store структуры Item
+     * @return Store со списком Item
      */
     Store loadBySpelling(Collection<String> itemsText) {
         // Очищаем слова
@@ -91,7 +92,7 @@ class Item_list extends BaseMdbUtils {
      */
     Store loadBySpelling(String fileName) {
         // Грузим слова из файла
-        Collection<String> itemsText = readFromFile(fileName)
+        Collection<String> itemsText = readTextFromFile(fileName)
 
         // Формируем пары из продряд идущих слов.
         Collection<String> itemsTextPairs = createPairs(itemsText)
@@ -111,17 +112,18 @@ class Item_list extends BaseMdbUtils {
      * @return слова, найденные в словаре
      */
     Store loadBySpelling(Collection<String> itemsText, Collection<String> wordsNotFound) {
-        Store stItem = mdb.createStore("Item")
+        Store stItem = mdb.createStore("Item.list")
 
-        // Получаем spelling для всех слов
+        // Получаем из кэша spelling для всех слов
         WordCacheService wordService = mdb.getModel().bean(WordCacheService)
         StoreIndex idxFacts = wordService.getIdxFacts()
 
-        //
+
+        // Загрузим что заказали в itemsText
         Set<String> setItemsText = new HashSet<>()
         for (String itemText : itemsText) {
             // Повторы не нужны
-            if (setItemsText.contains(itemsText)) {
+            if (setItemsText.contains(itemText)) {
                 continue
             }
 
@@ -135,9 +137,48 @@ class Item_list extends BaseMdbUtils {
             }
         }
 
+
+        // Загрузим тэги
+        Store stItemTag = mdb.loadQuery(sqlItemTag(stItem.getUniqueValues("id")))
+        Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "item")
+
+        // Заполним поле тэги (itemTag)
+        for (StoreRecord recItem : stItem) {
+            List<StoreRecord> lstRecItemTag = mapItemsTag.get(recItem.getLong("id"))
+            if (lstRecItemTag != null) {
+                // Превратим список тэгов в Map тегов
+                Map<Long, String> mapItemTag = new HashMap<>()
+                for (StoreRecord recItemTag : lstRecItemTag) {
+                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
+                }
+                recItem.setValue("itemTag", mapItemTag)
+            }
+        }
+
+
         //
         return stItem
     }
+
+    String sqlItemTag(Set ids) {
+        String strIds
+        if (ids.size() == 0) {
+            strIds = "0"
+        } else {
+            strIds = ids.join(",")
+        }
+        return """
+select 
+    ItemTag.item, 
+    Tag.* 
+from
+    ItemTag 
+    join Tag on (ItemTag.tag = Tag.id) 
+where
+    ItemTag.item in ( ${strIds} )
+"""
+    }
+
 
     /**
      * Читаем файл, очищаем от мусора
@@ -145,7 +186,7 @@ class Item_list extends BaseMdbUtils {
      * @param fileName файл со списком слов
      * @return очищенный список слов
      */
-    Collection<String> readFromFile(String fileName) {
+    Collection<String> readTextFromFile(String fileName) {
         // Грузим слова из файла
         String strFile = UtFile.loadString(fileName)
         Collection<String> itemsText = strFile.split()

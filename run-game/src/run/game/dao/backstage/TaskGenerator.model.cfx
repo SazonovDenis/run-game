@@ -9,6 +9,8 @@
         <field name="factAnswer" parent="Fact/ref"/>
         <field name="factValueQuestion" parent="Fact/value"/>
         <field name="factValueAnswer" parent="Fact/value"/>
+        <field name="factTagQuestion" parent="object"/>
+        <field name="factTagAnswer" parent="object"/>
 
     </domain>
 

@@ -1,0 +1,212 @@
+factQuestion	factAnswer	factValueQuestion	factValueAnswer	factTagQuestion	factTagAnswer
+23728	2297	10000-kreekly/mp3/Joey/vegetable.mp3	овощ	{1008=joey}	{1002=eng-rus}
+23728	133789	10000-kreekly/mp3/Joey/vegetable.mp3	овощ, растение, овощной	{1008=joey}	{1002=eng-rus}
+23729	2297	10000-kreekly/mp3/Kendra/vegetable.mp3	овощ	{1008=kendra}	{1002=eng-rus}
+23729	133789	10000-kreekly/mp3/Kendra/vegetable.mp3	овощ, растение, овощной	{1008=kendra}	{1002=eng-rus}
+23730	2297	10000-kreekly/mp3/Kimberly/vegetable.mp3	овощ	{1008=kimberly}	{1002=eng-rus}
+23730	133789	10000-kreekly/mp3/Kimberly/vegetable.mp3	овощ, растение, овощной	{1008=kimberly}	{1002=eng-rus}
+23731	2297	10000-kreekly/mp3/Justin/vegetable.mp3	овощ	{1008=justin}	{1002=eng-rus}
+23731	133789	10000-kreekly/mp3/Justin/vegetable.mp3	овощ, растение, овощной	{1008=justin}	{1002=eng-rus}
+23732	2297	10000-kreekly/mp3/Joanna/vegetable.mp3	овощ	{1008=joanna}	{1002=eng-rus}
+23732	133789	10000-kreekly/mp3/Joanna/vegetable.mp3	овощ, растение, овощной	{1008=joanna}	{1002=eng-rus}
+23733	2297	10000-kreekly/mp3/Salli/vegetable.mp3	овощ	{1008=salli}	{1002=eng-rus}
+23733	133789	10000-kreekly/mp3/Salli/vegetable.mp3	овощ, растение, овощной	{1008=salli}	{1002=eng-rus}
+23734	2297	10000-kreekly/mp3/Matthew/vegetable.mp3	овощ	{1008=matthew}	{1002=eng-rus}
+23734	133789	10000-kreekly/mp3/Matthew/vegetable.mp3	овощ, растение, овощной	{1008=matthew}	{1002=eng-rus}
+133790	2297	8000-wordsteps/mp3/vegetable.mp3	овощ	{}	{1002=eng-rus}
+133790	133789	8000-wordsteps/mp3/vegetable.mp3	овощ, растение, овощной	{}	{1002=eng-rus}
+37673	2306	10000-kreekly/mp3/Joey/bean.mp3	бобы	{1008=joey}	{1002=eng-rus}
+37673	37672	10000-kreekly/mp3/Joey/bean.mp3	боб	{1008=joey}	{1002=eng-rus}
+37674	2306	10000-kreekly/mp3/Kendra/bean.mp3	бобы	{1008=kendra}	{1002=eng-rus}
+37674	37672	10000-kreekly/mp3/Kendra/bean.mp3	боб	{1008=kendra}	{1002=eng-rus}
+37675	2306	10000-kreekly/mp3/Kimberly/bean.mp3	бобы	{1008=kimberly}	{1002=eng-rus}
+37675	37672	10000-kreekly/mp3/Kimberly/bean.mp3	боб	{1008=kimberly}	{1002=eng-rus}
+37676	2306	10000-kreekly/mp3/Justin/bean.mp3	бобы	{1008=justin}	{1002=eng-rus}
+37676	37672	10000-kreekly/mp3/Justin/bean.mp3	боб	{1008=justin}	{1002=eng-rus}
+37677	2306	10000-kreekly/mp3/Joanna/bean.mp3	бобы	{1008=joanna}	{1002=eng-rus}
+37677	37672	10000-kreekly/mp3/Joanna/bean.mp3	боб	{1008=joanna}	{1002=eng-rus}
+37678	2306	10000-kreekly/mp3/Salli/bean.mp3	бобы	{1008=salli}	{1002=eng-rus}
+37678	37672	10000-kreekly/mp3/Salli/bean.mp3	боб	{1008=salli}	{1002=eng-rus}
+37679	2306	10000-kreekly/mp3/Matthew/bean.mp3	бобы	{1008=matthew}	{1002=eng-rus}
+37679	37672	10000-kreekly/mp3/Matthew/bean.mp3	боб	{1008=matthew}	{1002=eng-rus}
+118088	2306	5000-studynow/mp3/bean.mp3	бобы	{}	{1002=eng-rus}
+118088	37672	5000-studynow/mp3/bean.mp3	боб	{}	{1002=eng-rus}
+126584	2306	8000-wordsteps/mp3/bean.mp3	бобы	{}	{1002=eng-rus}
+126584	37672	8000-wordsteps/mp3/bean.mp3	боб	{}	{1002=eng-rus}
+65338	2309	10000-kreekly/mp3/Joey/pea.mp3	горох	{1008=joey}	{1002=eng-rus}
+65338	123063	10000-kreekly/mp3/Joey/pea.mp3	горошина	{1008=joey}	{1002=eng-rus}
+65339	2309	10000-kreekly/mp3/Kendra/pea.mp3	горох	{1008=kendra}	{1002=eng-rus}
+65339	123063	10000-kreekly/mp3/Kendra/pea.mp3	горошина	{1008=kendra}	{1002=eng-rus}
+65340	2309	10000-kreekly/mp3/Kimberly/pea.mp3	горох	{1008=kimberly}	{1002=eng-rus}
+65340	123063	10000-kreekly/mp3/Kimberly/pea.mp3	горошина	{1008=kimberly}	{1002=eng-rus}
+65341	2309	10000-kreekly/mp3/Justin/pea.mp3	горох	{1008=justin}	{1002=eng-rus}
+65341	123063	10000-kreekly/mp3/Justin/pea.mp3	горошина	{1008=justin}	{1002=eng-rus}
+65342	2309	10000-kreekly/mp3/Joanna/pea.mp3	горох	{1008=joanna}	{1002=eng-rus}
+65342	123063	10000-kreekly/mp3/Joanna/pea.mp3	горошина	{1008=joanna}	{1002=eng-rus}
+65343	2309	10000-kreekly/mp3/Salli/pea.mp3	горох	{1008=salli}	{1002=eng-rus}
+65343	123063	10000-kreekly/mp3/Salli/pea.mp3	горошина	{1008=salli}	{1002=eng-rus}
+65344	2309	10000-kreekly/mp3/Matthew/pea.mp3	горох	{1008=matthew}	{1002=eng-rus}
+65344	123063	10000-kreekly/mp3/Matthew/pea.mp3	горошина	{1008=matthew}	{1002=eng-rus}
+123064	2309	5000-studynow/mp3/pea.mp3	горох	{}	{1002=eng-rus}
+123064	123063	5000-studynow/mp3/pea.mp3	горошина	{}	{1002=eng-rus}
+133916	2309	8000-wordsteps/mp3/pea.mp3	горох	{}	{1002=eng-rus}
+133916	123063	8000-wordsteps/mp3/pea.mp3	горошина	{}	{1002=eng-rus}
+79379	2312	10000-kreekly/mp3/Joey/cabbage.mp3	капуста	{1008=joey}	{1002=eng-rus}
+79380	2312	10000-kreekly/mp3/Kendra/cabbage.mp3	капуста	{1008=kendra}	{1002=eng-rus}
+79381	2312	10000-kreekly/mp3/Kimberly/cabbage.mp3	капуста	{1008=kimberly}	{1002=eng-rus}
+79382	2312	10000-kreekly/mp3/Justin/cabbage.mp3	капуста	{1008=justin}	{1002=eng-rus}
+79383	2312	10000-kreekly/mp3/Joanna/cabbage.mp3	капуста	{1008=joanna}	{1002=eng-rus}
+79384	2312	10000-kreekly/mp3/Salli/cabbage.mp3	капуста	{1008=salli}	{1002=eng-rus}
+79385	2312	10000-kreekly/mp3/Matthew/cabbage.mp3	капуста	{1008=matthew}	{1002=eng-rus}
+118536	2312	5000-studynow/mp3/cabbage.mp3	капуста	{}	{1002=eng-rus}
+125283	2312	8000-wordsteps/mp3/cabbage.mp3	капуста	{}	{1002=eng-rus}
+60410	2315	10000-kreekly/mp3/Joey/potato.mp3	картофель	{1008=joey}	{1002=eng-rus}
+60411	2315	10000-kreekly/mp3/Kendra/potato.mp3	картофель	{1008=kendra}	{1002=eng-rus}
+60412	2315	10000-kreekly/mp3/Kimberly/potato.mp3	картофель	{1008=kimberly}	{1002=eng-rus}
+60413	2315	10000-kreekly/mp3/Justin/potato.mp3	картофель	{1008=justin}	{1002=eng-rus}
+60414	2315	10000-kreekly/mp3/Joanna/potato.mp3	картофель	{1008=joanna}	{1002=eng-rus}
+60415	2315	10000-kreekly/mp3/Salli/potato.mp3	картофель	{1008=salli}	{1002=eng-rus}
+60416	2315	10000-kreekly/mp3/Matthew/potato.mp3	картофель	{1008=matthew}	{1002=eng-rus}
+123323	2315	5000-studynow/mp3/potato.mp3	картофель	{}	{1002=eng-rus}
+125526	2315	8000-wordsteps/mp3/potato.mp3	картофель	{}	{1002=eng-rus}
+32420	2318	10000-kreekly/mp3/Joey/onion.mp3	лук	{1008=joey}	{1002=eng-rus}
+32420	122811	10000-kreekly/mp3/Joey/onion.mp3	лук, луковица	{1008=joey}	{1002=eng-rus}
+32421	2318	10000-kreekly/mp3/Kendra/onion.mp3	лук	{1008=kendra}	{1002=eng-rus}
+32421	122811	10000-kreekly/mp3/Kendra/onion.mp3	лук, луковица	{1008=kendra}	{1002=eng-rus}
+32422	2318	10000-kreekly/mp3/Kimberly/onion.mp3	лук	{1008=kimberly}	{1002=eng-rus}
+32422	122811	10000-kreekly/mp3/Kimberly/onion.mp3	лук, луковица	{1008=kimberly}	{1002=eng-rus}
+32423	2318	10000-kreekly/mp3/Justin/onion.mp3	лук	{1008=justin}	{1002=eng-rus}
+32423	122811	10000-kreekly/mp3/Justin/onion.mp3	лук, луковица	{1008=justin}	{1002=eng-rus}
+32424	2318	10000-kreekly/mp3/Joanna/onion.mp3	лук	{1008=joanna}	{1002=eng-rus}
+32424	122811	10000-kreekly/mp3/Joanna/onion.mp3	лук, луковица	{1008=joanna}	{1002=eng-rus}
+32425	2318	10000-kreekly/mp3/Salli/onion.mp3	лук	{1008=salli}	{1002=eng-rus}
+32425	122811	10000-kreekly/mp3/Salli/onion.mp3	лук, луковица	{1008=salli}	{1002=eng-rus}
+32426	2318	10000-kreekly/mp3/Matthew/onion.mp3	лук	{1008=matthew}	{1002=eng-rus}
+32426	122811	10000-kreekly/mp3/Matthew/onion.mp3	лук, луковица	{1008=matthew}	{1002=eng-rus}
+122812	2318	5000-studynow/mp3/onion.mp3	лук	{}	{1002=eng-rus}
+122812	122811	5000-studynow/mp3/onion.mp3	лук, луковица	{}	{1002=eng-rus}
+125495	2318	8000-wordsteps/mp3/onion.mp3	лук	{}	{1002=eng-rus}
+125495	122811	8000-wordsteps/mp3/onion.mp3	лук, луковица	{}	{1002=eng-rus}
+98529	2321	10000-kreekly/mp3/Joey/carrot.mp3	морковь	{1008=joey}	{1002=eng-rus}
+98530	2321	10000-kreekly/mp3/Kendra/carrot.mp3	морковь	{1008=kendra}	{1002=eng-rus}
+98531	2321	10000-kreekly/mp3/Kimberly/carrot.mp3	морковь	{1008=kimberly}	{1002=eng-rus}
+98532	2321	10000-kreekly/mp3/Justin/carrot.mp3	морковь	{1008=justin}	{1002=eng-rus}
+98533	2321	10000-kreekly/mp3/Joanna/carrot.mp3	морковь	{1008=joanna}	{1002=eng-rus}
+98534	2321	10000-kreekly/mp3/Salli/carrot.mp3	морковь	{1008=salli}	{1002=eng-rus}
+98535	2321	10000-kreekly/mp3/Matthew/carrot.mp3	морковь	{1008=matthew}	{1002=eng-rus}
+118605	2321	5000-studynow/mp3/carrot.mp3	морковь	{}	{1002=eng-rus}
+125488	2321	8000-wordsteps/mp3/carrot.mp3	морковь	{}	{1002=eng-rus}
+88573	2324	10000-kreekly/mp3/Joey/cucumber.mp3	огурец	{1008=joey}	{1002=eng-rus}
+88574	2324	10000-kreekly/mp3/Kendra/cucumber.mp3	огурец	{1008=kendra}	{1002=eng-rus}
+88575	2324	10000-kreekly/mp3/Kimberly/cucumber.mp3	огурец	{1008=kimberly}	{1002=eng-rus}
+88576	2324	10000-kreekly/mp3/Justin/cucumber.mp3	огурец	{1008=justin}	{1002=eng-rus}
+88577	2324	10000-kreekly/mp3/Joanna/cucumber.mp3	огурец	{1008=joanna}	{1002=eng-rus}
+88578	2324	10000-kreekly/mp3/Salli/cucumber.mp3	огурец	{1008=salli}	{1002=eng-rus}
+88579	2324	10000-kreekly/mp3/Matthew/cucumber.mp3	огурец	{1008=matthew}	{1002=eng-rus}
+119396	2324	5000-studynow/mp3/cucumber.mp3	огурец	{}	{1002=eng-rus}
+125524	2324	8000-wordsteps/mp3/cucumber.mp3	огурец	{}	{1002=eng-rus}
+101430	2327	10000-kreekly/mp3/Joey/pepper.mp3	перец	{1008=joey}	{1002=eng-rus}
+101431	2327	10000-kreekly/mp3/Kendra/pepper.mp3	перец	{1008=kendra}	{1002=eng-rus}
+101432	2327	10000-kreekly/mp3/Kimberly/pepper.mp3	перец	{1008=kimberly}	{1002=eng-rus}
+101433	2327	10000-kreekly/mp3/Justin/pepper.mp3	перец	{1008=justin}	{1002=eng-rus}
+101434	2327	10000-kreekly/mp3/Joanna/pepper.mp3	перец	{1008=joanna}	{1002=eng-rus}
+101435	2327	10000-kreekly/mp3/Salli/pepper.mp3	перец	{1008=salli}	{1002=eng-rus}
+101436	2327	10000-kreekly/mp3/Matthew/pepper.mp3	перец	{1008=matthew}	{1002=eng-rus}
+123100	2327	5000-studynow/mp3/pepper.mp3	перец	{}	{1002=eng-rus}
+125585	2327	8000-wordsteps/mp3/pepper.mp3	перец	{}	{1002=eng-rus}
+59517	2330	10000-kreekly/mp3/Joey/parsley.mp3	петрушка	{1008=joey}	{1002=eng-rus}
+59517	125589	10000-kreekly/mp3/Joey/parsley.mp3	петрушка (бот.)	{1008=joey}	{1002=eng-rus}
+59518	2330	10000-kreekly/mp3/Kendra/parsley.mp3	петрушка	{1008=kendra}	{1002=eng-rus}
+59518	125589	10000-kreekly/mp3/Kendra/parsley.mp3	петрушка (бот.)	{1008=kendra}	{1002=eng-rus}
+59519	2330	10000-kreekly/mp3/Kimberly/parsley.mp3	петрушка	{1008=kimberly}	{1002=eng-rus}
+59519	125589	10000-kreekly/mp3/Kimberly/parsley.mp3	петрушка (бот.)	{1008=kimberly}	{1002=eng-rus}
+59520	2330	10000-kreekly/mp3/Justin/parsley.mp3	петрушка	{1008=justin}	{1002=eng-rus}
+59520	125589	10000-kreekly/mp3/Justin/parsley.mp3	петрушка (бот.)	{1008=justin}	{1002=eng-rus}
+59521	2330	10000-kreekly/mp3/Joanna/parsley.mp3	петрушка	{1008=joanna}	{1002=eng-rus}
+59521	125589	10000-kreekly/mp3/Joanna/parsley.mp3	петрушка (бот.)	{1008=joanna}	{1002=eng-rus}
+59522	2330	10000-kreekly/mp3/Salli/parsley.mp3	петрушка	{1008=salli}	{1002=eng-rus}
+59522	125589	10000-kreekly/mp3/Salli/parsley.mp3	петрушка (бот.)	{1008=salli}	{1002=eng-rus}
+59523	2330	10000-kreekly/mp3/Matthew/parsley.mp3	петрушка	{1008=matthew}	{1002=eng-rus}
+59523	125589	10000-kreekly/mp3/Matthew/parsley.mp3	петрушка (бот.)	{1008=matthew}	{1002=eng-rus}
+122992	2330	5000-studynow/mp3/parsley.mp3	петрушка	{}	{1002=eng-rus}
+122992	125589	5000-studynow/mp3/parsley.mp3	петрушка (бот.)	{}	{1002=eng-rus}
+125590	2330	8000-wordsteps/mp3/parsley.mp3	петрушка	{}	{1002=eng-rus}
+125590	125589	8000-wordsteps/mp3/parsley.mp3	петрушка (бот.)	{}	{1002=eng-rus}
+77636	2333	10000-kreekly/mp3/Joey/tomato.mp3	помидор	{1008=joey}	{1002=eng-rus}
+77636	125519	10000-kreekly/mp3/Joey/tomato.mp3	томат, помидор	{1008=joey}	{1002=eng-rus}
+77637	2333	10000-kreekly/mp3/Kendra/tomato.mp3	помидор	{1008=kendra}	{1002=eng-rus}
+77637	125519	10000-kreekly/mp3/Kendra/tomato.mp3	томат, помидор	{1008=kendra}	{1002=eng-rus}
+77638	2333	10000-kreekly/mp3/Kimberly/tomato.mp3	помидор	{1008=kimberly}	{1002=eng-rus}
+77638	125519	10000-kreekly/mp3/Kimberly/tomato.mp3	томат, помидор	{1008=kimberly}	{1002=eng-rus}
+77639	2333	10000-kreekly/mp3/Justin/tomato.mp3	помидор	{1008=justin}	{1002=eng-rus}
+77639	125519	10000-kreekly/mp3/Justin/tomato.mp3	томат, помидор	{1008=justin}	{1002=eng-rus}
+77640	2333	10000-kreekly/mp3/Joanna/tomato.mp3	помидор	{1008=joanna}	{1002=eng-rus}
+77640	125519	10000-kreekly/mp3/Joanna/tomato.mp3	томат, помидор	{1008=joanna}	{1002=eng-rus}
+77641	2333	10000-kreekly/mp3/Salli/tomato.mp3	помидор	{1008=salli}	{1002=eng-rus}
+77641	125519	10000-kreekly/mp3/Salli/tomato.mp3	томат, помидор	{1008=salli}	{1002=eng-rus}
+77642	2333	10000-kreekly/mp3/Matthew/tomato.mp3	помидор	{1008=matthew}	{1002=eng-rus}
+77642	125519	10000-kreekly/mp3/Matthew/tomato.mp3	томат, помидор	{1008=matthew}	{1002=eng-rus}
+125520	2333	8000-wordsteps/mp3/tomato.mp3	помидор	{}	{1002=eng-rus}
+125520	125519	8000-wordsteps/mp3/tomato.mp3	томат, помидор	{}	{1002=eng-rus}
+79667	2336	10000-kreekly/mp3/Joey/radish.mp3	редис	{1008=joey}	{1002=eng-rus}
+79667	5628	10000-kreekly/mp3/Joey/radish.mp3	редиска	{1008=joey}	{1002=eng-rus}
+79668	2336	10000-kreekly/mp3/Kendra/radish.mp3	редис	{1008=kendra}	{1002=eng-rus}
+79668	5628	10000-kreekly/mp3/Kendra/radish.mp3	редиска	{1008=kendra}	{1002=eng-rus}
+79669	2336	10000-kreekly/mp3/Kimberly/radish.mp3	редис	{1008=kimberly}	{1002=eng-rus}
+79669	5628	10000-kreekly/mp3/Kimberly/radish.mp3	редиска	{1008=kimberly}	{1002=eng-rus}
+79670	2336	10000-kreekly/mp3/Justin/radish.mp3	редис	{1008=justin}	{1002=eng-rus}
+79670	5628	10000-kreekly/mp3/Justin/radish.mp3	редиска	{1008=justin}	{1002=eng-rus}
+79671	2336	10000-kreekly/mp3/Joanna/radish.mp3	редис	{1008=joanna}	{1002=eng-rus}
+79671	5628	10000-kreekly/mp3/Joanna/radish.mp3	редиска	{1008=joanna}	{1002=eng-rus}
+79672	2336	10000-kreekly/mp3/Salli/radish.mp3	редис	{1008=salli}	{1002=eng-rus}
+79672	5628	10000-kreekly/mp3/Salli/radish.mp3	редиска	{1008=salli}	{1002=eng-rus}
+79673	2336	10000-kreekly/mp3/Matthew/radish.mp3	редис	{1008=matthew}	{1002=eng-rus}
+79673	5628	10000-kreekly/mp3/Matthew/radish.mp3	редиска	{1008=matthew}	{1002=eng-rus}
+60107	60106	10000-kreekly/mp3/Joey/beetroot.mp3	свекла	{1008=joey}	{1002=eng-rus}
+60107	125638	10000-kreekly/mp3/Joey/beetroot.mp3	красная свекла	{1008=joey}	{1002=eng-rus}
+60108	60106	10000-kreekly/mp3/Kendra/beetroot.mp3	свекла	{1008=kendra}	{1002=eng-rus}
+60108	125638	10000-kreekly/mp3/Kendra/beetroot.mp3	красная свекла	{1008=kendra}	{1002=eng-rus}
+60109	60106	10000-kreekly/mp3/Kimberly/beetroot.mp3	свекла	{1008=kimberly}	{1002=eng-rus}
+60109	125638	10000-kreekly/mp3/Kimberly/beetroot.mp3	красная свекла	{1008=kimberly}	{1002=eng-rus}
+60110	60106	10000-kreekly/mp3/Justin/beetroot.mp3	свекла	{1008=justin}	{1002=eng-rus}
+60110	125638	10000-kreekly/mp3/Justin/beetroot.mp3	красная свекла	{1008=justin}	{1002=eng-rus}
+60111	60106	10000-kreekly/mp3/Joanna/beetroot.mp3	свекла	{1008=joanna}	{1002=eng-rus}
+60111	125638	10000-kreekly/mp3/Joanna/beetroot.mp3	красная свекла	{1008=joanna}	{1002=eng-rus}
+60112	60106	10000-kreekly/mp3/Salli/beetroot.mp3	свекла	{1008=salli}	{1002=eng-rus}
+60112	125638	10000-kreekly/mp3/Salli/beetroot.mp3	красная свекла	{1008=salli}	{1002=eng-rus}
+60113	60106	10000-kreekly/mp3/Matthew/beetroot.mp3	свекла	{1008=matthew}	{1002=eng-rus}
+60113	125638	10000-kreekly/mp3/Matthew/beetroot.mp3	красная свекла	{1008=matthew}	{1002=eng-rus}
+125639	60106	8000-wordsteps/mp3/beetroot.mp3	свекла	{}	{1002=eng-rus}
+125639	125638	8000-wordsteps/mp3/beetroot.mp3	красная свекла	{}	{1002=eng-rus}
+77506	2342	10000-kreekly/mp3/Joey/celery.mp3	сельдерей	{1008=joey}	{1002=eng-rus}
+77507	2342	10000-kreekly/mp3/Kendra/celery.mp3	сельдерей	{1008=kendra}	{1002=eng-rus}
+77508	2342	10000-kreekly/mp3/Kimberly/celery.mp3	сельдерей	{1008=kimberly}	{1002=eng-rus}
+77509	2342	10000-kreekly/mp3/Justin/celery.mp3	сельдерей	{1008=justin}	{1002=eng-rus}
+77510	2342	10000-kreekly/mp3/Joanna/celery.mp3	сельдерей	{1008=joanna}	{1002=eng-rus}
+77511	2342	10000-kreekly/mp3/Salli/celery.mp3	сельдерей	{1008=salli}	{1002=eng-rus}
+77512	2342	10000-kreekly/mp3/Matthew/celery.mp3	сельдерей	{1008=matthew}	{1002=eng-rus}
+72028	2345	10000-kreekly/mp3/Joey/pumpkin.mp3	тыква	{1008=joey}	{1002=eng-rus}
+72029	2345	10000-kreekly/mp3/Kendra/pumpkin.mp3	тыква	{1008=kendra}	{1002=eng-rus}
+72030	2345	10000-kreekly/mp3/Kimberly/pumpkin.mp3	тыква	{1008=kimberly}	{1002=eng-rus}
+72031	2345	10000-kreekly/mp3/Justin/pumpkin.mp3	тыква	{1008=justin}	{1002=eng-rus}
+72032	2345	10000-kreekly/mp3/Joanna/pumpkin.mp3	тыква	{1008=joanna}	{1002=eng-rus}
+72033	2345	10000-kreekly/mp3/Salli/pumpkin.mp3	тыква	{1008=salli}	{1002=eng-rus}
+72034	2345	10000-kreekly/mp3/Matthew/pumpkin.mp3	тыква	{1008=matthew}	{1002=eng-rus}
+123527	2345	5000-studynow/mp3/pumpkin.mp3	тыква	{}	{1002=eng-rus}
+125583	2345	8000-wordsteps/mp3/pumpkin.mp3	тыква	{}	{1002=eng-rus}
+32333	2348	10000-kreekly/mp3/Joey/dill.mp3	укроп	{1008=joey}	{1002=eng-rus}
+32334	2348	10000-kreekly/mp3/Kendra/dill.mp3	укроп	{1008=kendra}	{1002=eng-rus}
+32335	2348	10000-kreekly/mp3/Kimberly/dill.mp3	укроп	{1008=kimberly}	{1002=eng-rus}
+32336	2348	10000-kreekly/mp3/Justin/dill.mp3	укроп	{1008=justin}	{1002=eng-rus}
+32337	2348	10000-kreekly/mp3/Joanna/dill.mp3	укроп	{1008=joanna}	{1002=eng-rus}
+32338	2348	10000-kreekly/mp3/Salli/dill.mp3	укроп	{1008=salli}	{1002=eng-rus}
+32339	2348	10000-kreekly/mp3/Matthew/dill.mp3	укроп	{1008=matthew}	{1002=eng-rus}
+108007	2354	10000-kreekly/mp3/Joey/garlic.mp3	чеснок	{1008=joey}	{1002=eng-rus}
+108008	2354	10000-kreekly/mp3/Kendra/garlic.mp3	чеснок	{1008=kendra}	{1002=eng-rus}
+108009	2354	10000-kreekly/mp3/Kimberly/garlic.mp3	чеснок	{1008=kimberly}	{1002=eng-rus}
+108010	2354	10000-kreekly/mp3/Justin/garlic.mp3	чеснок	{1008=justin}	{1002=eng-rus}
+108011	2354	10000-kreekly/mp3/Joanna/garlic.mp3	чеснок	{1008=joanna}	{1002=eng-rus}
+108012	2354	10000-kreekly/mp3/Salli/garlic.mp3	чеснок	{1008=salli}	{1002=eng-rus}
+108013	2354	10000-kreekly/mp3/Matthew/garlic.mp3	чеснок	{1008=matthew}	{1002=eng-rus}
+120849	2354	5000-studynow/mp3/garlic.mp3	чеснок	{}	{1002=eng-rus}
+125493	2354	8000-wordsteps/mp3/garlic.mp3	чеснок	{}	{1002=eng-rus}

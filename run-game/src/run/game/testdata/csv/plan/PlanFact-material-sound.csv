@@ -1,0 +1,535 @@
+factQuestion	factAnswer	factValueQuestion	factValueAnswer	factTagQuestion	factTagAnswer
+13451	2190	1000-puzzle-english/mp3/freedictionary_UK/material.mp3	материал	{1008=freedictionary_uk}	{1002=eng-rus}
+13452	2190	1000-puzzle-english/mp3/collins_US/material.mp3	материал	{1008=collins_us}	{1002=eng-rus}
+13453	2190	1000-puzzle-english/mp3/macmillan_UK/material.mp3	материал	{1008=macmillan_uk}	{1002=eng-rus}
+13454	2190	1000-puzzle-english/mp3/freedictionary_US/material.mp3	материал	{1008=freedictionary_us}	{1002=eng-rus}
+13455	2190	1000-puzzle-english/mp3/peterBaker_UK/material.mp3	материал	{1008=peterbaker_uk}	{1002=eng-rus}
+13456	2190	1000-puzzle-english/mp3/howjsay_UK/material.mp3	материал	{1008=howjsay_uk}	{1002=eng-rus}
+13457	2190	1000-puzzle-english/mp3/campbridge_US/material.mp3	материал	{1008=campbridge_us}	{1002=eng-rus}
+13458	2190	1000-puzzle-english/mp3/vocalware_hugh_UK/material.mp3	материал	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+13459	2190	1000-puzzle-english/mp3/campbridge_UK/material.mp3	материал	{1008=campbridge_uk}	{1002=eng-rus}
+13460	2190	1000-puzzle-english/mp3/collins_UK/material.mp3	материал	{1008=collins_uk}	{1002=eng-rus}
+13461	2190	1000-puzzle-english/mp3/SteveElliott_UK/material.mp3	материал	{1008=steveelliott_uk}	{1002=eng-rus}
+13462	2190	1000-puzzle-english/mp3/yandex_UK/material.mp3	материал	{1008=yandex_uk}	{1002=eng-rus}
+79539	2190	10000-kreekly/mp3/Joey/material.mp3	материал	{1008=joey}	{1002=eng-rus}
+79540	2190	10000-kreekly/mp3/Kendra/material.mp3	материал	{1008=kendra}	{1002=eng-rus}
+79541	2190	10000-kreekly/mp3/Kimberly/material.mp3	материал	{1008=kimberly}	{1002=eng-rus}
+79542	2190	10000-kreekly/mp3/Ivy/material.mp3	материал	{1008=ivy}	{1002=eng-rus}
+79543	2190	10000-kreekly/mp3/Justin/material.mp3	материал	{1008=justin}	{1002=eng-rus}
+79544	2190	10000-kreekly/mp3/Joanna/material.mp3	материал	{1008=joanna}	{1002=eng-rus}
+79545	2190	10000-kreekly/mp3/Salli/material.mp3	материал	{1008=salli}	{1002=eng-rus}
+79546	2190	10000-kreekly/mp3/Matthew/material.mp3	материал	{1008=matthew}	{1002=eng-rus}
+127066	2190	8000-wordsteps/mp3/material.mp3	материал	{}	{1002=eng-rus}
+15278	2193	1000-puzzle-english/mp3/freedictionary_UK/stone.mp3	камень	{1008=freedictionary_uk}	{1002=eng-rus}
+15279	2193	1000-puzzle-english/mp3/collins_US/stone.mp3	камень	{1008=collins_us}	{1002=eng-rus}
+15280	2193	1000-puzzle-english/mp3/macmillan_UK/stone.mp3	камень	{1008=macmillan_uk}	{1002=eng-rus}
+15281	2193	1000-puzzle-english/mp3/freedictionary_US/stone.mp3	камень	{1008=freedictionary_us}	{1002=eng-rus}
+15282	2193	1000-puzzle-english/mp3/peterBaker_UK/stone.mp3	камень	{1008=peterbaker_uk}	{1002=eng-rus}
+15283	2193	1000-puzzle-english/mp3/howjsay_UK/stone.mp3	камень	{1008=howjsay_uk}	{1002=eng-rus}
+15284	2193	1000-puzzle-english/mp3/campbridge_US/stone.mp3	камень	{1008=campbridge_us}	{1002=eng-rus}
+15285	2193	1000-puzzle-english/mp3/vocalware_hugh_UK/stone.mp3	камень	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+15286	2193	1000-puzzle-english/mp3/campbridge_UK/stone.mp3	камень	{1008=campbridge_uk}	{1002=eng-rus}
+15287	2193	1000-puzzle-english/mp3/collins_UK/stone.mp3	камень	{1008=collins_uk}	{1002=eng-rus}
+15288	2193	1000-puzzle-english/mp3/SteveElliott_UK/stone.mp3	камень	{1008=steveelliott_uk}	{1002=eng-rus}
+15289	2193	1000-puzzle-english/mp3/yandex_UK/stone.mp3	камень	{1008=yandex_uk}	{1002=eng-rus}
+36019	2193	10000-kreekly/mp3/Joey/stone.mp3	камень	{1008=joey}	{1002=eng-rus}
+36020	2193	10000-kreekly/mp3/Kendra/stone.mp3	камень	{1008=kendra}	{1002=eng-rus}
+36021	2193	10000-kreekly/mp3/Kimberly/stone.mp3	камень	{1008=kimberly}	{1002=eng-rus}
+36022	2193	10000-kreekly/mp3/Ivy/stone.mp3	камень	{1008=ivy}	{1002=eng-rus}
+36023	2193	10000-kreekly/mp3/Justin/stone.mp3	камень	{1008=justin}	{1002=eng-rus}
+36024	2193	10000-kreekly/mp3/Joanna/stone.mp3	камень	{1008=joanna}	{1002=eng-rus}
+36025	2193	10000-kreekly/mp3/Salli/stone.mp3	камень	{1008=salli}	{1002=eng-rus}
+36026	2193	10000-kreekly/mp3/Matthew/stone.mp3	камень	{1008=matthew}	{1002=eng-rus}
+132305	2193	8000-wordsteps/mp3/stone.mp3	камень	{}	{1002=eng-rus}
+29304	2196	10000-kreekly/mp3/Joey/concrete.mp3	бетон	{1008=joey}	{1002=eng-rus}
+29304	119084	10000-kreekly/mp3/Joey/concrete.mp3	бетон, бетонировать	{1008=joey}	{1002=eng-rus}
+29304	128838	10000-kreekly/mp3/Joey/concrete.mp3	бетон, сгущать, конкретный	{1008=joey}	{1002=eng-rus}
+29305	2196	10000-kreekly/mp3/Kendra/concrete.mp3	бетон	{1008=kendra}	{1002=eng-rus}
+29305	119084	10000-kreekly/mp3/Kendra/concrete.mp3	бетон, бетонировать	{1008=kendra}	{1002=eng-rus}
+29305	128838	10000-kreekly/mp3/Kendra/concrete.mp3	бетон, сгущать, конкретный	{1008=kendra}	{1002=eng-rus}
+29306	2196	10000-kreekly/mp3/Kimberly/concrete.mp3	бетон	{1008=kimberly}	{1002=eng-rus}
+29306	119084	10000-kreekly/mp3/Kimberly/concrete.mp3	бетон, бетонировать	{1008=kimberly}	{1002=eng-rus}
+29306	128838	10000-kreekly/mp3/Kimberly/concrete.mp3	бетон, сгущать, конкретный	{1008=kimberly}	{1002=eng-rus}
+29307	2196	10000-kreekly/mp3/Justin/concrete.mp3	бетон	{1008=justin}	{1002=eng-rus}
+29307	119084	10000-kreekly/mp3/Justin/concrete.mp3	бетон, бетонировать	{1008=justin}	{1002=eng-rus}
+29307	128838	10000-kreekly/mp3/Justin/concrete.mp3	бетон, сгущать, конкретный	{1008=justin}	{1002=eng-rus}
+29308	2196	10000-kreekly/mp3/Joanna/concrete.mp3	бетон	{1008=joanna}	{1002=eng-rus}
+29308	119084	10000-kreekly/mp3/Joanna/concrete.mp3	бетон, бетонировать	{1008=joanna}	{1002=eng-rus}
+29308	128838	10000-kreekly/mp3/Joanna/concrete.mp3	бетон, сгущать, конкретный	{1008=joanna}	{1002=eng-rus}
+29309	2196	10000-kreekly/mp3/Salli/concrete.mp3	бетон	{1008=salli}	{1002=eng-rus}
+29309	119084	10000-kreekly/mp3/Salli/concrete.mp3	бетон, бетонировать	{1008=salli}	{1002=eng-rus}
+29309	128838	10000-kreekly/mp3/Salli/concrete.mp3	бетон, сгущать, конкретный	{1008=salli}	{1002=eng-rus}
+29310	2196	10000-kreekly/mp3/Matthew/concrete.mp3	бетон	{1008=matthew}	{1002=eng-rus}
+29310	119084	10000-kreekly/mp3/Matthew/concrete.mp3	бетон, бетонировать	{1008=matthew}	{1002=eng-rus}
+29310	128838	10000-kreekly/mp3/Matthew/concrete.mp3	бетон, сгущать, конкретный	{1008=matthew}	{1002=eng-rus}
+119085	2196	5000-studynow/mp3/concrete.mp3	бетон	{}	{1002=eng-rus}
+119085	119084	5000-studynow/mp3/concrete.mp3	бетон, бетонировать	{}	{1002=eng-rus}
+119085	128838	5000-studynow/mp3/concrete.mp3	бетон, сгущать, конкретный	{}	{1002=eng-rus}
+128839	2196	8000-wordsteps/mp3/concrete.mp3	бетон	{}	{1002=eng-rus}
+128839	119084	8000-wordsteps/mp3/concrete.mp3	бетон, бетонировать	{}	{1002=eng-rus}
+128839	128838	8000-wordsteps/mp3/concrete.mp3	бетон, сгущать, конкретный	{}	{1002=eng-rus}
+53837	2199	10000-kreekly/mp3/Joey/brick.mp3	кирпич	{1008=joey}	{1002=eng-rus}
+53838	2199	10000-kreekly/mp3/Kendra/brick.mp3	кирпич	{1008=kendra}	{1002=eng-rus}
+53839	2199	10000-kreekly/mp3/Kimberly/brick.mp3	кирпич	{1008=kimberly}	{1002=eng-rus}
+53840	2199	10000-kreekly/mp3/Justin/brick.mp3	кирпич	{1008=justin}	{1002=eng-rus}
+53841	2199	10000-kreekly/mp3/Joanna/brick.mp3	кирпич	{1008=joanna}	{1002=eng-rus}
+53842	2199	10000-kreekly/mp3/Salli/brick.mp3	кирпич	{1008=salli}	{1002=eng-rus}
+53843	2199	10000-kreekly/mp3/Matthew/brick.mp3	кирпич	{1008=matthew}	{1002=eng-rus}
+118380	2199	5000-studynow/mp3/brick.mp3	кирпич	{}	{1002=eng-rus}
+127137	2199	8000-wordsteps/mp3/brick.mp3	кирпич	{}	{1002=eng-rus}
+15677	2202	1000-puzzle-english/mp3/freedictionary_UK/metal.mp3	металл	{1008=freedictionary_uk}	{1002=eng-rus}
+15677	129884	1000-puzzle-english/mp3/freedictionary_UK/metal.mp3	металл, металлический	{1008=freedictionary_uk}	{1002=eng-rus}
+15678	2202	1000-puzzle-english/mp3/collins_US/metal.mp3	металл	{1008=collins_us}	{1002=eng-rus}
+15678	129884	1000-puzzle-english/mp3/collins_US/metal.mp3	металл, металлический	{1008=collins_us}	{1002=eng-rus}
+15679	2202	1000-puzzle-english/mp3/macmillan_UK/metal.mp3	металл	{1008=macmillan_uk}	{1002=eng-rus}
+15679	129884	1000-puzzle-english/mp3/macmillan_UK/metal.mp3	металл, металлический	{1008=macmillan_uk}	{1002=eng-rus}
+15680	2202	1000-puzzle-english/mp3/freedictionary_US/metal.mp3	металл	{1008=freedictionary_us}	{1002=eng-rus}
+15680	129884	1000-puzzle-english/mp3/freedictionary_US/metal.mp3	металл, металлический	{1008=freedictionary_us}	{1002=eng-rus}
+15681	2202	1000-puzzle-english/mp3/peterBaker_UK/metal.mp3	металл	{1008=peterbaker_uk}	{1002=eng-rus}
+15681	129884	1000-puzzle-english/mp3/peterBaker_UK/metal.mp3	металл, металлический	{1008=peterbaker_uk}	{1002=eng-rus}
+15682	2202	1000-puzzle-english/mp3/howjsay_UK/metal.mp3	металл	{1008=howjsay_uk}	{1002=eng-rus}
+15682	129884	1000-puzzle-english/mp3/howjsay_UK/metal.mp3	металл, металлический	{1008=howjsay_uk}	{1002=eng-rus}
+15683	2202	1000-puzzle-english/mp3/campbridge_US/metal.mp3	металл	{1008=campbridge_us}	{1002=eng-rus}
+15683	129884	1000-puzzle-english/mp3/campbridge_US/metal.mp3	металл, металлический	{1008=campbridge_us}	{1002=eng-rus}
+15684	2202	1000-puzzle-english/mp3/vocalware_hugh_UK/metal.mp3	металл	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+15684	129884	1000-puzzle-english/mp3/vocalware_hugh_UK/metal.mp3	металл, металлический	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+15685	2202	1000-puzzle-english/mp3/campbridge_UK/metal.mp3	металл	{1008=campbridge_uk}	{1002=eng-rus}
+15685	129884	1000-puzzle-english/mp3/campbridge_UK/metal.mp3	металл, металлический	{1008=campbridge_uk}	{1002=eng-rus}
+15686	2202	1000-puzzle-english/mp3/collins_UK/metal.mp3	металл	{1008=collins_uk}	{1002=eng-rus}
+15686	129884	1000-puzzle-english/mp3/collins_UK/metal.mp3	металл, металлический	{1008=collins_uk}	{1002=eng-rus}
+15687	2202	1000-puzzle-english/mp3/SteveElliott_UK/metal.mp3	металл	{1008=steveelliott_uk}	{1002=eng-rus}
+15687	129884	1000-puzzle-english/mp3/SteveElliott_UK/metal.mp3	металл, металлический	{1008=steveelliott_uk}	{1002=eng-rus}
+15688	2202	1000-puzzle-english/mp3/yandex_UK/metal.mp3	металл	{1008=yandex_uk}	{1002=eng-rus}
+15688	129884	1000-puzzle-english/mp3/yandex_UK/metal.mp3	металл, металлический	{1008=yandex_uk}	{1002=eng-rus}
+71518	2202	10000-kreekly/mp3/Joey/metal.mp3	металл	{1008=joey}	{1002=eng-rus}
+71518	129884	10000-kreekly/mp3/Joey/metal.mp3	металл, металлический	{1008=joey}	{1002=eng-rus}
+71519	2202	10000-kreekly/mp3/Kendra/metal.mp3	металл	{1008=kendra}	{1002=eng-rus}
+71519	129884	10000-kreekly/mp3/Kendra/metal.mp3	металл, металлический	{1008=kendra}	{1002=eng-rus}
+71520	2202	10000-kreekly/mp3/Kimberly/metal.mp3	металл	{1008=kimberly}	{1002=eng-rus}
+71520	129884	10000-kreekly/mp3/Kimberly/metal.mp3	металл, металлический	{1008=kimberly}	{1002=eng-rus}
+71521	2202	10000-kreekly/mp3/Ivy/metal.mp3	металл	{1008=ivy}	{1002=eng-rus}
+71521	129884	10000-kreekly/mp3/Ivy/metal.mp3	металл, металлический	{1008=ivy}	{1002=eng-rus}
+71522	2202	10000-kreekly/mp3/Justin/metal.mp3	металл	{1008=justin}	{1002=eng-rus}
+71522	129884	10000-kreekly/mp3/Justin/metal.mp3	металл, металлический	{1008=justin}	{1002=eng-rus}
+71523	2202	10000-kreekly/mp3/Joanna/metal.mp3	металл	{1008=joanna}	{1002=eng-rus}
+71523	129884	10000-kreekly/mp3/Joanna/metal.mp3	металл, металлический	{1008=joanna}	{1002=eng-rus}
+71524	2202	10000-kreekly/mp3/Salli/metal.mp3	металл	{1008=salli}	{1002=eng-rus}
+71524	129884	10000-kreekly/mp3/Salli/metal.mp3	металл, металлический	{1008=salli}	{1002=eng-rus}
+71525	2202	10000-kreekly/mp3/Matthew/metal.mp3	металл	{1008=matthew}	{1002=eng-rus}
+71525	129884	10000-kreekly/mp3/Matthew/metal.mp3	металл, металлический	{1008=matthew}	{1002=eng-rus}
+129885	2202	8000-wordsteps/mp3/metal.mp3	металл	{}	{1002=eng-rus}
+129885	129884	8000-wordsteps/mp3/metal.mp3	металл, металлический	{}	{1002=eng-rus}
+82854	2205	10000-kreekly/mp3/Joey/rubber.mp3	резина	{1008=joey}	{1002=eng-rus}
+82854	82853	10000-kreekly/mp3/Joey/rubber.mp3	резинка	{1008=joey}	{1002=eng-rus}
+82854	124097	10000-kreekly/mp3/Joey/rubber.mp3	резина, резиновый	{1008=joey}	{1002=eng-rus}
+82855	2205	10000-kreekly/mp3/Kendra/rubber.mp3	резина	{1008=kendra}	{1002=eng-rus}
+82855	82853	10000-kreekly/mp3/Kendra/rubber.mp3	резинка	{1008=kendra}	{1002=eng-rus}
+82855	124097	10000-kreekly/mp3/Kendra/rubber.mp3	резина, резиновый	{1008=kendra}	{1002=eng-rus}
+82856	2205	10000-kreekly/mp3/Kimberly/rubber.mp3	резина	{1008=kimberly}	{1002=eng-rus}
+82856	82853	10000-kreekly/mp3/Kimberly/rubber.mp3	резинка	{1008=kimberly}	{1002=eng-rus}
+82856	124097	10000-kreekly/mp3/Kimberly/rubber.mp3	резина, резиновый	{1008=kimberly}	{1002=eng-rus}
+82857	2205	10000-kreekly/mp3/Justin/rubber.mp3	резина	{1008=justin}	{1002=eng-rus}
+82857	82853	10000-kreekly/mp3/Justin/rubber.mp3	резинка	{1008=justin}	{1002=eng-rus}
+82857	124097	10000-kreekly/mp3/Justin/rubber.mp3	резина, резиновый	{1008=justin}	{1002=eng-rus}
+82858	2205	10000-kreekly/mp3/Joanna/rubber.mp3	резина	{1008=joanna}	{1002=eng-rus}
+82858	82853	10000-kreekly/mp3/Joanna/rubber.mp3	резинка	{1008=joanna}	{1002=eng-rus}
+82858	124097	10000-kreekly/mp3/Joanna/rubber.mp3	резина, резиновый	{1008=joanna}	{1002=eng-rus}
+82859	2205	10000-kreekly/mp3/Salli/rubber.mp3	резина	{1008=salli}	{1002=eng-rus}
+82859	82853	10000-kreekly/mp3/Salli/rubber.mp3	резинка	{1008=salli}	{1002=eng-rus}
+82859	124097	10000-kreekly/mp3/Salli/rubber.mp3	резина, резиновый	{1008=salli}	{1002=eng-rus}
+82860	2205	10000-kreekly/mp3/Matthew/rubber.mp3	резина	{1008=matthew}	{1002=eng-rus}
+82860	82853	10000-kreekly/mp3/Matthew/rubber.mp3	резинка	{1008=matthew}	{1002=eng-rus}
+82860	124097	10000-kreekly/mp3/Matthew/rubber.mp3	резина, резиновый	{1008=matthew}	{1002=eng-rus}
+124098	2205	5000-studynow/mp3/rubber.mp3	резина	{}	{1002=eng-rus}
+124098	82853	5000-studynow/mp3/rubber.mp3	резинка	{}	{1002=eng-rus}
+124098	124097	5000-studynow/mp3/rubber.mp3	резина, резиновый	{}	{1002=eng-rus}
+125381	2205	8000-wordsteps/mp3/rubber.mp3	резина	{}	{1002=eng-rus}
+125381	82853	8000-wordsteps/mp3/rubber.mp3	резинка	{}	{1002=eng-rus}
+125381	124097	8000-wordsteps/mp3/rubber.mp3	резина, резиновый	{}	{1002=eng-rus}
+13816	2208	1000-puzzle-english/mp3/freedictionary_UK/glass.mp3	стекло	{1008=freedictionary_uk}	{1002=eng-rus}
+13816	3902	1000-puzzle-english/mp3/freedictionary_UK/glass.mp3	стакан	{1008=freedictionary_uk}	{1002=eng-rus}
+13816	20763	1000-puzzle-english/mp3/freedictionary_UK/glass.mp3	бокал	{1008=freedictionary_uk}	{1002=eng-rus}
+13816	120966	1000-puzzle-english/mp3/freedictionary_UK/glass.mp3	стекло или стакан	{1008=freedictionary_uk}	{1002=eng-rus}
+13816	125256	1000-puzzle-english/mp3/freedictionary_UK/glass.mp3	стакан, бокал	{1008=freedictionary_uk}	{1002=eng-rus}
+13817	2208	1000-puzzle-english/mp3/collins_US/glass.mp3	стекло	{1008=collins_us}	{1002=eng-rus}
+13817	3902	1000-puzzle-english/mp3/collins_US/glass.mp3	стакан	{1008=collins_us}	{1002=eng-rus}
+13817	20763	1000-puzzle-english/mp3/collins_US/glass.mp3	бокал	{1008=collins_us}	{1002=eng-rus}
+13817	120966	1000-puzzle-english/mp3/collins_US/glass.mp3	стекло или стакан	{1008=collins_us}	{1002=eng-rus}
+13817	125256	1000-puzzle-english/mp3/collins_US/glass.mp3	стакан, бокал	{1008=collins_us}	{1002=eng-rus}
+13818	2208	1000-puzzle-english/mp3/macmillan_UK/glass.mp3	стекло	{1008=macmillan_uk}	{1002=eng-rus}
+13818	3902	1000-puzzle-english/mp3/macmillan_UK/glass.mp3	стакан	{1008=macmillan_uk}	{1002=eng-rus}
+13818	20763	1000-puzzle-english/mp3/macmillan_UK/glass.mp3	бокал	{1008=macmillan_uk}	{1002=eng-rus}
+13818	120966	1000-puzzle-english/mp3/macmillan_UK/glass.mp3	стекло или стакан	{1008=macmillan_uk}	{1002=eng-rus}
+13818	125256	1000-puzzle-english/mp3/macmillan_UK/glass.mp3	стакан, бокал	{1008=macmillan_uk}	{1002=eng-rus}
+13819	2208	1000-puzzle-english/mp3/freedictionary_US/glass.mp3	стекло	{1008=freedictionary_us}	{1002=eng-rus}
+13819	3902	1000-puzzle-english/mp3/freedictionary_US/glass.mp3	стакан	{1008=freedictionary_us}	{1002=eng-rus}
+13819	20763	1000-puzzle-english/mp3/freedictionary_US/glass.mp3	бокал	{1008=freedictionary_us}	{1002=eng-rus}
+13819	120966	1000-puzzle-english/mp3/freedictionary_US/glass.mp3	стекло или стакан	{1008=freedictionary_us}	{1002=eng-rus}
+13819	125256	1000-puzzle-english/mp3/freedictionary_US/glass.mp3	стакан, бокал	{1008=freedictionary_us}	{1002=eng-rus}
+13820	2208	1000-puzzle-english/mp3/peterBaker_UK/glass.mp3	стекло	{1008=peterbaker_uk}	{1002=eng-rus}
+13820	3902	1000-puzzle-english/mp3/peterBaker_UK/glass.mp3	стакан	{1008=peterbaker_uk}	{1002=eng-rus}
+13820	20763	1000-puzzle-english/mp3/peterBaker_UK/glass.mp3	бокал	{1008=peterbaker_uk}	{1002=eng-rus}
+13820	120966	1000-puzzle-english/mp3/peterBaker_UK/glass.mp3	стекло или стакан	{1008=peterbaker_uk}	{1002=eng-rus}
+13820	125256	1000-puzzle-english/mp3/peterBaker_UK/glass.mp3	стакан, бокал	{1008=peterbaker_uk}	{1002=eng-rus}
+13821	2208	1000-puzzle-english/mp3/howjsay_UK/glass.mp3	стекло	{1008=howjsay_uk}	{1002=eng-rus}
+13821	3902	1000-puzzle-english/mp3/howjsay_UK/glass.mp3	стакан	{1008=howjsay_uk}	{1002=eng-rus}
+13821	20763	1000-puzzle-english/mp3/howjsay_UK/glass.mp3	бокал	{1008=howjsay_uk}	{1002=eng-rus}
+13821	120966	1000-puzzle-english/mp3/howjsay_UK/glass.mp3	стекло или стакан	{1008=howjsay_uk}	{1002=eng-rus}
+13821	125256	1000-puzzle-english/mp3/howjsay_UK/glass.mp3	стакан, бокал	{1008=howjsay_uk}	{1002=eng-rus}
+13822	2208	1000-puzzle-english/mp3/campbridge_US/glass.mp3	стекло	{1008=campbridge_us}	{1002=eng-rus}
+13822	3902	1000-puzzle-english/mp3/campbridge_US/glass.mp3	стакан	{1008=campbridge_us}	{1002=eng-rus}
+13822	20763	1000-puzzle-english/mp3/campbridge_US/glass.mp3	бокал	{1008=campbridge_us}	{1002=eng-rus}
+13822	120966	1000-puzzle-english/mp3/campbridge_US/glass.mp3	стекло или стакан	{1008=campbridge_us}	{1002=eng-rus}
+13822	125256	1000-puzzle-english/mp3/campbridge_US/glass.mp3	стакан, бокал	{1008=campbridge_us}	{1002=eng-rus}
+13823	2208	1000-puzzle-english/mp3/vocalware_hugh_UK/glass.mp3	стекло	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+13823	3902	1000-puzzle-english/mp3/vocalware_hugh_UK/glass.mp3	стакан	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+13823	20763	1000-puzzle-english/mp3/vocalware_hugh_UK/glass.mp3	бокал	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+13823	120966	1000-puzzle-english/mp3/vocalware_hugh_UK/glass.mp3	стекло или стакан	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+13823	125256	1000-puzzle-english/mp3/vocalware_hugh_UK/glass.mp3	стакан, бокал	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+13824	2208	1000-puzzle-english/mp3/campbridge_UK/glass.mp3	стекло	{1008=campbridge_uk}	{1002=eng-rus}
+13824	3902	1000-puzzle-english/mp3/campbridge_UK/glass.mp3	стакан	{1008=campbridge_uk}	{1002=eng-rus}
+13824	20763	1000-puzzle-english/mp3/campbridge_UK/glass.mp3	бокал	{1008=campbridge_uk}	{1002=eng-rus}
+13824	120966	1000-puzzle-english/mp3/campbridge_UK/glass.mp3	стекло или стакан	{1008=campbridge_uk}	{1002=eng-rus}
+13824	125256	1000-puzzle-english/mp3/campbridge_UK/glass.mp3	стакан, бокал	{1008=campbridge_uk}	{1002=eng-rus}
+13825	2208	1000-puzzle-english/mp3/collins_UK/glass.mp3	стекло	{1008=collins_uk}	{1002=eng-rus}
+13825	3902	1000-puzzle-english/mp3/collins_UK/glass.mp3	стакан	{1008=collins_uk}	{1002=eng-rus}
+13825	20763	1000-puzzle-english/mp3/collins_UK/glass.mp3	бокал	{1008=collins_uk}	{1002=eng-rus}
+13825	120966	1000-puzzle-english/mp3/collins_UK/glass.mp3	стекло или стакан	{1008=collins_uk}	{1002=eng-rus}
+13825	125256	1000-puzzle-english/mp3/collins_UK/glass.mp3	стакан, бокал	{1008=collins_uk}	{1002=eng-rus}
+13826	2208	1000-puzzle-english/mp3/SteveElliott_UK/glass.mp3	стекло	{1008=steveelliott_uk}	{1002=eng-rus}
+13826	3902	1000-puzzle-english/mp3/SteveElliott_UK/glass.mp3	стакан	{1008=steveelliott_uk}	{1002=eng-rus}
+13826	20763	1000-puzzle-english/mp3/SteveElliott_UK/glass.mp3	бокал	{1008=steveelliott_uk}	{1002=eng-rus}
+13826	120966	1000-puzzle-english/mp3/SteveElliott_UK/glass.mp3	стекло или стакан	{1008=steveelliott_uk}	{1002=eng-rus}
+13826	125256	1000-puzzle-english/mp3/SteveElliott_UK/glass.mp3	стакан, бокал	{1008=steveelliott_uk}	{1002=eng-rus}
+13827	2208	1000-puzzle-english/mp3/yandex_UK/glass.mp3	стекло	{1008=yandex_uk}	{1002=eng-rus}
+13827	3902	1000-puzzle-english/mp3/yandex_UK/glass.mp3	стакан	{1008=yandex_uk}	{1002=eng-rus}
+13827	20763	1000-puzzle-english/mp3/yandex_UK/glass.mp3	бокал	{1008=yandex_uk}	{1002=eng-rus}
+13827	120966	1000-puzzle-english/mp3/yandex_UK/glass.mp3	стекло или стакан	{1008=yandex_uk}	{1002=eng-rus}
+13827	125256	1000-puzzle-english/mp3/yandex_UK/glass.mp3	стакан, бокал	{1008=yandex_uk}	{1002=eng-rus}
+101546	2208	10000-kreekly/mp3/Joey/glass.mp3	стекло	{1008=joey}	{1002=eng-rus}
+101546	3902	10000-kreekly/mp3/Joey/glass.mp3	стакан	{1008=joey}	{1002=eng-rus}
+101546	20763	10000-kreekly/mp3/Joey/glass.mp3	бокал	{1008=joey}	{1002=eng-rus}
+101546	120966	10000-kreekly/mp3/Joey/glass.mp3	стекло или стакан	{1008=joey}	{1002=eng-rus}
+101546	125256	10000-kreekly/mp3/Joey/glass.mp3	стакан, бокал	{1008=joey}	{1002=eng-rus}
+101547	2208	10000-kreekly/mp3/Kendra/glass.mp3	стекло	{1008=kendra}	{1002=eng-rus}
+101547	3902	10000-kreekly/mp3/Kendra/glass.mp3	стакан	{1008=kendra}	{1002=eng-rus}
+101547	20763	10000-kreekly/mp3/Kendra/glass.mp3	бокал	{1008=kendra}	{1002=eng-rus}
+101547	120966	10000-kreekly/mp3/Kendra/glass.mp3	стекло или стакан	{1008=kendra}	{1002=eng-rus}
+101547	125256	10000-kreekly/mp3/Kendra/glass.mp3	стакан, бокал	{1008=kendra}	{1002=eng-rus}
+101548	2208	10000-kreekly/mp3/Kimberly/glass.mp3	стекло	{1008=kimberly}	{1002=eng-rus}
+101548	3902	10000-kreekly/mp3/Kimberly/glass.mp3	стакан	{1008=kimberly}	{1002=eng-rus}
+101548	20763	10000-kreekly/mp3/Kimberly/glass.mp3	бокал	{1008=kimberly}	{1002=eng-rus}
+101548	120966	10000-kreekly/mp3/Kimberly/glass.mp3	стекло или стакан	{1008=kimberly}	{1002=eng-rus}
+101548	125256	10000-kreekly/mp3/Kimberly/glass.mp3	стакан, бокал	{1008=kimberly}	{1002=eng-rus}
+101549	2208	10000-kreekly/mp3/Ivy/glass.mp3	стекло	{1008=ivy}	{1002=eng-rus}
+101549	3902	10000-kreekly/mp3/Ivy/glass.mp3	стакан	{1008=ivy}	{1002=eng-rus}
+101549	20763	10000-kreekly/mp3/Ivy/glass.mp3	бокал	{1008=ivy}	{1002=eng-rus}
+101549	120966	10000-kreekly/mp3/Ivy/glass.mp3	стекло или стакан	{1008=ivy}	{1002=eng-rus}
+101549	125256	10000-kreekly/mp3/Ivy/glass.mp3	стакан, бокал	{1008=ivy}	{1002=eng-rus}
+101550	2208	10000-kreekly/mp3/Justin/glass.mp3	стекло	{1008=justin}	{1002=eng-rus}
+101550	3902	10000-kreekly/mp3/Justin/glass.mp3	стакан	{1008=justin}	{1002=eng-rus}
+101550	20763	10000-kreekly/mp3/Justin/glass.mp3	бокал	{1008=justin}	{1002=eng-rus}
+101550	120966	10000-kreekly/mp3/Justin/glass.mp3	стекло или стакан	{1008=justin}	{1002=eng-rus}
+101550	125256	10000-kreekly/mp3/Justin/glass.mp3	стакан, бокал	{1008=justin}	{1002=eng-rus}
+101551	2208	10000-kreekly/mp3/Joanna/glass.mp3	стекло	{1008=joanna}	{1002=eng-rus}
+101551	3902	10000-kreekly/mp3/Joanna/glass.mp3	стакан	{1008=joanna}	{1002=eng-rus}
+101551	20763	10000-kreekly/mp3/Joanna/glass.mp3	бокал	{1008=joanna}	{1002=eng-rus}
+101551	120966	10000-kreekly/mp3/Joanna/glass.mp3	стекло или стакан	{1008=joanna}	{1002=eng-rus}
+101551	125256	10000-kreekly/mp3/Joanna/glass.mp3	стакан, бокал	{1008=joanna}	{1002=eng-rus}
+101552	2208	10000-kreekly/mp3/Salli/glass.mp3	стекло	{1008=salli}	{1002=eng-rus}
+101552	3902	10000-kreekly/mp3/Salli/glass.mp3	стакан	{1008=salli}	{1002=eng-rus}
+101552	20763	10000-kreekly/mp3/Salli/glass.mp3	бокал	{1008=salli}	{1002=eng-rus}
+101552	120966	10000-kreekly/mp3/Salli/glass.mp3	стекло или стакан	{1008=salli}	{1002=eng-rus}
+101552	125256	10000-kreekly/mp3/Salli/glass.mp3	стакан, бокал	{1008=salli}	{1002=eng-rus}
+101553	2208	10000-kreekly/mp3/Matthew/glass.mp3	стекло	{1008=matthew}	{1002=eng-rus}
+101553	3902	10000-kreekly/mp3/Matthew/glass.mp3	стакан	{1008=matthew}	{1002=eng-rus}
+101553	20763	10000-kreekly/mp3/Matthew/glass.mp3	бокал	{1008=matthew}	{1002=eng-rus}
+101553	120966	10000-kreekly/mp3/Matthew/glass.mp3	стекло или стакан	{1008=matthew}	{1002=eng-rus}
+101553	125256	10000-kreekly/mp3/Matthew/glass.mp3	стакан, бокал	{1008=matthew}	{1002=eng-rus}
+120967	2208	5000-studynow/mp3/glass.mp3	стекло	{}	{1002=eng-rus}
+120967	3902	5000-studynow/mp3/glass.mp3	стакан	{}	{1002=eng-rus}
+120967	20763	5000-studynow/mp3/glass.mp3	бокал	{}	{1002=eng-rus}
+120967	120966	5000-studynow/mp3/glass.mp3	стекло или стакан	{}	{1002=eng-rus}
+120967	125256	5000-studynow/mp3/glass.mp3	стакан, бокал	{}	{1002=eng-rus}
+125257	2208	8000-wordsteps/mp3/glass.mp3	стекло	{}	{1002=eng-rus}
+125257	3902	8000-wordsteps/mp3/glass.mp3	стакан	{}	{1002=eng-rus}
+125257	20763	8000-wordsteps/mp3/glass.mp3	бокал	{}	{1002=eng-rus}
+125257	120966	8000-wordsteps/mp3/glass.mp3	стекло или стакан	{}	{1002=eng-rus}
+125257	125256	8000-wordsteps/mp3/glass.mp3	стакан, бокал	{}	{1002=eng-rus}
+9628	2211	1000-puzzle-english/mp3/freedictionary_UK/wood.mp3	древесина	{1008=freedictionary_uk}	{1002=eng-rus}
+9628	9627	1000-puzzle-english/mp3/freedictionary_UK/wood.mp3	дерево	{1008=freedictionary_uk}	{1002=eng-rus}
+9628	125200	1000-puzzle-english/mp3/freedictionary_UK/wood.mp3	древесина, лес	{1008=freedictionary_uk}	{1002=eng-rus}
+9628	126277	1000-puzzle-english/mp3/freedictionary_UK/wood.mp3	лес, древесина, дрова	{1008=freedictionary_uk}	{1002=eng-rus}
+9629	2211	1000-puzzle-english/mp3/collins_US/wood.mp3	древесина	{1008=collins_us}	{1002=eng-rus}
+9629	9627	1000-puzzle-english/mp3/collins_US/wood.mp3	дерево	{1008=collins_us}	{1002=eng-rus}
+9629	125200	1000-puzzle-english/mp3/collins_US/wood.mp3	древесина, лес	{1008=collins_us}	{1002=eng-rus}
+9629	126277	1000-puzzle-english/mp3/collins_US/wood.mp3	лес, древесина, дрова	{1008=collins_us}	{1002=eng-rus}
+9630	2211	1000-puzzle-english/mp3/macmillan_UK/wood.mp3	древесина	{1008=macmillan_uk}	{1002=eng-rus}
+9630	9627	1000-puzzle-english/mp3/macmillan_UK/wood.mp3	дерево	{1008=macmillan_uk}	{1002=eng-rus}
+9630	125200	1000-puzzle-english/mp3/macmillan_UK/wood.mp3	древесина, лес	{1008=macmillan_uk}	{1002=eng-rus}
+9630	126277	1000-puzzle-english/mp3/macmillan_UK/wood.mp3	лес, древесина, дрова	{1008=macmillan_uk}	{1002=eng-rus}
+9631	2211	1000-puzzle-english/mp3/freedictionary_US/wood.mp3	древесина	{1008=freedictionary_us}	{1002=eng-rus}
+9631	9627	1000-puzzle-english/mp3/freedictionary_US/wood.mp3	дерево	{1008=freedictionary_us}	{1002=eng-rus}
+9631	125200	1000-puzzle-english/mp3/freedictionary_US/wood.mp3	древесина, лес	{1008=freedictionary_us}	{1002=eng-rus}
+9631	126277	1000-puzzle-english/mp3/freedictionary_US/wood.mp3	лес, древесина, дрова	{1008=freedictionary_us}	{1002=eng-rus}
+9632	2211	1000-puzzle-english/mp3/peterBaker_UK/wood.mp3	древесина	{1008=peterbaker_uk}	{1002=eng-rus}
+9632	9627	1000-puzzle-english/mp3/peterBaker_UK/wood.mp3	дерево	{1008=peterbaker_uk}	{1002=eng-rus}
+9632	125200	1000-puzzle-english/mp3/peterBaker_UK/wood.mp3	древесина, лес	{1008=peterbaker_uk}	{1002=eng-rus}
+9632	126277	1000-puzzle-english/mp3/peterBaker_UK/wood.mp3	лес, древесина, дрова	{1008=peterbaker_uk}	{1002=eng-rus}
+9633	2211	1000-puzzle-english/mp3/howjsay_UK/wood.mp3	древесина	{1008=howjsay_uk}	{1002=eng-rus}
+9633	9627	1000-puzzle-english/mp3/howjsay_UK/wood.mp3	дерево	{1008=howjsay_uk}	{1002=eng-rus}
+9633	125200	1000-puzzle-english/mp3/howjsay_UK/wood.mp3	древесина, лес	{1008=howjsay_uk}	{1002=eng-rus}
+9633	126277	1000-puzzle-english/mp3/howjsay_UK/wood.mp3	лес, древесина, дрова	{1008=howjsay_uk}	{1002=eng-rus}
+9634	2211	1000-puzzle-english/mp3/campbridge_US/wood.mp3	древесина	{1008=campbridge_us}	{1002=eng-rus}
+9634	9627	1000-puzzle-english/mp3/campbridge_US/wood.mp3	дерево	{1008=campbridge_us}	{1002=eng-rus}
+9634	125200	1000-puzzle-english/mp3/campbridge_US/wood.mp3	древесина, лес	{1008=campbridge_us}	{1002=eng-rus}
+9634	126277	1000-puzzle-english/mp3/campbridge_US/wood.mp3	лес, древесина, дрова	{1008=campbridge_us}	{1002=eng-rus}
+9635	2211	1000-puzzle-english/mp3/vocalware_hugh_UK/wood.mp3	древесина	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9635	9627	1000-puzzle-english/mp3/vocalware_hugh_UK/wood.mp3	дерево	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9635	125200	1000-puzzle-english/mp3/vocalware_hugh_UK/wood.mp3	древесина, лес	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9635	126277	1000-puzzle-english/mp3/vocalware_hugh_UK/wood.mp3	лес, древесина, дрова	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9636	2211	1000-puzzle-english/mp3/campbridge_UK/wood.mp3	древесина	{1008=campbridge_uk}	{1002=eng-rus}
+9636	9627	1000-puzzle-english/mp3/campbridge_UK/wood.mp3	дерево	{1008=campbridge_uk}	{1002=eng-rus}
+9636	125200	1000-puzzle-english/mp3/campbridge_UK/wood.mp3	древесина, лес	{1008=campbridge_uk}	{1002=eng-rus}
+9636	126277	1000-puzzle-english/mp3/campbridge_UK/wood.mp3	лес, древесина, дрова	{1008=campbridge_uk}	{1002=eng-rus}
+9637	2211	1000-puzzle-english/mp3/collins_UK/wood.mp3	древесина	{1008=collins_uk}	{1002=eng-rus}
+9637	9627	1000-puzzle-english/mp3/collins_UK/wood.mp3	дерево	{1008=collins_uk}	{1002=eng-rus}
+9637	125200	1000-puzzle-english/mp3/collins_UK/wood.mp3	древесина, лес	{1008=collins_uk}	{1002=eng-rus}
+9637	126277	1000-puzzle-english/mp3/collins_UK/wood.mp3	лес, древесина, дрова	{1008=collins_uk}	{1002=eng-rus}
+9638	2211	1000-puzzle-english/mp3/SteveElliott_UK/wood.mp3	древесина	{1008=steveelliott_uk}	{1002=eng-rus}
+9638	9627	1000-puzzle-english/mp3/SteveElliott_UK/wood.mp3	дерево	{1008=steveelliott_uk}	{1002=eng-rus}
+9638	125200	1000-puzzle-english/mp3/SteveElliott_UK/wood.mp3	древесина, лес	{1008=steveelliott_uk}	{1002=eng-rus}
+9638	126277	1000-puzzle-english/mp3/SteveElliott_UK/wood.mp3	лес, древесина, дрова	{1008=steveelliott_uk}	{1002=eng-rus}
+9639	2211	1000-puzzle-english/mp3/yandex_UK/wood.mp3	древесина	{1008=yandex_uk}	{1002=eng-rus}
+9639	9627	1000-puzzle-english/mp3/yandex_UK/wood.mp3	дерево	{1008=yandex_uk}	{1002=eng-rus}
+9639	125200	1000-puzzle-english/mp3/yandex_UK/wood.mp3	древесина, лес	{1008=yandex_uk}	{1002=eng-rus}
+9639	126277	1000-puzzle-english/mp3/yandex_UK/wood.mp3	лес, древесина, дрова	{1008=yandex_uk}	{1002=eng-rus}
+45839	2211	10000-kreekly/mp3/Joey/wood.mp3	древесина	{1008=joey}	{1002=eng-rus}
+45839	9627	10000-kreekly/mp3/Joey/wood.mp3	дерево	{1008=joey}	{1002=eng-rus}
+45839	125200	10000-kreekly/mp3/Joey/wood.mp3	древесина, лес	{1008=joey}	{1002=eng-rus}
+45839	126277	10000-kreekly/mp3/Joey/wood.mp3	лес, древесина, дрова	{1008=joey}	{1002=eng-rus}
+45840	2211	10000-kreekly/mp3/Kendra/wood.mp3	древесина	{1008=kendra}	{1002=eng-rus}
+45840	9627	10000-kreekly/mp3/Kendra/wood.mp3	дерево	{1008=kendra}	{1002=eng-rus}
+45840	125200	10000-kreekly/mp3/Kendra/wood.mp3	древесина, лес	{1008=kendra}	{1002=eng-rus}
+45840	126277	10000-kreekly/mp3/Kendra/wood.mp3	лес, древесина, дрова	{1008=kendra}	{1002=eng-rus}
+45841	2211	10000-kreekly/mp3/Kimberly/wood.mp3	древесина	{1008=kimberly}	{1002=eng-rus}
+45841	9627	10000-kreekly/mp3/Kimberly/wood.mp3	дерево	{1008=kimberly}	{1002=eng-rus}
+45841	125200	10000-kreekly/mp3/Kimberly/wood.mp3	древесина, лес	{1008=kimberly}	{1002=eng-rus}
+45841	126277	10000-kreekly/mp3/Kimberly/wood.mp3	лес, древесина, дрова	{1008=kimberly}	{1002=eng-rus}
+45842	2211	10000-kreekly/mp3/Ivy/wood.mp3	древесина	{1008=ivy}	{1002=eng-rus}
+45842	9627	10000-kreekly/mp3/Ivy/wood.mp3	дерево	{1008=ivy}	{1002=eng-rus}
+45842	125200	10000-kreekly/mp3/Ivy/wood.mp3	древесина, лес	{1008=ivy}	{1002=eng-rus}
+45842	126277	10000-kreekly/mp3/Ivy/wood.mp3	лес, древесина, дрова	{1008=ivy}	{1002=eng-rus}
+45843	2211	10000-kreekly/mp3/Justin/wood.mp3	древесина	{1008=justin}	{1002=eng-rus}
+45843	9627	10000-kreekly/mp3/Justin/wood.mp3	дерево	{1008=justin}	{1002=eng-rus}
+45843	125200	10000-kreekly/mp3/Justin/wood.mp3	древесина, лес	{1008=justin}	{1002=eng-rus}
+45843	126277	10000-kreekly/mp3/Justin/wood.mp3	лес, древесина, дрова	{1008=justin}	{1002=eng-rus}
+45844	2211	10000-kreekly/mp3/Joanna/wood.mp3	древесина	{1008=joanna}	{1002=eng-rus}
+45844	9627	10000-kreekly/mp3/Joanna/wood.mp3	дерево	{1008=joanna}	{1002=eng-rus}
+45844	125200	10000-kreekly/mp3/Joanna/wood.mp3	древесина, лес	{1008=joanna}	{1002=eng-rus}
+45844	126277	10000-kreekly/mp3/Joanna/wood.mp3	лес, древесина, дрова	{1008=joanna}	{1002=eng-rus}
+45845	2211	10000-kreekly/mp3/Salli/wood.mp3	древесина	{1008=salli}	{1002=eng-rus}
+45845	9627	10000-kreekly/mp3/Salli/wood.mp3	дерево	{1008=salli}	{1002=eng-rus}
+45845	125200	10000-kreekly/mp3/Salli/wood.mp3	древесина, лес	{1008=salli}	{1002=eng-rus}
+45845	126277	10000-kreekly/mp3/Salli/wood.mp3	лес, древесина, дрова	{1008=salli}	{1002=eng-rus}
+45846	2211	10000-kreekly/mp3/Matthew/wood.mp3	древесина	{1008=matthew}	{1002=eng-rus}
+45846	9627	10000-kreekly/mp3/Matthew/wood.mp3	дерево	{1008=matthew}	{1002=eng-rus}
+45846	125200	10000-kreekly/mp3/Matthew/wood.mp3	древесина, лес	{1008=matthew}	{1002=eng-rus}
+45846	126277	10000-kreekly/mp3/Matthew/wood.mp3	лес, древесина, дрова	{1008=matthew}	{1002=eng-rus}
+126278	2211	8000-wordsteps/mp3/wood.mp3	древесина	{}	{1002=eng-rus}
+126278	9627	8000-wordsteps/mp3/wood.mp3	дерево	{}	{1002=eng-rus}
+126278	125200	8000-wordsteps/mp3/wood.mp3	древесина, лес	{}	{1002=eng-rus}
+126278	126277	8000-wordsteps/mp3/wood.mp3	лес, древесина, дрова	{}	{1002=eng-rus}
+28841	2214	10000-kreekly/mp3/Joey/plastic.mp3	пластик	{1008=joey}	{1002=eng-rus}
+28841	129876	10000-kreekly/mp3/Joey/plastic.mp3	пластмасса, пластичный	{1008=joey}	{1002=eng-rus}
+28842	2214	10000-kreekly/mp3/Kendra/plastic.mp3	пластик	{1008=kendra}	{1002=eng-rus}
+28842	129876	10000-kreekly/mp3/Kendra/plastic.mp3	пластмасса, пластичный	{1008=kendra}	{1002=eng-rus}
+28843	2214	10000-kreekly/mp3/Kimberly/plastic.mp3	пластик	{1008=kimberly}	{1002=eng-rus}
+28843	129876	10000-kreekly/mp3/Kimberly/plastic.mp3	пластмасса, пластичный	{1008=kimberly}	{1002=eng-rus}
+28844	2214	10000-kreekly/mp3/Justin/plastic.mp3	пластик	{1008=justin}	{1002=eng-rus}
+28844	129876	10000-kreekly/mp3/Justin/plastic.mp3	пластмасса, пластичный	{1008=justin}	{1002=eng-rus}
+28845	2214	10000-kreekly/mp3/Joanna/plastic.mp3	пластик	{1008=joanna}	{1002=eng-rus}
+28845	129876	10000-kreekly/mp3/Joanna/plastic.mp3	пластмасса, пластичный	{1008=joanna}	{1002=eng-rus}
+28846	2214	10000-kreekly/mp3/Salli/plastic.mp3	пластик	{1008=salli}	{1002=eng-rus}
+28846	129876	10000-kreekly/mp3/Salli/plastic.mp3	пластмасса, пластичный	{1008=salli}	{1002=eng-rus}
+28847	2214	10000-kreekly/mp3/Matthew/plastic.mp3	пластик	{1008=matthew}	{1002=eng-rus}
+28847	129876	10000-kreekly/mp3/Matthew/plastic.mp3	пластмасса, пластичный	{1008=matthew}	{1002=eng-rus}
+129877	2214	8000-wordsteps/mp3/plastic.mp3	пластик	{}	{1002=eng-rus}
+129877	129876	8000-wordsteps/mp3/plastic.mp3	пластмасса, пластичный	{}	{1002=eng-rus}
+9803	2217	1000-puzzle-english/mp3/freedictionary_UK/paper.mp3	бумага	{1008=freedictionary_uk}	{1002=eng-rus}
+9803	122979	1000-puzzle-english/mp3/freedictionary_UK/paper.mp3	бумага, документ	{1008=freedictionary_uk}	{1002=eng-rus}
+9803	126380	1000-puzzle-english/mp3/freedictionary_UK/paper.mp3	бумага, газета	{1008=freedictionary_uk}	{1002=eng-rus}
+9804	2217	1000-puzzle-english/mp3/collins_US/paper.mp3	бумага	{1008=collins_us}	{1002=eng-rus}
+9804	122979	1000-puzzle-english/mp3/collins_US/paper.mp3	бумага, документ	{1008=collins_us}	{1002=eng-rus}
+9804	126380	1000-puzzle-english/mp3/collins_US/paper.mp3	бумага, газета	{1008=collins_us}	{1002=eng-rus}
+9805	2217	1000-puzzle-english/mp3/macmillan_UK/paper.mp3	бумага	{1008=macmillan_uk}	{1002=eng-rus}
+9805	122979	1000-puzzle-english/mp3/macmillan_UK/paper.mp3	бумага, документ	{1008=macmillan_uk}	{1002=eng-rus}
+9805	126380	1000-puzzle-english/mp3/macmillan_UK/paper.mp3	бумага, газета	{1008=macmillan_uk}	{1002=eng-rus}
+9806	2217	1000-puzzle-english/mp3/freedictionary_US/paper.mp3	бумага	{1008=freedictionary_us}	{1002=eng-rus}
+9806	122979	1000-puzzle-english/mp3/freedictionary_US/paper.mp3	бумага, документ	{1008=freedictionary_us}	{1002=eng-rus}
+9806	126380	1000-puzzle-english/mp3/freedictionary_US/paper.mp3	бумага, газета	{1008=freedictionary_us}	{1002=eng-rus}
+9807	2217	1000-puzzle-english/mp3/peterBaker_UK/paper.mp3	бумага	{1008=peterbaker_uk}	{1002=eng-rus}
+9807	122979	1000-puzzle-english/mp3/peterBaker_UK/paper.mp3	бумага, документ	{1008=peterbaker_uk}	{1002=eng-rus}
+9807	126380	1000-puzzle-english/mp3/peterBaker_UK/paper.mp3	бумага, газета	{1008=peterbaker_uk}	{1002=eng-rus}
+9808	2217	1000-puzzle-english/mp3/howjsay_UK/paper.mp3	бумага	{1008=howjsay_uk}	{1002=eng-rus}
+9808	122979	1000-puzzle-english/mp3/howjsay_UK/paper.mp3	бумага, документ	{1008=howjsay_uk}	{1002=eng-rus}
+9808	126380	1000-puzzle-english/mp3/howjsay_UK/paper.mp3	бумага, газета	{1008=howjsay_uk}	{1002=eng-rus}
+9809	2217	1000-puzzle-english/mp3/campbridge_US/paper.mp3	бумага	{1008=campbridge_us}	{1002=eng-rus}
+9809	122979	1000-puzzle-english/mp3/campbridge_US/paper.mp3	бумага, документ	{1008=campbridge_us}	{1002=eng-rus}
+9809	126380	1000-puzzle-english/mp3/campbridge_US/paper.mp3	бумага, газета	{1008=campbridge_us}	{1002=eng-rus}
+9810	2217	1000-puzzle-english/mp3/vocalware_hugh_UK/paper.mp3	бумага	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9810	122979	1000-puzzle-english/mp3/vocalware_hugh_UK/paper.mp3	бумага, документ	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9810	126380	1000-puzzle-english/mp3/vocalware_hugh_UK/paper.mp3	бумага, газета	{1008=vocalware_hugh_uk}	{1002=eng-rus}
+9811	2217	1000-puzzle-english/mp3/campbridge_UK/paper.mp3	бумага	{1008=campbridge_uk}	{1002=eng-rus}
+9811	122979	1000-puzzle-english/mp3/campbridge_UK/paper.mp3	бумага, документ	{1008=campbridge_uk}	{1002=eng-rus}
+9811	126380	1000-puzzle-english/mp3/campbridge_UK/paper.mp3	бумага, газета	{1008=campbridge_uk}	{1002=eng-rus}
+9812	2217	1000-puzzle-english/mp3/collins_UK/paper.mp3	бумага	{1008=collins_uk}	{1002=eng-rus}
+9812	122979	1000-puzzle-english/mp3/collins_UK/paper.mp3	бумага, документ	{1008=collins_uk}	{1002=eng-rus}
+9812	126380	1000-puzzle-english/mp3/collins_UK/paper.mp3	бумага, газета	{1008=collins_uk}	{1002=eng-rus}
+9813	2217	1000-puzzle-english/mp3/SteveElliott_UK/paper.mp3	бумага	{1008=steveelliott_uk}	{1002=eng-rus}
+9813	122979	1000-puzzle-english/mp3/SteveElliott_UK/paper.mp3	бумага, документ	{1008=steveelliott_uk}	{1002=eng-rus}
+9813	126380	1000-puzzle-english/mp3/SteveElliott_UK/paper.mp3	бумага, газета	{1008=steveelliott_uk}	{1002=eng-rus}
+9814	2217	1000-puzzle-english/mp3/yandex_UK/paper.mp3	бумага	{1008=yandex_uk}	{1002=eng-rus}
+9814	122979	1000-puzzle-english/mp3/yandex_UK/paper.mp3	бумага, документ	{1008=yandex_uk}	{1002=eng-rus}
+9814	126380	1000-puzzle-english/mp3/yandex_UK/paper.mp3	бумага, газета	{1008=yandex_uk}	{1002=eng-rus}
+80273	2217	10000-kreekly/mp3/Joey/paper.mp3	бумага	{1008=joey}	{1002=eng-rus}
+80273	122979	10000-kreekly/mp3/Joey/paper.mp3	бумага, документ	{1008=joey}	{1002=eng-rus}
+80273	126380	10000-kreekly/mp3/Joey/paper.mp3	бумага, газета	{1008=joey}	{1002=eng-rus}
+80274	2217	10000-kreekly/mp3/Kendra/paper.mp3	бумага	{1008=kendra}	{1002=eng-rus}
+80274	122979	10000-kreekly/mp3/Kendra/paper.mp3	бумага, документ	{1008=kendra}	{1002=eng-rus}
+80274	126380	10000-kreekly/mp3/Kendra/paper.mp3	бумага, газета	{1008=kendra}	{1002=eng-rus}
+80275	2217	10000-kreekly/mp3/Kimberly/paper.mp3	бумага	{1008=kimberly}	{1002=eng-rus}
+80275	122979	10000-kreekly/mp3/Kimberly/paper.mp3	бумага, документ	{1008=kimberly}	{1002=eng-rus}
+80275	126380	10000-kreekly/mp3/Kimberly/paper.mp3	бумага, газета	{1008=kimberly}	{1002=eng-rus}
+80276	2217	10000-kreekly/mp3/Ivy/paper.mp3	бумага	{1008=ivy}	{1002=eng-rus}
+80276	122979	10000-kreekly/mp3/Ivy/paper.mp3	бумага, документ	{1008=ivy}	{1002=eng-rus}
+80276	126380	10000-kreekly/mp3/Ivy/paper.mp3	бумага, газета	{1008=ivy}	{1002=eng-rus}
+80277	2217	10000-kreekly/mp3/Justin/paper.mp3	бумага	{1008=justin}	{1002=eng-rus}
+80277	122979	10000-kreekly/mp3/Justin/paper.mp3	бумага, документ	{1008=justin}	{1002=eng-rus}
+80277	126380	10000-kreekly/mp3/Justin/paper.mp3	бумага, газета	{1008=justin}	{1002=eng-rus}
+80278	2217	10000-kreekly/mp3/Joanna/paper.mp3	бумага	{1008=joanna}	{1002=eng-rus}
+80278	122979	10000-kreekly/mp3/Joanna/paper.mp3	бумага, документ	{1008=joanna}	{1002=eng-rus}
+80278	126380	10000-kreekly/mp3/Joanna/paper.mp3	бумага, газета	{1008=joanna}	{1002=eng-rus}
+80279	2217	10000-kreekly/mp3/Salli/paper.mp3	бумага	{1008=salli}	{1002=eng-rus}
+80279	122979	10000-kreekly/mp3/Salli/paper.mp3	бумага, документ	{1008=salli}	{1002=eng-rus}
+80279	126380	10000-kreekly/mp3/Salli/paper.mp3	бумага, газета	{1008=salli}	{1002=eng-rus}
+80280	2217	10000-kreekly/mp3/Matthew/paper.mp3	бумага	{1008=matthew}	{1002=eng-rus}
+80280	122979	10000-kreekly/mp3/Matthew/paper.mp3	бумага, документ	{1008=matthew}	{1002=eng-rus}
+80280	126380	10000-kreekly/mp3/Matthew/paper.mp3	бумага, газета	{1008=matthew}	{1002=eng-rus}
+122980	2217	5000-studynow/mp3/paper.mp3	бумага	{}	{1002=eng-rus}
+122980	122979	5000-studynow/mp3/paper.mp3	бумага, документ	{}	{1002=eng-rus}
+122980	126380	5000-studynow/mp3/paper.mp3	бумага, газета	{}	{1002=eng-rus}
+126381	2217	8000-wordsteps/mp3/paper.mp3	бумага	{}	{1002=eng-rus}
+126381	122979	8000-wordsteps/mp3/paper.mp3	бумага, документ	{}	{1002=eng-rus}
+126381	126380	8000-wordsteps/mp3/paper.mp3	бумага, газета	{}	{1002=eng-rus}
+97603	2220	10000-kreekly/mp3/Joey/carton.mp3	картон	{1008=joey}	{1002=eng-rus}
+97603	132531	10000-kreekly/mp3/Joey/carton.mp3	коробка	{1008=joey}	{1002=eng-rus}
+97604	2220	10000-kreekly/mp3/Kendra/carton.mp3	картон	{1008=kendra}	{1002=eng-rus}
+97604	132531	10000-kreekly/mp3/Kendra/carton.mp3	коробка	{1008=kendra}	{1002=eng-rus}
+97605	2220	10000-kreekly/mp3/Kimberly/carton.mp3	картон	{1008=kimberly}	{1002=eng-rus}
+97605	132531	10000-kreekly/mp3/Kimberly/carton.mp3	коробка	{1008=kimberly}	{1002=eng-rus}
+97606	2220	10000-kreekly/mp3/Justin/carton.mp3	картон	{1008=justin}	{1002=eng-rus}
+97606	132531	10000-kreekly/mp3/Justin/carton.mp3	коробка	{1008=justin}	{1002=eng-rus}
+97607	2220	10000-kreekly/mp3/Joanna/carton.mp3	картон	{1008=joanna}	{1002=eng-rus}
+97607	132531	10000-kreekly/mp3/Joanna/carton.mp3	коробка	{1008=joanna}	{1002=eng-rus}
+97608	2220	10000-kreekly/mp3/Salli/carton.mp3	картон	{1008=salli}	{1002=eng-rus}
+97608	132531	10000-kreekly/mp3/Salli/carton.mp3	коробка	{1008=salli}	{1002=eng-rus}
+97609	2220	10000-kreekly/mp3/Matthew/carton.mp3	картон	{1008=matthew}	{1002=eng-rus}
+97609	132531	10000-kreekly/mp3/Matthew/carton.mp3	коробка	{1008=matthew}	{1002=eng-rus}
+132532	2220	8000-wordsteps/mp3/carton.mp3	картон	{}	{1002=eng-rus}
+132532	132531	8000-wordsteps/mp3/carton.mp3	коробка	{}	{1002=eng-rus}
+49228	2226	10000-kreekly/mp3/Joey/clay.mp3	глина	{1008=joey}	{1002=eng-rus}
+49228	125973	10000-kreekly/mp3/Joey/clay.mp3	глина, земля	{1008=joey}	{1002=eng-rus}
+49229	2226	10000-kreekly/mp3/Kendra/clay.mp3	глина	{1008=kendra}	{1002=eng-rus}
+49229	125973	10000-kreekly/mp3/Kendra/clay.mp3	глина, земля	{1008=kendra}	{1002=eng-rus}
+49230	2226	10000-kreekly/mp3/Kimberly/clay.mp3	глина	{1008=kimberly}	{1002=eng-rus}
+49230	125973	10000-kreekly/mp3/Kimberly/clay.mp3	глина, земля	{1008=kimberly}	{1002=eng-rus}
+49231	2226	10000-kreekly/mp3/Justin/clay.mp3	глина	{1008=justin}	{1002=eng-rus}
+49231	125973	10000-kreekly/mp3/Justin/clay.mp3	глина, земля	{1008=justin}	{1002=eng-rus}
+49232	2226	10000-kreekly/mp3/Joanna/clay.mp3	глина	{1008=joanna}	{1002=eng-rus}
+49232	125973	10000-kreekly/mp3/Joanna/clay.mp3	глина, земля	{1008=joanna}	{1002=eng-rus}
+49233	2226	10000-kreekly/mp3/Salli/clay.mp3	глина	{1008=salli}	{1002=eng-rus}
+49233	125973	10000-kreekly/mp3/Salli/clay.mp3	глина, земля	{1008=salli}	{1002=eng-rus}
+49234	2226	10000-kreekly/mp3/Matthew/clay.mp3	глина	{1008=matthew}	{1002=eng-rus}
+49234	125973	10000-kreekly/mp3/Matthew/clay.mp3	глина, земля	{1008=matthew}	{1002=eng-rus}
+118828	2226	5000-studynow/mp3/clay.mp3	глина	{}	{1002=eng-rus}
+118828	125973	5000-studynow/mp3/clay.mp3	глина, земля	{}	{1002=eng-rus}
+125974	2226	8000-wordsteps/mp3/clay.mp3	глина	{}	{1002=eng-rus}
+125974	125973	8000-wordsteps/mp3/clay.mp3	глина, земля	{}	{1002=eng-rus}
+38188	2229	10000-kreekly/mp3/Joey/leather.mp3	кожа	{1008=joey}	{1002=eng-rus}
+38188	121985	10000-kreekly/mp3/Joey/leather.mp3	кожаный, кожа	{1008=joey}	{1002=eng-rus}
+38188	129476	10000-kreekly/mp3/Joey/leather.mp3	кожа, кожаный	{1008=joey}	{1002=eng-rus}
+38189	2229	10000-kreekly/mp3/Kendra/leather.mp3	кожа	{1008=kendra}	{1002=eng-rus}
+38189	121985	10000-kreekly/mp3/Kendra/leather.mp3	кожаный, кожа	{1008=kendra}	{1002=eng-rus}
+38189	129476	10000-kreekly/mp3/Kendra/leather.mp3	кожа, кожаный	{1008=kendra}	{1002=eng-rus}
+38190	2229	10000-kreekly/mp3/Kimberly/leather.mp3	кожа	{1008=kimberly}	{1002=eng-rus}
+38190	121985	10000-kreekly/mp3/Kimberly/leather.mp3	кожаный, кожа	{1008=kimberly}	{1002=eng-rus}
+38190	129476	10000-kreekly/mp3/Kimberly/leather.mp3	кожа, кожаный	{1008=kimberly}	{1002=eng-rus}
+38191	2229	10000-kreekly/mp3/Justin/leather.mp3	кожа	{1008=justin}	{1002=eng-rus}
+38191	121985	10000-kreekly/mp3/Justin/leather.mp3	кожаный, кожа	{1008=justin}	{1002=eng-rus}
+38191	129476	10000-kreekly/mp3/Justin/leather.mp3	кожа, кожаный	{1008=justin}	{1002=eng-rus}
+38192	2229	10000-kreekly/mp3/Joanna/leather.mp3	кожа	{1008=joanna}	{1002=eng-rus}
+38192	121985	10000-kreekly/mp3/Joanna/leather.mp3	кожаный, кожа	{1008=joanna}	{1002=eng-rus}
+38192	129476	10000-kreekly/mp3/Joanna/leather.mp3	кожа, кожаный	{1008=joanna}	{1002=eng-rus}
+38193	2229	10000-kreekly/mp3/Salli/leather.mp3	кожа	{1008=salli}	{1002=eng-rus}
+38193	121985	10000-kreekly/mp3/Salli/leather.mp3	кожаный, кожа	{1008=salli}	{1002=eng-rus}
+38193	129476	10000-kreekly/mp3/Salli/leather.mp3	кожа, кожаный	{1008=salli}	{1002=eng-rus}
+38194	2229	10000-kreekly/mp3/Matthew/leather.mp3	кожа	{1008=matthew}	{1002=eng-rus}
+38194	121985	10000-kreekly/mp3/Matthew/leather.mp3	кожаный, кожа	{1008=matthew}	{1002=eng-rus}
+38194	129476	10000-kreekly/mp3/Matthew/leather.mp3	кожа, кожаный	{1008=matthew}	{1002=eng-rus}
+121986	2229	5000-studynow/mp3/leather.mp3	кожа	{}	{1002=eng-rus}
+121986	121985	5000-studynow/mp3/leather.mp3	кожаный, кожа	{}	{1002=eng-rus}
+121986	129476	5000-studynow/mp3/leather.mp3	кожа, кожаный	{}	{1002=eng-rus}
+129477	2229	8000-wordsteps/mp3/leather.mp3	кожа	{}	{1002=eng-rus}
+129477	121985	8000-wordsteps/mp3/leather.mp3	кожаный, кожа	{}	{1002=eng-rus}
+129477	129476	8000-wordsteps/mp3/leather.mp3	кожа, кожаный	{}	{1002=eng-rus}
+35966	2232	10000-kreekly/mp3/Joey/cloth.mp3	ткань	{1008=joey}	{1002=eng-rus}
+35966	118876	10000-kreekly/mp3/Joey/cloth.mp3	ткань, тряпка	{1008=joey}	{1002=eng-rus}
+35967	2232	10000-kreekly/mp3/Kendra/cloth.mp3	ткань	{1008=kendra}	{1002=eng-rus}
+35967	118876	10000-kreekly/mp3/Kendra/cloth.mp3	ткань, тряпка	{1008=kendra}	{1002=eng-rus}
+35968	2232	10000-kreekly/mp3/Kimberly/cloth.mp3	ткань	{1008=kimberly}	{1002=eng-rus}
+35968	118876	10000-kreekly/mp3/Kimberly/cloth.mp3	ткань, тряпка	{1008=kimberly}	{1002=eng-rus}
+35969	2232	10000-kreekly/mp3/Justin/cloth.mp3	ткань	{1008=justin}	{1002=eng-rus}
+35969	118876	10000-kreekly/mp3/Justin/cloth.mp3	ткань, тряпка	{1008=justin}	{1002=eng-rus}
+35970	2232	10000-kreekly/mp3/Joanna/cloth.mp3	ткань	{1008=joanna}	{1002=eng-rus}
+35970	118876	10000-kreekly/mp3/Joanna/cloth.mp3	ткань, тряпка	{1008=joanna}	{1002=eng-rus}
+35971	2232	10000-kreekly/mp3/Salli/cloth.mp3	ткань	{1008=salli}	{1002=eng-rus}
+35971	118876	10000-kreekly/mp3/Salli/cloth.mp3	ткань, тряпка	{1008=salli}	{1002=eng-rus}
+35972	2232	10000-kreekly/mp3/Matthew/cloth.mp3	ткань	{1008=matthew}	{1002=eng-rus}
+35972	118876	10000-kreekly/mp3/Matthew/cloth.mp3	ткань, тряпка	{1008=matthew}	{1002=eng-rus}
+118877	2232	5000-studynow/mp3/cloth.mp3	ткань	{}	{1002=eng-rus}
+118877	118876	5000-studynow/mp3/cloth.mp3	ткань, тряпка	{}	{1002=eng-rus}
+134233	2232	8000-wordsteps/mp3/cloth.mp3	ткань	{}	{1002=eng-rus}
+134233	118876	8000-wordsteps/mp3/cloth.mp3	ткань, тряпка	{}	{1002=eng-rus}
+86734	2235	10000-kreekly/mp3/Joey/wool.mp3	шерсть	{1008=joey}	{1002=eng-rus}
+86734	125201	10000-kreekly/mp3/Joey/wool.mp3	шерсть, шерстяной	{1008=joey}	{1002=eng-rus}
+86735	2235	10000-kreekly/mp3/Kendra/wool.mp3	шерсть	{1008=kendra}	{1002=eng-rus}
+86735	125201	10000-kreekly/mp3/Kendra/wool.mp3	шерсть, шерстяной	{1008=kendra}	{1002=eng-rus}
+86736	2235	10000-kreekly/mp3/Kimberly/wool.mp3	шерсть	{1008=kimberly}	{1002=eng-rus}
+86736	125201	10000-kreekly/mp3/Kimberly/wool.mp3	шерсть, шерстяной	{1008=kimberly}	{1002=eng-rus}
+86737	2235	10000-kreekly/mp3/Justin/wool.mp3	шерсть	{1008=justin}	{1002=eng-rus}
+86737	125201	10000-kreekly/mp3/Justin/wool.mp3	шерсть, шерстяной	{1008=justin}	{1002=eng-rus}
+86738	2235	10000-kreekly/mp3/Joanna/wool.mp3	шерсть	{1008=joanna}	{1002=eng-rus}
+86738	125201	10000-kreekly/mp3/Joanna/wool.mp3	шерсть, шерстяной	{1008=joanna}	{1002=eng-rus}
+86739	2235	10000-kreekly/mp3/Salli/wool.mp3	шерсть	{1008=salli}	{1002=eng-rus}
+86739	125201	10000-kreekly/mp3/Salli/wool.mp3	шерсть, шерстяной	{1008=salli}	{1002=eng-rus}
+86740	2235	10000-kreekly/mp3/Matthew/wool.mp3	шерсть	{1008=matthew}	{1002=eng-rus}
+86740	125201	10000-kreekly/mp3/Matthew/wool.mp3	шерсть, шерстяной	{1008=matthew}	{1002=eng-rus}
+129490	2235	8000-wordsteps/mp3/wool.mp3	шерсть	{}	{1002=eng-rus}
+129490	125201	8000-wordsteps/mp3/wool.mp3	шерсть, шерстяной	{}	{1002=eng-rus}
+102131	2238	10000-kreekly/mp3/Joey/silk.mp3	шелк	{1008=joey}	{1002=eng-rus}
+102131	129487	10000-kreekly/mp3/Joey/silk.mp3	шелковый, шелк	{1008=joey}	{1002=eng-rus}
+102132	2238	10000-kreekly/mp3/Kendra/silk.mp3	шелк	{1008=kendra}	{1002=eng-rus}
+102132	129487	10000-kreekly/mp3/Kendra/silk.mp3	шелковый, шелк	{1008=kendra}	{1002=eng-rus}
+102133	2238	10000-kreekly/mp3/Kimberly/silk.mp3	шелк	{1008=kimberly}	{1002=eng-rus}
+102133	129487	10000-kreekly/mp3/Kimberly/silk.mp3	шелковый, шелк	{1008=kimberly}	{1002=eng-rus}
+102134	2238	10000-kreekly/mp3/Justin/silk.mp3	шелк	{1008=justin}	{1002=eng-rus}
+102134	129487	10000-kreekly/mp3/Justin/silk.mp3	шелковый, шелк	{1008=justin}	{1002=eng-rus}
+102135	2238	10000-kreekly/mp3/Joanna/silk.mp3	шелк	{1008=joanna}	{1002=eng-rus}
+102135	129487	10000-kreekly/mp3/Joanna/silk.mp3	шелковый, шелк	{1008=joanna}	{1002=eng-rus}
+102136	2238	10000-kreekly/mp3/Salli/silk.mp3	шелк	{1008=salli}	{1002=eng-rus}
+102136	129487	10000-kreekly/mp3/Salli/silk.mp3	шелковый, шелк	{1008=salli}	{1002=eng-rus}
+102137	2238	10000-kreekly/mp3/Matthew/silk.mp3	шелк	{1008=matthew}	{1002=eng-rus}
+102137	129487	10000-kreekly/mp3/Matthew/silk.mp3	шелковый, шелк	{1008=matthew}	{1002=eng-rus}
+129488	2238	8000-wordsteps/mp3/silk.mp3	шелк	{}	{1002=eng-rus}
+129488	129487	8000-wordsteps/mp3/silk.mp3	шелковый, шелк	{}	{1002=eng-rus}

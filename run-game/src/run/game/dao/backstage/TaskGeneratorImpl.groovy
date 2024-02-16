@@ -10,6 +10,7 @@ import jandcode.core.store.*
 import run.game.dao.*
 import run.game.model.service.*
 import run.game.testdata.fixture.*
+import run.game.util.*
 
 //@CompileStatic
 public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
@@ -17,10 +18,9 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
     Rnd rnd
 
     int OPTIONS_COUNT = 6
-
     int VALUES_FALSE_MAX_COUNT = 25
 
-    public static Map<Long, String> DataType_CODE = [
+    Map<Long, String> DataType_CODE = [
             (RgmDbConst.DataType_word_spelling) : "word_spelling",
             (RgmDbConst.DataType_word_translate): "word_translate",
             (RgmDbConst.DataType_word_sound)    : "word_sound",
@@ -36,6 +36,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
     }
 
 
+    @Override
     public Store generateItemFactsCombinations(long item, long dataTypeQuestion, long dataTypeAnswer, Collection<Long> factTagQuestion, Collection<Long> factTagAnswer) {
         Store res = mdb.createStore("FactCombinations")
 
@@ -46,30 +47,90 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
         //
         if (stQuestion.size() == 0) {
-            throw new XError("Не найден dataTypeQuestion: " + dataTypeQuestion + ", item: " + list.loadItem(item).getString("value"))
+            throw new XError("Не найден dataTypeQuestion: " + DataType_CODE.get(dataTypeQuestion) + ", item: " + list.loadItem(item).getString("value"))
         }
         if (stAnswer.size() == 0) {
-            throw new XError("Не найден dataTypeAnswer: " + dataTypeAnswer + ", item: " + list.loadItem(item).getString("value"))
+            throw new XError("Не найден dataTypeAnswer: " + DataType_CODE.get(dataTypeAnswer) + ", item: " + list.loadItem(item).getString("value"))
         }
 
         // Перебираем факты: "факт вопрос" и "факт ответ", для каждой пары
         for (StoreRecord recQuestion : stQuestion) {
             for (StoreRecord recAnswer : stAnswer) {
+                Map mapFactTagQuestion = new HashMap()
+                Map mapFactTagAnswer = new HashMap()
+                //
+
+                //
                 res.add([
                         item             : recQuestion.getLong("item"),
                         factQuestion     : recQuestion.getLong("id"),
                         factAnswer       : recAnswer.getLong("id"),
                         factValueQuestion: recQuestion.getString("factValue"),
                         factValueAnswer  : recAnswer.getString("factValue"),
+                        factTagQuestion  : mapFactTagQuestion,
+                        factTagAnswer    : mapFactTagAnswer,
                 ])
             }
         }
+
+
+        // Загрузим тэги
+        Set factIds = new HashSet()
+        factIds.addAll(stQuestion.getUniqueValues("id"))
+        factIds.addAll(stAnswer.getUniqueValues("id"))
+        Store stFactTag = mdb.loadQuery(sqlFactTag(factIds))
+        Map<Object, List<StoreRecord>> mapFactsTag = StoreUtils.collectGroupBy_records(stFactTag, "fact")
+
+        // Заполним поле тэги (factTag)
+        for (StoreRecord recFactCombination : res) {
+            List<StoreRecord> lstRecFactTag = mapFactsTag.get(recFactCombination.getLong("factQuestion"))
+            if (lstRecFactTag != null) {
+                // Превратим список тэгов в Map тегов
+                Map<Long, String> mapFactTag = new HashMap<>()
+                for (StoreRecord recFactTag : lstRecFactTag) {
+                    mapFactTag.put(recFactTag.getLong("tagType"), recFactTag.getString("value"))
+                }
+                recFactCombination.setValue("factTagQuestion", mapFactTag)
+            }
+            //
+            lstRecFactTag = mapFactsTag.get(recFactCombination.getLong("factAnswer"))
+            if (lstRecFactTag != null) {
+                // Превратим список тэгов в Map тегов
+                Map<Long, String> mapFactTag = new HashMap<>()
+                for (StoreRecord recFactTag : lstRecFactTag) {
+                    mapFactTag.put(recFactTag.getLong("tagType"), recFactTag.getString("value"))
+                }
+                recFactCombination.setValue("factTagAnswer", mapFactTag)
+            }
+        }
+
 
         //
         return res
     }
 
 
+    String sqlFactTag(Set ids) {
+        String strIds
+        if (ids.size() == 0) {
+            strIds = "0"
+        } else {
+            strIds = ids.join(",")
+        }
+        return """
+select 
+    FactTag.fact, 
+    Tag.* 
+from
+    FactTag 
+    join Tag on (FactTag.tag = Tag.id) 
+where
+    FactTag.fact in ( ${strIds} )
+"""
+    }
+
+
+    @Override
     public DataBox generateTask(long factQuestion, long factAnswer, Collection<String> answerFalseValues) {
         DataBox res = new DataBox()
 
@@ -163,7 +224,6 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // ---
         // Формируем recTask
         StoreRecord recTask = mdb.createStoreRecord("Task")
-        //recTask.setValue("item", idItem)
         recTask.setValue("factQuestion", recFactQuestion.getValue("id"))
         recTask.setValue("factAnswer", recFactAnswer.getValue("id"))
 
@@ -257,8 +317,8 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
         // ---
         res.put("task", recTask)
-        res.put("taskOption", stTaskOption)
         res.put("taskQuestion", stTaskQuestion)
+        res.put("taskOption", stTaskOption)
 
 
         //

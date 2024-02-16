@@ -42,9 +42,20 @@
                                  stack-label
                                  :dense="true"
                                  label="Пароль"
-                                 type="password">
+                                 :type="user_password_isHidden ? 'password' : 'text'">
                             <template #prepend>
-                                <q-icon name="password" size="1em" color="gray-600"/>
+                                <q-icon
+                                    name="password"
+                                    size="1em"
+                                    color="gray-600"/>
+                            </template>
+                            <template v-slot:append>
+                                <q-icon
+                                    :name="user_password_isHidden ? 'visibility-off' : 'visibility'"
+                                    class="cursor-pointer"
+                                    color="gray-600"
+                                    @click="user_password_isHidden = !user_password_isHidden"
+                                />
                             </template>
                         </q-input>
 
@@ -102,9 +113,20 @@
                                  stack-label
                                  :dense="true"
                                  label="Пароль"
-                                 type="password">
+                                 :type="user_password_isHidden ? 'password' : 'text'">
                             <template #prepend>
-                                <q-icon name="password" size="1em" color="gray-600"/>
+                                <q-icon
+                                    name="password"
+                                    size="1em"
+                                    color="gray-600"/>
+                            </template>
+                            <template v-slot:append>
+                                <q-icon
+                                    :name="user_password_isHidden ? 'visibility-off' : 'visibility'"
+                                    class="cursor-pointer"
+                                    color="gray-600"
+                                    @click="user_password_isHidden = !user_password_isHidden"
+                                />
                             </template>
                         </q-input>
 
@@ -171,9 +193,20 @@
                                      stack-label
                                      :dense="true"
                                      label="Пароль"
-                                     type="password">
+                                     :type="user_password_isHidden ? 'password' : 'text'">
                                 <template #prepend>
-                                    <q-icon name="password" size="1em" color="gray-600"/>
+                                    <q-icon
+                                        name="password"
+                                        size="1em"
+                                        color="gray-600"/>
+                                </template>
+                                <template v-slot:append>
+                                    <q-icon
+                                        :name="user_password_isHidden ? 'visibility-off' : 'visibility'"
+                                        class="cursor-pointer"
+                                        color="gray-600"
+                                        @click="user_password_isHidden = !user_password_isHidden"
+                                    />
                                 </template>
                             </q-input>
 
@@ -243,6 +276,8 @@ export default {
             password: null,
             //
             globalState: ctx.getGlobalState(),
+            //
+            user_password_isHidden: true,
         }
     },
 

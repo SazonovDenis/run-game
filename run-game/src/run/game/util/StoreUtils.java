@@ -346,19 +346,19 @@ public class StoreUtils {
         // Распределим по ключу (для каждого keyField)
         Map<Object, List<StoreRecord>> stRecsByKey = StoreUtils.collectGroupBy_records(store, keyField);
 
-        // Раскроем значения и превратим в Map
+        // Раскроем значения и превратим каждое в Map
         for (Object key : stRecsByKey.keySet()) {
-            List<Object> repairWorks = new ArrayList<>();
+            List<Object> lstValues = new ArrayList<>();
 
             //
             List<StoreRecord> repairWorkRecs = stRecsByKey.get(key);
             for (StoreRecord recRepairWork : repairWorkRecs) {
                 Object val = conv.apply(recRepairWork);
-                repairWorks.add(val);
+                lstValues.add(val);
             }
 
             //
-            res.put(key, repairWorks);
+            res.put(key, lstValues);
         }
 
         //

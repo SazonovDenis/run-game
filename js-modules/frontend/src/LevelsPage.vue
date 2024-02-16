@@ -97,7 +97,7 @@ export default {
 
         onCreateLevel() {
             apx.showFrame({
-                frame: '/plan', props: {doIns: true}
+                frame: '/planAddFact', props: {}
             })
         },
 

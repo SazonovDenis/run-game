@@ -1,99 +1,83 @@
 <template>
 
-    <MenuContainer :title="plan.planText"
+    <MenuContainer title="Редактирование плана"
+                   :showFooter="true"
                    :frameReturn="frameReturn"
                    :frameReturnProps="frameReturnProps"
     >
 
         <div v-if="dataLoaded">
 
-            <PlanInfo :_planText="plan.planText"
-                      :ratingTask="statistic.ratingTask"
-                      :ratingQuickness="statistic.ratingQuickness"
-                      :ratingMax="statistic.ratingMax"
+
+            <q-input class="q-mb-sm"
+                     dense outlined
+                     label="Название плана"
+                     v-model="plan.planText"
             />
 
-            <q-separator/>
 
+            <div v-if="plan.id">
 
-            <div class="row">
-                <jc-btn class="q-ma-sm"
-                        kind="primary"
-                        label="Играть уровень"
-                        style="min-width: 10em;"
-                        @click="gameStart()">
-                </jc-btn>
+                <div class="row q-mb-sm">
 
-                <jc-btn class="q-ma-sm"
-                        kind="secondary"
-                        label="Выбрать другой уровень"
-                        style="min-width: 12em;"
-                        @click="onSelectLevel()">
-                </jc-btn>
-            </div>
+                    <div class="q-mr-sm">
 
-            <q-separator/>
+                        <q-input
+                            style="max-width: 9em"
+                            dense outlined clearable
+                            v-model="filterText"
+                            placeholder="Поиск"
+                        >
 
+                            <template v-slot:append v-if="!filterText">
+                                <q-icon name="search"/>
+                            </template>
 
-            <div class="row q-mb-sm">
+                        </q-input>
 
-                <div class="q-mr-sm">
+                    </div>
 
-                    <q-input
-                        style="max-width: 9em"
-                        dense outlined clearable
-                        v-model="filterText"
-                        placeholder="Поиск"
+                    <q-btn-dropdown
+                        @click="sortFieldMenu=true"
+                        v-model="sortFieldMenu"
+                        style="width: 10em;"
+                        color="grey-2"
+                        text-color="black"
+                        no-caps
+                        split
+                        align="left"
+                        :icon="sortFieldIcon[sortField]"
+                        :label="sortFieldText[sortField]"
                     >
+                        <q-list class="q-pa-sm">
 
-                        <template v-slot:append v-if="!filterText">
-                            <q-icon name="search"/>
-                        </template>
+                            <q-item class="q-py-md" clickable v-close-popup
+                                    @click="sortField='question'">
+                                Слово
+                            </q-item>
 
-                    </q-input>
+                            <q-item class="q-py-md" clickable v-close-popup
+                                    @click="sortField='answer'">
+                                Перевод
+                            </q-item>
+
+                            <q-item class="q-py-md" clickable v-close-popup
+                                    @click="sortField='ratingDesc'">
+                                Лучшие
+                            </q-item>
+
+                            <q-item class="q-py-md" clickable v-close-popup
+                                    @click="sortField='ratingAsc'">
+                                Худшие
+                            </q-item>
+
+                        </q-list>
+                    </q-btn-dropdown>
+
+
+                    <q-toggle v-model="showHidden" label="Скрытые"/>
 
                 </div>
-
-                <q-btn-dropdown
-                    @click="sortFieldMenu=true"
-                    v-model="sortFieldMenu"
-                    style="width: 10em;"
-                    color="grey-2"
-                    text-color="black"
-                    no-caps
-                    split
-                    align="left"
-                    :icon="sortFieldIcon[sortField]"
-                    :label="sortFieldText[sortField]"
-                >
-                    <q-list class="q-pa-sm">
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='question'">
-                            Слово
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='answer'">
-                            Перевод
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='ratingDesc'">
-                            Лучшие
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='ratingAsc'">
-                            Худшие
-                        </q-item>
-
-                    </q-list>
-                </q-btn-dropdown>
-
-
-                <q-toggle v-model="showHidden" label="Скрытые"/>
-
             </div>
 
 
@@ -103,30 +87,48 @@
                 :itemsMenu="itemsMenu"
                 :filter="filter"/>
 
-
-            <q-page-sticky
-                position="bottom-right"
-                :offset="[70, 10]">
-                <q-btn round
-                       color="purple-4"
-                       icon="edit"
-                       size="1.2em"
-                       @click="onPlanEdit"
-                />
-            </q-page-sticky>
-
-            <q-page-sticky
-                position="bottom-right"
-                :offset="[10, 10]">
-                <q-btn round
-                       color="green-7"
-                       icon="add"
-                       size="1.2em"
-                       @click="onPlanAddFact"
-                />
-            </q-page-sticky>
-
         </div>
+
+
+        <template v-slot:footer>
+
+            <q-footer>
+
+                <q-toolbar class="bg-grey-1 text-black" style="min-height: 5em">
+
+
+                    <div class="row " style="width: 100%">
+
+                        <div class="row" style="flex-grow: 10; align-content: end">
+                            <div style="flex-grow: 10">
+                                &nbsp;
+                            </div>
+
+
+                            <div
+                                class="q-ma-sm"
+                                style="margin: auto;"
+                                @click="clickItemStateText">
+                                    <span class="rgm-link-soft"> {{
+                                            itemStateText
+                                        }}</span>
+                            </div>
+
+                            <q-btn
+                                no-caps
+                                class="q-ma-sm"
+                                label="Сохранить изменения"
+                                @click="savePlan()"
+                            />
+
+
+                        </div>
+                    </div>
+                </q-toolbar>
+
+            </q-footer>
+
+        </template>
 
 
     </MenuContainer>
@@ -144,12 +146,16 @@ import MenuContainer from "./comp/MenuContainer"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
 import utils from "./utils"
+import {daoApi} from "run-game-frontend/src/dao"
 
 export default {
-    name: "PlanPage",
+    name: "PlanEditPage",
 
     props: {
         planId: null,
+        planText: null,
+        frameReturn: null,
+        frameReturnProps: null,
     },
 
     components: {
@@ -182,8 +188,6 @@ export default {
             ],
 
             dataLoaded: false,
-            frameReturn: null,
-            frameReturnProps: null,
 
             sortFieldMenu: false,
             sortField: "",
@@ -363,28 +367,15 @@ export default {
             console.info("planTask: ", task)
         },
 
-        onPlanEdit() {
-            apx.showFrame({
-                frame: '/planEdit',
-                props: {
-                    planId: this.plan.id,
-                    planText: this.plan.planText,
-                    frameReturn: "/plan",
-                    frameReturnProps: {planId: this.planId}
-                }
-            })
-        },
+        async savePlan() {
+            let recPlan = {id: this.plan.id, text: this.plan.planText}
+            await daoApi.invoke('m/Plan/upd', [recPlan])
 
-        onPlanAddFact() {
+            //
             apx.showFrame({
-                frame: '/planAddFact',
-                props: {
-                    planId: this.plan.id,
-                    planText: this.plan.planText,
-                    frameReturn: "/plan",
-                    frameReturnProps: {planId: this.planId}
-                }
+                frame: '/plan', props: {planId: this.planId}
             })
+
         },
 
     },
@@ -399,6 +390,7 @@ export default {
             })
             return
         }
+
 
         //
         this.dataLoaded = false

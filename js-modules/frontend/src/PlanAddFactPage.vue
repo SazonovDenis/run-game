@@ -1,6 +1,6 @@
 <template>
     <MenuContainer
-        :title="planText"
+        :title="title"
         :frameReturn="frameReturn"
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
@@ -25,6 +25,12 @@
 
 
         <div v-if="addMode==='viewItemsAdd'">
+
+            <q-input v-if="!planId" class="q-mb-sm"
+                     dense outlined
+                     label="Название плана"
+                     v-model="plan.planText"
+            />
 
             <TaskList
                 :showEdit="true"
@@ -61,21 +67,37 @@
 
                             <template v-if="itemsAdd.length > 0">
 
-                                <div
-                                    class="q-ma-sm"
-                                    style="margin: auto;"
-                                    @click="clickItemStateText">
+                                <div _v-if="addMode !== 'viewItemsAdd'"
+                                     class="q-ma-sm"
+                                     style="margin: auto;"
+                                     @click="clickItemStateText()">
                                     <span class="rgm-link-soft"> {{
                                             itemStateText
                                         }}</span>
                                 </div>
 
-                                <q-btn
-                                    no-caps
-                                    class="q-ma-sm"
-                                    label="Сохранить"
-                                    @click="saveItems()"
-                                />
+
+                                <template v-if="addMode === 'viewItemsAdd'">
+
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        :label="btnSaveTitle"
+                                        @click="btnSaveClick()"
+                                    />
+
+                                </template>
+
+                                <template v-else>
+
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        label="Далее"
+                                        @click="btnNextClick()"
+                                    />
+
+                                </template>
 
                             </template>
 
@@ -104,7 +126,7 @@ import {apx} from "./vendor"
 import utils from "./utils"
 
 export default {
-    name: "AddFactPage",
+    name: "PlanAddFactPage",
 
     components: {
         MenuContainer, TextInputPhoto, TextInputText, TaskList
@@ -120,6 +142,7 @@ export default {
     data() {
         return {
             addMode: "text",
+            plan: {},
             itemsAdd: [],
             itemsMenu: [
                 {
@@ -131,9 +154,29 @@ export default {
     },
 
     computed: {
+
+        title() {
+            if (this.addMode === "photo") {
+                return "Добавление слов"
+            } else if (this.addMode === "text") {
+                return "Добавление слов"
+            } else {
+                return "Сохранение"
+            }
+        },
+
+        btnSaveTitle() {
+            if (this.planId) {
+                return "Сохранить"
+            } else {
+                return "Создать план"
+            }
+        },
+
         itemStateText() {
-            return "Выбрано: " + this.itemsAdd.length
+            return "Добавлено слов: " + this.itemsAdd.length
         }
+
     },
 
     methods: {
@@ -149,9 +192,12 @@ export default {
             this.addMode = "viewItemsAdd"
         },
 
-        async saveItems() {
+        btnNextClick() {
+            this.addMode = "viewItemsAdd"
+        },
+
+        async btnSaveClick() {
             //
-            let recPlan = {text: this.planText}
             let stPlanFact = []
             for (let item of this.itemsAdd) {
                 stPlanFact.push({
@@ -163,8 +209,11 @@ export default {
             //
             let planId = this.planId
             if (!planId) {
+                // Создаем новый план и добавляем слова
+                let recPlan = {text: this.plan.planText}
                 planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFact, []])
             } else {
+                // Добавляем слова в существующий план
                 await daoApi.invoke('m/Plan/addFact', [planId, stPlanFact])
             }
 
@@ -183,6 +232,12 @@ export default {
                 frame: '/login'
             })
             return
+        }
+
+        // Для обеспечения возможности добавлять слова в еще не созданный план
+        if (!this.planId) {
+            let planText = apx.date.toDisplayStr(apx.date.today())
+            this.plan = {planText: "Уровень " + planText}
         }
     },
 

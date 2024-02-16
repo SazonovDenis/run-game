@@ -201,6 +201,9 @@ export default {
             this.localState = await gameplay.loadLastGame()
         }
 
+        if (!this.localState.game) {
+            return
+        }
 
         // --- Подготовим возможность сортировки по порядку выдачи заданий, но с группировкой по фактам
 

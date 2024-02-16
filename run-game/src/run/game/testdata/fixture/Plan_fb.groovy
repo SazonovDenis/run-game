@@ -61,51 +61,5 @@ class Plan_fb extends BaseFixtureBuilder {
     }
 
 
-    /**
-     *
-     * @param planName
-     * @param fileName
-     * @param useSameItemsAsFalse =true - использовать слова из плана в качестве вариантов
-     * неправильного ответа; =false - варианты неправильного ответа будут подобраны из похожих слов
-     */
-/*
-    long createPlanFromFile_spelling(String planName, String fileName, boolean useSameItemsAsFalse) {
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
-        Item_list itemList = mdb.create(Item_list)
-
-        // Ищем слова из файла среди словарных слов
-        Store items = itemList.loadBySpelling(fileName)
-
-        //
-        Collection<Long> itemsFalse = null
-        if (useSameItemsAsFalse) {
-            itemsFalse = items
-        }
-
-        //
-        return planCreator.createPlan(planName, items, itemsFalse, RgmDbConst.DataType_word_spelling, RgmDbConst.DataType_word_translate, 10)
-    }
-*/
-
-/*
-    long createPlanFromFile_sound(String planName, String fileName, boolean useSameItemsAsFalse) {
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
-        RgmTools rgmTools = mdb.create(RgmTools)
-
-        // Ищем слова из файла среди словарных слов
-        Collection<Long> items = new ArrayList<>()
-        Collection<String> wordsNotFound = new ArrayList<>()
-        rgmTools.loadItemsFromTextFile(fileName, items, wordsNotFound)
-
-        //
-        Collection<Long> itemsFalse = null
-        if (useSameItemsAsFalse) {
-            itemsFalse = items
-        }
-
-        //
-        return planCreator.createPlan(planName, items, itemsFalse, RgmDbConst.DataType_word_sound, RgmDbConst.DataType_word_translate, 5)
-    }
-*/
 
 }

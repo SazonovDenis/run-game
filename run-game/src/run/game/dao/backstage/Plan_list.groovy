@@ -51,20 +51,23 @@ class Plan_list extends RgmMdbUtils {
         //
         SqlFilter filter = SqlFilter.create(mdb, sqlPlansUsr(), params)
         //
+        filter.addWhere("isPublic", "equal")
         filter.addWhere("isHidden", "equal")
-        //
         filter.addWhere("plan", "equal")
+
         //
         SqlFilterBuilder part_public = { SqlFilterContext ctx ->
             ctx.addPart("accessMode", "and (isOwner = 0 and isAllowed = 0 and isPublic = 1)")
         }
-        filter.addWhere("isPublic", part_public)
+        filter.addWhere("isNotMy", part_public)
+
         //
         SqlFilterBuilder part_private = { SqlFilterContext ctx ->
             ctx.addPart("accessMode", "and (isOwner = 1 or isAllowed = 1)")
         }
         filter.addWhere("isPrivate", part_private)
 
+        //
         filter.load(res)
 
         //

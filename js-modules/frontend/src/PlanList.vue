@@ -23,13 +23,13 @@
 
                     <div class="row absolute-bottom plan-item-info">
                         <div class="plan-item-added-info">
-                            <rgm-icon v-if="plan.added"
+                            <rgm-icon v-if="plan.isAllowed"
                                       bg-color="white"
                                       color="green"
                                       name="star"
                                       text="Добавлен"
                             />
-                            <rgm-icon v-if="!plan.added"
+                            <rgm-icon v-if="!plan.isAllowed"
                                       bg-color="white"
                                       color="grey-5"
                                       name="star"
@@ -74,6 +74,7 @@ import gameplay from "./gameplay"
 import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
 import RgmIcon from "./comp/RgmIcon"
+import {daoApi} from "run-game-frontend/src/dao"
 
 export default {
 
@@ -92,11 +93,18 @@ export default {
             }
         },
 
-        onClickStar(plan) {
-            if (plan.added) {
-                plan.added = false
+        async onClickStar(plan) {
+            if (plan.isAllowed) {
+                plan.isAllowed = false
             } else {
-                plan.added = true
+                plan.isAllowed = true
+            }
+
+            //
+            if (plan.isAllowed) {
+                await daoApi.invoke('m/Plan/addUsrPlan', [plan.id])
+            } else {
+                await daoApi.invoke('m/Plan/delUsrPlan', [plan.id])
             }
         },
 

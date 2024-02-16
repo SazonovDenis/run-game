@@ -11,10 +11,11 @@
         -->
         <field name="text" parent="string" size="200" title="Название плана"/>
 
-        <!--@
-        Так помечаются планы, доступные для всех пользователей
-        -->
-        <field name="isPublic" parent="boolean" title="План общедоступный"/>
+        <field name="isPublic" parent="boolean" title="План общедоступный">
+            <!--@
+            Так помечаются планы, доступные для всех пользователей
+            -->
+        </field>
     </domain>
 
 

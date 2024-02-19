@@ -3,12 +3,20 @@ package run.game.dao.ocr
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.process.*
+import jandcode.commons.stopwatch.*
+import org.slf4j.*
 import run.game.dao.*
 
 class Ocr extends RgmMdbUtils {
 
 
+    protected static Logger log = LoggerFactory.getLogger(Ocr.class)
+
+
     public List parseStill(String imgBase64) {
+        Stopwatch sw = new DefaultStopwatch("ocr.parseStill")
+        sw.start()
+
         // Строку base64
         int pos = imgBase64.indexOf(",") + 1
         String imgStr = imgBase64.substring(pos)
@@ -28,9 +36,15 @@ class Ocr extends RgmMdbUtils {
 
         // Вернем
         String[] itemsText = text.split()
+        List res = itemsText.toList()
 
         //
-        return itemsText.toList()
+        if (log.isInfoEnabled()) {
+            log.info(sw.toString())
+        }
+
+        //
+        return res
     }
 
 

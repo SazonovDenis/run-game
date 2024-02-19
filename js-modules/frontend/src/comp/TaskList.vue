@@ -131,11 +131,11 @@ export default {
         },
 
         itemMenuColor(menuItem, taskItem) {
-            if (menuItem.itemMenuColor) {
-                if (menuItem.itemMenuColor instanceof Function) {
-                    return menuItem.itemMenuColor(taskItem)
+            if (menuItem.color) {
+                if (menuItem.color instanceof Function) {
+                    return menuItem.color(taskItem)
                 } else {
-                    return menuItem.itemMenuColor
+                    return menuItem.color
                 }
             } else {
                 return "black"
@@ -173,30 +173,6 @@ export default {
             }
         },
 
-        getKnownBadColor(isKnownBad) {
-            if (isKnownBad) {
-                return "yellow-8"
-            } else {
-                return "grey-5"
-            }
-        },
-
-        getKnownGoodColor(isKnownGood) {
-            if (isKnownGood) {
-                return "yellow-8"
-            } else {
-                return "grey-5"
-            }
-        },
-
-        getHiddenColor(isHidden) {
-            if (isHidden) {
-                return "red-6"
-            } else {
-                return "grey-7"
-            }
-        },
-
         getClassAnswerResult(task) {
             if (task.wasTrue) {
                 return "was-true"
@@ -216,33 +192,6 @@ export default {
             } else {
                 return this.filter(task)
             }
-        },
-
-        itemHiddenToggle(task) {
-            task.isHidden = !task.isHidden
-            if (task.isHidden) {
-                task.isKnownGood = false
-                task.isKnownBad = false
-            }
-            ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
-        },
-
-        itemKnownBadToggle(task) {
-            task.isKnownBad = !task.isKnownBad
-            if (task.isKnownBad) {
-                task.isHidden = false
-                task.isKnownGood = false
-            }
-            ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
-        },
-
-        itemKnownGoodToggle(task) {
-            task.isKnownGood = !isKnownGood
-            if (task.isKnownGood) {
-                task.isHidden = false
-                task.isKnownBad = false
-            }
-            ctx.gameplay.api_saveUsrFact(task.factQuestion, task.factAnswer, task)
         },
 
     },

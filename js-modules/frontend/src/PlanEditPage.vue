@@ -85,7 +85,8 @@
                 :showEdit="true"
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
-                :filter="filter"/>
+                :filter="filter"
+            />
 
         </div>
 
@@ -181,10 +182,15 @@ export default {
             itemsDel: [],
             itemsMenu: [
                 {
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
+                {
                     icon: this.itemDeleteMenuIcon,
-                    itemMenuColor: this.itemDeleteMenuColor,
+                    color: this.itemDeleteMenuColor,
                     itemMenuClick: this.itemDeleteMenuClick,
-                }
+                },
             ],
 
             dataLoaded: false,
@@ -217,12 +223,42 @@ export default {
 
     methods: {
 
+        itemHideMenuIcon(taskItem) {
+            //if (this.showHidden) {
+                if (taskItem.isHidden) {
+                    return "visibility-off"
+                } else {
+                    return "visibility"
+                }
+            //}
+        },
+
+        itemHideMenuColor(taskItem) {
+            if (taskItem.isHidden) {
+                return "grey-8"
+            } else {
+                return "grey-5"
+            }
+        },
+
+        itemHideMenuClick(taskItem) {
+            taskItem.isHidden = !taskItem.isHidden
+            //
+            if (taskItem.isHidden) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
+            }
+            //
+            ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
+
+        },
+
         itemDeleteMenuIcon(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsDel)
             if (p !== -1) {
-                return "visibility-off"
+                return "del"
             } else {
-                return "visibility"
+                return "del"
             }
         },
 
@@ -231,7 +267,7 @@ export default {
             if (p !== -1) {
                 return "red-6"
             } else {
-                return "grey-5"
+                return "grey-8"
             }
         },
 
@@ -346,30 +382,21 @@ export default {
             return auth.isAuth()
         },
 
-        async gameStart() {
-            await gameplay.gameStart(this.planId)
-
-            apx.showFrame({
-                frame: '/game', props: {}
-            })
-        },
-
-        async onSelectLevel() {
-            await gameplay.closeActiveGame()
-
-            apx.showFrame({
-                frame: '/levels',
-            })
-        },
-
-
-        async taskRemove(task) {
-            console.info("planTask: ", task)
-        },
-
         async savePlan() {
+            // Редактируем план
             let recPlan = {id: this.plan.id, text: this.plan.planText}
             await daoApi.invoke('m/Plan/upd', [recPlan])
+
+            // Удаляем слова из плана
+            let stPlanFact = []
+            for (let item of this.itemsDel) {
+                stPlanFact.push({
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+            //
+            await daoApi.invoke('m/Plan/delFact', [this.plan.id, stPlanFact])
 
             //
             apx.showFrame({

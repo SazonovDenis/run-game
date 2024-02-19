@@ -72,15 +72,19 @@ class Plan_upd extends RgmMdbUtils {
 
 
     @DaoMethod
-    void delFact(long idPlan, long idPlanFact) {
+    void delFact(long idPlan, List<Map> planFact) {
         // Проверим, что запись существует и доступна пользователю
         Plan_list list = mdb.create(Plan_list)
         list.getPlanUsr(idPlan)
 
         //
-        mdb.execQuery("delete from PlanFact where plan = :plan and id = :idPlanFact",
-                [plan: idPlan, planFact: idPlanFact]
-        )
+        for (Map mapPlanFact : planFact) {
+            mdb.deleteRec("PlanFact", [
+                    plan        : idPlan,
+                    factQuestion: mapPlanFact.get("factQuestion"),
+                    factAnswer  : mapPlanFact.get("factAnswer"),
+            ])
+        }
     }
 
 

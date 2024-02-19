@@ -19,10 +19,20 @@
         </div>
 
 
+        <div>
+            <q-toggle
+                v-if="this.hiddenCount > 0"
+                v-model="showHidden"
+                :label="'Скрытые (' + this.hiddenCount + ')'"
+            />
+        </div>
+
+
         <TaskList
             :showEdit="true"
             :tasks="items"
             :itemsMenu="itemsMenu"
+            :filter="filter"
         />
 
 
@@ -66,6 +76,10 @@ export default {
     props: {
         // Куда складывать выбранные Item
         itemsAdd: {type: Array, default: []},
+
+        itemsHideAdd: {type: Array, default: []},
+
+        itemsHideDel: {type: Array, default: []},
     },
 
     data() {
@@ -73,10 +87,15 @@ export default {
             items: [],
             itemsMenu: [
                 {
-                    icon: "quasar.stepper.done",
-                    itemMenuColor: this.itemDeleteMenuColor,
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
+                {
+                    icon: this.itemDeleteMenuIcon,
+                    color: this.itemDeleteMenuColor,
                     itemMenuClick: this.itemDeleteMenuClick,
-                }
+                },
             ],
 
             //
@@ -89,6 +108,9 @@ export default {
             video: null,
             canvas: null,
             photo: null,
+
+            showHidden: false,
+            hiddenCount: false,
 
             info: null,
         }
@@ -115,6 +137,80 @@ export default {
     },
 
     methods: {
+
+        itemHideMenuIcon(taskItem) {
+            if (taskItem.isHidden) {
+                return "visibility-off"
+            } else {
+                return "visibility"
+            }
+        },
+
+        itemHideMenuColor(taskItem) {
+            if (taskItem.isHidden) {
+                let posItemsHide = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                if (posItemsHide === -1) {
+                    return "grey-6"
+                } else {
+                    return "red-8"
+                }
+            } else {
+                let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                if (posItemsHideDel === -1) {
+                    return "grey-6"
+                } else {
+                    return "red-8"
+                }
+            }
+        },
+
+        itemHideMenuClick(taskItem) {
+            taskItem.isHidden = !taskItem.isHidden
+            //
+            if (taskItem.isHidden) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
+            }
+            //
+            //ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
+
+            //
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+
+            //
+            if (taskItem.isHidden) {
+                if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
+                    this.itemsHideAdd.push(taskItem)
+                }
+                if (posItemsHideDel !== -1) {
+                    this.itemsHideDel.splice(posItemsHideDel, 1)
+                }
+                if (posItemsAdd !== -1) {
+                    this.itemsAdd.splice(posItemsAdd, 1)
+                }
+            } else {
+                if (posItemsHideAdd !== -1) {
+                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                }
+                if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                    this.itemsHideDel.push(taskItem)
+                }
+            }
+
+        },
+
+
+        itemDeleteMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "quasar.stepper.done"
+            } else {
+                return "add"
+            }
+        },
+
         itemDeleteMenuColor(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
@@ -130,9 +226,23 @@ export default {
                 this.itemsAdd.splice(p, 1)
             } else {
                 this.itemsAdd.push(taskItem)
+                //
+                if (taskItem.isHidden) {
+                    this.itemHideMenuClick(taskItem)
+                }
             }
         },
 
+
+        /* =============================== */
+
+        filter(planTask) {
+            if (planTask.isHidden && !this.showHidden) {
+                return false
+            }
+
+            return true
+        },
 
         /* =============================== */
 
@@ -231,6 +341,15 @@ export default {
                 let resApi = await daoApi.loadStore('m/Game/findStill', [dataImage])
                 //
                 this.items = resApi.records
+
+                //
+                this.hiddenCount = 0
+                for (let item of this.items) {
+                    if (item.isHidden) {
+                        this.hiddenCount = this.hiddenCount + 1
+                    }
+                }
+
 
             } else {
                 this.clearphoto();

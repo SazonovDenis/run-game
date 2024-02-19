@@ -92,7 +92,9 @@
                 </q-btn-dropdown>
 
 
-                <q-toggle v-model="showHidden" label="Скрытые"/>
+                <!--
+                                <q-toggle v-model="showHidden" label="Скрытые"/>
+                -->
 
             </div>
 
@@ -101,7 +103,8 @@
                 :showEdit="true"
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
-                :filter="filter"/>
+                :filter="filter"
+            />
 
 
             <q-page-sticky
@@ -143,7 +146,6 @@ import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
-import utils from "./utils"
 
 export default {
     name: "PlanPage",
@@ -174,11 +176,13 @@ export default {
 
             itemsDel: [],
             itemsMenu: [
-                {
-                    icon: this.itemDeleteMenuIcon,
-                    itemMenuColor: this.itemDeleteMenuColor,
-                    itemMenuClick: this.itemDeleteMenuClick,
-                }
+                /*
+                                {
+                                    icon: this.itemHideMenuIcon,
+                                    color: this.itemHideMenuColor,
+                                    itemMenuClick: this.itemHideMenuClick,
+                                },
+                */
             ],
 
             dataLoaded: false,
@@ -200,7 +204,9 @@ export default {
                 ratingAsc: "quasar.arrow.down",
             },
 
-            showHidden: false,
+            /*
+                        showHidden: false,
+            */
             filterText: null,
         }
     },
@@ -213,31 +219,31 @@ export default {
 
     methods: {
 
-        itemDeleteMenuIcon(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
+        itemHideMenuIcon(taskItem) {
+            if (taskItem.isHidden) {
                 return "visibility-off"
             } else {
                 return "visibility"
             }
         },
 
-        itemDeleteMenuColor(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                return "red-6"
+        itemHideMenuColor(taskItem) {
+            if (taskItem.isHidden) {
+                return "red-3"
             } else {
                 return "grey-5"
             }
         },
 
-        itemDeleteMenuClick(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                this.itemsDel.splice(p, 1)
-            } else {
-                this.itemsDel.push(taskItem)
+        itemHideMenuClick(taskItem) {
+            taskItem.isHidden = !taskItem.isHidden
+            //
+            if (taskItem.isHidden) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
             }
+            //
+            ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
         },
 
 
@@ -356,11 +362,6 @@ export default {
             apx.showFrame({
                 frame: '/levels',
             })
-        },
-
-
-        async taskRemove(task) {
-            console.info("planTask: ", task)
         },
 
         onPlanEdit() {

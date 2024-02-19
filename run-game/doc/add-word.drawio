@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-02-09T09:33:14.875Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.11 Chrome/114.0.5735.289 Electron/25.9.8 Safari/537.36" etag="eJgRJLvHKXs-4piRegHl" version="22.1.11" type="device">
+<mxfile host="Electron" modified="2024-02-19T13:55:35.854Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="uy4G1-z7NIDDNNJkYTd6" version="23.1.5" type="device">
   <diagram name="Page-1" id="2ZXnxln7qE2Y-TCDfevn">
-    <mxGraphModel dx="1846" dy="1220" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1576" dy="1037" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -693,6 +693,15 @@
         </mxCell>
         <mxCell id="h-nfmt_-MIfsoqwDkyqW-180" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=data:image/png,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAB1UlEQVR4Xr2UO0sDQRSFD2ihhWJhoWAjqOAvsBUrMYVYaGEjNjYJAUGwEsQHFoqP+FgXETuL/AEVBME/YGMpWFnYaKIJxmh2PHdMJtnZdU2jFw47e+fcb2Z2Zhb4z1AuOtUhLqmrGvXavrqDwBgByicX47bvx1AnaDPtffQTcBYASo59xneMlkrbF4Q10XxP3XIWu3wWQ2AVSV+KutE1rLV5sryFkELvYwOKOlcOVvl+IbmAj7V+2BG62JGzTA+fKcSeE8hR18brYEj6LGhOGFWgiynL4Emh9GUSOCXQy8yh2we1Z0qGAWqTi0l2lMqGi0q+uI4dz9E5+W7Txv+9fMmXpLaSN6E20WxGdbGic4to5Hu+sIwCleXMipkkJl7i6BNPGehJrc2LAr6/LUFRJe8AisvX4gDv0cCQJT/FMZJfYM7RA72VdjD3HMcogYufW3g0S3YwZsMCm1JcwwwLX6nH7Cx6VBoNxh/cFGkPV4Ehx8bbw0duHoVsHAPGKN7wY/PEXHut78eDrWQ35VBHH+ykD6aB1asn10muVdTVy1Pb1J2Sq8rNs3k6ai96xM8hzU+kD7l8V5VCa5XwS3Ap4wGgg0HbV3cQ0Kv8P9dLzrzD9v1pfAGiYAtrHyn5OQAAAABJRU5ErkJggg==;" parent="1" vertex="1">
           <mxGeometry x="46" y="725" width="19" height="19" as="geometry" />
+        </mxCell>
+        <mxCell id="xONDaJO8Ah_RI7K4c6C6-1" value="Удаление слов из уровня" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="380" y="870" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="xONDaJO8Ah_RI7K4c6C6-2" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1.008;exitY=0.478;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="h-nfmt_-MIfsoqwDkyqW-133" target="xONDaJO8Ah_RI7K4c6C6-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="490" y="850" as="sourcePoint" />
+            <mxPoint x="540" y="800" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

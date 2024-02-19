@@ -8,7 +8,11 @@
 
         <div v-if="addMode==='text'">
 
-            <TextInputText :itemsAdd="itemsAdd">
+            <TextInputText
+                :itemsAdd="itemsAdd"
+                :itemsHideAdd="itemsHideAdd"
+                :itemsHideDel="itemsHideDel"
+            >
 
             </TextInputText>
 
@@ -17,7 +21,11 @@
 
         <div v-if="addMode==='photo'">
 
-            <TextInputPhoto :itemsAdd="itemsAdd">
+            <TextInputPhoto
+                :itemsAdd="itemsAdd"
+                :itemsHideAdd="itemsHideAdd"
+                :itemsHideDel="itemsHideDel"
+            >
 
             </TextInputPhoto>
 
@@ -35,7 +43,23 @@
             <TaskList
                 :showEdit="true"
                 :tasks="itemsAdd"
-                :itemsMenu="itemsMenu"
+                :itemsMenu="itemsMenuAdd"
+            />
+
+        </div>
+
+        <div v-if="addMode==='viewItemsHide'">
+
+            <q-input v-if="!planId" class="q-mb-sm"
+                     dense outlined
+                     label="Название плана"
+                     v-model="plan.planText"
+            />
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsHideAdd"
+                :itemsMenu="itemsMenuHide"
             />
 
         </div>
@@ -65,12 +89,25 @@
                                 &nbsp;
                             </div>
 
+                            <template v-if="itemsHideAdd.length > 0 || itemsHideDel.length > 0">
+
+                                <div
+                                    class="q-ma-sm"
+                                    style="margin: auto;"
+                                    @click="clickItemsHideText()">
+                                    <span class="rgm-link-soft"> {{
+                                            itemsHideText
+                                        }}</span>
+                                </div>
+
+                            </template>
+
                             <template v-if="itemsAdd.length > 0">
 
-                                <div _v-if="addMode !== 'viewItemsAdd'"
-                                     class="q-ma-sm"
-                                     style="margin: auto;"
-                                     @click="clickItemStateText()">
+                                <div
+                                    class="q-ma-sm"
+                                    style="margin: auto;"
+                                    @click="clickItemStateText()">
                                     <span class="rgm-link-soft"> {{
                                             itemStateText
                                         }}</span>
@@ -142,13 +179,26 @@ export default {
     data() {
         return {
             addMode: "text",
+
             plan: {},
             itemsAdd: [],
-            itemsMenu: [
+            itemsHideAdd: [],
+            itemsHideDel: [],
+
+            itemsMenuAdd: [
                 {
-                    icon: "clear",
+                    icon: this.itemDeleteMenuIcon,
+                    color: this.itemDeleteMenuColor,
                     itemMenuClick: this.itemDeleteMenuClick,
-                }
+                },
+            ],
+
+            itemsMenuHide: [
+                {
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
             ],
         }
     },
@@ -174,22 +224,95 @@ export default {
         },
 
         itemStateText() {
-            return "Добавлено слов: " + this.itemsAdd.length
-        }
+            return "Добавлено: " + this.itemsAdd.length
+        },
+
+        itemsHideText() {
+            let s = ""
+
+            if (this.itemsHideAdd.length > 0) {
+                s = s + "скрыто: " + this.itemsHideAdd.length
+            }
+
+            if (this.itemsHideDel.length > 0) {
+                if (s.length > 0) {
+                    s = s + ", "
+                }
+                s = s + "показано: " + this.itemsHideDel.length
+            }
+
+            //
+            s = s.charAt(0).toUpperCase() + s.slice(1);
+
+            return s
+        },
 
     },
 
     methods: {
+
+        itemHideMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            if (p !== -1) {
+                return "visibility-off"
+            } else {
+                return "visibility"
+            }
+        },
+
+        itemHideMenuColor(isHidden) {
+            if (isHidden) {
+                return "red-6"
+            } else {
+                return "grey-7"
+            }
+        },
+
+        itemHideMenuClick(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            if (p !== -1) {
+                this.itemsHideAdd.splice(p, 1)
+            } else {
+                this.itemsHideAdd.push(taskItem)
+            }
+        },
+
+        itemDeleteMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "clear"
+            } else {
+                return "add"
+            }
+        },
+
+        itemDeleteMenuColor(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "grey-7"
+            } else {
+                return "grey-7"
+            }
+        },
 
         itemDeleteMenuClick(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
                 this.itemsAdd.splice(p, 1)
             }
+
+            //
+            if (this.itemsAdd.length === 0) {
+                this.addMode = "text"
+            }
         },
 
         clickItemStateText() {
             this.addMode = "viewItemsAdd"
+        },
+
+        clickItemsHideText() {
+            this.addMode = "viewItemsHide"
         },
 
         btnNextClick() {
@@ -217,6 +340,7 @@ export default {
                 await daoApi.invoke('m/Plan/addFact', [planId, stPlanFact])
             }
 
+            //
             apx.showFrame({
                 frame: '/plan', props: {planId: planId}
             })

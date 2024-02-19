@@ -9,10 +9,11 @@ import jandcode.core.store.*;
 import run.game.dao.*;
 import run.game.dao.backstage.*;
 import run.game.model.service.*;
+import run.game.util.*;
 
 
 /**
- * Менеджер/фабрика кубов
+ * Хранилище разной информации, закешированной при старте.
  */
 public class WordCacheServiceImpl extends BaseModelMember implements WordCacheService {
 
@@ -23,6 +24,7 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     private StoreIndex idxFacts;
     private Store stFactSpelling;
     private Store stFactTranslate;
+    private StoreIndex idxOcrStopWords;
 
     @Override
     protected void onConfigure(BeanConfig cfg) throws Exception {
@@ -52,6 +54,11 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
         return stFactTranslate;
     }
 
+    @Override
+    public StoreIndex getIdxOcrStopWords() {
+        return idxOcrStopWords;
+    }
+
 
     /**
      * Загружает список и готовит его к работе.
@@ -67,6 +74,12 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
         stFactSpelling.copyTo(stFact);
         stFactTranslate.copyTo(stFact);
         idxFacts = stFact.getIndex("factValue");
+
+        // Стоп-слова при разборе сфотографировании текста
+        Store stOcrStopWords = mdb.createStore("OcrStopWords");
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils.class);
+        utils.addFromCsv(stOcrStopWords, "res:run/game/dao/game/OcrStopWords.csv");
+        idxOcrStopWords = stOcrStopWords.getIndex("value");
     }
 
 

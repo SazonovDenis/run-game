@@ -60,7 +60,9 @@
 
 
     <!-- Список заданий (пары фактов вопрос+ответ) -->
-    <domain name="PlanFact.list" parent="id">
+    <domain name="PlanFact.list">
+        <field name="item" parent="Item/ref"/>
+
         <!-- Факт -->
         <field name="factQuestion" parent="Fact/ref"/>
         <field name="factAnswer" parent="Fact/ref"/>

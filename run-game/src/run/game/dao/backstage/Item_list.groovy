@@ -119,7 +119,7 @@ class Item_list extends BaseMdbUtils {
         StoreIndex idxFacts = wordService.getIdxFacts()
 
 
-        // Загрузим что заказали в itemsText
+        // Отберем среди itemsText те слова, котрые мы знаем (idxFacts)
         Set<String> setItemsText = new HashSet<>()
         for (String itemText : itemsText) {
             // Повторы не нужны
@@ -138,6 +138,8 @@ class Item_list extends BaseMdbUtils {
         }
 
 
+/*
+        todo: теги пока не нужны и не используются
         // Загрузим тэги
         Store stItemTag = mdb.loadQuery(sqlItemTag(stItem.getUniqueValues("id")))
         Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "item")
@@ -154,6 +156,7 @@ class Item_list extends BaseMdbUtils {
                 recItem.setValue("itemTag", mapItemTag)
             }
         }
+*/
 
 
         //

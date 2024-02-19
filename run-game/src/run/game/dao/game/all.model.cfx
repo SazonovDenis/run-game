@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
+    <domain name="OcrStopWords">
+
+        <field name="value" parent="string"/>
+
+    </domain>
 
 </root>

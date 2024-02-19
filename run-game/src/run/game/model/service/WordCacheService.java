@@ -10,7 +10,6 @@ public interface WordCacheService extends Comp {
 
 
     /**
-     *
      * Известные факты (индекс по значению)
      */
     StoreIndex getIdxFacts();
@@ -18,5 +17,12 @@ public interface WordCacheService extends Comp {
     Store getStFactSpelling();
 
     Store getStFactTranslate();
+
+
+    /**
+     * Стоп-слова при разборе сфотографировании текста
+     */
+    StoreIndex getIdxOcrStopWords();
+
 
 }

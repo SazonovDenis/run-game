@@ -15,6 +15,7 @@ import kis.molap.ntbd.model.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 import run.game.dao.ocr.*
+import run.game.model.service.*
 import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
@@ -329,13 +330,35 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Ocr ocr = mdb.create(Ocr)
         List listText = ocr.parseStill(imgBase64)
 
+        // Получаем из кэша стоп-слова
+        WordCacheService wordService = mdb.getModel().bean(WordCacheService)
+        StoreIndex idxOcrStopWords = wordService.getIdxOcrStopWords()
+        // Фильтруем по стоп-словам
+        listText.removeIf(value -> idxOcrStopWords.get(value.toLowerCase()) != null)
+
         // Ищем Item по text
         Item_list itemsList = mdb.create(Item_list)
         Store stItem = itemsList.loadBySpelling(listText)
 
-        // Превратим список Item в список пар фактов
+        // Превратим список Item в список пар фактов (сгенерим комбинации)
         Set itemIds = stItem.getUniqueValues("id")
-        return loadFactList(itemIds)
+        Store stFact = loadFactList(itemIds)
+
+        // Обеспечим порядок, как в исходном тексте
+        Map<Object, List<StoreRecord>> factsByItems = StoreUtils.collectGroupBy_records(stFact, ["item"])
+        Store stFactRes = mdb.createStore("PlanFact.list")
+        for (StoreRecord recItem : stItem) {
+            String item = recItem.getString("id")
+            List<StoreRecord> lstItemFacts = factsByItems.get(item)
+            if (lstItemFacts != null) {
+                for (StoreRecord recFact : lstItemFacts) {
+                    stFactRes.add(recFact)
+                }
+            }
+        }
+
+        //
+        return stFactRes
     }
 
 

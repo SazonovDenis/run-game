@@ -9,12 +9,35 @@
         <div v-if="addMode==='text'">
 
             <TextInputText
-                :itemsAdd="itemsAdd"
-                :itemsHideAdd="itemsHideAdd"
-                :itemsHideDel="itemsHideDel"
+                :items="items"
+                :itemsOnChange="itemsOnChange"
             >
 
+                <!--
+                                :itemsAdd="itemsAdd"
+                                :itemsHideAdd="itemsHideAdd"
+                                :itemsHideDel="itemsHideDel"
+                -->
+
+                <template v-slot:toolbar>
+                    <q-toggle
+                        v-if="this.hiddenCount > 0"
+                        v-model="showHidden"
+                        :label="'Скрытые (' + this.hiddenCount + ')'"/>
+
+                </template>
+
+
             </TextInputText>
+
+            <TaskList
+                :showEdit="true"
+                :tasks="items"
+                :itemsMenu="itemsMenu"
+                :filter="filter"
+            >
+
+            </TaskList>
 
         </div>
 
@@ -22,12 +45,26 @@
         <div v-if="addMode==='photo'">
 
             <TextInputPhoto
-                :itemsAdd="itemsAdd"
-                :itemsHideAdd="itemsHideAdd"
-                :itemsHideDel="itemsHideDel"
+                :items="items"
+                :itemsOnChange="itemsOnChange"
             >
 
+                <template v-slot:toolbar>
+                    <q-toggle
+                        v-if="this.hiddenCount > 0"
+                        v-model="showHidden"
+                        :label="'Скрытые (' + this.hiddenCount + ')'"/>
+
+                </template>
+
             </TextInputPhoto>
+
+            <TaskList
+                :showEdit="true"
+                :tasks="items"
+                :itemsMenu="itemsMenu"
+                :filter="filter"
+            />
 
         </div>
 
@@ -48,17 +85,22 @@
 
         </div>
 
-        <div v-if="addMode==='viewItemsHide'">
-
-            <q-input v-if="!planId" class="q-mb-sm"
-                     dense outlined
-                     label="Название плана"
-                     v-model="plan.planText"
-            />
+        <div v-if="addMode==='viewItemsHideAdd'">
 
             <TaskList
                 :showEdit="true"
                 :tasks="itemsHideAdd"
+                :itemsMenu="itemsMenuHide"
+            />
+
+        </div>
+
+
+        <div v-if="addMode==='viewItemsHideDel'">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsHideDel"
                 :itemsMenu="itemsMenuHide"
             />
 
@@ -76,12 +118,12 @@
                         <q-btn v-if="this.addMode !== 'text'"
                                class="q-ma-xs"
                                icon="quasar.editor.size"
-                               @click="this.addMode='text'"
+                               @click="this.setAddMode('text')"
                         />
                         <q-btn v-if="this.addMode !== 'photo'"
                                class="q-ma-xs"
                                icon="image"
-                               @click="this.addMode='photo'"
+                               @click="this.setAddMode('photo')"
                         />
 
                         <div class="row" style="flex-grow: 10; align-content: end">
@@ -89,14 +131,29 @@
                                 &nbsp;
                             </div>
 
-                            <template v-if="itemsHideAdd.length > 0 || itemsHideDel.length > 0">
+                            <template
+                                v-if="itemsHideAdd.length > 0">
 
                                 <div
-                                    class="q-ma-sm"
-                                    style="margin: auto;"
-                                    @click="clickItemsHideText()">
+                                    class="q-ma-xs"
+                                    _style="margin: auto;"
+                                    @click="clickItemsHideAddText()">
                                     <span class="rgm-link-soft"> {{
-                                            itemsHideText
+                                            itemsHideAddText
+                                        }}</span>
+                                </div>
+
+                            </template>
+
+                            <template
+                                v-if="itemsHideDel.length > 0">
+
+                                <div
+                                    class="q-ma-xs"
+                                    _style="margin: auto;"
+                                    @click="clickItemsHideDelText()">
+                                    <span class="rgm-link-soft"> {{
+                                            itemsHideDelText
                                         }}</span>
                                 </div>
 
@@ -105,36 +162,38 @@
                             <template v-if="itemsAdd.length > 0">
 
                                 <div
-                                    class="q-ma-sm"
-                                    style="margin: auto;"
-                                    @click="clickItemStateText()">
+                                    class="q-ma-xs"
+                                    _style="margin: auto;"
+                                    @click="clickItemsAddText()">
                                     <span class="rgm-link-soft"> {{
-                                            itemStateText
+                                            itemsAddText
                                         }}</span>
                                 </div>
 
 
-                                <template v-if="addMode === 'viewItemsAdd'">
+                                <!--
+                                                                <template v-if="addMode === 'viewItemsAdd'">
 
-                                    <q-btn
-                                        no-caps
-                                        class="q-ma-sm"
-                                        :label="btnSaveTitle"
-                                        @click="btnSaveClick()"
-                                    />
+                                                                    <q-btn
+                                                                        no-caps
+                                                                        class="q-ma-sm"
+                                                                        :label="btnSaveTitle"
+                                                                        @click="btnSaveClick()"
+                                                                    />
 
-                                </template>
+                                                                </template>
 
-                                <template v-else>
+                                                                <template v-else>
 
-                                    <q-btn
-                                        no-caps
-                                        class="q-ma-sm"
-                                        label="Далее"
-                                        @click="btnNextClick()"
-                                    />
+                                                                    <q-btn
+                                                                        no-caps
+                                                                        class="q-ma-sm"
+                                                                        label="Далее"
+                                                                        @click="btnNextClick()"
+                                                                    />
 
-                                </template>
+                                                                </template>
+                                -->
 
                             </template>
 
@@ -161,6 +220,8 @@ import TextInputText from "./comp/TextInputText"
 import auth from "./auth"
 import {apx} from "./vendor"
 import utils from "./utils"
+import ctx from "./gameplayCtx"
+
 
 export default {
     name: "PlanAddFactPage",
@@ -181,9 +242,27 @@ export default {
             addMode: "text",
 
             plan: {},
+            items: [],
+
             itemsAdd: [],
             itemsHideAdd: [],
             itemsHideDel: [],
+
+            showHidden: false,
+            hiddenCount: 0,
+
+            itemsMenu: [
+                {
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
+                {
+                    icon: this.itemAddMenuIcon,
+                    color: this.itemAddMenuColor,
+                    itemMenuClick: this.itemAddMenuClick,
+                },
+            ],
 
             itemsMenuAdd: [
                 {
@@ -223,26 +302,26 @@ export default {
             }
         },
 
-        itemStateText() {
+        itemsAddText() {
             return "Добавлено: " + this.itemsAdd.length
         },
 
-        itemsHideText() {
+        itemsHideAddText() {
             let s = ""
 
             if (this.itemsHideAdd.length > 0) {
-                s = s + "скрыто: " + this.itemsHideAdd.length
+                s = "Скрыто: " + this.itemsHideAdd.length
             }
+
+            return s
+        },
+
+        itemsHideDelText() {
+            let s = ""
 
             if (this.itemsHideDel.length > 0) {
-                if (s.length > 0) {
-                    s = s + ", "
-                }
-                s = s + "показано: " + this.itemsHideDel.length
+                s = s + "Показано: " + this.itemsHideDel.length
             }
-
-            //
-            s = s.charAt(0).toUpperCase() + s.slice(1);
 
             return s
         },
@@ -251,31 +330,175 @@ export default {
 
     methods: {
 
+        itemsOnChange() {
+            //console.info("itemsOnChange")
+
+            // Удобнее держать отдельную переменную this.hiddenCount
+            this.hiddenCount = 0
+            for (let item of this.items) {
+                if (item.isHidden) {
+                    this.hiddenCount = this.hiddenCount + 1
+                }
+            }
+
+            // Для новой порции слов учтем, какие мы только что скрыли и добавили
+            for (let item of this.items) {
+                let posItemsHideAdd = utils.itemPosInItems(item, this.itemsHideAdd)
+                if (posItemsHideAdd !== -1) {
+                    item.isHidden = true
+                }
+
+                let posItemsHideDel = utils.itemPosInItems(item, this.itemsHideDel)
+                if (posItemsHideDel !== -1) {
+                    item.isHidden = false
+                }
+
+                let posItemsAdd = utils.itemPosInItems(item, this.itemsAdd)
+                if (posItemsAdd !== -1) {
+                    item.isInItemsAdd = true
+                }
+            }
+
+        },
+
+        filter(taskItem) {
+            if (!this.showHidden && taskItem.isHidden) {
+                return false
+            }
+
+            return true
+        },
+
+        /* -------------------------------- */
+
         itemHideMenuIcon(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-            if (p !== -1) {
+            if (taskItem.isHidden) {
                 return "visibility-off"
             } else {
                 return "visibility"
             }
         },
 
-        itemHideMenuColor(isHidden) {
-            if (isHidden) {
-                return "red-6"
+        itemHideMenuColor(taskItem) {
+            if (taskItem.isHidden) {
+                let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                if (p !== -1) {
+                    return "red-6"
+                } else {
+                    return "grey-7"
+                }
+            } else {
+                let p = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                if (p !== -1) {
+                    return "red-6"
+                } else {
+                    return "grey-7"
+                }
+            }
+        },
+
+        itemHideMenuClick(taskItem) {
+            taskItem.isHidden = !taskItem.isHidden
+            //
+            if (taskItem.isHidden) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
+            }
+
+
+            //
+            if (taskItem.isHidden) {
+                this.hiddenCount = this.hiddenCount + 1
+            } else {
+                this.hiddenCount = this.hiddenCount - 1
+            }
+
+
+            //
+            ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
+
+
+            //
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+
+            //
+            if (taskItem.isHidden) {
+                if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
+                    this.itemsHideAdd.push(taskItem)
+                }
+                if (posItemsHideDel !== -1) {
+                    this.itemsHideDel.splice(posItemsHideDel, 1)
+                }
+                if (posItemsAdd !== -1) {
+                    this.itemsAdd.splice(posItemsAdd, 1)
+                    taskItem.isInItemsAdd = false
+                }
+            } else {
+                if (posItemsHideAdd !== -1) {
+                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                }
+                if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                    this.itemsHideDel.push(taskItem)
+                }
+            }
+
+
+            //
+            if (this.itemsHideAdd.length === 0 && this.addMode === "viewItemsHideAdd") {
+                this.setAddMode("text")
+            }
+            //
+            if (this.itemsHideDel.length === 0 && this.addMode === "viewItemsHideDel") {
+                this.setAddMode("text")
+            }
+        },
+
+        /* -------------------------------- */
+
+        itemAddMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "quasar.stepper.done"
+            } else {
+                return "add"
+            }
+        },
+
+        itemAddMenuColor(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "green-6"
             } else {
                 return "grey-7"
             }
         },
 
-        itemHideMenuClick(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+        itemAddMenuClick(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
-                this.itemsHideAdd.splice(p, 1)
+                this.itemsAdd.splice(p, 1)
             } else {
-                this.itemsHideAdd.push(taskItem)
+                this.itemsAdd.push(taskItem)
+
+                //
+                if (taskItem.isHidden) {
+                    let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                    let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                    if (posItemsHideAdd !== -1) {
+                        this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                    }
+                    if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                        this.itemsHideDel.push(taskItem)
+                    }
+                }
+                //
+                taskItem.isHidden = false
             }
         },
+
+        /* -------------------------------- */
 
         itemDeleteMenuIcon(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
@@ -303,20 +526,36 @@ export default {
 
             //
             if (this.itemsAdd.length === 0) {
-                this.addMode = "text"
+                this.setAddMode("text")
             }
         },
 
-        clickItemStateText() {
-            this.addMode = "viewItemsAdd"
+        /* -------------------------------- */
+
+        clickItemsAddText() {
+            this.setAddMode("viewItemsAdd")
         },
 
-        clickItemsHideText() {
-            this.addMode = "viewItemsHide"
+        clickItemsHideAddText() {
+            this.setAddMode("viewItemsHideAdd")
         },
 
-        btnNextClick() {
-            this.addMode = "viewItemsAdd"
+        clickItemsHideDelText() {
+            this.setAddMode("viewItemsHideDel")
+        },
+
+        /*
+                btnNextClick() {
+                    this.addMode = "viewItemsAdd"
+                },
+        */
+
+        setAddMode(addMode) {
+            if (addMode !== this.addMode) {
+                this.items.length = 0
+                this.itemsOnChange()
+            }
+            this.addMode = addMode
         },
 
         async btnSaveClick() {

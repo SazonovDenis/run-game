@@ -20,22 +20,20 @@
 
                 <div class="row q-mb-sm">
 
-                    <div class="q-mr-sm">
 
-                        <q-input
-                            style="max-width: 9em"
-                            dense outlined clearable
-                            v-model="filterText"
-                            placeholder="Поиск"
-                        >
+                    <q-input class="q-mr-sm"
+                             style="max-width: 9em"
+                             dense outlined clearable
+                             v-model="filterText"
+                             placeholder="Поиск"
+                    >
 
-                            <template v-slot:append v-if="!filterText">
-                                <q-icon name="search"/>
-                            </template>
+                        <template v-slot:append v-if="!filterText">
+                            <q-icon name="search"/>
+                        </template>
 
-                        </q-input>
+                    </q-input>
 
-                    </div>
 
                     <q-btn-dropdown
                         @click="sortFieldMenu=true"
@@ -140,7 +138,6 @@
 <script>
 
 import {apx} from "./vendor"
-import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
@@ -224,13 +221,11 @@ export default {
     methods: {
 
         itemHideMenuIcon(taskItem) {
-            //if (this.showHidden) {
-                if (taskItem.isHidden) {
-                    return "visibility-off"
-                } else {
-                    return "visibility"
-                }
-            //}
+            if (taskItem.isHidden) {
+                return "visibility-off"
+            } else {
+                return "visibility"
+            }
         },
 
         itemHideMenuColor(taskItem) {

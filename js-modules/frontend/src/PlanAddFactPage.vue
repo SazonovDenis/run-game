@@ -6,18 +6,33 @@
         :showFooter="true">
 
 
+        <div v-if="addMode==='editPlan'">
+
+            <q-input class="q-mb-sm"
+                     dense outlined
+                     label="Название плана"
+                     v-model="plan.planText"
+            />
+
+            <TaskList
+                v-if="itemsExt.length > 0"
+                :showEdit="true"
+                :tasks="itemsExt"
+                :itemsMenu="itemsMenu_modeEdit"
+                :filter="filter"
+            >
+
+            </TaskList>
+
+        </div>
+
+
         <div v-if="addMode==='text'">
 
             <TextInputText
                 :items="items"
                 :itemsOnChange="itemsOnChange"
             >
-
-                <!--
-                                :itemsAdd="itemsAdd"
-                                :itemsHideAdd="itemsHideAdd"
-                                :itemsHideDel="itemsHideDel"
-                -->
 
                 <template v-slot:toolbar>
                     <q-toggle
@@ -31,9 +46,10 @@
             </TextInputText>
 
             <TaskList
+                v-if="items.length > 0"
                 :showEdit="true"
                 :tasks="items"
-                :itemsMenu="itemsMenu"
+                :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filter"
             >
 
@@ -60,9 +76,10 @@
             </TextInputPhoto>
 
             <TaskList
+                v-if="items.length > 0"
                 :showEdit="true"
                 :tasks="items"
-                :itemsMenu="itemsMenu"
+                :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filter"
             />
 
@@ -81,6 +98,16 @@
                 :showEdit="true"
                 :tasks="itemsAdd"
                 :itemsMenu="itemsMenuAdd"
+            />
+
+        </div>
+
+        <div v-if="addMode==='viewItemsDel'">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsDel"
+                :itemsMenu="itemsMenu_modeEdit"
             />
 
         </div>
@@ -115,16 +142,35 @@
 
 
                     <div class="row " style="width: 100%">
-                        <q-btn v-if="this.addMode !== 'text'"
-                               class="q-ma-xs"
-                               icon="quasar.editor.size"
-                               @click="this.setAddMode('text')"
-                        />
-                        <q-btn v-if="this.addMode !== 'photo'"
-                               class="q-ma-xs"
-                               icon="image"
-                               @click="this.setAddMode('photo')"
-                        />
+                        <div
+                            style="position: absolute; top: -3em;">
+
+                            <q-btn v-if="this.addMode !== 'editPlan'"
+                                   round
+                                   color="purple-4"
+                                   class="q-ma-xs"
+                                   icon="edit"
+                                   size="1.2em"
+                                   @click="this.setAddMode('editPlan')"
+                            />
+
+                            <q-btn v-if="this.addMode !== 'text'"
+                                   round
+                                   color="green-7"
+                                   class="q-ma-xs"
+                                   size="1.2em"
+                                   icon="quasar.editor.size"
+                                   @click="this.setAddMode('text')"
+                            />
+                            <q-btn v-if="this.addMode !== 'photo'"
+                                   round
+                                   color="yellow-9"
+                                   class="q-ma-xs"
+                                   size="1.2em"
+                                   icon="image"
+                                   @click="this.setAddMode('photo')"
+                            />
+                        </div>
 
                         <div class="row" style="flex-grow: 10; align-content: end">
                             <div style="flex-grow: 10">
@@ -140,6 +186,20 @@
                                     @click="clickItemsHideAddText()">
                                     <span class="rgm-link-soft"> {{
                                             itemsHideAddText
+                                        }}</span>
+                                </div>
+
+                            </template>
+
+                            <template
+                                v-if="itemsDel.length > 0">
+
+                                <div
+                                    class="q-ma-xs"
+                                    _style="margin: auto;"
+                                    @click="clickItemsDelText()">
+                                    <span class="rgm-link-soft"> {{
+                                            itemsDelText
                                         }}</span>
                                 </div>
 
@@ -233,6 +293,9 @@ export default {
     props: {
         planId: null,
         planText: null,
+
+        tasks: null,
+
         frameReturn: null,
         frameReturnProps: null,
     },
@@ -243,15 +306,17 @@ export default {
 
             plan: {},
             items: [],
+            itemsExt: [],
 
             itemsAdd: [],
+            itemsDel: [],
             itemsHideAdd: [],
             itemsHideDel: [],
 
             showHidden: false,
             hiddenCount: 0,
 
-            itemsMenu: [
+            itemsMenu_modeAddFact: [
                 {
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
@@ -261,6 +326,19 @@ export default {
                     icon: this.itemAddMenuIcon,
                     color: this.itemAddMenuColor,
                     itemMenuClick: this.itemAddMenuClick,
+                },
+            ],
+
+            itemsMenu_modeEdit: [
+                {
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
+                {
+                    icon: this.takeRemoveMenuIcon,
+                    color: this.takeRemoveMenuColor,
+                    itemMenuClick: this.takeRemoveMenuClick,
                 },
             ],
 
@@ -279,13 +357,16 @@ export default {
                     itemMenuClick: this.itemHideMenuClick,
                 },
             ],
+
         }
     },
 
     computed: {
 
         title() {
-            if (this.addMode === "photo") {
+            if (this.addMode === "editPlan") {
+                return "Редактирование плана"
+            } else if (this.addMode === "photo") {
                 return "Добавление слов"
             } else if (this.addMode === "text") {
                 return "Добавление слов"
@@ -304,6 +385,14 @@ export default {
 
         itemsAddText() {
             return "Добавлено: " + this.itemsAdd.length
+        },
+
+        itemsDelText() {
+            if (this.itemsDel.length > 0) {
+                return "Удалено: " + this.itemsDel.length
+            } else {
+                return ""
+            }
         },
 
         itemsHideAddText() {
@@ -390,9 +479,9 @@ export default {
             } else {
                 let p = utils.itemPosInItems(taskItem, this.itemsHideDel)
                 if (p !== -1) {
-                    return "red-6"
+                    return "red-5"
                 } else {
-                    return "grey-7"
+                    return "grey-6"
                 }
             }
         },
@@ -500,6 +589,35 @@ export default {
 
         /* -------------------------------- */
 
+        takeRemoveMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (p !== -1) {
+                return "del"
+            } else {
+                return "del"
+            }
+        },
+
+        takeRemoveMenuColor(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (p !== -1) {
+                return "red-6"
+            } else {
+                return "grey-8"
+            }
+        },
+
+        takeRemoveMenuClick(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (p !== -1) {
+                this.itemsDel.splice(p, 1)
+            } else {
+                this.itemsDel.push(taskItem)
+            }
+        },
+
+        /* -------------------------------- */
+
         itemDeleteMenuIcon(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
@@ -534,6 +652,10 @@ export default {
 
         clickItemsAddText() {
             this.setAddMode("viewItemsAdd")
+        },
+
+        clickItemsDelText() {
+            this.setAddMode("viewItemsDel")
         },
 
         clickItemsHideAddText() {
@@ -601,6 +723,11 @@ export default {
         if (!this.planId) {
             let planText = apx.date.toDisplayStr(apx.date.today())
             this.plan = {planText: "Уровень " + planText}
+        }
+
+        //
+        if (this.tasks) {
+            this.itemsExt = this.tasks
         }
     },
 

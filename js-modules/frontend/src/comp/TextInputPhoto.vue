@@ -10,19 +10,52 @@
             info: {{ info }}
         </div>
 
+        <div class="photo-container" :class="getClassCamera">
 
-        <div class="contentarea" @click="onPictureClick">
+            <div _class="contentarea" @click="onPictureClick">
 
-            <div :class="'video ' + getClassVideo">
-                <video id="video">Video stream not available.</video>
+                <div :class="'video ' + getClassVideo">
+                    <video id="video">Video stream not available.</video>
+                </div>
+
+                <canvas id="canvas"></canvas>
+
+                <div :class="'photo ' + getClassPhoto">
+                    <img id="photo"
+                         alt="The screen capture will appear in this box.">
+                </div>
+
             </div>
 
-            <canvas id="canvas"></canvas>
 
-            <div :class="'photo ' + getClassPhoto">
-                <img id="photo"
-                     alt="The screen capture will appear in this box.">
+            <div class="photo-btn-div">
+
+                <q-btn v-if="isCameraCapturing===true"
+                       round
+                       class="photo-btn"
+                       color="accent"
+                       icon="image"
+                       @click="onTakePicture"
+                />
+
+                <q-btn v-if="isCameraCapturing===false && dataLoaded===true"
+                       round
+                       class="photo-btn"
+                       color="primary"
+                       icon="del"
+                       @click="onNewPicture"
+                />
+
             </div>
+
+        </div>
+
+        <div :class="'photo-camera-state photo-state-wait ' + getClassCameraInit">
+            Инициализация камеры
+        </div>
+
+        <div :class="'photo-camera-state photo-state-error ' + getClassCameraInitFalil">
+            Нет доступа к камере
         </div>
 
 
@@ -41,29 +74,6 @@
 
 
         </div>
-
-
-        <!--
-                <q-page-sticky position="bottom-right" :offset="[10, 70]">
-
-                    <q-btn v-if="isCapturing===true"
-                           style="height: 4em; width: 4em;"
-                           round
-                           color="accent"
-                           icon="image"
-                           @click="onTakePicture"
-                    />
-
-                    <q-btn v-if="isCapturing===false"
-                           style="height: 4em; width: 4em;"
-                           round
-                           color="primary"
-                           icon="del"
-                           @click="onNewPicture"
-                    />
-
-                </q-page-sticky>
-        -->
 
     </div>
 
@@ -91,8 +101,13 @@ export default {
             width: 1024, // We will scale the photo width to this
             height: 0,  // This will be computed based on the input stream
 
-            wasInit: false,
-            isCapturing: null,
+            wasCameraInit: false,
+            wasCanplay: false,
+            wasCameraInitFail: false,
+            wasCameraInitOk: false,
+            isCameraCapturing: false,
+
+            dataLoaded: false,
 
             video: null,
             canvas: null,
@@ -104,8 +119,32 @@ export default {
 
     computed: {
 
+        getClassCameraInit() {
+            if (this.wasCameraInit === false) {
+                return ""
+            } else {
+                return "hidden"
+            }
+        },
+
+        getClassCameraInitFalil() {
+            if (this.wasCameraInitFail === true) {
+                return ""
+            } else {
+                return "hidden"
+            }
+        },
+
+        getClassCamera() {
+            if (this.wasCameraInitOk === true) {
+                return ""
+            } else {
+                return "hidden"
+            }
+        },
+
         getClassVideo() {
-            if (this.isCapturing === true) {
+            if (this.isCameraCapturing === true) {
                 return ""
             } else {
                 return "hidden"
@@ -113,7 +152,7 @@ export default {
         },
 
         getClassPhoto() {
-            if (this.isCapturing === false) {
+            if (this.isCameraCapturing === false) {
                 return ""
             } else {
                 return "hidden"
@@ -239,7 +278,8 @@ export default {
         /* =============================== */
 
         onPictureClick() {
-            if (this.isCapturing) {
+            console.log("onPictureClick")
+            if (this.isCameraCapturing) {
                 this.onTakePicture()
             } else {
                 this.onNewPicture()
@@ -247,47 +287,71 @@ export default {
         },
 
         onTakePicture() {
-            this.takepicture();
-            this.isCapturing = false
-            //console.log("onTakePicture")
+            console.log("onTakePicture")
+            this.takePicture();
+            this.isCameraCapturing = false
         },
 
         onNewPicture() {
+            console.log("onNewPicture")
             this.clearphoto();
             this.clearData()
-            this.isCapturing = true
-            //console.log("onNewPicture")
+            this.isCameraCapturing = true
         },
 
 
         startup() {
-            this.video = document.getElementById('video');
-            this.canvas = document.getElementById('canvas');
-            this.photo = document.getElementById('photo');
+            let th = this
 
-            navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: 'environment'
-                },
-                audio: false
-            }).then(function(stream) {
-                console.info("stream", stream)
-                video.srcObject = stream;
-                video.play();
-            }).catch(function(err) {
-                console.log("An error occurred: " + err);
-            });
+            try {
+                th.video = document.getElementById('video');
+                th.canvas = document.getElementById('canvas');
+                th.photo = document.getElementById('photo');
 
-            video.addEventListener('canplay', this.canplay, false)
+                //
+                navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment'
+                    },
+                    audio: false
 
-            this.clearphoto();
+                }).then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+
+                    //
+                    video.addEventListener('canplay', th.onCanplay, false)
+
+                    //
+                    th.wasCameraInit = true
+                    th.wasCameraInitOk = true
+                    th.isCameraCapturing = true
+
+                }).catch(function(err) {
+                    console.log("An error occurred: " + err);
+
+                    //
+                    th.wasCameraInit = true
+                    th.wasCameraInitFail = true
+                    th.isCameraCapturing = false
+                });
+
+            } catch(e) {
+                console.log("An error occurred: " + e);
+
+                th.info = e
+
+                th.wasCameraInit = true
+                th.wasCameraInitFail = true
+                th.isCameraCapturing = false
+            }
 
             //
-            this.isCapturing = true
+            th.clearphoto();
         },
 
-        canplay() {
-            if (!this.wasInit) {
+        onCanplay() {
+            if (!this.wasCanplay) {
                 ///////////////////////////////
                 console.info("video: " + video.videoWidth + "x" + video.videoHeight)
                 this.info = "video: " + video.videoWidth + "x" + video.videoHeight
@@ -308,9 +372,6 @@ export default {
                 video.setAttribute('height', this.height);
                 canvas.setAttribute('width', this.width);
                 canvas.setAttribute('height', this.height);
-
-                //
-                this.wasInit = true;
             }
         },
 
@@ -321,14 +382,16 @@ export default {
 
             var data = canvas.toDataURL('image/png');
             photo.setAttribute('src', data);
+
+            this.dataLoaded = false
         },
 
-        async takepicture() {
+        async takePicture() {
             var canvasContext = canvas.getContext('2d');
             if (this.width && this.height) {
                 //canvas.width = this.width;
                 //canvas.height = this.height;
-                canvasContext.drawImage(video, 0, 0, this.width, this.height /*, 0, 0, this.width, this.height*/);
+                canvasContext.drawImage(video, 0, 0, this.width, this.height);
 
                 var dataImage = canvas.toDataURL('image/png');
                 photo.setAttribute('src', dataImage);
@@ -382,6 +445,9 @@ export default {
                             }
                         }
             */
+
+            //
+            this.dataLoaded = true
         },
 
         clearData() {
@@ -417,9 +483,20 @@ export default {
     display: inline-block;
 }
 
-.contentarea {
-    font-size: 16px;
-    text-align: center;
+.photo-container {
+    position: relative;
+}
+
+.photo-btn-div {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1rem;
+    opacity: 0.8;
+}
+
+.photo-btn {
+    height: 4rem;
+    width: 4rem;
 }
 
 #video {
@@ -433,17 +510,41 @@ export default {
 
     width: 100%;
     height: auto;
-    _aspect-ratio: auto;
 }
 
 #canvas {
     display: none;
 }
 
-
 .hidden {
     display: none;
 }
 
+.photo-camera-state {
+    font-size: 3em;
+    text-align: center;
+
+    animation-name: fade;
+    animation-delay: .2s;
+    animation-duration: 0.5s;
+    animation-fill-mode: both;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.photo-state-wait {
+    color: grey;
+}
+
+.photo-state-error {
+    color: #850000;
+}
 
 </style>

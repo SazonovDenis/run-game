@@ -32,78 +32,11 @@
                 </jc-btn>
             </div>
 
-            <q-separator/>
-
-
-            <div class="row q-mb-sm">
-
-                <div class="q-mr-sm">
-
-                    <q-input
-                        style="max-width: 9em"
-                        dense outlined clearable
-                        v-model="filterText"
-                        placeholder="Поиск"
-                    >
-
-                        <template v-slot:append v-if="!filterText">
-                            <q-icon name="search"/>
-                        </template>
-
-                    </q-input>
-
-                </div>
-
-                <q-btn-dropdown
-                    @click="sortFieldMenu=true"
-                    v-model="sortFieldMenu"
-                    style="width: 10em;"
-                    color="grey-2"
-                    text-color="black"
-                    no-caps
-                    split
-                    align="left"
-                    :icon="sortFieldIcon[sortField]"
-                    :label="sortFieldText[sortField]"
-                >
-                    <q-list class="q-pa-sm">
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='question'">
-                            Слово
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='answer'">
-                            Перевод
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='ratingDesc'">
-                            Лучшие
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='ratingAsc'">
-                            Худшие
-                        </q-item>
-
-                    </q-list>
-                </q-btn-dropdown>
-
-
-                <!--
-                                <q-toggle v-model="showHidden" label="Скрытые"/>
-                -->
-
-            </div>
-
 
             <TaskList
                 :showEdit="true"
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
-                :filter="filter"
             />
 
 
@@ -300,49 +233,51 @@ export default {
             }
         },
 
-        filter(planTask) {
-            if (planTask.isHidden && !this.showHidden) {
-                return false
-            }
+        /*
+                filter(planTask) {
+                    if (planTask.isHidden && !this.showHidden) {
+                        return false
+                    }
 
-            if (!this.filterText) {
-                return true
-            }
+                    if (!this.filterText) {
+                        return true
+                    }
 
-            if (this.contains(this.filterText, planTask.question.valueTranslate)) {
-                return true
-            }
+                    if (this.contains(this.filterText, planTask.question.valueTranslate)) {
+                        return true
+                    }
 
-            if (this.contains(this.filterText, planTask.question.valueSpelling)) {
-                return true
-            }
+                    if (this.contains(this.filterText, planTask.question.valueSpelling)) {
+                        return true
+                    }
 
-            if (this.contains(this.filterText, planTask.answer.valueTranslate)) {
-                return true
-            }
+                    if (this.contains(this.filterText, planTask.answer.valueTranslate)) {
+                        return true
+                    }
 
-            if (this.contains(this.filterText, planTask.answer.valueSpelling)) {
-                return true
-            }
+                    if (this.contains(this.filterText, planTask.answer.valueSpelling)) {
+                        return true
+                    }
 
-            return false
-        },
+                    return false
+                },
 
-        contains(filter, value) {
-            if (!filter) {
-                return true
-            }
+                contains(filter, value) {
+                    if (!filter) {
+                        return true
+                    }
 
-            if (!value) {
-                return false
-            }
+                    if (!value) {
+                        return false
+                    }
 
-            if (value.includes(filter)) {
-                return true
-            } else {
-                return false
-            }
-        },
+                    if (value.includes(filter)) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+        */
 
         isAuth() {
             return auth.isAuth()
@@ -382,6 +317,8 @@ export default {
                 props: {
                     planId: this.plan.id,
                     planText: this.plan.planText,
+                    plan: this.plan,
+                    tasks: this.tasks,
                     frameReturn: "/plan",
                     frameReturnProps: {planId: this.planId}
                 }

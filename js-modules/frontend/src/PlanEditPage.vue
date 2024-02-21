@@ -184,9 +184,9 @@ export default {
                     itemMenuClick: this.itemHideMenuClick,
                 },
                 {
-                    icon: this.itemDeleteMenuIcon,
-                    color: this.itemDeleteMenuColor,
-                    itemMenuClick: this.itemDeleteMenuClick,
+                    icon: this.takeRemoveMenuIcon,
+                    color: this.takeRemoveMenuColor,
+                    itemMenuClick: this.takeRemoveMenuClick,
                 },
             ],
 
@@ -248,7 +248,7 @@ export default {
 
         },
 
-        itemDeleteMenuIcon(taskItem) {
+        takeRemoveMenuIcon(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsDel)
             if (p !== -1) {
                 return "del"
@@ -257,7 +257,7 @@ export default {
             }
         },
 
-        itemDeleteMenuColor(taskItem) {
+        takeRemoveMenuColor(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsDel)
             if (p !== -1) {
                 return "red-6"
@@ -266,7 +266,7 @@ export default {
             }
         },
 
-        itemDeleteMenuClick(taskItem) {
+        takeRemoveMenuClick(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsDel)
             if (p !== -1) {
                 this.itemsDel.splice(p, 1)

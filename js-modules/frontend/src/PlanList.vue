@@ -51,7 +51,7 @@
 
 
                     <q-card-section class="plan-item-text text-h4">
-                        {{ plan.text }}
+                        {{ plan.planText }}
                     </q-card-section>
 
 

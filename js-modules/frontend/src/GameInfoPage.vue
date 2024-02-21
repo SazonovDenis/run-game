@@ -98,6 +98,7 @@
 
             <TaskList
                 v-if="localState.game && localState.game.done"
+                :showTaskData="true"
                 :showAnswerResult="true"
                 :tasks="localState.tasks"/>
 

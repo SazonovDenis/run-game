@@ -14,6 +14,12 @@
                      v-model="plan.planText"
             />
 
+            <TaskListFilterBar
+                v-model:filterText="filterText"
+                v-model:sortField="sortField"
+                v-model:showHidden="showHidden"
+            />
+
             <TaskList
                 v-if="itemsExt.length > 0"
                 :showEdit="true"
@@ -156,10 +162,10 @@
 
                             <q-btn v-if="this.addMode !== 'text'"
                                    round
-                                   color="green-7"
+                                   color="yellow-10"
                                    class="q-ma-xs"
                                    size="1.2em"
-                                   icon="quasar.editor.size"
+                                   icon="word-add-keyboard"
                                    @click="this.setAddMode('text')"
                             />
                             <q-btn v-if="this.addMode !== 'photo'"
@@ -167,7 +173,7 @@
                                    color="yellow-9"
                                    class="q-ma-xs"
                                    size="1.2em"
-                                   icon="image"
+                                   icon="word-add-photo"
                                    @click="this.setAddMode('photo')"
                             />
                         </div>
@@ -177,44 +183,38 @@
                                 &nbsp;
                             </div>
 
-                            <template
-                                v-if="itemsHideAdd.length > 0">
+                            <template v-if="itemsHideAdd.length > 0">
 
                                 <div
-                                    class="q-ma-xs"
-                                    _style="margin: auto;"
+                                    class="q-ma-xs items-count-info"
                                     @click="clickItemsHideAddText()">
-                                    <span class="rgm-link-soft"> {{
-                                            itemsHideAddText
-                                        }}</span>
+                                    <span class="rgm-link-soft">
+                                        {{ itemsHideAddText }}
+                                    </span>
                                 </div>
 
                             </template>
 
-                            <template
-                                v-if="itemsDel.length > 0">
+                            <template v-if="itemsDel.length > 0">
 
                                 <div
-                                    class="q-ma-xs"
-                                    _style="margin: auto;"
+                                    class="q-ma-xs items-count-info"
                                     @click="clickItemsDelText()">
-                                    <span class="rgm-link-soft"> {{
-                                            itemsDelText
-                                        }}</span>
+                                    <span class="rgm-link-soft">
+                                        {{ itemsDelText }}
+                                    </span>
                                 </div>
 
                             </template>
 
-                            <template
-                                v-if="itemsHideDel.length > 0">
+                            <template v-if="itemsHideDel.length > 0">
 
                                 <div
-                                    class="q-ma-xs"
-                                    _style="margin: auto;"
+                                    class="q-ma-xs items-count-info"
                                     @click="clickItemsHideDelText()">
-                                    <span class="rgm-link-soft"> {{
-                                            itemsHideDelText
-                                        }}</span>
+                                    <span class="rgm-link-soft">
+                                        {{ itemsHideDelText }}
+                                    </span>
                                 </div>
 
                             </template>
@@ -222,38 +222,36 @@
                             <template v-if="itemsAdd.length > 0">
 
                                 <div
-                                    class="q-ma-xs"
-                                    _style="margin: auto;"
+                                    class="q-ma-xs items-count-info"
                                     @click="clickItemsAddText()">
-                                    <span class="rgm-link-soft"> {{
-                                            itemsAddText
-                                        }}</span>
+                                    <span class="rgm-link-soft">
+                                        {{ itemsAddText }}
+                                    </span>
                                 </div>
 
 
-                                <!--
-                                                                <template v-if="addMode === 'viewItemsAdd'">
+                                <template v-if="addMode === 'viewItemsAdd'">
 
-                                                                    <q-btn
-                                                                        no-caps
-                                                                        class="q-ma-sm"
-                                                                        :label="btnSaveTitle"
-                                                                        @click="btnSaveClick()"
-                                                                    />
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        :label="btnSaveTitle"
+                                        @click="btnSaveClick()"
+                                    />
 
-                                                                </template>
+                                </template>
 
-                                                                <template v-else>
+                                <template v-else>
 
-                                                                    <q-btn
-                                                                        no-caps
-                                                                        class="q-ma-sm"
-                                                                        label="Далее"
-                                                                        @click="btnNextClick()"
-                                                                    />
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        label="Готово"
+                                        @click="btnNextClick()"
+                                    />
 
-                                                                </template>
-                                -->
+                                </template>
+
 
                             </template>
 
@@ -277,6 +275,7 @@ import MenuContainer from "./comp/MenuContainer"
 import TaskList from "./comp/TaskList"
 import TextInputPhoto from "./comp/TextInputPhoto"
 import TextInputText from "./comp/TextInputText"
+import TaskListFilterBar from "./comp/TaskListFilterBar"
 import auth from "./auth"
 import {apx} from "./vendor"
 import utils from "./utils"
@@ -287,7 +286,7 @@ export default {
     name: "PlanAddFactPage",
 
     components: {
-        MenuContainer, TextInputPhoto, TextInputText, TaskList
+        MenuContainer, TaskListFilterBar, TextInputPhoto, TextInputText, TaskList
     },
 
     props: {
@@ -295,6 +294,7 @@ export default {
         planText: null,
 
         tasks: null,
+        defaultAddMode: null,
 
         frameReturn: null,
         frameReturnProps: null,
@@ -313,8 +313,11 @@ export default {
             itemsHideAdd: [],
             itemsHideDel: [],
 
-            showHidden: false,
             hiddenCount: 0,
+
+            filterText: "",
+            sortField: "",
+            showHidden: false,
 
             itemsMenu_modeAddFact: [
                 {
@@ -719,6 +722,11 @@ export default {
             return
         }
 
+        //
+        if (this.defaultAddMode){
+            this.addMode = this.defaultAddMode
+        }
+
         // Для обеспечения возможности добавлять слова в еще не созданный план
         if (!this.planId) {
             let planText = apx.date.toDisplayStr(apx.date.today())
@@ -738,5 +746,9 @@ export default {
 
 
 <style scoped>
+
+.items-count-info {
+    margin: auto;
+}
 
 </style>

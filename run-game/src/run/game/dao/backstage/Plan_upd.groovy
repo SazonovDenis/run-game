@@ -40,8 +40,7 @@ class Plan_upd extends RgmMdbUtils {
     void upd(Map plan) {
         // Проверим, что запись существует и доступна пользователю
         long idPlan = UtCnv.toLong(plan.get("id"))
-        Plan_list list = mdb.create(Plan_list)
-        list.getPlanUsr(idPlan)
+        validatePlanEdit(idPlan)
 
         //
         StoreRecord recPlan = mdb.createStoreRecord("Plan")
@@ -56,8 +55,7 @@ class Plan_upd extends RgmMdbUtils {
     @DaoMethod
     void addFact(long idPlan, List<Map> planFact) {
         // Проверим, что запись существует и доступна пользователю
-        Plan_list list = mdb.create(Plan_list)
-        list.getPlanUsr(idPlan)
+        validatePlanEdit(idPlan)
 
         //
         for (Map mapPlanFact : planFact) {
@@ -74,8 +72,7 @@ class Plan_upd extends RgmMdbUtils {
     @DaoMethod
     void delFact(long idPlan, List<Map> planFact) {
         // Проверим, что запись существует и доступна пользователю
-        Plan_list list = mdb.create(Plan_list)
-        list.getPlanUsr(idPlan)
+        validatePlanEdit(idPlan)
 
         //
         for (Map mapPlanFact : planFact) {
@@ -96,11 +93,14 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void del(long idPlan) {
+        // Проверим, что запись существует и доступна пользователю
+        validatePlanEdit(idPlan)
+
         // Метки доступа
         long idUsr = getCurrentUserId()
         mdb.execQuery("delete from UsrPlan where plan = :plan and usr = :usr", [plan: idPlan, usr: idUsr])
         // Другие ссылки
-        mdb.execQuery("delete from PlanFact where plan = :plan", [plan: idPlan])
+        //mdb.execQuery("delete from PlanFact where plan = :plan", [plan: plan])
         mdb.execQuery("delete from PlanTag where plan = :plan", [plan: idPlan])
         // Сама запись
         mdb.execQuery("delete from Plan where id = :plan", [plan: idPlan])
@@ -278,5 +278,15 @@ group by
 """
     }
 
+
+    void validatePlanEdit(long idPlan) {
+        Plan_list list = mdb.create(Plan_list)
+        StoreRecord rec = list.getPlanUsr(idPlan)
+
+        //
+        if (!rec.getBoolean("isOwner")) {
+            throw new XError("Пользователь не имеет права редактировать план")
+        }
+    }
 
 }

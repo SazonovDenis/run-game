@@ -1,12 +1,14 @@
 <template>
 
-    <q-list bordered separator>
+    <q-list _bordered _separator>
         <template v-for="(taskItem, index) in tasks">
-            <q-item v-ripple v-if="!taskItem.factQuestion">
+            <q-item v-if="!taskItem.factQuestion" v-ripple>
                 <div style="height: 3em">&nbsp;</div>
             </q-item>
 
-            <q-item clickable v-ripple v-else-if="isItemShown(taskItem)">
+            <q-item v-else-if="isItemShown(taskItem)"
+                    :class="getClassItemRow(taskItem, index)"
+                    clickable v-ripple>
 
                 <q-item-section top avatar v-if="showAnswerResult">
                     <div
@@ -17,20 +19,29 @@
 
                 <q-item-section>
 
-                    <q-item-label overline class="question">
+                    <q-item-label overline class="question"
+                                  v-if="isFactFirstAnswer(taskItem, index)">
 
-                        <div>
-                            <TaskValue :task="taskItem.question" :doShowText="true"/>
-                        </div>
+                        <TaskValue v-if="showTaskData"
+                                   :task="taskItem.taskQuestion"
+                                   :doShowText="true"/>
+
+                        <TaskValue v-else
+                                   :task="taskItem.question"
+                                   :doShowText="true"/>
 
                     </q-item-label>
 
 
                     <q-item-label class="answer">
 
-                        <div class="row">
-                            <TaskValue :task="taskItem.answer" :doShowText="true"/>
-                        </div>
+                        <TaskValue v-if="showTaskData"
+                                   :task="taskItem.taskAnswer"
+                                   :doShowText="true"/>
+
+                        <TaskValue v-else
+                                   :task="taskItem.answer"
+                                   :doShowText="true"/>
 
                     </q-item-label>
 
@@ -98,7 +109,6 @@
 <script>
 
 import TaskValue from "./TaskValue"
-import ctx from "../gameplayCtx"
 
 export default {
     name: "TaskList",
@@ -108,6 +118,15 @@ export default {
     },
 
     props: {
+        /**
+         * Какое тело вопроса и ответа показывать.
+         * Если showTaskData == true, то показывать подготовленные задания вопрос и ответ
+         * (вопрос и ответ из Task<-TaskOption и Task<-TaskQuestion), что полезно при просмотре списка заданий в игре.
+         * Если showTaskData == false, то показывать значения ФАКТОВ задания
+         * (данные из Task.factQuestion->Fact.* и Task.factQuestion->Fact.*),
+         * что полезно при просмотре списка фактов в плане.
+         */
+        showTaskData: false,
         showAnswerResult: false,
         showEdit: false,
         tasks: null,
@@ -170,6 +189,29 @@ export default {
                 return "black"
             } else {
                 return "black"
+            }
+        },
+
+        getClassItemRow(task, index) {
+            if (index === 0 || this.isFactFirstAnswer(task, index)) {
+                return "item-first-answer"
+            } else {
+                return "item-next-answer"
+            }
+        },
+
+        isFactFirstAnswer(task, index) {
+            ///////////////////////////////
+            // todo определиться как показывать несколько вариантов ответов
+            return true
+            ///////////////////////////////
+
+            if (index === 0) {
+                return true
+            } else if (task.factQuestion !== this.tasks[index - 1].factQuestion) {
+                return true
+            } else {
+                return false
             }
         },
 
@@ -243,5 +285,14 @@ export default {
     margin-right: 0.3em;
 }
 
+.item-first-answer {
+    border-top: 1px solid silver;
+}
+
+.item-next-answer {
+    padding-top: 0;
+    _padding-top: 0.2em;
+    _padding-bottom: 0.2em;
+}
 
 </style>

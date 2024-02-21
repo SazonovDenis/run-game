@@ -8,6 +8,12 @@
     <domain name="Plan.server" parent="id">
         <field name="plan" parent="Plan/ref"/>
         <field name="planText" parent="Plan/text"/>
+
+        <field name="isOwner" parent="UsrPlan/isOwner"/>
+        <field name="isHidden" parent="UsrPlan/isHidden"/>
+        <field name="isAllowed" parent="UsrPlan/isAllowed"/>
+
+        <field name="isPublic" parent="Plan/isPublic"/>
     </domain>
 
 
@@ -117,13 +123,13 @@
     <!-- Список планов + статистика по зазаниям плана -->
     <domain name="Plan.list.statistic" parent="id">
         <field name="plan" parent="Plan/ref"/>
-        <field name="text" parent="Plan/text"/>
+        <field name="planText" parent="Plan/text"/>
 
-        <field name="isOwner" parent="boolean" title="Пользователь является автором"/>
-        <field name="isHidden" parent="boolean" title="План скрыт"/>
-        <field name="isAllowed" parent="boolean" title="Разрешен доступ"/>
+        <field name="isOwner" parent="UsrPlan/isOwner"/>
+        <field name="isHidden" parent="UsrPlan/isHidden"/>
+        <field name="isAllowed" parent="UsrPlan/isAllowed"/>
 
-        <field name="isPublic" parent="boolean"/>
+        <field name="isPublic" parent="Plan/isPublic"/>
 
         <field name="count" parent="Cube_UsrPlan/count"/>
         <field name="countFull" parent="Cube_UsrPlan/countFull"/>

@@ -13,7 +13,7 @@
                     </q-item-section>
 
                     <q-item-section>
-                        {{ plan.text }}
+                        {{ plan.planText }}
                     </q-item-section>
 
                     <q-item-section top side>

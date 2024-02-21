@@ -418,6 +418,10 @@ export default {
             for (let item of items) {
                 this.items.push(item)
             }
+            // Для красивого отступа от последнего элемента todo сделать красивее
+            if (this.items.length > 5) {
+                this.items.push({})
+            }
 
             // Уведомим родителя
             if (this.itemsOnChange) {

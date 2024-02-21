@@ -18,64 +18,71 @@
 
             <div v-if="plan.id">
 
-                <div class="row q-mb-sm">
+                <TaskListFilterBar
+                    v-model:filterText="filterText"
+                    v-model:sortField="sortField"
+                    v-model:showHidden="showHidden"
+
+                />
+
+                <!--                <div class="row q-mb-sm">
 
 
-                    <q-input class="q-mr-sm"
-                             style="max-width: 9em"
-                             dense outlined clearable
-                             v-model="filterText"
-                             placeholder="Поиск"
-                    >
+                                    <q-input class="q-mr-sm"
+                                             style="max-width: 9em"
+                                             dense outlined clearable
+                                             v-model="filterText"
+                                             placeholder="Поиск"
+                                    >
 
-                        <template v-slot:append v-if="!filterText">
-                            <q-icon name="search"/>
-                        </template>
+                                        <template v-slot:append v-if="!filterText">
+                                            <q-icon name="search"/>
+                                        </template>
 
-                    </q-input>
-
-
-                    <q-btn-dropdown
-                        @click="sortFieldMenu=true"
-                        v-model="sortFieldMenu"
-                        style="width: 10em;"
-                        color="grey-2"
-                        text-color="black"
-                        no-caps
-                        split
-                        align="left"
-                        :icon="sortFieldIcon[sortField]"
-                        :label="sortFieldText[sortField]"
-                    >
-                        <q-list class="q-pa-sm">
-
-                            <q-item class="q-py-md" clickable v-close-popup
-                                    @click="sortField='question'">
-                                Слово
-                            </q-item>
-
-                            <q-item class="q-py-md" clickable v-close-popup
-                                    @click="sortField='answer'">
-                                Перевод
-                            </q-item>
-
-                            <q-item class="q-py-md" clickable v-close-popup
-                                    @click="sortField='ratingDesc'">
-                                Лучшие
-                            </q-item>
-
-                            <q-item class="q-py-md" clickable v-close-popup
-                                    @click="sortField='ratingAsc'">
-                                Худшие
-                            </q-item>
-
-                        </q-list>
-                    </q-btn-dropdown>
+                                    </q-input>
 
 
-                    <q-toggle v-model="showHidden" label="Скрытые"/>
+                                    <q-btn-dropdown
+                                        @click="sortFieldMenu=true"
+                                        v-model="sortFieldMenu"
+                                        style="width: 10em;"
+                                        color="grey-2"
+                                        text-color="black"
+                                        no-caps
+                                        split
+                                        align="left"
+                                        :icon="sortFieldIcon[sortField]"
+                                        :label="sortFieldText[sortField]"
+                                    >
+                                        <q-list class="q-pa-sm">
 
-                </div>
+                                            <q-item class="q-py-md" clickable v-close-popup
+                                                    @click="sortField='question'">
+                                                Слово
+                                            </q-item>
+
+                                            <q-item class="q-py-md" clickable v-close-popup
+                                                    @click="sortField='answer'">
+                                                Перевод
+                                            </q-item>
+
+                                            <q-item class="q-py-md" clickable v-close-popup
+                                                    @click="sortField='ratingDesc'">
+                                                Лучшие
+                                            </q-item>
+
+                                            <q-item class="q-py-md" clickable v-close-popup
+                                                    @click="sortField='ratingAsc'">
+                                                Худшие
+                                            </q-item>
+
+                                        </q-list>
+                                    </q-btn-dropdown>
+
+
+                                    <q-toggle v-model="showHidden" label="Скрытые"/>
+
+                                </div>-->
             </div>
 
 
@@ -141,6 +148,7 @@ import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
 import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
+import TaskListFilterBar from "./comp/TaskListFilterBar"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
 import utils from "./utils"
@@ -157,7 +165,7 @@ export default {
     },
 
     components: {
-        MenuContainer, PlanInfo, TaskList
+        MenuContainer, TaskListFilterBar, PlanInfo, TaskList
     },
 
     computed: {
@@ -192,28 +200,35 @@ export default {
 
             dataLoaded: false,
 
-            sortFieldMenu: false,
+            filterText: "",
             sortField: "",
-            sortFieldText: {
-                question: "Слово",
-                answer: "Перевод",
-                ratingDesc: "Лучшие",
-                ratingAsc: "Худшие",
-            },
-            sortFieldIcon: {
-                question: "quasar.arrow.down",
-                answer: "quasar.arrow.down",
-                ratingDesc: "quasar.arrow.up",
-                ratingAsc: "quasar.arrow.down",
-            },
-
             showHidden: false,
-            filterText: null,
+
+            /*
+                        sortFieldMenu: false,
+                        sortField: "",
+                        sortFieldText: {
+                            question: "Слово",
+                            answer: "Перевод",
+                            ratingDesc: "Лучшие",
+                            ratingAsc: "Худшие",
+                        },
+                        sortFieldIcon: {
+                            question: "quasar.arrow.down",
+                            answer: "quasar.arrow.down",
+                            ratingDesc: "quasar.arrow.up",
+                            ratingAsc: "quasar.arrow.down",
+                        },
+
+                        showHidden: false,
+                        filterText: null,
+            */
         }
     },
 
     watch: {
         sortField: function(value, old) {
+            console.info("sortField!!!!!!!!")
             this.tasks.sort(this.compareFunction)
         }
     },
@@ -456,8 +471,10 @@ export default {
         // --- Сортировка по умолчанию
         this.sortField = "question"
 
-        //
-        this.tasks.push({})
+        // Для красивого отступа от последнего элемента todo сделать красивее
+        if (this.tasks.length > 5) {
+            this.tasks.push({})
+        }
 
         //
         this.dataLoaded = true

@@ -33,18 +33,103 @@
             </div>
 
 
+            <q-separator/>
+
+
+            <div class="row q-mb-sm">
+
+                <div class="q-mr-sm">
+
+                    <q-input
+                        style="max-width: 9em"
+                        dense outlined clearable
+                        v-model="filterText"
+                        placeholder="Поиск"
+                    >
+
+                        <template v-slot:append v-if="!filterText">
+                            <q-icon name="search"/>
+                        </template>
+
+                    </q-input>
+
+                </div>
+
+                <q-btn-dropdown
+                    @click="sortFieldMenu=true"
+                    v-model="sortFieldMenu"
+                    style="width: 12em;"
+                    color="grey-2"
+                    text-color="black"
+                    no-caps
+                    split
+                    align="left"
+                    :icon="sortFieldIcon[sortField]"
+                    :label="sortFieldText[sortField]"
+                >
+                    <q-list class="q-pa-sm">
+
+                        <!--
+                            <q-item class="q-py-md" clickable v-close-popup
+                                    @click="sortField='answer'">
+                                Перевод
+                            </q-item>
+                        -->
+
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='ratingAsc'">
+                            Сложные
+                        </q-item>
+
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='ratingDesc'">
+                            Легкие
+                        </q-item>
+
+                        <q-item class="q-py-md" clickable v-close-popup
+                                @click="sortField='question'">
+                            По алфавиту
+                        </q-item>
+
+                    </q-list>
+
+                </q-btn-dropdown>
+
+
+                <!--
+                                <q-toggle v-model="showHidden" label="Скрытые"/>
+                -->
+
+            </div>
+
+
             <TaskList
                 :showEdit="true"
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
+                :filter="filter"
             />
 
 
             <q-page-sticky
+                v-if="plan.isOwner === true && tasks.length === 0"
+                position="bottom-left"
+                :offset="[10, 10]">
+                <q-btn no-caps
+                       color="red-7"
+                       icon="del"
+                       label="Удалить план"
+                       size="1.2em"
+                       @click="onPlanDelete"
+                />
+            </q-page-sticky>
+
+            <q-page-sticky
+                _v-if="plan.isOwner === true"
                 position="bottom-right"
-                :offset="[70, 10]">
+                :offset="[170, 5]">
                 <q-btn round
-                       color="purple-4"
+                       color="purple-9"
                        icon="edit"
                        size="1.2em"
                        @click="onPlanEdit"
@@ -52,13 +137,26 @@
             </q-page-sticky>
 
             <q-page-sticky
+                v-if="plan.isOwner === true"
                 position="bottom-right"
-                :offset="[10, 10]">
+                :offset="[70, 5]">
                 <q-btn round
                        color="green-7"
                        icon="add"
                        size="1.2em"
                        @click="onPlanAddFact"
+                />
+            </q-page-sticky>
+
+            <q-page-sticky
+                _v-if="plan.isOwner === true"
+                position="bottom-right"
+                :offset="[10, 5]">
+                <q-btn round
+                       color="purple-4"
+                       icon="edit"
+                       size="1.2em"
+                       @click="onPlanEdit_new"
                 />
             </q-page-sticky>
 
@@ -79,6 +177,7 @@ import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
+import {daoApi} from "run-game-frontend/src/dao"
 
 export default {
     name: "PlanPage",
@@ -125,10 +224,10 @@ export default {
             sortFieldMenu: false,
             sortField: "",
             sortFieldText: {
-                question: "Слово",
+                question: "По алфавиту",
                 answer: "Перевод",
-                ratingDesc: "Лучшие",
-                ratingAsc: "Худшие",
+                ratingDesc: "Легкие",
+                ratingAsc: "Сложные",
             },
             sortFieldIcon: {
                 question: "quasar.arrow.down",
@@ -233,51 +332,49 @@ export default {
             }
         },
 
-        /*
-                filter(planTask) {
-                    if (planTask.isHidden && !this.showHidden) {
-                        return false
-                    }
+        filter(planTask) {
+            if (planTask.isHidden && !this.showHidden) {
+                return false
+            }
 
-                    if (!this.filterText) {
-                        return true
-                    }
+            if (!this.filterText) {
+                return true
+            }
 
-                    if (this.contains(this.filterText, planTask.question.valueTranslate)) {
-                        return true
-                    }
+            if (this.contains(this.filterText, planTask.question.valueTranslate)) {
+                return true
+            }
 
-                    if (this.contains(this.filterText, planTask.question.valueSpelling)) {
-                        return true
-                    }
+            if (this.contains(this.filterText, planTask.question.valueSpelling)) {
+                return true
+            }
 
-                    if (this.contains(this.filterText, planTask.answer.valueTranslate)) {
-                        return true
-                    }
+            if (this.contains(this.filterText, planTask.answer.valueTranslate)) {
+                return true
+            }
 
-                    if (this.contains(this.filterText, planTask.answer.valueSpelling)) {
-                        return true
-                    }
+            if (this.contains(this.filterText, planTask.answer.valueSpelling)) {
+                return true
+            }
 
-                    return false
-                },
+            return false
+        },
 
-                contains(filter, value) {
-                    if (!filter) {
-                        return true
-                    }
+        contains(filter, value) {
+            if (!filter) {
+                return true
+            }
 
-                    if (!value) {
-                        return false
-                    }
+            if (!value) {
+                return false
+            }
 
-                    if (value.includes(filter)) {
-                        return true
-                    } else {
-                        return false
-                    }
-                },
-        */
+            if (value.includes(filter)) {
+                return true
+            } else {
+                return false
+            }
+        },
 
         isAuth() {
             return auth.isAuth()
@@ -311,6 +408,21 @@ export default {
             })
         },
 
+        onPlanEdit_new() {
+            apx.showFrame({
+                frame: '/planAddFact',
+                props: {
+                    planId: this.plan.id,
+                    planText: this.plan.planText,
+                    plan: this.plan,
+                    tasks: this.tasks,
+                    defaultAddMode: "editPlan",
+                    frameReturn: "/plan",
+                    frameReturnProps: {planId: this.planId}
+                }
+            })
+        },
+
         onPlanAddFact() {
             apx.showFrame({
                 frame: '/planAddFact',
@@ -322,6 +434,16 @@ export default {
                     frameReturn: "/plan",
                     frameReturnProps: {planId: this.planId}
                 }
+            })
+        },
+
+        async onPlanDelete() {
+            //
+            await daoApi.invoke('m/Plan/del', [this.planId])
+
+            //
+            apx.showFrame({
+                frame: '/levels',
             })
         },
 
@@ -378,10 +500,12 @@ export default {
         }
 
         // --- Сортировка по умолчанию
-        this.sortField = "question"
+        this.sortField = "ratingAsc"
 
-        //
-        this.tasks.push({})
+        // Для красивого отступа от последнего элемента todo сделать красивее
+        if (this.tasks.length > 5) {
+            this.tasks.push({})
+        }
 
         //
         this.dataLoaded = true

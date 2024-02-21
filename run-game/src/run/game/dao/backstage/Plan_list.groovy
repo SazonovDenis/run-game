@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+import jandcode.commons.error.XError
 import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
@@ -14,9 +15,19 @@ class Plan_list extends RgmMdbUtils {
      * или по запланированному учителем.
      */
     @DaoMethod
-    Store getPlanUsr(long plan) {
+    StoreRecord getPlanUsr(long plan) {
         Map params = [isPrivate: true, plan: plan]
-        return getPlansInternal(params)
+        Store st = getPlansInternal(params)
+
+        //
+        if (st.size() == 0) {
+            throw new XError("У пользователя нет доступа к плану")
+        }
+        //
+        StoreRecord rec = st.get(0)
+
+        //
+        return rec
     }
 
     /**
@@ -84,11 +95,14 @@ Tab_Plans as (
 select
     Plan.id,
     Plan.id plan,
-    Plan.text, 
+    Plan.text planText,
+     
     Plan.isPublic,
+    
     coalesce(UsrPlan.isHidden, 0) isHidden,
     coalesce(UsrPlan.isOwner, 0) isOwner,
     coalesce(UsrPlan.isAllowed, 0) isAllowed,
+    
     coalesce(Cube_UsrPlan.count, 0) count,
     coalesce(Cube_UsrPlan.countFull, 0) countFull,
     coalesce(Cube_UsrPlan.ratingTask, 0) ratingTask,

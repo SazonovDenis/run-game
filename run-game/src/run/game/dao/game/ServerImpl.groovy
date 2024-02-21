@@ -279,7 +279,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         long idUsr = getCurrentUserId()
 
         //
-        StoreRecord recPlanRaw = mdb.loadQueryRecord(sqlPlanStatistic(), [plan: idPlan, usr: idUsr])
+        Plan_list list = mdb.create(Plan_list)
+        StoreRecord recPlanRaw = list.getPlanUsr(idPlan)
 
         // План
         StoreRecord recPlan = mdb.createStoreRecord("Plan.server")
@@ -290,7 +291,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         mdb.loadQuery(stPlanFacts, sqlPlanFactsStatistic(), [plan: idPlan, usr: idUsr])
 
         // Дополним факты в плане данными для вопроса и ответа
-        fillTaskBody(stPlanFacts, idPlan)
+        fillPlanTaskBody(stPlanFacts, idPlan)
 
 
         // По всем заданиям игры - сумма баллов и т.д.
@@ -433,7 +434,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         mdb.loadQuery(stGameTasks, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
 
         // Дополним ФАКТЫ игры данными вопроса и ответа
-        fillTaskBody(stGameTasks, idPlan)
+        fillPlanTaskBody(stGameTasks, idPlan)
 
         // Дополним ЗАДАНИЯ игры данными вопроса и ответа
         fillGameTaskBody(stGameTasks, idGame, idUsr)
@@ -698,7 +699,7 @@ where
      *
      * Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
      */
-    void fillTaskBody(Store stTasks, long idPlan) {
+    void fillPlanTaskBody(Store stTasks, long idPlan) {
         // Данные вопроса и ответа
         Store stFactQuestion = mdb.loadQuery(sqlFactQuestion(), [plan: idPlan])
         Store stFactAnswer = mdb.loadQuery(sqlFactAnswer(), [plan: idPlan])
@@ -1084,30 +1085,6 @@ where
 order by    
     Game.dbeg,
     Game.id
-"""
-    }
-
-    private String sqlPlanStatistic() {
-        return """
-select
-    Plan.id,
-    Plan.id plan,
-    Plan.text planText,
-    
-    Cube_UsrPlan.count,
-    Cube_UsrPlan.countFull,
-    Cube_UsrPlan.ratingTask,
-    Cube_UsrPlan.ratingQuickness
-
-from
-    Plan
-    left join Cube_UsrPlan on (
-        Cube_UsrPlan.usr = :usr and 
-        Cube_UsrPlan.plan = Plan.id 
-    )
-
-where
-    Plan.id = :plan
 """
     }
 

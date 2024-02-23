@@ -1,96 +1,142 @@
 <template>
+    <MenuContainer
+        :title="title"
+        :frameReturn="frameReturn"
+        :frameReturnProps="frameReturnProps"
+        :showFooter="true">
 
-    <MenuContainer title="Редактирование плана"
-                   :showFooter="true"
-                   :frameReturn="frameReturn"
-                   :frameReturnProps="frameReturnProps"
-    >
 
-        <div v-if="dataLoaded">
-
+        <div v-if="viewMode==='editPlan'">
 
             <q-input class="q-mb-sm"
                      dense outlined
                      label="Название плана"
-                     v-model="plan.planText"
+                     v-model="planText"
             />
 
 
-            <div v-if="plan.id">
-
-                <TaskListFilterBar
-                    v-model:filterText="filterText"
-                    v-model:sortField="sortField"
-                    v-model:showHidden="showHidden"
-
-                />
-
-                <!--                <div class="row q-mb-sm">
-
-
-                                    <q-input class="q-mr-sm"
-                                             style="max-width: 9em"
-                                             dense outlined clearable
-                                             v-model="filterText"
-                                             placeholder="Поиск"
-                                    >
-
-                                        <template v-slot:append v-if="!filterText">
-                                            <q-icon name="search"/>
-                                        </template>
-
-                                    </q-input>
-
-
-                                    <q-btn-dropdown
-                                        @click="sortFieldMenu=true"
-                                        v-model="sortFieldMenu"
-                                        style="width: 10em;"
-                                        color="grey-2"
-                                        text-color="black"
-                                        no-caps
-                                        split
-                                        align="left"
-                                        :icon="sortFieldIcon[sortField]"
-                                        :label="sortFieldText[sortField]"
-                                    >
-                                        <q-list class="q-pa-sm">
-
-                                            <q-item class="q-py-md" clickable v-close-popup
-                                                    @click="sortField='question'">
-                                                Слово
-                                            </q-item>
-
-                                            <q-item class="q-py-md" clickable v-close-popup
-                                                    @click="sortField='answer'">
-                                                Перевод
-                                            </q-item>
-
-                                            <q-item class="q-py-md" clickable v-close-popup
-                                                    @click="sortField='ratingDesc'">
-                                                Лучшие
-                                            </q-item>
-
-                                            <q-item class="q-py-md" clickable v-close-popup
-                                                    @click="sortField='ratingAsc'">
-                                                Худшие
-                                            </q-item>
-
-                                        </q-list>
-                                    </q-btn-dropdown>
-
-
-                                    <q-toggle v-model="showHidden" label="Скрытые"/>
-
-                                </div>-->
-            </div>
+            <TaskListFilterBar
+                v-model:filterText="filterText"
+                v-model:sortField="sortField"
+                v-model:showHidden="showHidden"
+                v-model:hiddenCount="planItemsHiddenCount"
+            />
 
 
             <TaskList
+                v-if="planItems.length > 0"
                 :showEdit="true"
-                :tasks="tasks"
-                :itemsMenu="itemsMenu"
+                :tasks="planItems"
+                :itemsMenu="itemsMenu_modeEdit"
                 :filter="filter"
+            >
+
+            </TaskList>
+
+        </div>
+
+
+        <div v-if="viewMode==='addByText'">
+
+            <TextInputText
+                :items="itemsLoaded"
+                :itemsOnChange="itemsOnChange"
+            >
+
+                <template v-slot:toolbar>
+                    <q-toggle
+                        v-if="this.hiddenCount > 0"
+                        v-model="showHidden"
+                        :label="'Скрытые (' + this.hiddenCount + ')'"/>
+                </template>
+
+
+            </TextInputText>
+
+            <TaskList
+                v-if="itemsLoaded.length > 0"
+                :showEdit="true"
+                :tasks="itemsLoaded"
+                :itemsMenu="itemsMenu_modeAddFact"
+                :filter="filter"
+            >
+
+            </TaskList>
+
+        </div>
+
+
+        <div v-if="viewMode==='addByPhoto'">
+
+            <TextInputPhoto
+                :items="itemsLoaded"
+                :itemsOnChange="itemsOnChange"
+            >
+
+                <template v-slot:toolbar>
+                    <q-toggle
+                        v-if="this.hiddenCount > 0"
+                        v-model="showHidden"
+                        :label="'Скрытые (' + this.hiddenCount + ')'"/>
+
+                </template>
+
+            </TextInputPhoto>
+
+            <TaskList
+                v-if="itemsLoaded.length > 0"
+                :showEdit="true"
+                :tasks="itemsLoaded"
+                :itemsMenu="itemsMenu_modeAddFact"
+                :filter="filter"
+            />
+
+        </div>
+
+
+        <div v-if="viewMode==='viewItemsAdd'">
+
+            <q-input v-if="!this.plan" class="q-mb-sm"
+                     dense outlined
+                     label="Название плана"
+                     v-model="planText"
+            />
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsAdd"
+                :itemsMenu="itemsMenuAdd"
+            />
+
+        </div>
+
+        <div v-if="viewMode==='viewItemsDel'">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsDel"
+                :itemsMenu="itemsMenu_modeEdit"
+            />
+
+        </div>
+
+        <div v-if="viewMode==='viewItemsHideAdd'">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsHideAdd"
+                :itemsMenu="itemsMenuHide"
+            />
+
+        </div>
+
+
+        <div v-if="viewMode==='viewItemsHideDel'">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsHideDel"
+                :itemsMenu="itemsMenuHide"
             />
 
         </div>
@@ -104,28 +150,116 @@
 
 
                     <div class="row " style="width: 100%">
+                        <div
+                            style="position: absolute; top: -3em;">
+
+                            <q-btn v-if="plan && this.viewMode !== 'editPlan'"
+                                   round
+                                   color="purple-4"
+                                   class="q-ma-xs"
+                                   icon="edit"
+                                   size="1.2em"
+                                   @click="this.setViewMode('editPlan')"
+                            />
+
+                            <q-btn v-if="this.viewMode !== 'addByText'"
+                                   round
+                                   color="yellow-10"
+                                   class="q-ma-xs"
+                                   size="1.2em"
+                                   icon="word-add-keyboard"
+                                   @click="this.setViewMode('addByText')"
+                            />
+                            <q-btn v-if="this.viewMode !== 'addByPhoto'"
+                                   round
+                                   color="yellow-9"
+                                   class="q-ma-xs"
+                                   size="1.2em"
+                                   icon="word-add-photo"
+                                   @click="this.setViewMode('addByPhoto')"
+                            />
+                        </div>
 
                         <div class="row" style="flex-grow: 10; align-content: end">
                             <div style="flex-grow: 10">
                                 &nbsp;
                             </div>
 
+                            <template v-if="itemsAdd.length > 0">
 
-                            <div
-                                class="q-ma-sm"
-                                style="margin: auto;"
-                                @click="clickItemStateText">
-                                    <span class="rgm-link-soft"> {{
-                                            itemStateText
-                                        }}</span>
-                            </div>
+                                <div
+                                    class="q-ma-xs items-count-info"
+                                    @click="clickItemsAddText()">
+                                    <span class="rgm-link-soft">
+                                        {{ itemsAddText }}
+                                    </span>
+                                </div>
 
-                            <q-btn
-                                no-caps
-                                class="q-ma-sm"
-                                label="Сохранить изменения"
-                                @click="savePlan()"
-                            />
+                            </template>
+
+                            <template v-if="itemsHideAdd.length > 0">
+
+                                <div
+                                    class="q-ma-xs items-count-info"
+                                    @click="clickItemsHideAddText()">
+                                    <span class="rgm-link-soft">
+                                        {{ itemsHideAddText }}
+                                    </span>
+                                </div>
+
+                            </template>
+
+                            <template v-if="itemsHideDel.length > 0">
+
+                                <div
+                                    class="q-ma-xs items-count-info"
+                                    @click="clickItemsHideDelText()">
+                                    <span class="rgm-link-soft">
+                                        {{ itemsHideDelText }}
+                                    </span>
+                                </div>
+
+                            </template>
+
+                            <template v-if="itemsDel.length > 0">
+
+                                <div
+                                    class="q-ma-xs items-count-info"
+                                    @click="clickItemsDelText()">
+                                    <span class="rgm-link-soft">
+                                        {{ itemsDelText }}
+                                    </span>
+                                </div>
+
+                            </template>
+
+                            <template
+                                v-if="(plan && plan.planText !== planText) || itemsAdd.length > 0 || itemsDel.length > 0 || itemsHideAdd.length > 0 || itemsHideDel.length > 0">
+
+                                <template v-if="!plan && viewMode !== 'viewItemsAdd'">
+
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        label="Далее"
+                                        @click="btnNextClick()"
+                                    />
+
+                                </template>
+
+                                <template v-else>
+
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        :label="btnSaveTitle"
+                                        @click="btnSaveClick()"
+                                    />
+
+                                </template>
+
+
+                            </template>
 
 
                         </div>
@@ -138,54 +272,72 @@
 
 
     </MenuContainer>
-
 </template>
-
 
 <script>
 
-import {apx} from "./vendor"
-import ctx from "./gameplayCtx"
-import auth from "./auth"
+import {daoApi} from "./dao"
 import MenuContainer from "./comp/MenuContainer"
-import TaskListFilterBar from "./comp/TaskListFilterBar"
-import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
+import TextInputPhoto from "./comp/TextInputPhoto"
+import TextInputText from "./comp/TextInputText"
+import TaskListFilterBar from "./comp/TaskListFilterBar"
+import auth from "./auth"
+import {apx} from "./vendor"
 import utils from "./utils"
-import {daoApi} from "run-game-frontend/src/dao"
+import ctx from "./gameplayCtx"
+
 
 export default {
     name: "PlanEditPage",
 
+    components: {
+        MenuContainer, TaskListFilterBar, TextInputPhoto, TextInputText, TaskList
+    },
+
     props: {
-        planId: null,
-        planText: null,
+        plan: null,
+        planItems: null,
+
+        defaultViewMode: null,
         frameReturn: null,
         frameReturnProps: null,
     },
 
-    components: {
-        MenuContainer, TaskListFilterBar, PlanInfo, TaskList
-    },
-
-    computed: {
-        itemStateText() {
-            if (this.itemsDel.length > 0) {
-                return "Выбрано на удаление: " + this.itemsDel.length
-            } else {
-                return ""
-            }
-        }
-    },
-
     data() {
         return {
-            plan: {},
-            tasks: {},
-            statistic: {},
+            planText: null,
 
+            viewMode: "addByText",
+
+            itemsLoaded: [],
+
+            itemsAdd: [],
             itemsDel: [],
-            itemsMenu: [
+            itemsHideAdd: [],
+            itemsHideDel: [],
+
+            hiddenCount: 0,
+            planItemsHiddenCount: 0,
+
+            filterText: "",
+            sortField: "ratingAsc",
+            showHidden: false,
+
+            itemsMenu_modeAddFact: [
+                {
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
+                {
+                    icon: this.itemAddMenuIcon,
+                    color: this.itemAddMenuColor,
+                    itemMenuClick: this.itemAddMenuClick,
+                },
+            ],
+
+            itemsMenu_modeEdit: [
                 {
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
@@ -198,98 +350,164 @@ export default {
                 },
             ],
 
-            dataLoaded: false,
+            itemsMenuAdd: [
+                {
+                    icon: this.itemDeleteMenuIcon,
+                    color: this.itemDeleteMenuColor,
+                    itemMenuClick: this.itemDeleteMenuClick,
+                },
+            ],
 
-            filterText: "",
-            sortField: "",
-            showHidden: false,
+            itemsMenuHide: [
+                {
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    itemMenuClick: this.itemHideMenuClick,
+                },
+            ],
 
-            /*
-                        sortFieldMenu: false,
-                        sortField: "",
-                        sortFieldText: {
-                            question: "Слово",
-                            answer: "Перевод",
-                            ratingDesc: "Лучшие",
-                            ratingAsc: "Худшие",
-                        },
-                        sortFieldIcon: {
-                            question: "quasar.arrow.down",
-                            answer: "quasar.arrow.down",
-                            ratingDesc: "quasar.arrow.up",
-                            ratingAsc: "quasar.arrow.down",
-                        },
-
-                        showHidden: false,
-                        filterText: null,
-            */
         }
     },
 
     watch: {
         sortField: function(value, old) {
-            console.info("sortField!!!!!!!!")
-            this.tasks.sort(this.compareFunction)
+            this.planItems.sort(this.compareFunction)
         }
+    },
+
+
+    computed: {
+
+        title() {
+            if (this.viewMode === "editPlan") {
+                return "Редактирование плана"
+            } else if (this.viewMode === "addByPhoto") {
+                return "Добавление слов"
+            } else if (this.viewMode === "addByText") {
+                return "Добавление слов"
+            } else if (this.viewMode === "viewItemsHideAdd") {
+                return "Скрытые слова"
+            } else if (this.viewMode === "viewItemsHideDel") {
+                return "Показанные слова"
+            } else if (this.viewMode === "viewItemsDel") {
+                return "Удаленные слова"
+            } else if (this.viewMode === "viewItemsAdd") {
+                if (this.plan) {
+                    return "Добавленные слова"
+                } else {
+                    return "Создание плана"
+                }
+            }
+        },
+
+        btnSaveTitle() {
+            if (this.plan) {
+                return "Сохранить"
+            } else {
+                return "Создать план"
+            }
+        },
+
+        itemsAddText() {
+            return "Добавлено: " + this.itemsAdd.length
+        },
+
+        itemsDelText() {
+            return "Удалено: " + this.itemsDel.length
+        },
+
+        itemsHideAddText() {
+            return "Скрыто: " + this.itemsHideAdd.length
+        },
+
+        itemsHideDelText() {
+            return "Показано: " + this.itemsHideDel.length
+        },
+
     },
 
     methods: {
 
-        itemHideMenuIcon(taskItem) {
-            if (taskItem.isHidden) {
-                return "visibility-off"
-            } else {
-                return "visibility"
+        itemsOnChange() {
+
+            // Удобнее держать отдельную переменную this.hiddenCount
+            this.hiddenCount = 0
+            for (let item of this.itemsLoaded) {
+                if (item.isHidden) {
+                    this.hiddenCount = this.hiddenCount + 1
+                }
             }
+
+            // Для новой порции слов учтем, какие мы только что скрыли и добавили
+            for (let item of this.itemsLoaded) {
+                let posItemsHideAdd = utils.itemPosInItems(item, this.itemsHideAdd)
+                if (posItemsHideAdd !== -1) {
+                    item.isHidden = true
+                }
+
+                let posItemsHideDel = utils.itemPosInItems(item, this.itemsHideDel)
+                if (posItemsHideDel !== -1) {
+                    item.isHidden = false
+                }
+
+                let posItemsAdd = utils.itemPosInItems(item, this.itemsAdd)
+                if (posItemsAdd !== -1) {
+                    item.isInItemsAdd = true
+                }
+            }
+
         },
 
-        itemHideMenuColor(taskItem) {
-            if (taskItem.isHidden) {
-                return "grey-8"
-            } else {
-                return "grey-5"
+        filter(taskItem) {
+            if (taskItem.isHidden && !this.showHidden) {
+                return false
             }
-        },
 
-        itemHideMenuClick(taskItem) {
-            taskItem.isHidden = !taskItem.isHidden
             //
-            if (taskItem.isHidden) {
-                taskItem.isKnownGood = false
-                taskItem.isKnownBad = false
+            if (taskItem.isDeleted && !this.showHidden) {
+                return false
             }
+
             //
-            ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
+            if (!this.filterText) {
+                return true
+            } else {
+                if (this.contains(this.filterText, taskItem.question.valueTranslate)) {
+                    return true
+                }
 
+                if (this.contains(this.filterText, taskItem.question.valueSpelling)) {
+                    return true
+                }
+
+                if (this.contains(this.filterText, taskItem.answer.valueTranslate)) {
+                    return true
+                }
+
+                if (this.contains(this.filterText, taskItem.answer.valueSpelling)) {
+                    return true
+                }
+            }
+
+            //
+            return false
         },
 
-        takeRemoveMenuIcon(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                return "del"
+        contains(filter, value) {
+            if (!filter) {
+                return true
+            }
+
+            if (!value) {
+                return false
+            }
+
+            if (value.toLowerCase().includes(filter.toLowerCase())) {
+                return true
             } else {
-                return "del"
+                return false
             }
         },
-
-        takeRemoveMenuColor(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                return "red-6"
-            } else {
-                return "grey-8"
-            }
-        },
-
-        takeRemoveMenuClick(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                this.itemsDel.splice(p, 1)
-            } else {
-                this.itemsDel.push(taskItem)
-            }
-        },
-
 
         compareFunction(v1, v2) {
             if (!v1.factQuestion) {
@@ -344,164 +562,371 @@ export default {
             }
         },
 
-        filter(planTask) {
-            if (planTask.isHidden && !this.showHidden) {
-                return false
-            }
+        /* -------------------------------- */
 
-            if (!this.filterText) {
-                return true
-            }
-
-            if (this.contains(this.filterText, planTask.question.valueTranslate)) {
-                return true
-            }
-
-            if (this.contains(this.filterText, planTask.question.valueSpelling)) {
-                return true
-            }
-
-            if (this.contains(this.filterText, planTask.answer.valueTranslate)) {
-                return true
-            }
-
-            if (this.contains(this.filterText, planTask.answer.valueSpelling)) {
-                return true
-            }
-
-            return false
-        },
-
-        contains(filter, value) {
-            if (!filter) {
-                return true
-            }
-
-            if (!value) {
-                return false
-            }
-
-            if (value.includes(filter)) {
-                return true
+        itemHideMenuIcon(taskItem) {
+            if (taskItem.isHidden) {
+                return "visibility-off"
             } else {
-                return false
+                return "visibility"
             }
         },
 
-        isAuth() {
-            return auth.isAuth()
+        itemHideMenuColor(taskItem) {
+            if (taskItem.isHidden) {
+                let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                if (p !== -1) {
+                    return "red-6"
+                } else {
+                    return "grey-7"
+                }
+            } else {
+                let p = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                if (p !== -1) {
+                    return "red-5"
+                } else {
+                    return "grey-6"
+                }
+            }
         },
 
-        async savePlan() {
-            // Редактируем план
-            let recPlan = {id: this.plan.id, text: this.plan.planText}
-            await daoApi.invoke('m/Plan/upd', [recPlan])
+        itemHideMenuClick(taskItem) {
+            taskItem.isHidden = !taskItem.isHidden
+            //
+            if (taskItem.isHidden) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
+            }
 
-            // Удаляем слова из плана
-            let stPlanFact = []
-            for (let item of this.itemsDel) {
-                stPlanFact.push({
+
+            //
+            if (taskItem.isHidden) {
+                this.hiddenCount = this.hiddenCount + 1
+            } else {
+                this.hiddenCount = this.hiddenCount - 1
+            }
+
+
+            //
+            //ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
+
+
+            //
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+
+            //
+            if (taskItem.isHidden) {
+                if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
+                    this.itemsHideAdd.push(taskItem)
+                }
+                if (posItemsHideDel !== -1) {
+                    this.itemsHideDel.splice(posItemsHideDel, 1)
+                }
+                if (posItemsAdd !== -1) {
+                    this.itemsAdd.splice(posItemsAdd, 1)
+                    taskItem.isInItemsAdd = false
+                }
+            } else {
+                if (posItemsHideAdd !== -1) {
+                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                }
+                if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                    this.itemsHideDel.push(taskItem)
+                }
+            }
+
+
+            //
+            if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
+                this.setViewMode("addByText")
+            }
+            //
+            if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
+                this.setViewMode("addByText")
+            }
+        },
+
+        /* -------------------------------- */
+
+        itemAddMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "quasar.stepper.done"
+            } else {
+                return "add"
+            }
+        },
+
+        itemAddMenuColor(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "green-6"
+            } else {
+                return "grey-7"
+            }
+        },
+
+        itemAddMenuClick(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                this.itemsAdd.splice(p, 1)
+            } else {
+                this.itemsAdd.push(taskItem)
+
+                //
+                if (taskItem.isHidden) {
+                    let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                    let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                    if (posItemsHideAdd !== -1) {
+                        this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                    }
+                    if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                        this.itemsHideDel.push(taskItem)
+                    }
+                }
+                //
+                taskItem.isHidden = false
+            }
+        },
+
+        /* -------------------------------- */
+
+        takeRemoveMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (p !== -1) {
+                return "del"
+            } else {
+                return "del"
+            }
+        },
+
+        takeRemoveMenuColor(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (p !== -1) {
+                return "red-6"
+            } else {
+                return "grey-8"
+            }
+        },
+
+        takeRemoveMenuClick(taskItem) {
+            // Собственное состояние
+            taskItem.isDeleted = !taskItem.isDeleted
+            if (taskItem.isDeleted) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
+            }
+
+
+            // Общий счетчик
+            if (taskItem.isDeleted) {
+                this.hiddenCount = this.hiddenCount + 1
+            } else {
+                this.hiddenCount = this.hiddenCount - 1
+            }
+
+
+            // Состояние в списках
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            //
+            if (taskItem.isDeleted && p === -1) {
+                this.itemsDel.push(taskItem)
+            }
+            //
+            if (!taskItem.isDeleted && p !== -1) {
+                this.itemsDel.splice(p, 1)
+            }
+
+            //
+            if (this.itemsDel.length === 0 && this.viewMode === "viewItemsDel") {
+                this.setViewMode("addByText")
+            }
+        },
+
+        /* -------------------------------- */
+
+        itemDeleteMenuIcon(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "clear"
+            } else {
+                return "add"
+            }
+        },
+
+        itemDeleteMenuColor(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                return "grey-7"
+            } else {
+                return "grey-7"
+            }
+        },
+
+        itemDeleteMenuClick(taskItem) {
+            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (p !== -1) {
+                this.itemsAdd.splice(p, 1)
+            }
+
+            //
+            if (this.itemsAdd.length === 0) {
+                this.setViewMode("addByText")
+            }
+        },
+
+        /* -------------------------------- */
+
+        clickItemsAddText() {
+            this.setViewMode("viewItemsAdd")
+        },
+
+        clickItemsDelText() {
+            this.setViewMode("viewItemsDel")
+        },
+
+        clickItemsHideAddText() {
+            this.setViewMode("viewItemsHideAdd")
+        },
+
+        clickItemsHideDelText() {
+            this.setViewMode("viewItemsHideDel")
+        },
+
+        setViewMode(viewMode) {
+            if (viewMode !== this.viewMode) {
+                // Фильтр очищаем, ведь ищем заново
+                this.filterText = ""
+
+                // Ранее загруженные слова очищаем, ведь ищем заново
+                this.itemsLoaded.length = 0
+                this.itemsOnChange()
+            }
+            this.viewMode = viewMode
+        },
+
+        btnNextClick() {
+            this.viewMode = "viewItemsAdd"
+        },
+
+        async btnSaveClick() {
+            // Добавленные факты
+            let stPlanFactAdd = []
+            for (let item of this.itemsAdd) {
+                stPlanFactAdd.push({
                     factAnswer: item.factAnswer,
                     factQuestion: item.factQuestion,
                 })
             }
+
+            // Удаленные факты
+            let stPlanFactDel = []
+            for (let item of this.itemsDel) {
+                stPlanFactDel.push({
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+
+            // Скрытые и показанные факты
+            let stPlanFactHideAddHideDel = []
+            for (let item of this.itemsHideAdd) {
+                stPlanFactHideAddHideDel.push({
+                    isHidden: item.isHidden,
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+            for (let item of this.itemsHideDel) {
+                stPlanFactHideAddHideDel.push({
+                    isHidden: item.isHidden,
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+
             //
-            await daoApi.invoke('m/Plan/delFact', [this.plan.id, stPlanFact])
+            let planId
+            if (!this.plan) {
+                // Создаем новый план и добавляем слова
+                let recPlan = {text: this.planText}
+                planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFactAdd, []])
+            } else {
+                planId = this.plan.id
+
+                // Редактируем план
+                let recPlan = {id: planId, text: this.planText}
+                await daoApi.invoke('m/Plan/upd', [recPlan])
+
+                // Добавляем слова в существующий план
+                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
+
+                // Удаляем слова в существующем плане
+                await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
+            }
+
+            // Скрытые и показанные факты
+            for (let item of stPlanFactHideAddHideDel) {
+                await ctx.gameplay.api_saveUsrFact(item.factQuestion, item.factAnswer, item)
+            }
 
             //
             apx.showFrame({
-                frame: '/plan', props: {planId: this.planId}
+                frame: '/plan', props: {planId: planId}
             })
 
         },
 
     },
 
-    created() {
-    },
-
     async mounted() {
+        // Есть текущий пользователь?
         if (!auth.isAuth()) {
             apx.showFrame({
-                frame: '/login',
+                frame: '/login'
             })
             return
         }
 
-
         //
-        this.dataLoaded = false
+        if (this.defaultViewMode) {
+            this.viewMode = this.defaultViewMode
+        }
 
-        //
-        let res = await ctx.gameplay.api_getPlanTasks(this.planId)
+        // Для обеспечения возможности добавлять слова в еще не созданный план
+        if (!this.plan) {
+            let planTextDt = apx.date.toDisplayStr(apx.date.today())
+            this.planText = "Уровень " + planTextDt
+        } else {
+            this.planText = this.plan.planText
+        }
 
-        //
-        this.plan = res.plan
-        this.tasks = res.tasks
-        this.statistic = res.statistic
 
-
-        // --- Подготовим возможность сортировки по рейтингу, но с группировкой по фактам
-
-        // Сортировка по группе, а потом по худшему рейтингу в группе
-        // (группу образуют факт-вопрос и несколько фактов ответа)
-        this.sortField = ""
-        this.tasks.sort(this.compareFunction)
-
-        // Сделам "сортировочный" рейтинг одинаковым внутри группы "факт-вопрос"
-        // Это для того, чтобы при сортировке по рейтингу члены группы двигались вместе
-        let getRatingTaskForSort = function(ratingTaskGroup, taskItem) {
-            return "" +
-                (ratingTaskGroup * 1000 + "_").padStart(6, "0") +
-                taskItem.factQuestion + "_" +
-                (taskItem.ratingTask * 1000 + "_").padStart(6, "0")
-        };
-        //
-        let ratingTaskGroup
-        for (let i = 0; i < this.tasks.length; i++) {
-            let task = this.tasks[i]
-
-            if (i === 0 || task.factQuestion !== this.tasks[i - 1].factQuestion) {
-                ratingTaskGroup = task.ratingTask
+        // Удобнее держать отдельную переменную this.planItemsHiddenCount
+        this.planItemsHiddenCount = 0
+        if (this.plan) {
+            // Если передан план - переданы и this.planItems
+            for (let item of this.planItems) {
+                if (item.isHidden) {
+                    this.planItemsHiddenCount = this.planItemsHiddenCount + 1
+                }
             }
-
-            task.ratingTaskForSort = getRatingTaskForSort(ratingTaskGroup, task)
         }
-
-        // --- Сортировка по умолчанию
-        this.sortField = "question"
-
-        // Для красивого отступа от последнего элемента todo сделать красивее
-        if (this.tasks.length > 5) {
-            this.tasks.push({})
-        }
-
-        //
-        this.dataLoaded = true
     },
 
-    unmounted() {
-    },
 
 }
 
 </script>
 
 
-<style lang="less" scoped>
+<style scoped>
 
-hr {
-    margin: 1em 0;
-}
-
-.plan-tasks {
-    _font-size: 1.2em;
-}
-
-.game-info {
-    font-size: 1.5em;
-    text-align: center;
+.items-count-info {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 </style>
-

@@ -121,7 +121,7 @@ export default {
 
         onCreateLevel() {
             apx.showFrame({
-                frame: '/planAddFact', props: {}
+                frame: '/planEdit', props: {}
             })
         },
 

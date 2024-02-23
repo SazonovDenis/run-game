@@ -361,7 +361,7 @@ export default {
 
         onPlanEdit() {
             apx.showFrame({
-                frame: '/planAddFact',
+                frame: '/planEdit',
                 props: {
                     plan: this.plan,
                     planItems: this.tasks,
@@ -374,10 +374,11 @@ export default {
 
         onPlanAddFact() {
             apx.showFrame({
-                frame: '/planAddFact',
+                frame: '/planEdit',
                 props: {
                     plan: this.plan,
                     planItems: this.tasks,
+                    defaultViewMode: "addByText",
                     frameReturn: "/plan",
                     frameReturnProps: {planId: this.planId}
                 }

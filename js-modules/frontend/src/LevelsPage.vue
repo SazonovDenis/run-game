@@ -1,12 +1,12 @@
 <template>
 
-    <MenuContainer title="Мои уровни">
+    <MenuContainer :title="title">
 
         <q-list bordered separator>
 
             <template v-for="plan in plans">
 
-                <q-item clickable @click="planTaskStatistic(plan.plan)">
+                <q-item clickable @click="onPlanClick(plan.plan)">
 
                     <q-item-section top avatar>
                         <q-avatar icon="folder" color="grey-4" text-color="white"/>
@@ -35,9 +35,9 @@
         </q-list>
 
 
-        <q-page-sticky
-            position="bottom-right"
-            :offset="[18, 18]">
+        <q-page-sticky v-if="showEdit"
+                       position="bottom-right"
+                       :offset="[18, 18]">
             <q-fab style="height: 4.1em; width: 4.1em;"
                    color="purple"
                    icon="add"
@@ -81,6 +81,21 @@ export default {
         MenuContainer, TasksStatistic
     },
 
+    props: {
+        title: {
+            type: String,
+            default: "Мои уровни"
+        },
+        onLevelClick: {
+            type: Function,
+            default: null
+        },
+        showEdit: {
+            type: Boolean,
+            default: true
+        }
+    },
+
     data() {
         return {
             plans: [],
@@ -89,7 +104,16 @@ export default {
     },
 
     methods: {
-        planTaskStatistic(planId) {
+
+        onPlanClick(planId) {
+            if (this.onLevelClick) {
+                this.onLevelClick(planId)
+            } else {
+                this.onPlanClickDefault(planId)
+            }
+        },
+
+        onPlanClickDefault(planId) {
             apx.showFrame({
                 frame: '/plan', props: {planId: planId}
             })

@@ -416,7 +416,7 @@ export default {
                     planText: this.plan.planText,
                     plan: this.plan,
                     tasks: this.tasks,
-                    defaultAddMode: "editPlan",
+                    defaultViewMode: "editPlan",
                     frameReturn: "/plan",
                     frameReturnProps: {planId: this.planId}
                 }

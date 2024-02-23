@@ -7,7 +7,7 @@
 
             <template v-for="plan in plans">
 
-                <q-card class="plan-item" @click="onClickStar(plan)">
+                <q-card class="plan-item">
                     <q-img :src="imgSrc(plan.img)">
                         <template v-slot:error>
                             <div
@@ -21,7 +21,8 @@
                     </q-img>
 
 
-                    <div class="row absolute-bottom plan-item-info">
+                    <div class="row absolute-bottom plan-item-info"
+                         @click="onClickStar(plan)">
                         <div class="plan-item-added-info">
                             <rgm-icon v-if="plan.isAllowed"
                                       bg-color="white"
@@ -50,7 +51,8 @@
                     </div>
 
 
-                    <q-card-section class="plan-item-text text-h4">
+                    <q-card-section class="plan-item-text text-h4"
+                                    @click="onClickPlan(plan)">
                         {{ plan.planText }}
                     </q-card-section>
 
@@ -106,6 +108,12 @@ export default {
             } else {
                 await daoApi.invoke('m/Plan/delUsrPlan', [plan.id])
             }
+        },
+
+        async onClickPlan(plan) {
+            apx.showFrame({
+                frame: '/plan', props: {planId: plan.id}
+            })
         },
 
     },

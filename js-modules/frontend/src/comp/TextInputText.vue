@@ -6,6 +6,7 @@
 
             <q-input
                 dense outlined clearable
+                debounce="300"
                 ref="filterText"
                 v-model="filterText"
                 placeholder="Поиск"
@@ -143,12 +144,12 @@ export default {
 
     watch: {
 
-        async filterText(filterText, v2) {
+        async filterText(valueNow, valuePrior) {
             // Установка daoApi.waitShow = false и оборачивание в try/finally - чтобы не дергался фокус
             let resApi
             try {
                 daoApi.waitShow = false
-                resApi = await daoApi.loadStore("m/Game/findItems", [filterText])
+                resApi = await daoApi.loadStore("m/Game/findItems", [valueNow])
             } finally {
                 daoApi.waitShow = true
             }

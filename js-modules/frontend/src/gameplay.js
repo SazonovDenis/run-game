@@ -199,9 +199,9 @@ export default {
         ctx.globalState.tasksResult = resGameTask.tasksResult
     },
 
-    async api_saveUsrFact(factQuestion, factAnswer, params) {
+    async api_saveUsrFact(factQuestion, factAnswer, item) {
         let resApi = await daoApi.loadStore('m/Game/saveUsrFact',
-            [factQuestion, factAnswer, {isHidden: params.isHidden, isKnownGood: params.isKnownBad}]
+            [factQuestion, factAnswer, {isHidden: item.isHidden, isKnownGood: item.isKnownBad}]
         )
         return ctx.gameplay.parseResApiGame(resApi)
     },

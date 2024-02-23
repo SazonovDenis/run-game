@@ -154,7 +154,7 @@ export default {
 
         continueActiveGame() {
             apx.showFrame({
-                frame: '/game', props: {prop1: 1}
+                frame: '/game'
             })
         },
 
@@ -162,7 +162,19 @@ export default {
             await gameplay.closeActiveGame()
 
             apx.showFrame({
-                frame: '/levelChoice',
+                frame: '/levels', props: {
+                    title: "Выбор уровня",
+                    onLevelClick: this.gameStart,
+                    showEdit: false,
+                }
+            })
+        },
+
+        async gameStart(planId) {
+            await gameplay.gameStart(planId)
+
+            apx.showFrame({
+                frame: '/game', props: {}
             })
         },
 

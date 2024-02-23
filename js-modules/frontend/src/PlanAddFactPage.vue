@@ -6,13 +6,41 @@
         :showFooter="true">
 
 
-        <div v-if="addMode==='editPlan'">
+        <div v-if="viewMode==='editPlan'">
 
             <q-input class="q-mb-sm"
                      dense outlined
                      label="Название плана"
                      v-model="plan.planText"
             />
+
+            <!--
+            <div>
+                filterText: {{ filterText }}
+            </div>
+            showHidden: {{ showHidden }}
+            sortField: {{ sortField }}
+            -->
+
+            <!--
+            valueSecond: {{ valueSecond }}
+            value3: {{ value3 }}
+            valueFour: {{ valueFour }}
+            -->
+
+            <!--
+            <TaskListFilterBar
+                :value1="value1"
+                @update:value1="value1 = $event"
+
+                :valueSecond="valueSecond"
+                @update:valueSecond="valueSecond = $event"
+
+                v-model:value3="value3"
+
+                v-model:valueFour="valueFour"
+            />
+            -->
 
             <TaskListFilterBar
                 v-model:filterText="filterText"
@@ -33,7 +61,7 @@
         </div>
 
 
-        <div v-if="addMode==='text'">
+        <div v-if="viewMode==='addByText'">
 
             <TextInputText
                 :items="items"
@@ -64,7 +92,7 @@
         </div>
 
 
-        <div v-if="addMode==='photo'">
+        <div v-if="viewMode==='addByPhoto'">
 
             <TextInputPhoto
                 :items="items"
@@ -92,7 +120,7 @@
         </div>
 
 
-        <div v-if="addMode==='viewItemsAdd'">
+        <div v-if="viewMode==='viewItemsAdd'">
 
             <q-input v-if="!planId" class="q-mb-sm"
                      dense outlined
@@ -108,7 +136,7 @@
 
         </div>
 
-        <div v-if="addMode==='viewItemsDel'">
+        <div v-if="viewMode==='viewItemsDel'">
 
             <TaskList
                 :showEdit="true"
@@ -118,7 +146,7 @@
 
         </div>
 
-        <div v-if="addMode==='viewItemsHideAdd'">
+        <div v-if="viewMode==='viewItemsHideAdd'">
 
             <TaskList
                 :showEdit="true"
@@ -129,7 +157,7 @@
         </div>
 
 
-        <div v-if="addMode==='viewItemsHideDel'">
+        <div v-if="viewMode==='viewItemsHideDel'">
 
             <TaskList
                 :showEdit="true"
@@ -151,30 +179,30 @@
                         <div
                             style="position: absolute; top: -3em;">
 
-                            <q-btn v-if="this.addMode !== 'editPlan'"
+                            <q-btn v-if="this.viewMode !== 'editPlan'"
                                    round
                                    color="purple-4"
                                    class="q-ma-xs"
                                    icon="edit"
                                    size="1.2em"
-                                   @click="this.setAddMode('editPlan')"
+                                   @click="this.setViewMode('editPlan')"
                             />
 
-                            <q-btn v-if="this.addMode !== 'text'"
+                            <q-btn v-if="this.viewMode !== 'addByText'"
                                    round
                                    color="yellow-10"
                                    class="q-ma-xs"
                                    size="1.2em"
                                    icon="word-add-keyboard"
-                                   @click="this.setAddMode('text')"
+                                   @click="this.setViewMode('addByText')"
                             />
-                            <q-btn v-if="this.addMode !== 'photo'"
+                            <q-btn v-if="this.viewMode !== 'addByPhoto'"
                                    round
                                    color="yellow-9"
                                    class="q-ma-xs"
                                    size="1.2em"
                                    icon="word-add-photo"
-                                   @click="this.setAddMode('photo')"
+                                   @click="this.setViewMode('addByPhoto')"
                             />
                         </div>
 
@@ -183,6 +211,18 @@
                                 &nbsp;
                             </div>
 
+                            <template v-if="itemsAdd.length > 0">
+
+                                <div
+                                    class="q-ma-xs items-count-info"
+                                    @click="clickItemsAddText()">
+                                    <span class="rgm-link-soft">
+                                        {{ itemsAddText }}
+                                    </span>
+                                </div>
+
+                            </template>
+
                             <template v-if="itemsHideAdd.length > 0">
 
                                 <div
@@ -190,18 +230,6 @@
                                     @click="clickItemsHideAddText()">
                                     <span class="rgm-link-soft">
                                         {{ itemsHideAddText }}
-                                    </span>
-                                </div>
-
-                            </template>
-
-                            <template v-if="itemsDel.length > 0">
-
-                                <div
-                                    class="q-ma-xs items-count-info"
-                                    @click="clickItemsDelText()">
-                                    <span class="rgm-link-soft">
-                                        {{ itemsDelText }}
                                     </span>
                                 </div>
 
@@ -219,18 +247,24 @@
 
                             </template>
 
-                            <template v-if="itemsAdd.length > 0">
+                            <template v-if="itemsDel.length > 0">
 
                                 <div
                                     class="q-ma-xs items-count-info"
-                                    @click="clickItemsAddText()">
+                                    @click="clickItemsDelText()">
                                     <span class="rgm-link-soft">
-                                        {{ itemsAddText }}
+                                        {{ itemsDelText }}
                                     </span>
                                 </div>
 
+                            </template>
 
-                                <template v-if="addMode === 'viewItemsAdd'">
+                            <template
+                                v-if="itemsAdd.length > 0 || itemsDel.length > 0 || itemsHideAdd.length > 0 || itemsHideDel.length > 0">
+
+
+                                <!--
+                                <template v-if="viewMode === 'viewItemsAdd'">
 
                                     <q-btn
                                         no-caps
@@ -242,15 +276,19 @@
                                 </template>
 
                                 <template v-else>
+                                -->
 
-                                    <q-btn
-                                        no-caps
-                                        class="q-ma-sm"
-                                        label="Готово"
-                                        @click="btnNextClick()"
-                                    />
+                                <q-btn
+                                    no-caps
+                                    class="q-ma-sm"
+                                    label="Готово"
+                                    @__click="btnNextClick()"
+                                    @click="btnSaveClick()"
+                                />
 
-                                </template>
+                                <!--
+                                 </template>
+                                -->
 
 
                             </template>
@@ -294,7 +332,7 @@ export default {
         planText: null,
 
         tasks: null,
-        defaultAddMode: null,
+        defaultViewMode: null,
 
         frameReturn: null,
         frameReturnProps: null,
@@ -303,6 +341,8 @@ export default {
     data() {
         return {
             addMode: "text",
+
+            viewMode: "addByText",
 
             plan: {},
             items: [],
@@ -316,7 +356,7 @@ export default {
             hiddenCount: 0,
 
             filterText: "",
-            sortField: "",
+            sortField: "ratingAsc",
             showHidden: false,
 
             itemsMenu_modeAddFact: [
@@ -364,14 +404,21 @@ export default {
         }
     },
 
+    watch: {
+        sortField: function(value, old) {
+            this.tasks.sort(this.compareFunction)
+        }
+    },
+
+
     computed: {
 
         title() {
-            if (this.addMode === "editPlan") {
+            if (this.viewMode === "editPlan") {
                 return "Редактирование плана"
-            } else if (this.addMode === "photo") {
+            } else if (this.viewMode === "addByPhoto") {
                 return "Добавление слов"
-            } else if (this.addMode === "text") {
+            } else if (this.viewMode === "addByText") {
                 return "Добавление слов"
             } else {
                 return "Сохранение"
@@ -391,31 +438,15 @@ export default {
         },
 
         itemsDelText() {
-            if (this.itemsDel.length > 0) {
-                return "Удалено: " + this.itemsDel.length
-            } else {
-                return ""
-            }
+            return "Удалено: " + this.itemsDel.length
         },
 
         itemsHideAddText() {
-            let s = ""
-
-            if (this.itemsHideAdd.length > 0) {
-                s = "Скрыто: " + this.itemsHideAdd.length
-            }
-
-            return s
+            return "Скрыто: " + this.itemsHideAdd.length
         },
 
         itemsHideDelText() {
-            let s = ""
-
-            if (this.itemsHideDel.length > 0) {
-                s = s + "Показано: " + this.itemsHideDel.length
-            }
-
-            return s
+            return "Показано: " + this.itemsHideDel.length
         },
 
     },
@@ -454,11 +485,107 @@ export default {
         },
 
         filter(taskItem) {
-            if (!this.showHidden && taskItem.isHidden) {
+            if (taskItem.isHidden && !this.showHidden) {
                 return false
             }
 
-            return true
+            //
+            if (taskItem.isDeleted && !this.showHidden) {
+                return false
+            }
+
+            //
+            if (!this.filterText) {
+                return true
+            } else {
+                if (this.contains(this.filterText, taskItem.question.valueTranslate)) {
+                    return true
+                }
+
+                if (this.contains(this.filterText, taskItem.question.valueSpelling)) {
+                    return true
+                }
+
+                if (this.contains(this.filterText, taskItem.answer.valueTranslate)) {
+                    return true
+                }
+
+                if (this.contains(this.filterText, taskItem.answer.valueSpelling)) {
+                    return true
+                }
+            }
+
+            //
+            return false
+        },
+
+        contains(filter, value) {
+            if (!filter) {
+                return true
+            }
+
+            if (!value) {
+                return false
+            }
+
+            if (value.includes(filter)) {
+                return true
+            } else {
+                return false
+            }
+        },
+
+        compareFunction(v1, v2) {
+            if (!v1.factQuestion) {
+                return 1
+            } else if (!v2.factQuestion) {
+                return -1
+            } else if (this.sortField === "question") {
+                if (v1.question.valueSpelling > v2.question.valueSpelling) {
+                    return 1
+                } else if (v1.question.valueSpelling < v2.question.valueSpelling) {
+                    return -1
+                } else {
+                    return 0
+                }
+            } else if (this.sortField === "answer") {
+                if (v1.answer.valueTranslate > v2.answer.valueTranslate) {
+                    return 1
+                } else if (v1.answer.valueTranslate < v2.answer.valueTranslate) {
+                    return -1
+                } else {
+                    return 0
+                }
+            } else if (this.sortField === "ratingAsc") {
+                if (v1.ratingTaskForSort > v2.ratingTaskForSort) {
+                    return 1
+                } else if (v1.ratingTaskForSort < v2.ratingTaskForSort) {
+                    return -1
+                } else {
+                    return 0
+                }
+            } else if (this.sortField === "ratingDesc") {
+                if (v1.ratingTaskForSort < v2.ratingTaskForSort) {
+                    return 1
+                } else if (v1.ratingTaskForSort > v2.ratingTaskForSort) {
+                    return -1
+                } else {
+                    return 0
+                }
+            } else {
+                // По умолчанию сортируем по коду факта-вопроса, а потом по рейтингу
+                if (v1.factQuestion > v2.factQuestion) {
+                    return 1
+                } else if (v1.factQuestion < v2.factQuestion) {
+                    return -1
+                } else if (v1.factQuestion === v2.factQuestion && v1.ratingTask > v2.ratingTask) {
+                    return 1
+                } else if (v1.factQuestion === v2.factQuestion && v1.ratingTask < v2.ratingTask) {
+                    return -1
+                } else {
+                    return 0
+                }
+            }
         },
 
         /* -------------------------------- */
@@ -507,7 +634,7 @@ export default {
 
 
             //
-            ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
+            //ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
 
 
             //
@@ -538,12 +665,12 @@ export default {
 
 
             //
-            if (this.itemsHideAdd.length === 0 && this.addMode === "viewItemsHideAdd") {
-                this.setAddMode("text")
+            if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
+                this.setViewMode("addByText")
             }
             //
-            if (this.itemsHideDel.length === 0 && this.addMode === "viewItemsHideDel") {
-                this.setAddMode("text")
+            if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
+                this.setViewMode("addByText")
             }
         },
 
@@ -611,11 +738,36 @@ export default {
         },
 
         takeRemoveMenuClick(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                this.itemsDel.splice(p, 1)
+            // Собственное состояние
+            taskItem.isDeleted = !taskItem.isDeleted
+            if (taskItem.isDeleted) {
+                taskItem.isKnownGood = false
+                taskItem.isKnownBad = false
+            }
+
+
+            // Общий счетчик
+            if (taskItem.isDeleted) {
+                this.hiddenCount = this.hiddenCount + 1
             } else {
+                this.hiddenCount = this.hiddenCount - 1
+            }
+
+
+            // Состояние в списках
+            let p = utils.itemPosInItems(taskItem, this.itemsDel)
+            //
+            if (taskItem.isDeleted && p === -1) {
                 this.itemsDel.push(taskItem)
+            }
+            //
+            if (!taskItem.isDeleted && p !== -1) {
+                this.itemsDel.splice(p, 1)
+            }
+
+            //
+            if (this.itemsDel.length === 0 && this.viewMode === "viewItemsDel") {
+                this.setViewMode("addByText")
             }
         },
 
@@ -647,47 +799,85 @@ export default {
 
             //
             if (this.itemsAdd.length === 0) {
-                this.setAddMode("text")
+                this.setViewMode("addByText")
             }
         },
 
         /* -------------------------------- */
 
         clickItemsAddText() {
-            this.setAddMode("viewItemsAdd")
+            this.setViewMode("viewItemsAdd")
         },
 
         clickItemsDelText() {
-            this.setAddMode("viewItemsDel")
+            this.setViewMode("viewItemsDel")
         },
 
         clickItemsHideAddText() {
-            this.setAddMode("viewItemsHideAdd")
+            this.setViewMode("viewItemsHideAdd")
         },
 
         clickItemsHideDelText() {
-            this.setAddMode("viewItemsHideDel")
+            this.setViewMode("viewItemsHideDel")
         },
 
-        /*
-                btnNextClick() {
-                    this.addMode = "viewItemsAdd"
-                },
-        */
+        setViewMode(viewMode) {
+            if (viewMode !== this.viewMode) {
+                // Фильтр очищаем, ведь ищем заново
+                this.filterText=""
 
-        setAddMode(addMode) {
-            if (addMode !== this.addMode) {
+                // Ранее загруженные слова очищаем, ведь ищем заново
                 this.items.length = 0
                 this.itemsOnChange()
             }
-            this.addMode = addMode
+            this.viewMode = viewMode
+        },
+
+        btnNextClick() {
+            if (this.frameReturn) {
+                apx.showFrame({
+                    frame: this.frameReturn,
+                    props: this.frameReturnProps,
+                })
+                return
+            }
+
+            apx.showFrame({
+                frame: '/',
+            })
+            //this.viewMode = "viewItemsAdd"
         },
 
         async btnSaveClick() {
             //
-            let stPlanFact = []
+            let stPlanFactAdd = []
             for (let item of this.itemsAdd) {
-                stPlanFact.push({
+                stPlanFactAdd.push({
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+            //
+            let stPlanFactDel = []
+            for (let item of this.itemsDel) {
+                stPlanFactDel.push({
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+
+            //
+            let stPlanFactHideAddHideDel = []
+            for (let item of this.itemsHideAdd) {
+                stPlanFactHideAddHideDel.push({
+                    isHidden: item.isHidden,
+                    factAnswer: item.factAnswer,
+                    factQuestion: item.factQuestion,
+                })
+            }
+            for (let item of this.itemsHideDel) {
+                stPlanFactHideAddHideDel.push({
+                    isHidden: item.isHidden,
                     factAnswer: item.factAnswer,
                     factQuestion: item.factQuestion,
                 })
@@ -698,10 +888,18 @@ export default {
             if (!planId) {
                 // Создаем новый план и добавляем слова
                 let recPlan = {text: this.plan.planText}
-                planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFact, []])
+                planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFactAdd, []])
             } else {
                 // Добавляем слова в существующий план
-                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFact])
+                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
+
+                // Удаляем слова в существующем плане
+                await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
+            }
+
+            // Флаги
+            for (let item of stPlanFactHideAddHideDel) {
+                ctx.gameplay.api_saveUsrFact(item.factQuestion, item.factAnswer, item)
             }
 
             //
@@ -723,8 +921,8 @@ export default {
         }
 
         //
-        if (this.defaultAddMode){
-            this.addMode = this.defaultAddMode
+        if (this.defaultViewMode) {
+            this.viewMode = this.defaultViewMode
         }
 
         // Для обеспечения возможности добавлять слова в еще не созданный план
@@ -748,7 +946,8 @@ export default {
 <style scoped>
 
 .items-count-info {
-    margin: auto;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 </style>

@@ -51,7 +51,9 @@
 
 ### run.game.dao.backstage.TaskGeneratorImpl.generateItemFactsCombinations
 
-не использованы factTagQuestion, factTagAnswer
+не использованы factTagQuestion, factTagAnswer, т.е. нет возможности указать
+тип плана (звук -> перевод, написание -> перевод), 
+задействовать тэги "сложность"
 
 ### run.game.dao.backstage.TaskGeneratorImpl.prepareValuesFalse
 

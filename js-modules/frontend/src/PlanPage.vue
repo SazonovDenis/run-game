@@ -7,7 +7,7 @@
 
         <div v-if="dataLoaded">
 
-            <PlanInfo :_planText="plan.planText"
+            <PlanInfo :planText="null"
                       :ratingTask="statistic.ratingTask"
                       :ratingQuickness="statistic.ratingQuickness"
                       :ratingMax="statistic.ratingMax"
@@ -69,13 +69,6 @@
                 >
                     <q-list class="q-pa-sm">
 
-                        <!--
-                            <q-item class="q-py-md" clickable v-close-popup
-                                    @click="sortField='answer'">
-                                Перевод
-                            </q-item>
-                        -->
-
                         <q-item class="q-py-md" clickable v-close-popup
                                 @click="sortField='ratingAsc'">
                             Сложные
@@ -97,7 +90,7 @@
 
 
                 <!--
-                                <q-toggle v-model="showHidden" label="Скрытые"/>
+                <q-toggle v-model="showHidden" label="Скрытые"/>
                 -->
 
             </div>
@@ -124,17 +117,6 @@
                 />
             </q-page-sticky>
 
-            <q-page-sticky
-                _v-if="plan.isOwner === true"
-                position="bottom-right"
-                :offset="[170, 5]">
-                <q-btn round
-                       color="purple-9"
-                       icon="edit"
-                       size="1.2em"
-                       @click="onPlanEdit"
-                />
-            </q-page-sticky>
 
             <q-page-sticky
                 v-if="plan.isOwner === true"
@@ -156,7 +138,7 @@
                        color="purple-4"
                        icon="edit"
                        size="1.2em"
-                       @click="onPlanEdit_new"
+                       @click="onPlanEdit"
                 />
             </q-page-sticky>
 
@@ -190,32 +172,13 @@ export default {
         MenuContainer, PlanInfo, TaskList
     },
 
-    computed: {
-        itemStateText() {
-            if (this.itemsDel.length > 0) {
-                return "Выбрано на удаление: " + this.itemsDel.length
-            } else {
-                return ""
-            }
-        }
-    },
-
     data() {
         return {
             plan: {},
             tasks: {},
             statistic: {},
 
-            itemsDel: [],
-            itemsMenu: [
-                /*
-                                {
-                                    icon: this.itemHideMenuIcon,
-                                    color: this.itemHideMenuColor,
-                                    itemMenuClick: this.itemHideMenuClick,
-                                },
-                */
-            ],
+            itemsMenu: [],
 
             dataLoaded: false,
             frameReturn: null,
@@ -369,7 +332,7 @@ export default {
                 return false
             }
 
-            if (value.includes(filter)) {
+            if (value.toLowerCase().includes(filter.toLowerCase())) {
                 return true
             } else {
                 return false
@@ -398,24 +361,10 @@ export default {
 
         onPlanEdit() {
             apx.showFrame({
-                frame: '/planEdit',
-                props: {
-                    planId: this.plan.id,
-                    planText: this.plan.planText,
-                    frameReturn: "/plan",
-                    frameReturnProps: {planId: this.planId}
-                }
-            })
-        },
-
-        onPlanEdit_new() {
-            apx.showFrame({
                 frame: '/planAddFact',
                 props: {
-                    planId: this.plan.id,
-                    planText: this.plan.planText,
                     plan: this.plan,
-                    tasks: this.tasks,
+                    planItems: this.tasks,
                     defaultViewMode: "editPlan",
                     frameReturn: "/plan",
                     frameReturnProps: {planId: this.planId}
@@ -427,10 +376,8 @@ export default {
             apx.showFrame({
                 frame: '/planAddFact',
                 props: {
-                    planId: this.plan.id,
-                    planText: this.plan.planText,
                     plan: this.plan,
-                    tasks: this.tasks,
+                    planItems: this.tasks,
                     frameReturn: "/plan",
                     frameReturnProps: {planId: this.planId}
                 }
@@ -449,8 +396,6 @@ export default {
 
     },
 
-    created() {
-    },
 
     async mounted() {
         if (!auth.isAuth()) {
@@ -526,7 +471,6 @@ hr {
 }
 
 .plan-tasks {
-    _font-size: 1.2em;
 }
 
 .game-info {

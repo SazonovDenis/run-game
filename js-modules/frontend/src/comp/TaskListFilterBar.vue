@@ -17,7 +17,7 @@
             @update:modelValue="updateParent('filterText', $event)"
 
             class="q-mr-sm"
-            style="max-width: 9em"
+            style="max-width: 8em"
             dense outlined clearable
             placeholder="Поиск"
         >
@@ -56,12 +56,12 @@
 
                 <q-item class="q-py-md" clickable v-close-popup
                         @click="setSortField('ratingDesc')">
-                    Лучшие
+                    Легкие
                 </q-item>
 
                 <q-item class="q-py-md" clickable v-close-popup
                         @click="setSortField('ratingAsc')">
-                    Худшие
+                    Сложные
                 </q-item>
 
             </q-list>
@@ -69,9 +69,10 @@
 
 
         <q-toggle
+            v-if="hiddenCount > 0"
+            :label="'Скрытые (' + hiddenCount + ')'"
             v-model="inputShowHidden"
             @update:modelValue="updateParent('showHidden', $event)"
-            label="Скрытые"
         />
 
     </div>
@@ -88,6 +89,7 @@ export default {
         filterText: String,
         sortField: null,
         showHidden: false,
+        hiddenCount: 0,
 
         /*
                 value1: String,
@@ -113,8 +115,8 @@ export default {
             sortFieldText: {
                 question: "Слово",
                 answer: "Перевод",
-                ratingDesc: "Лучшие",
-                ratingAsc: "Худшие",
+                ratingDesc: "Легкие",
+                ratingAsc: "Сложные",
             },
             sortFieldIcon: {
                 question: "quasar.arrow.down",

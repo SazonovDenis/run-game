@@ -11,47 +11,22 @@
             <q-input class="q-mb-sm"
                      dense outlined
                      label="Название плана"
-                     v-model="plan.planText"
+                     v-model="planText"
             />
 
-            <!--
-            <div>
-                filterText: {{ filterText }}
-            </div>
-            showHidden: {{ showHidden }}
-            sortField: {{ sortField }}
-            -->
-
-            <!--
-            valueSecond: {{ valueSecond }}
-            value3: {{ value3 }}
-            valueFour: {{ valueFour }}
-            -->
-
-            <!--
-            <TaskListFilterBar
-                :value1="value1"
-                @update:value1="value1 = $event"
-
-                :valueSecond="valueSecond"
-                @update:valueSecond="valueSecond = $event"
-
-                v-model:value3="value3"
-
-                v-model:valueFour="valueFour"
-            />
-            -->
 
             <TaskListFilterBar
                 v-model:filterText="filterText"
                 v-model:sortField="sortField"
                 v-model:showHidden="showHidden"
+                v-model:hiddenCount="planItemsHiddenCount"
             />
 
+
             <TaskList
-                v-if="itemsExt.length > 0"
+                v-if="planItems.length > 0"
                 :showEdit="true"
-                :tasks="itemsExt"
+                :tasks="planItems"
                 :itemsMenu="itemsMenu_modeEdit"
                 :filter="filter"
             >
@@ -64,7 +39,7 @@
         <div v-if="viewMode==='addByText'">
 
             <TextInputText
-                :items="items"
+                :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
             >
 
@@ -73,16 +48,15 @@
                         v-if="this.hiddenCount > 0"
                         v-model="showHidden"
                         :label="'Скрытые (' + this.hiddenCount + ')'"/>
-
                 </template>
 
 
             </TextInputText>
 
             <TaskList
-                v-if="items.length > 0"
+                v-if="itemsLoaded.length > 0"
                 :showEdit="true"
-                :tasks="items"
+                :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filter"
             >
@@ -95,7 +69,7 @@
         <div v-if="viewMode==='addByPhoto'">
 
             <TextInputPhoto
-                :items="items"
+                :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
             >
 
@@ -110,9 +84,9 @@
             </TextInputPhoto>
 
             <TaskList
-                v-if="items.length > 0"
+                v-if="itemsLoaded.length > 0"
                 :showEdit="true"
-                :tasks="items"
+                :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filter"
             />
@@ -122,10 +96,10 @@
 
         <div v-if="viewMode==='viewItemsAdd'">
 
-            <q-input v-if="!planId" class="q-mb-sm"
+            <q-input v-if="!this.plan" class="q-mb-sm"
                      dense outlined
                      label="Название плана"
-                     v-model="plan.planText"
+                     v-model="planText"
             />
 
             <TaskList
@@ -179,7 +153,7 @@
                         <div
                             style="position: absolute; top: -3em;">
 
-                            <q-btn v-if="this.viewMode !== 'editPlan'"
+                            <q-btn v-if="plan && this.viewMode !== 'editPlan'"
                                    round
                                    color="purple-4"
                                    class="q-ma-xs"
@@ -260,11 +234,20 @@
                             </template>
 
                             <template
-                                v-if="itemsAdd.length > 0 || itemsDel.length > 0 || itemsHideAdd.length > 0 || itemsHideDel.length > 0">
+                                v-if="(plan && plan.planText !== planText) || itemsAdd.length > 0 || itemsDel.length > 0 || itemsHideAdd.length > 0 || itemsHideDel.length > 0">
 
+                                <template v-if="!plan && viewMode !== 'viewItemsAdd'">
 
-                                <!--
-                                <template v-if="viewMode === 'viewItemsAdd'">
+                                    <q-btn
+                                        no-caps
+                                        class="q-ma-sm"
+                                        label="Далее"
+                                        @click="btnNextClick()"
+                                    />
+
+                                </template>
+
+                                <template v-else>
 
                                     <q-btn
                                         no-caps
@@ -274,21 +257,6 @@
                                     />
 
                                 </template>
-
-                                <template v-else>
-                                -->
-
-                                <q-btn
-                                    no-caps
-                                    class="q-ma-sm"
-                                    label="Готово"
-                                    @__click="btnNextClick()"
-                                    @click="btnSaveClick()"
-                                />
-
-                                <!--
-                                 </template>
-                                -->
 
 
                             </template>
@@ -328,25 +296,21 @@ export default {
     },
 
     props: {
-        planId: null,
-        planText: null,
+        plan: null,
+        planItems: null,
 
-        tasks: null,
         defaultViewMode: null,
-
         frameReturn: null,
         frameReturnProps: null,
     },
 
     data() {
         return {
-            addMode: "text",
+            planText: null,
 
             viewMode: "addByText",
 
-            plan: {},
-            items: [],
-            itemsExt: [],
+            itemsLoaded: [],
 
             itemsAdd: [],
             itemsDel: [],
@@ -354,6 +318,7 @@ export default {
             itemsHideDel: [],
 
             hiddenCount: 0,
+            planItemsHiddenCount: 0,
 
             filterText: "",
             sortField: "ratingAsc",
@@ -406,7 +371,7 @@ export default {
 
     watch: {
         sortField: function(value, old) {
-            this.tasks.sort(this.compareFunction)
+            this.planItems.sort(this.compareFunction)
         }
     },
 
@@ -420,13 +385,23 @@ export default {
                 return "Добавление слов"
             } else if (this.viewMode === "addByText") {
                 return "Добавление слов"
-            } else {
-                return "Сохранение"
+            } else if (this.viewMode === "viewItemsHideAdd") {
+                return "Скрытые слова"
+            } else if (this.viewMode === "viewItemsHideDel") {
+                return "Показанные слова"
+            } else if (this.viewMode === "viewItemsDel") {
+                return "Удаленные слова"
+            } else if (this.viewMode === "viewItemsAdd") {
+                if (this.plan) {
+                    return "Добавленные слова"
+                } else {
+                    return "Создание плана"
+                }
             }
         },
 
         btnSaveTitle() {
-            if (this.planId) {
+            if (this.plan) {
                 return "Сохранить"
             } else {
                 return "Создать план"
@@ -454,18 +429,17 @@ export default {
     methods: {
 
         itemsOnChange() {
-            //console.info("itemsOnChange")
 
             // Удобнее держать отдельную переменную this.hiddenCount
             this.hiddenCount = 0
-            for (let item of this.items) {
+            for (let item of this.itemsLoaded) {
                 if (item.isHidden) {
                     this.hiddenCount = this.hiddenCount + 1
                 }
             }
 
             // Для новой порции слов учтем, какие мы только что скрыли и добавили
-            for (let item of this.items) {
+            for (let item of this.itemsLoaded) {
                 let posItemsHideAdd = utils.itemPosInItems(item, this.itemsHideAdd)
                 if (posItemsHideAdd !== -1) {
                     item.isHidden = true
@@ -528,7 +502,7 @@ export default {
                 return false
             }
 
-            if (value.includes(filter)) {
+            if (value.toLowerCase().includes(filter.toLowerCase())) {
                 return true
             } else {
                 return false
@@ -824,32 +798,21 @@ export default {
         setViewMode(viewMode) {
             if (viewMode !== this.viewMode) {
                 // Фильтр очищаем, ведь ищем заново
-                this.filterText=""
+                this.filterText = ""
 
                 // Ранее загруженные слова очищаем, ведь ищем заново
-                this.items.length = 0
+                this.itemsLoaded.length = 0
                 this.itemsOnChange()
             }
             this.viewMode = viewMode
         },
 
         btnNextClick() {
-            if (this.frameReturn) {
-                apx.showFrame({
-                    frame: this.frameReturn,
-                    props: this.frameReturnProps,
-                })
-                return
-            }
-
-            apx.showFrame({
-                frame: '/',
-            })
-            //this.viewMode = "viewItemsAdd"
+            this.viewMode = "viewItemsAdd"
         },
 
         async btnSaveClick() {
-            //
+            // Добавленные факты
             let stPlanFactAdd = []
             for (let item of this.itemsAdd) {
                 stPlanFactAdd.push({
@@ -857,7 +820,8 @@ export default {
                     factQuestion: item.factQuestion,
                 })
             }
-            //
+
+            // Удаленные факты
             let stPlanFactDel = []
             for (let item of this.itemsDel) {
                 stPlanFactDel.push({
@@ -866,7 +830,7 @@ export default {
                 })
             }
 
-            //
+            // Скрытые и показанные факты
             let stPlanFactHideAddHideDel = []
             for (let item of this.itemsHideAdd) {
                 stPlanFactHideAddHideDel.push({
@@ -884,12 +848,18 @@ export default {
             }
 
             //
-            let planId = this.planId
-            if (!planId) {
+            let planId
+            if (!this.plan) {
                 // Создаем новый план и добавляем слова
-                let recPlan = {text: this.plan.planText}
+                let recPlan = {text: this.planText}
                 planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFactAdd, []])
             } else {
+                planId = this.plan.id
+
+                // Редактируем план
+                let recPlan = {id: planId, text: this.planText}
+                await daoApi.invoke('m/Plan/upd', [recPlan])
+
                 // Добавляем слова в существующий план
                 await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
 
@@ -897,9 +867,9 @@ export default {
                 await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
             }
 
-            // Флаги
+            // Скрытые и показанные факты
             for (let item of stPlanFactHideAddHideDel) {
-                ctx.gameplay.api_saveUsrFact(item.factQuestion, item.factAnswer, item)
+                await ctx.gameplay.api_saveUsrFact(item.factQuestion, item.factAnswer, item)
             }
 
             //
@@ -926,14 +896,20 @@ export default {
         }
 
         // Для обеспечения возможности добавлять слова в еще не созданный план
-        if (!this.planId) {
-            let planText = apx.date.toDisplayStr(apx.date.today())
-            this.plan = {planText: "Уровень " + planText}
+        if (!this.plan) {
+            let planTextDt = apx.date.toDisplayStr(apx.date.today())
+            this.planText = "Уровень " + planTextDt
+        } else {
+            this.planText = this.plan.planText
         }
 
-        //
-        if (this.tasks) {
-            this.itemsExt = this.tasks
+
+        // Удобнее держать отдельную переменную this.planItemsHiddenCount
+        this.planItemsHiddenCount = 0
+        for (let item of this.planItems) {
+            if (item.isHidden) {
+                this.planItemsHiddenCount = this.planItemsHiddenCount + 1
+            }
         }
     },
 

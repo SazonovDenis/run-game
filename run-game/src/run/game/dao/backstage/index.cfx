@@ -12,6 +12,14 @@
                       class="run.game.dao.backstage.Plan_upd"/>
 
             </item>
+            
+
+            <item name="m/Task">
+
+               <item name="i" method="*"
+                      class="run.game.dao.backstage.Task_upd"/>
+
+            </item>
 
         </holder>
     </dao>

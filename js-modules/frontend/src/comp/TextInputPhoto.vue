@@ -55,6 +55,7 @@
 
 
         <div class="row">
+<!--
             <q-btn
                 v-if="items.length > 0"
                 no-caps
@@ -63,6 +64,7 @@
                 label="Выбрать все"
                 @click="selectAll()"
             />
+-->
 
 
             <slot name="toolbar"></slot>
@@ -89,6 +91,7 @@ export default {
     props: {
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
+        //onAddItems: {type: Function},
     },
 
     data() {
@@ -158,119 +161,17 @@ export default {
 
     methods: {
 
-        /*
-                itemHideMenuIcon(taskItem) {
-                    if (taskItem.isHidden) {
-                        return "visibility-off"
-                    } else {
-                        return "visibility"
-                    }
-                },
-
-                itemHideMenuColor(taskItem) {
-                    if (taskItem.isHidden) {
-                        let posItemsHide = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                        if (posItemsHide === -1) {
-                            return "grey-6"
-                        } else {
-                            return "red-8"
-                        }
-                    } else {
-                        let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                        if (posItemsHideDel === -1) {
-                            return "grey-6"
-                        } else {
-                            return "red-8"
-                        }
-                    }
-                },
-
-                itemHideMenuClick(taskItem) {
-                    taskItem.isHidden = !taskItem.isHidden
-                    //
-                    if (taskItem.isHidden) {
-                        taskItem.isKnownGood = false
-                        taskItem.isKnownBad = false
-                    }
-                    //
-                    //ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
-
-                    //
-                    let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
-                    let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                    let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-
-                    //
-                    if (taskItem.isHidden) {
-                        if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
-                            this.itemsHideAdd.push(taskItem)
-                        }
-                        if (posItemsHideDel !== -1) {
-                            this.itemsHideDel.splice(posItemsHideDel, 1)
-                        }
-                        if (posItemsAdd !== -1) {
-                            this.itemsAdd.splice(posItemsAdd, 1)
-                            taskItem.isInItemsAdd = false
-                        }
-                    } else {
-                        if (posItemsHideAdd !== -1) {
-                            this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                        }
-                        if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
-                            this.itemsHideDel.push(taskItem)
-                        }
-                    }
-
-                },
-
-
-                itemDeleteMenuIcon(taskItem) {
-                    //let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-                    //if (p !== -1) {
-                    if (taskItem.isInItemsAdd) {
-                        return "quasar.stepper.done"
-                    } else {
-                        return "add"
-                    }
-                },
-
-                itemDeleteMenuColor(taskItem) {
-                    //let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-                    //if (p !== -1) {
-                    if (taskItem.isInItemsAdd) {
-                        return "green-6"
-                    } else {
-                        return "grey-7"
-                    }
-                },
-
-                itemDeleteMenuClick(taskItem) {
-                    let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-                    if (p !== -1) {
-                        this.itemsAdd.splice(p, 1)
-                        taskItem.isInItemsAdd = false
-                    } else {
-                        this.itemsAdd.push(taskItem)
-                        taskItem.isInItemsAdd = true
-                        //
-                        if (taskItem.isHidden) {
-                            this.itemHideMenuClick(taskItem)
-                        }
-                    }
-                },
-        */
-
+/*
         selectAll() {
+            let itemsAdd = []
             for (let taskItem of this.items) {
-                if (!taskItem.isHidden && !taskItem.isInItemsAdd) {
-                    this.itemsAdd.push(taskItem)
-                    taskItem.isInItemsAdd = true
+                if ((taskItem.isHidden && this.showHidden) || (!taskItem.isHidden && !this.showHidden)) {
+                    itemsAdd.push(taskItem)
                 }
             }
+            this.onAddItems(itemsAdd)
         },
-
-
-        /* =============================== */
+*/
 
         onPictureClick() {
             console.log("onPictureClick")
@@ -422,28 +323,6 @@ export default {
             if (this.itemsOnChange) {
                 this.itemsOnChange()
             }
-
-            /*
-                        //
-                        this.hiddenCount = 0
-                        for (let item of this.items) {
-                            if (item.isHidden) {
-                                this.hiddenCount = this.hiddenCount + 1
-                            }
-                        }
-                        // Для новой порции слов учтем, какие мы только что скрыли и добавили
-                        for (let item of this.items) {
-                            let posItemsHideAdd = utils.itemPosInItems(item, this.itemsHideAdd)
-                            if (posItemsHideAdd !== -1) {
-                                item.isHidden = true
-                            }
-
-                            let posItemsAdd = utils.itemPosInItems(item, this.itemsAdd)
-                            if (posItemsAdd !== -1) {
-                                item.isInItemsAdd = true
-                            }
-                        }
-            */
 
             //
             this.dataLoaded = true

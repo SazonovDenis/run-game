@@ -214,34 +214,6 @@ export default {
 
     methods: {
 
-        itemHideMenuIcon(taskItem) {
-            if (taskItem.isHidden) {
-                return "visibility-off"
-            } else {
-                return "visibility"
-            }
-        },
-
-        itemHideMenuColor(taskItem) {
-            if (taskItem.isHidden) {
-                return "red-3"
-            } else {
-                return "grey-5"
-            }
-        },
-
-        itemHideMenuClick(taskItem) {
-            taskItem.isHidden = !taskItem.isHidden
-            //
-            if (taskItem.isHidden) {
-                taskItem.isKnownGood = false
-                taskItem.isKnownBad = false
-            }
-            //
-            ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
-        },
-
-
         compareFunction(v1, v2) {
             if (!v1.factQuestion) {
                 return 1

@@ -200,10 +200,16 @@ export default {
     },
 
     async api_saveUsrFact(factQuestion, factAnswer, item) {
-        let resApi = await daoApi.loadStore('m/Game/saveUsrFact',
-            [factQuestion, factAnswer, {isHidden: item.isHidden, isKnownGood: item.isKnownBad}]
+        let resApi = await daoApi.loadStore('m/Task/saveUsrFact',
+            [factQuestion, factAnswer, {
+                isHidden: item.isHidden, isKnownGood: item.isKnownBad
+            }]
         )
         return ctx.gameplay.parseResApiGame(resApi)
+    },
+
+    async api_saveUsrFacts(usrFacts, planId) {
+        await daoApi.invoke('m/Task/saveUsrFacts', [usrFacts, planId])
     },
 
     async api_gameStart(planId) {

@@ -52,13 +52,15 @@
 
                     <div class="text-grey-8 q-gutter-xs">
 
-                        <q-btn v-for="menuItem in itemsMenu"
-                               flat dense round
-                               size="1.2em"
-                               :icon="itemMenuIcon(menuItem, taskItem)"
-                               :color="itemMenuColor(menuItem, taskItem)"
-                               @click="itemMenuClick(menuItem, taskItem)"
-                        />
+                        <template v-for="menuItem in itemsMenu">
+                            <q-btn v-if="!menuItem.hidden"
+                                   flat dense round
+                                   size="1.2em"
+                                   :icon="itemMenuIcon(menuItem, taskItem)"
+                                   :color="itemMenuColor(menuItem, taskItem)"
+                                   @click="itemMenuClick(menuItem, taskItem)"
+                            />
+                        </template>
 
 
                         <!--

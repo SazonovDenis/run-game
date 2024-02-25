@@ -10,6 +10,7 @@
 
             <q-input class="q-mb-sm"
                      dense outlined
+                     :disable="!canEditPlan()"
                      label="Название плана"
                      v-model="planText"
             />
@@ -19,7 +20,7 @@
                 v-model:filterText="filterText"
                 v-model:sortField="sortField"
                 v-model:showHidden="showHidden"
-                v-model:hiddenCount="planItemsHiddenCount"
+                v-model:hiddenCount="hiddenCount"
             />
 
 
@@ -28,7 +29,7 @@
                 :showEdit="true"
                 :tasks="planItems"
                 :itemsMenu="itemsMenu_modeEdit"
-                :filter="filter"
+                :filter="filterExt"
             >
 
             </TaskList>
@@ -45,9 +46,9 @@
 
                 <template v-slot:toolbar>
                     <q-toggle
-                        v-if="this.hiddenCount > 0"
-                        v-model="showHidden"
-                        :label="'Скрытые (' + this.hiddenCount + ')'"/>
+                        v-if="this.hiddenCountLoaded > 0"
+                        v-model="showHiddenLoaded"
+                        :label="'Скрытые (' + this.hiddenCountLoaded + ')'"/>
                 </template>
 
 
@@ -58,7 +59,7 @@
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
-                :filter="filter"
+                :filter="filterLoaded"
             >
 
             </TaskList>
@@ -74,10 +75,19 @@
             >
 
                 <template v-slot:toolbar>
+                    <q-btn
+                        v-if="itemsLoaded.length > 0"
+                        no-caps
+                        class="q-ma-sm"
+                        icon="quasar.stepper.done"
+                        label="Выбрать все"
+                        @click="selectAll()"
+                    />
+
                     <q-toggle
-                        v-if="this.hiddenCount > 0"
-                        v-model="showHidden"
-                        :label="'Скрытые (' + this.hiddenCount + ')'"/>
+                        v-if="this.hiddenCountLoaded > 0"
+                        v-model="showHiddenLoaded"
+                        :label="'Скрытые (' + this.hiddenCountLoaded + ')'"/>
 
                 </template>
 
@@ -88,7 +98,7 @@
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
-                :filter="filter"
+                :filter="filterLoaded"
             />
 
         </div>
@@ -105,7 +115,7 @@
             <TaskList
                 :showEdit="true"
                 :tasks="itemsAdd"
-                :itemsMenu="itemsMenuAdd"
+                :itemsMenu="itemsMenu_modeViewItemsAdd"
             />
 
         </div>
@@ -125,7 +135,7 @@
             <TaskList
                 :showEdit="true"
                 :tasks="itemsHideAdd"
-                :itemsMenu="itemsMenuHide"
+                :itemsMenu="itemsMenu_modeViewHide"
             />
 
         </div>
@@ -136,7 +146,7 @@
             <TaskList
                 :showEdit="true"
                 :tasks="itemsHideDel"
-                :itemsMenu="itemsMenuHide"
+                :itemsMenu="itemsMenu_modeViewHide"
             />
 
         </div>
@@ -146,7 +156,7 @@
 
             <q-footer>
 
-                <q-toolbar class="bg-grey-1 text-black" style="min-height: 5em">
+                <q-toolbar class="bg-grey-1 text-black" style="min-height: 4em">
 
 
                     <div class="row " style="width: 100%">
@@ -162,21 +172,24 @@
                                    @click="this.setViewMode('editPlan')"
                             />
 
-                            <q-btn v-if="this.viewMode !== 'addByText'"
-                                   round
-                                   color="yellow-10"
-                                   class="q-ma-xs"
-                                   size="1.2em"
-                                   icon="word-add-keyboard"
-                                   @click="this.setViewMode('addByText')"
+                            <q-btn
+                                v-if="this.canEditPlan() && this.viewMode !== 'addByText'"
+                                round
+                                color="yellow-10"
+                                class="q-ma-xs"
+                                size="1.2em"
+                                icon="word-add-keyboard"
+                                @click="this.setViewMode('addByText')"
                             />
-                            <q-btn v-if="this.viewMode !== 'addByPhoto'"
-                                   round
-                                   color="yellow-9"
-                                   class="q-ma-xs"
-                                   size="1.2em"
-                                   icon="word-add-photo"
-                                   @click="this.setViewMode('addByPhoto')"
+
+                            <q-btn
+                                v-if="this.canEditPlan() && this.viewMode !== 'addByPhoto'"
+                                round
+                                color="yellow-9"
+                                class="q-ma-xs"
+                                size="1.2em"
+                                icon="word-add-photo"
+                                @click="this.setViewMode('addByPhoto')"
                             />
                         </div>
 
@@ -318,11 +331,12 @@ export default {
             itemsHideDel: [],
 
             hiddenCount: 0,
-            planItemsHiddenCount: 0,
+            hiddenCountLoaded: 0,
 
             filterText: "",
             sortField: "ratingAsc",
             showHidden: false,
+            showHiddenLoaded: false,
 
             itemsMenu_modeAddFact: [
                 {
@@ -347,10 +361,11 @@ export default {
                     icon: this.takeRemoveMenuIcon,
                     color: this.takeRemoveMenuColor,
                     itemMenuClick: this.takeRemoveMenuClick,
+                    hidden: !this.canEditPlan(),
                 },
             ],
 
-            itemsMenuAdd: [
+            itemsMenu_modeViewItemsAdd: [
                 {
                     icon: this.itemDeleteMenuIcon,
                     color: this.itemDeleteMenuColor,
@@ -358,7 +373,7 @@ export default {
                 },
             ],
 
-            itemsMenuHide: [
+            itemsMenu_modeViewHide: [
                 {
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
@@ -428,15 +443,44 @@ export default {
 
     methods: {
 
-        itemsOnChange() {
+        selectAll() {
+            let itemsAdd = []
+            for (let taskItem of this.itemsLoaded) {
+                if ((taskItem.isHidden && this.showHiddenLoaded) || (!taskItem.isHidden && !this.showHiddenLoaded)) {
+                    itemsAdd.push(taskItem)
+                }
+            }
+            this.itemsAddItems(itemsAdd)
+        },
 
-            // Удобнее держать отдельную переменную this.hiddenCount
+
+        calcHiddenCountExt() {
             this.hiddenCount = 0
-            for (let item of this.itemsLoaded) {
+            for (let item of this.planItems) {
                 if (item.isHidden) {
                     this.hiddenCount = this.hiddenCount + 1
                 }
             }
+            //
+            if (this.hiddenCount === 0) {
+                this.showHidden = false
+            }
+        },
+
+        calcHiddenCountLoaded() {
+            this.hiddenCountLoaded = 0
+            for (let item of this.itemsLoaded) {
+                if (item.isHidden) {
+                    this.hiddenCountLoaded = this.hiddenCountLoaded + 1
+                }
+            }
+            //
+            if (this.hiddenCountLoaded === 0) {
+                this.showHiddenLoaded = false
+            }
+        },
+
+        itemsOnChange() {
 
             // Для новой порции слов учтем, какие мы только что скрыли и добавили
             for (let item of this.itemsLoaded) {
@@ -456,10 +500,33 @@ export default {
                 }
             }
 
+            // Удобнее держать отдельную переменную this.hiddenCount
+            this.calcHiddenCountLoaded()
         },
 
-        filter(taskItem) {
+        filterLoaded(taskItem) {
+            if (taskItem.isHidden && !this.showHiddenLoaded) {
+                return false
+            }
+
+            if (!taskItem.isHidden && this.showHiddenLoaded) {
+                return false
+            }
+
+            //
+            if (taskItem.isDeleted && !this.showHiddenLoaded) {
+                return false
+            }
+
+            return true
+        },
+
+        filterExt(taskItem) {
             if (taskItem.isHidden && !this.showHidden) {
+                return false
+            }
+
+            if (!taskItem.isHidden && this.showHidden) {
                 return false
             }
 
@@ -493,8 +560,8 @@ export default {
             return false
         },
 
-        contains(filter, value) {
-            if (!filter) {
+        contains(filterLoaded, value) {
+            if (!filterLoaded) {
                 return true
             }
 
@@ -502,7 +569,7 @@ export default {
                 return false
             }
 
-            if (value.toLowerCase().includes(filter.toLowerCase())) {
+            if (value.toLowerCase().includes(filterLoaded.toLowerCase())) {
                 return true
             } else {
                 return false
@@ -598,12 +665,10 @@ export default {
                 taskItem.isKnownBad = false
             }
 
-
-            //
-            if (taskItem.isHidden) {
-                this.hiddenCount = this.hiddenCount + 1
-            } else {
-                this.hiddenCount = this.hiddenCount - 1
+            // Подправим состояние "isHidden" в основном списке
+            let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
+            if (posItemsExt !== -1) {
+                this.planItems[posItemsExt].isHidden = taskItem.isHidden
             }
 
 
@@ -616,7 +681,7 @@ export default {
             let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
             let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
 
-            //
+            // Согласуем нахождение Item в других списках
             if (taskItem.isHidden) {
                 if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
                     this.itemsHideAdd.push(taskItem)
@@ -639,12 +704,25 @@ export default {
 
 
             //
+            this.calcHiddenCountLoaded()
+            this.calcHiddenCountExt()
+
+
+            //
             if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
-                this.setViewMode("addByText")
+                if (this.canEditPlan()) {
+                    this.setViewMode("addByText")
+                } else {
+                    this.setViewMode("editPlan")
+                }
             }
             //
             if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
-                this.setViewMode("addByText")
+                if (this.canEditPlan()) {
+                    this.setViewMode("addByText")
+                } else {
+                    this.setViewMode("editPlan")
+                }
             }
         },
 
@@ -652,8 +730,13 @@ export default {
 
         itemAddMenuIcon(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (p !== -1) {
-                return "quasar.stepper.done"
+            let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
+            if (p !== -1 || posItemsExt !== -1) {
+                if (p !== -1) {
+                    return "quasar.stepper.done"
+                } else {
+                    return "quasar.stepper.done"
+                }
             } else {
                 return "add"
             }
@@ -661,34 +744,72 @@ export default {
 
         itemAddMenuColor(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (p !== -1) {
-                return "green-6"
+            let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
+            if (p !== -1 || posItemsExt !== -1) {
+                if (p !== -1) {
+                    return "green-6"
+                } else {
+                    return "grey-7"
+                }
             } else {
                 return "grey-7"
             }
         },
 
-        itemAddMenuClick(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (p !== -1) {
-                this.itemsAdd.splice(p, 1)
-            } else {
-                this.itemsAdd.push(taskItem)
+        itemsAddItems(taskItems) {
+            for (let taskItem of taskItems) {
 
-                //
-                if (taskItem.isHidden) {
-                    let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                    let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                    if (posItemsHideAdd !== -1) {
-                        this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+                if (p !== -1) {
+                    this.itemsAdd.splice(p, 1)
+                } else {
+                    this.itemsAdd.push(taskItem)
+
+                    // Согласуем нахождение Item в других списках
+                    if (taskItem.isHidden) {
+                        let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                        let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                        if (posItemsHideAdd !== -1) {
+                            this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                        }
+                        if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                            this.itemsHideDel.push(taskItem)
+                        }
                     }
-                    if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
-                        this.itemsHideDel.push(taskItem)
+                    //
+                    taskItem.isHidden = false
+
+
+                    // Подправим состояние "isHidden" в основном списке
+                    let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
+                    if (posItemsExt !== -1) {
+                        this.planItems[posItemsExt].isHidden = taskItem.isHidden
                     }
+
                 }
-                //
-                taskItem.isHidden = false
             }
+
+            //
+            this.calcHiddenCountExt()
+            this.calcHiddenCountLoaded()
+        },
+
+        itemAddMenuClick(taskItem) {
+            this.itemsAddItems([taskItem])
+
+            /*
+                        let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
+                        if (posItemsExt !== -1) {
+                            return
+                        }
+
+                        let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+                        if (p !== -1) {
+                            this.itemsAdd.splice(p, 1)
+                        } else {
+                            this.itemsAddItems([taskItem])
+                        }
+            */
         },
 
         /* -------------------------------- */
@@ -726,6 +847,10 @@ export default {
             } else {
                 this.hiddenCount = this.hiddenCount - 1
             }
+            //
+            if (this.hiddenCount === 0) {
+                this.showHidden = false
+            }
 
 
             // Состояние в списках
@@ -759,7 +884,7 @@ export default {
         itemDeleteMenuColor(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
-                return "grey-7"
+                return "red-6"
             } else {
                 return "grey-7"
             }
@@ -773,7 +898,11 @@ export default {
 
             //
             if (this.itemsAdd.length === 0) {
-                this.setViewMode("addByText")
+                if (this.canEditPlan()) {
+                    this.setViewMode("addByText")
+                } else {
+                    this.setViewMode("editPlan")
+                }
             }
         },
 
@@ -795,6 +924,12 @@ export default {
             this.setViewMode("viewItemsHideDel")
         },
 
+
+        canEditPlan() {
+            return !this.plan || this.plan.isOwner === true
+        },
+
+
         setViewMode(viewMode) {
             if (viewMode !== this.viewMode) {
                 // Фильтр очищаем, ведь ищем заново
@@ -812,6 +947,10 @@ export default {
         },
 
         async btnSaveClick() {
+            // ---
+            // Параметры для вызова api
+
+
             // Добавленные факты
             let stPlanFactAdd = []
             for (let item of this.itemsAdd) {
@@ -847,7 +986,12 @@ export default {
                 })
             }
 
-            //
+
+            // ---
+            // Вызов api
+
+
+            // План
             let planId
             if (!this.plan) {
                 // Создаем новый план и добавляем слова
@@ -856,21 +1000,22 @@ export default {
             } else {
                 planId = this.plan.id
 
-                // Редактируем план
-                let recPlan = {id: planId, text: this.planText}
-                await daoApi.invoke('m/Plan/upd', [recPlan])
+                if (this.canEditPlan()) {
+                    // Редактируем план
+                    let recPlan = {id: planId, text: this.planText}
+                    await daoApi.invoke('m/Plan/upd', [recPlan])
 
-                // Добавляем слова в существующий план
-                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
+                    // Добавляем слова в существующий план
+                    await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
 
-                // Удаляем слова в существующем плане
-                await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
+                    // Удаляем слова в существующем плане
+                    await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
+                }
             }
 
             // Скрытые и показанные факты
-            for (let item of stPlanFactHideAddHideDel) {
-                await ctx.gameplay.api_saveUsrFact(item.factQuestion, item.factAnswer, item)
-            }
+            await ctx.gameplay.api_saveUsrFacts(stPlanFactHideAddHideDel, planId)
+
 
             //
             apx.showFrame({
@@ -904,15 +1049,12 @@ export default {
         }
 
 
-        // Удобнее держать отдельную переменную this.planItemsHiddenCount
-        this.planItemsHiddenCount = 0
+        // Удобнее держать отдельную переменную this.hiddenCount
+
+        this.hiddenCount = 0
         if (this.plan) {
             // Если передан план - переданы и this.planItems
-            for (let item of this.planItems) {
-                if (item.isHidden) {
-                    this.planItemsHiddenCount = this.planItemsHiddenCount + 1
-                }
-            }
+            this.calcHiddenCountExt()
         }
     },
 

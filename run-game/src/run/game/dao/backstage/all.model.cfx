@@ -22,6 +22,17 @@
     </domain>
 
 
+    <!-- Plan_upd -->
+
+    <domain name="PlanFact.upd" parent="PlanFact">
+
+        <field name="plan" req="true"/>
+        <field name="factQuestion" req="true"/>
+        <field name="factAnswer" req="true"/>
+
+    </domain>
+
+
     <!-- Fact_list -->
 
     <domain name="Fact.list" parent="id">

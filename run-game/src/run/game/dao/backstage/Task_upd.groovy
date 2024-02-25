@@ -59,6 +59,25 @@ class Task_upd extends RgmMdbUtils {
 
 
     @DaoMethod
+    public void saveUsrFacts(List<Map> usrFacts, long idPlan) {
+        for (Map usrFact : usrFacts) {
+            long factQuestion = usrFact.get("factQuestion")
+            long factAnswer = usrFact.get("factAnswer")
+            Map dataUsrFact = [
+                    isHidden   : usrFact.get("isHidden"),
+                    isKnownGood: usrFact.get("isKnownGood"),
+            ]
+            //
+            saveUsrFact(factQuestion, factAnswer, dataUsrFact)
+        }
+
+        // Пересчитаем кубы
+        long idUsr = getCurrentUserId()
+        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
+    }
+
+    @DaoMethod
     void saveUsrFact(long factQuestion, long factAnswer, Map dataUsrFact) {
         long idUsr = getCurrentUserId()
 

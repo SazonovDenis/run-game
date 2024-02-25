@@ -26,8 +26,15 @@ class Plan_upd extends RgmMdbUtils {
         long idUsr = getCurrentUserId()
         Map usrPlan = [usr: idUsr, isOwner: true]
 
+        // Добавляем план в БД
+        long idPlan = insInternal(plan, planFact, planTag, usrPlan)
+
+        // Пересчитаем кубы
+        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
+
         //
-        return insInternal(plan, planFact, planTag, usrPlan)
+        return idPlan
     }
 
 
@@ -38,7 +45,7 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void upd(Map plan) {
-        // Проверим, что запись существует и доступна пользователю
+        // Проверим, что запись о плане существует и доступна пользователю
         long idPlan = UtCnv.toLong(plan.get("id"))
         validatePlanEdit(idPlan)
 
@@ -54,24 +61,33 @@ class Plan_upd extends RgmMdbUtils {
 
     @DaoMethod
     void addFact(long idPlan, List<Map> planFact) {
-        // Проверим, что запись существует и доступна пользователю
+        // Проверим, что запись о плане существует и доступна пользователю
         validatePlanEdit(idPlan)
 
         //
         for (Map mapPlanFact : planFact) {
-            StoreRecord rec = mdb.createStoreRecord("PlanFact", mapPlanFact)
+            StoreRecord rec = mdb.createStoreRecord("PlanFact.upd", mapPlanFact)
             rec.setValue("plan", idPlan)
+            //
+            mdb.validateRecord(rec)
+            mdb.validateErrors.checkErrors()
+            //
             mdb.insertRec("PlanFact", rec)
         }
 
         // Проверим наличие заданий или создадим их
         checkPlanTasks(idPlan)
+
+        // Пересчитаем кубы
+        long idUsr = getCurrentUserId()
+        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
 
 
     @DaoMethod
     void delFact(long idPlan, List<Map> planFact) {
-        // Проверим, что запись существует и доступна пользователю
+        // Проверим, что запись о плане существует и доступна пользователю
         validatePlanEdit(idPlan)
 
         //
@@ -82,6 +98,11 @@ class Plan_upd extends RgmMdbUtils {
                     factAnswer  : mapPlanFact.get("factAnswer"),
             ])
         }
+
+        // Пересчитаем кубы
+        long idUsr = getCurrentUserId()
+        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
 
 
@@ -93,7 +114,7 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void del(long idPlan) {
-        // Проверим, что запись существует и доступна пользователю
+        // Проверим, что запись о плане существует и доступна пользователю
         validatePlanEdit(idPlan)
 
         // Метки доступа
@@ -126,6 +147,10 @@ class Plan_upd extends RgmMdbUtils {
         } else {
             mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isAllowed: true])
         }
+
+        // Пересчитаем кубы
+        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
 
 
@@ -221,6 +246,8 @@ class Plan_upd extends RgmMdbUtils {
      */
     private void checkPlanTasks(long idPlan) {
         Store st = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan])
+
+        mdb.outTable(st)
 
         // Создадим задания
         Task_upd taskUpd = mdb.create(Task_upd)

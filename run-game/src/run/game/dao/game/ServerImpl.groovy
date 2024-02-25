@@ -7,10 +7,6 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
-import kis.molap.model.coord.*
-import kis.molap.model.cube.*
-import kis.molap.model.service.*
-import kis.molap.model.value.impl.*
 import kis.molap.ntbd.model.*
 import run.game.dao.*
 import run.game.dao.backstage.*
@@ -88,7 +84,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Пересчитаем кубы
         long idPlan = recGame.getLong("plan")
-        cubesRecalc(idUsr, idGame, idPlan)
+        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+        cubeUtils.cubesRecalc(idUsr, idGame, idPlan)
     }
 
 
@@ -392,11 +389,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return stFacts
     }
 
-    @DaoMethod
-    void saveUsrFact(long factQuestion, long factAnswer, Map dataUsrFact) {
-        Task_upd upd = mdb.create(Task_upd)
-        upd.saveUsrFact(factQuestion, factAnswer, dataUsrFact)
-    }
 
     DataBox loadAndPrepareGame_Short(long idGame, long idUsr) {
         DataBox res = new DataBox()
@@ -1128,63 +1120,5 @@ where
 """
     }
 
-
-    void cubesRecalc(long idUsr, long idGame, long idPlan) {
-        // Что считаем
-        Store stPlanFact = mdb.loadQuery("select factQuestion, factAnswer, :usr usr from PlanFact where plan = :plan", [usr: idUsr, plan: idPlan])
-        CoordList coordsUsrFact = createCoords(stPlanFact, ["usr", "factQuestion", "factAnswer"])
-        CoordList coordsUsrGame = createCoords([usr: idUsr, game: idGame])
-        CoordList coordsUsrPlan = createCoords([usr: idUsr, plan: idPlan])
-
-        //
-        cubeRecalc("Cube_UsrFactStatistic", coordsUsrFact)
-        cubeRecalc("Cube_UsrGameStatistic", coordsUsrGame)
-        cubeRecalc("Cube_UsrPlanStatistic", coordsUsrPlan)
-    }
-
-
-    void cubeRecalc(String cubeName, CoordList coords) {
-        // Создаем куб
-        CubeService cubeService = getModel().bean(CubeService)
-        Cube cube = cubeService.createCube(cubeName, mdb)
-
-        // Результат будем писать в БД
-        CalcResultStreamDb res = new CalcResultStreamDb(mdb, cube.getInfo())
-        res.open()
-
-        // Расчет и запись
-        cube.calc(coords, null, null, res)
-
-        // Запись остатка
-        res.close()
-
-    }
-
-
-    CoordList createCoords(Map values) {
-        CoordList coords = CoordList.create()
-
-        Coord coord = Coord.create()
-        for (String field : values.keySet()) {
-            coord.put(field, values.get(field))
-        }
-        coords.add(coord)
-
-        return coords
-    }
-
-    CoordList createCoords(Store st, ArrayList<String> fields) {
-        CoordList coords = CoordList.create()
-
-        for (StoreRecord rec : st) {
-            Coord coord = Coord.create()
-            for (String field : fields) {
-                coord.put(field, rec.getValue(field))
-            }
-            coords.add(coord)
-        }
-
-        return coords
-    }
 
 }

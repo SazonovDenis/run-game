@@ -165,8 +165,8 @@ export default {
         },
 
         itemMenuClick(menuItem, taskItem) {
-            if (menuItem.itemMenuClick) {
-                menuItem.itemMenuClick(taskItem)
+            if (menuItem.onClick) {
+                menuItem.onClick(taskItem)
             }
         },
 

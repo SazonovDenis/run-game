@@ -55,20 +55,8 @@
 
 
         <div class="row">
-<!--
-            <q-btn
-                v-if="items.length > 0"
-                no-caps
-                class="q-ma-sm"
-                icon="quasar.stepper.done"
-                label="Выбрать все"
-                @click="selectAll()"
-            />
--->
-
 
             <slot name="toolbar"></slot>
-
 
         </div>
 
@@ -160,18 +148,6 @@ export default {
     },
 
     methods: {
-
-/*
-        selectAll() {
-            let itemsAdd = []
-            for (let taskItem of this.items) {
-                if ((taskItem.isHidden && this.showHidden) || (!taskItem.isHidden && !this.showHidden)) {
-                    itemsAdd.push(taskItem)
-                }
-            }
-            this.onAddItems(itemsAdd)
-        },
-*/
 
         onPictureClick() {
             console.log("onPictureClick")

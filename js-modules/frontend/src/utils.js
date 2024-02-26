@@ -148,6 +148,10 @@ export default {
     },
 
     itemPosInItems(item, itemsList) {
+        if (!itemsList) {
+            return -1
+        }
+
         for (let p = 0; p < itemsList.length; p++) {
             let itemEl = itemsList[p]
             if (itemEl.factAnswer === item.factAnswer &&

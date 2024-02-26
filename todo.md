@@ -80,3 +80,22 @@ if (UtWord.isAlphasEng(valueTrue)) {
 2. Порядок слов не соблюден!
 3. Догрузить аудио в список предпросмотра (там надо победить разнообразие вариантов)
 4. Все-таки нужно показывать одно слово - одна строка, а всё разнообразие куда-нибудь спрятать
+
+
+### run.game.dao.backstage.Task_upd.saveUsrFacts
+~~~
+void saveUsrFacts(List<Map> usrFacts, long idPlan) {
+~~~
+
+Параметр "план" (idPlan) не нужен для бизнес-логики, только для кубов.
+Заменить на нормальный пересчет
+
+
+### /home/dvsa/projects/jc2-projects/run-game/js-modules/frontend/src/comp/TaskList.vue
+
+~~~
+default.methods.isFactFirstAnswer
+~~~
+
+Определиться, как показывать (и выбирать) несколько вариантов ответов 
+(несколько переводов на одно слово)

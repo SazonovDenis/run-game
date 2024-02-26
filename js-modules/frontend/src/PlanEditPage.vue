@@ -25,9 +25,9 @@
 
 
             <TaskList
-                v-if="planItems.length > 0"
+                v-if="itemsExternal.length > 0"
                 :showEdit="true"
-                :tasks="planItems"
+                :tasks="itemsExternal"
                 :itemsMenu="itemsMenu_modeEdit"
                 :filter="filterExt"
             >
@@ -323,6 +323,7 @@ export default {
 
             viewMode: "addByText",
 
+            itemsExternal: [],
             itemsLoaded: [],
 
             itemsAdd: [],
@@ -342,12 +343,12 @@ export default {
                 {
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
-                    itemMenuClick: this.itemHideMenuClick,
+                    onClick: this.itemHideMenuClick,
                 },
                 {
                     icon: this.itemAddMenuIcon,
                     color: this.itemAddMenuColor,
-                    itemMenuClick: this.itemAddMenuClick,
+                    onClick: this.itemAddMenuClick,
                 },
             ],
 
@@ -355,12 +356,12 @@ export default {
                 {
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
-                    itemMenuClick: this.itemHideMenuClick,
+                    onClick: this.itemHideMenuClick,
                 },
                 {
                     icon: this.takeRemoveMenuIcon,
                     color: this.takeRemoveMenuColor,
-                    itemMenuClick: this.takeRemoveMenuClick,
+                    onClick: this.takeRemoveMenuClick,
                     hidden: !this.canEditPlan(),
                 },
             ],
@@ -369,7 +370,7 @@ export default {
                 {
                     icon: this.itemDeleteMenuIcon,
                     color: this.itemDeleteMenuColor,
-                    itemMenuClick: this.itemDeleteMenuClick,
+                    onClick: this.itemDeleteMenuClick,
                 },
             ],
 
@@ -377,7 +378,7 @@ export default {
                 {
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
-                    itemMenuClick: this.itemHideMenuClick,
+                    onClick: this.itemHideMenuClick,
                 },
             ],
 
@@ -386,7 +387,7 @@ export default {
 
     watch: {
         sortField: function(value, old) {
-            this.planItems.sort(this.compareFunction)
+            this.itemsExternal.sort(this.compareFunction)
         }
     },
 
@@ -454,9 +455,9 @@ export default {
         },
 
 
-        calcHiddenCountExt() {
+        calcHiddenCountExternal() {
             this.hiddenCount = 0
-            for (let item of this.planItems) {
+            for (let item of this.itemsExternal) {
                 if (item.isHidden) {
                     this.hiddenCount = this.hiddenCount + 1
                 }
@@ -492,11 +493,6 @@ export default {
                 let posItemsHideDel = utils.itemPosInItems(item, this.itemsHideDel)
                 if (posItemsHideDel !== -1) {
                     item.isHidden = false
-                }
-
-                let posItemsAdd = utils.itemPosInItems(item, this.itemsAdd)
-                if (posItemsAdd !== -1) {
-                    item.isInItemsAdd = true
                 }
             }
 
@@ -658,54 +654,11 @@ export default {
         },
 
         itemHideMenuClick(taskItem) {
-            taskItem.isHidden = !taskItem.isHidden
-            //
-            if (taskItem.isHidden) {
-                taskItem.isKnownGood = false
-                taskItem.isKnownBad = false
-            }
-
-            // Подправим состояние "isHidden" в основном списке
-            let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
-            if (posItemsExt !== -1) {
-                this.planItems[posItemsExt].isHidden = taskItem.isHidden
-            }
-
-
-            //
-            //ctx.gameplay.api_saveUsrFact(taskItem.factQuestion, taskItem.factAnswer, taskItem)
-
-
-            //
-            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
-            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-
-            // Согласуем нахождение Item в других списках
-            if (taskItem.isHidden) {
-                if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
-                    this.itemsHideAdd.push(taskItem)
-                }
-                if (posItemsHideDel !== -1) {
-                    this.itemsHideDel.splice(posItemsHideDel, 1)
-                }
-                if (posItemsAdd !== -1) {
-                    this.itemsAdd.splice(posItemsAdd, 1)
-                    taskItem.isInItemsAdd = false
-                }
+            if (this.itemIsHidden(taskItem)) {
+                this.itemHideDel(taskItem)
             } else {
-                if (posItemsHideAdd !== -1) {
-                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                }
-                if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
-                    this.itemsHideDel.push(taskItem)
-                }
+                this.itemHideAdd(taskItem)
             }
-
-
-            //
-            this.calcHiddenCountLoaded()
-            this.calcHiddenCountExt()
 
 
             //
@@ -728,10 +681,15 @@ export default {
 
         /* -------------------------------- */
 
+        //////////////////////////////////
+        //////////////////////////////////
+        //////////////////////////////////
+        //^c как должны выглядеть ранее добавленные слова и как НЕ реагировать на повторное добавление? Удалять?
+
+
         itemAddMenuIcon(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
-            if (p !== -1 || posItemsExt !== -1) {
+            if (this.itemIsAdded(taskItem)) {
+                let p = utils.itemPosInItems(taskItem, this.itemsAdd)
                 if (p !== -1) {
                     return "quasar.stepper.done"
                 } else {
@@ -744,7 +702,7 @@ export default {
 
         itemAddMenuColor(taskItem) {
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             if (p !== -1 || posItemsExt !== -1) {
                 if (p !== -1) {
                     return "green-6"
@@ -756,70 +714,26 @@ export default {
             }
         },
 
-        itemsAddItems(taskItems) {
-            for (let taskItem of taskItems) {
-
-                let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-                if (p !== -1) {
-                    this.itemsAdd.splice(p, 1)
-                } else {
-                    this.itemsAdd.push(taskItem)
-
-                    // Согласуем нахождение Item в других списках
-                    if (taskItem.isHidden) {
-                        let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                        let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                        if (posItemsHideAdd !== -1) {
-                            this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                        }
-                        if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
-                            this.itemsHideDel.push(taskItem)
-                        }
-                    }
-                    //
-                    taskItem.isHidden = false
-
-
-                    // Подправим состояние "isHidden" в основном списке
-                    let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
-                    if (posItemsExt !== -1) {
-                        this.planItems[posItemsExt].isHidden = taskItem.isHidden
-                    }
-
-                }
-            }
-
-            //
-            this.calcHiddenCountExt()
-            this.calcHiddenCountLoaded()
-        },
-
         itemAddMenuClick(taskItem) {
-            this.itemsAddItems([taskItem])
-
-            /*
-                        let posItemsExt = utils.itemPosInItems(taskItem, this.planItems)
-                        if (posItemsExt !== -1) {
-                            return
-                        }
-
-                        let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-                        if (p !== -1) {
-                            this.itemsAdd.splice(p, 1)
-                        } else {
-                            this.itemsAddItems([taskItem])
-                        }
-            */
+            if (this.itemIsAdded(taskItem)) {
+                this.itemDel(taskItem)
+            } else {
+                this.itemAdd(taskItem)
+            }
         },
 
         /* -------------------------------- */
 
         takeRemoveMenuIcon(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                return "del"
+            if (this.itemIsAdded(taskItem)) {
+                let p = utils.itemPosInItems(taskItem, this.itemsAdd)
+                if (p !== -1) {
+                    return "quasar.stepper.done"
+                } else {
+                    return "quasar.stepper.done"
+                }
             } else {
-                return "del"
+                return "add"
             }
         },
 
@@ -833,35 +747,10 @@ export default {
         },
 
         takeRemoveMenuClick(taskItem) {
-            // Собственное состояние
-            taskItem.isDeleted = !taskItem.isDeleted
-            if (taskItem.isDeleted) {
-                taskItem.isKnownGood = false
-                taskItem.isKnownBad = false
-            }
-
-
-            // Общий счетчик
-            if (taskItem.isDeleted) {
-                this.hiddenCount = this.hiddenCount + 1
+            if (this.itemIsAdded(taskItem)) {
+                this.itemDel(taskItem)
             } else {
-                this.hiddenCount = this.hiddenCount - 1
-            }
-            //
-            if (this.hiddenCount === 0) {
-                this.showHidden = false
-            }
-
-
-            // Состояние в списках
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            //
-            if (taskItem.isDeleted && p === -1) {
-                this.itemsDel.push(taskItem)
-            }
-            //
-            if (!taskItem.isDeleted && p !== -1) {
-                this.itemsDel.splice(p, 1)
+                this.itemAdd(taskItem)
             }
 
             //
@@ -873,8 +762,7 @@ export default {
         /* -------------------------------- */
 
         itemDeleteMenuIcon(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (p !== -1) {
+            if (this.itemIsAdded(taskItem)) {
                 return "clear"
             } else {
                 return "add"
@@ -891,9 +779,10 @@ export default {
         },
 
         itemDeleteMenuClick(taskItem) {
-            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (p !== -1) {
-                this.itemsAdd.splice(p, 1)
+            if (this.itemIsAdded(taskItem)) {
+                this.itemDel(taskItem)
+            } else {
+                this.itemAdd(taskItem)
             }
 
             //
@@ -904,6 +793,204 @@ export default {
                     this.setViewMode("editPlan")
                 }
             }
+        },
+
+        /* -------------------------------- */
+
+        /**
+         * После сохранения taskItem будет в плане и не скрыт
+         */
+        itemAdd(taskItem) {
+            console.info("itemAdd", taskItem)
+
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+
+            // Согласуем нахождение Item в других списках
+            if (posItemsExt === -1 && posItemsAdd === -1) {
+                this.itemsAdd.push(taskItem)
+            }
+            //
+            if (posItemsDel !== -1) {
+                this.itemsDel.splice(posItemsDel, 1)
+            }
+            //
+            if (taskItem.isHidden) {
+                let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                if (posItemsHideAdd !== -1) {
+                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                }
+                //
+                let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                    this.itemsHideDel.push(taskItem)
+                }
+            }
+
+            // Собственное состояние
+            taskItem.isHidden = false
+            //taskItem.isDeleted = false
+
+            // Подправим состояние "isHidden" в основном списке
+            if (posItemsExt !== -1) {
+                this.itemsExternal[posItemsExt].isHidden = false
+                this.itemsExternal[posItemsExt].isDeleted = false
+            }
+
+            //
+            this.calcHiddenCountLoaded()
+            this.calcHiddenCountExternal()
+        },
+
+        /**
+         * После сохранения taskItem не будет в плане
+         */
+        itemDel(taskItem) {
+            console.info("itemDel", taskItem)
+
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+
+            // Согласуем нахождение Item в других списках
+            if (posItemsAdd !== -1) {
+                this.itemsAdd.splice(posItemsAdd, 1)
+            }
+            //
+            if (posItemsExt !== -1 && posItemsDel === -1) {
+                this.itemsDel.push(taskItem)
+            }
+            //
+            if (taskItem.isHidden) {
+                let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                if (posItemsHideAdd !== -1) {
+                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                }
+                //
+                let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                if (posItemsHideDel === -1) {
+                    this.itemsHideDel.splice(posItemsHideDel, 1)
+                }
+            }
+
+            // Собственное состояние
+            taskItem.isHidden = false
+
+            // Подправим состояние "isHidden" в основном списке
+            if (posItemsExt !== -1) {
+                this.itemsExternal[posItemsExt].isHidden = false
+                this.itemsExternal[posItemsExt].isDeleted = true
+            }
+
+            //
+            this.calcHiddenCountLoaded()
+            this.calcHiddenCountExternal()
+        },
+
+        itemHideAdd(taskItem) {
+            // Собственное состояние
+            taskItem.isHidden = true
+            taskItem.isKnownGood = false
+            taskItem.isKnownBad = false
+
+            // Согласуем нахождение Item в других списках
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+
+            if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
+                this.itemsHideAdd.push(taskItem)
+            }
+            if (posItemsDel !== -1) {
+                this.itemsDel.splice(posItemsDel, 1)
+            }
+            if (posItemsHideDel !== -1) {
+                this.itemsHideDel.splice(posItemsHideDel, 1)
+            }
+            if (posItemsAdd !== -1) {
+                this.itemsAdd.splice(posItemsAdd, 1)
+            }
+
+            // Подправим состояние "isHidden" в основном списке
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+            if (posItemsExt !== -1) {
+                this.itemsExternal[posItemsExt].isHidden = true
+                this.itemsExternal[posItemsExt].isDeleted = false
+            }
+
+            //
+            this.calcHiddenCountLoaded()
+            this.calcHiddenCountExternal()
+        },
+
+        itemHideDel(taskItem) {
+            // Собственное состояние
+            taskItem.isHidden = false
+
+            //
+            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+
+            // Согласуем нахождение Item в других списках
+            if (posItemsHideAdd !== -1) {
+                this.itemsHideAdd.splice(posItemsHideAdd, 1)
+            }
+            if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                this.itemsHideDel.push(taskItem)
+            }
+
+            // Подправим состояние "isHidden" в основном списке
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+            if (posItemsExt !== -1) {
+                this.itemsExternal[posItemsExt].isHidden = false
+            }
+
+            //
+            this.calcHiddenCountLoaded()
+            this.calcHiddenCountExternal()
+        },
+
+        /**
+         * @returns {boolean} true, если taskItem находится в плане или будет добавлен при сохранении
+         */
+        itemIsAdded(taskItem) {
+            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (posItemsDel !== -1) {
+                return false;
+            }
+
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+            if (posItemsExt !== -1) {
+                return true;
+            }
+
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            if (posItemsAdd !== -1) {
+                return true;
+            }
+
+            return false;
+        },
+
+        /**
+         * @returns {boolean} true, если taskItem скрыт или будет скрыт при сохранении
+         */
+        itemIsHidden(taskItem) {
+            return taskItem.isHidden;
+        },
+
+        itemsAddItems(taskItems) {
+            for (let taskItem of taskItems) {
+                if (!this.itemIsAdded(taskItem)) {
+                    this.itemAdd(taskItem)
+                }
+            }
+
+            //
+            this.calcHiddenCountExternal()
+            this.calcHiddenCountLoaded()
         },
 
         /* -------------------------------- */
@@ -1040,22 +1127,23 @@ export default {
             this.viewMode = this.defaultViewMode
         }
 
-        // Для обеспечения возможности добавлять слова в еще не созданный план
-        if (!this.plan) {
+        //
+        if (this.planItems) {
+            this.itemsExternal = this.planItems
+        }
+
+        //
+        if (this.plan) {
+            this.planText = this.plan.planText
+        } else {
+            // Еще не созданный план
             let planTextDt = apx.date.toDisplayStr(apx.date.today())
             this.planText = "Уровень " + planTextDt
-        } else {
-            this.planText = this.plan.planText
         }
 
 
         // Удобнее держать отдельную переменную this.hiddenCount
-
-        this.hiddenCount = 0
-        if (this.plan) {
-            // Если передан план - переданы и this.planItems
-            this.calcHiddenCountExt()
-        }
+        this.calcHiddenCountExternal()
     },
 
 

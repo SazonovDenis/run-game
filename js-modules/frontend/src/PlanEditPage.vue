@@ -125,7 +125,7 @@
             <TaskList
                 :showEdit="true"
                 :tasks="itemsDel"
-                :itemsMenu="itemsMenu_modeEdit"
+                :itemsMenu="itemsMenu_modeViewItemsDel"
             />
 
         </div>
@@ -341,11 +341,13 @@ export default {
 
             itemsMenu_modeAddFact: [
                 {
+                    outline: this.itemHideMenuOutline,
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
                     onClick: this.itemHideMenuClick,
                 },
                 {
+                    outline: this.itemAddMenuOutline,
                     icon: this.itemAddMenuIcon,
                     color: this.itemAddMenuColor,
                     onClick: this.itemAddMenuClick,
@@ -354,6 +356,7 @@ export default {
 
             itemsMenu_modeEdit: [
                 {
+                    outline: this.itemHideMenuOutline,
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
                     onClick: this.itemHideMenuClick,
@@ -366,8 +369,25 @@ export default {
                 },
             ],
 
+            itemsMenu_modeViewItemsDel: [
+                {
+                    outline: this.itemHideMenuOutline,
+                    icon: this.itemHideMenuIcon,
+                    color: this.itemHideMenuColor,
+                    onClick: this.itemHideMenuClick,
+                },
+                {
+                    outline: this.itemAddMenuOutline,
+                    icon: this.takeRemoveMenuIcon,
+                    color: this.takeRemoveMenuColor,
+                    onClick: this.takeRemoveMenuClick,
+                    hidden: !this.canEditPlan(),
+                },
+            ],
+
             itemsMenu_modeViewItemsAdd: [
                 {
+                    outline: true,
                     icon: this.itemDeleteMenuIcon,
                     color: this.itemDeleteMenuColor,
                     onClick: this.itemDeleteMenuClick,
@@ -376,6 +396,7 @@ export default {
 
             itemsMenu_modeViewHide: [
                 {
+                    outline: true,
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
                     onClick: this.itemHideMenuClick,
@@ -627,6 +648,17 @@ export default {
 
         /* -------------------------------- */
 
+
+        itemHideMenuOutline(taskItem) {
+            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+            if (posItemsHideAdd !== -1 || posItemsHideDel !== -1) {
+                return true
+            } else {
+                return false
+            }
+        },
+
         itemHideMenuIcon(taskItem) {
             if (taskItem.isHidden) {
                 return "visibility-off"
@@ -636,21 +668,24 @@ export default {
         },
 
         itemHideMenuColor(taskItem) {
+            return "grey-7"
+/*
             if (taskItem.isHidden) {
                 let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
                 if (p !== -1) {
-                    return "red-6"
+                    return "grey-7"
                 } else {
                     return "grey-7"
                 }
             } else {
                 let p = utils.itemPosInItems(taskItem, this.itemsHideDel)
                 if (p !== -1) {
-                    return "red-5"
+                    return "grey-7"
                 } else {
-                    return "grey-6"
+                    return "grey-7"
                 }
             }
+*/
         },
 
         itemHideMenuClick(taskItem) {
@@ -663,37 +698,49 @@ export default {
 
             //
             if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
-                if (this.canEditPlan()) {
-                    this.setViewMode("addByText")
-                } else {
-                    this.setViewMode("editPlan")
-                }
+                this.setViewMode(this.defaultViewMode)
+                /*
+                                if (this.canEditPlan()) {
+                                    this.setViewMode("addByText")
+                                } else {
+                                    this.setViewMode("editPlan")
+                                }
+                */
             }
             //
             if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
-                if (this.canEditPlan()) {
-                    this.setViewMode("addByText")
-                } else {
-                    this.setViewMode("editPlan")
-                }
+                this.setViewMode(this.defaultViewMode)
+                /*
+                                if (this.canEditPlan()) {
+                                    this.setViewMode("addByText")
+                                } else {
+                                    this.setViewMode("editPlan")
+                                }
+                */
             }
         },
 
         /* -------------------------------- */
 
-        //////////////////////////////////
-        //////////////////////////////////
-        //////////////////////////////////
-        //^c как должны выглядеть ранее добавленные слова и как НЕ реагировать на повторное добавление? Удалять?
-
+        itemAddMenuOutline(taskItem) {
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+            if (posItemsAdd !== -1 || posItemsDel !== -1) {
+                return true
+            } else {
+                return false
+            }
+        },
 
         itemAddMenuIcon(taskItem) {
             if (this.itemIsAdded(taskItem)) {
                 let p = utils.itemPosInItems(taskItem, this.itemsAdd)
                 if (p !== -1) {
-                    return "quasar.stepper.done"
+                    return "del"
+                    //return "quasar.stepper.done"
                 } else {
-                    return "quasar.stepper.done"
+                    return "del"
+                    //return "quasar.stepper.done"
                 }
             } else {
                 return "add"
@@ -701,6 +748,9 @@ export default {
         },
 
         itemAddMenuColor(taskItem) {
+            return "grey-8"
+
+/*
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             if (p !== -1 || posItemsExt !== -1) {
@@ -712,6 +762,7 @@ export default {
             } else {
                 return "grey-7"
             }
+*/
         },
 
         itemAddMenuClick(taskItem) {
@@ -728,9 +779,11 @@ export default {
             if (this.itemIsAdded(taskItem)) {
                 let p = utils.itemPosInItems(taskItem, this.itemsAdd)
                 if (p !== -1) {
-                    return "quasar.stepper.done"
+                    return "del"
+                    //return "quasar.stepper.done"
                 } else {
-                    return "quasar.stepper.done"
+                    return "del"
+                    //return "quasar.stepper.done"
                 }
             } else {
                 return "add"
@@ -738,12 +791,15 @@ export default {
         },
 
         takeRemoveMenuColor(taskItem) {
+            return "grey-8"
+/*
             let p = utils.itemPosInItems(taskItem, this.itemsDel)
             if (p !== -1) {
                 return "red-6"
             } else {
                 return "grey-8"
             }
+*/
         },
 
         takeRemoveMenuClick(taskItem) {
@@ -763,19 +819,22 @@ export default {
 
         itemDeleteMenuIcon(taskItem) {
             if (this.itemIsAdded(taskItem)) {
-                return "clear"
+                return "del"
             } else {
                 return "add"
             }
         },
 
         itemDeleteMenuColor(taskItem) {
+            return "grey-8"
+/*
             let p = utils.itemPosInItems(taskItem, this.itemsAdd)
             if (p !== -1) {
                 return "red-6"
             } else {
                 return "grey-7"
             }
+*/
         },
 
         itemDeleteMenuClick(taskItem) {
@@ -787,11 +846,14 @@ export default {
 
             //
             if (this.itemsAdd.length === 0) {
-                if (this.canEditPlan()) {
-                    this.setViewMode("addByText")
-                } else {
-                    this.setViewMode("editPlan")
-                }
+                this.setViewMode(this.defaultViewMode)
+                /*
+                                if (this.canEditPlan()) {
+                                    this.setViewMode("addByText")
+                                } else {
+                                    this.setViewMode("editPlan")
+                                }
+                */
             }
         },
 

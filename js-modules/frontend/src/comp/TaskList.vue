@@ -54,7 +54,9 @@
 
                         <template v-for="menuItem in itemsMenu">
                             <q-btn v-if="!menuItem.hidden"
-                                   flat dense round
+                                   dense round
+                                   :flat="!itemMenuOutline(menuItem, taskItem)"
+                                   :outline="itemMenuOutline(menuItem, taskItem)"
                                    size="1.2em"
                                    :icon="itemMenuIcon(menuItem, taskItem)"
                                    :color="itemMenuColor(menuItem, taskItem)"
@@ -137,6 +139,19 @@ export default {
     },
 
     methods: {
+
+        itemMenuOutline(menuItem, taskItem) {
+            if (menuItem.outline) {
+                if (menuItem.outline instanceof Function) {
+                    return menuItem.outline(taskItem)
+                } else {
+                    return menuItem.outline
+                }
+            } else {
+                return false
+            }
+
+        },
 
         itemMenuIcon(menuItem, taskItem) {
             if (menuItem.icon) {

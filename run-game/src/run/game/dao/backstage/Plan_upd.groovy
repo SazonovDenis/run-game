@@ -6,6 +6,7 @@ import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.dao.auth.*
 
 class Plan_upd extends RgmMdbUtils {
 
@@ -116,6 +117,7 @@ class Plan_upd extends RgmMdbUtils {
     void del(long idPlan) {
         // Проверим, что запись о плане существует и доступна пользователю
         validatePlanEdit(idPlan)
+        validatePlanDel(idPlan)
 
         // Метки доступа
         long idUsr = getCurrentUserId()
@@ -162,9 +164,13 @@ class Plan_upd extends RgmMdbUtils {
         long idUsr = getCurrentUserId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
+        //
         if (rec == null || !rec.getBoolean("isAllowed")) {
             throw new XError("План не был добавлен к списку планов пользователя")
         }
+
+        //
+        validatePlanDel(idPlan)
 
         //
         mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isAllowed: false])
@@ -179,9 +185,13 @@ class Plan_upd extends RgmMdbUtils {
         long idUsr = getCurrentUserId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
+        //
         if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isOwner"))) {
             throw new XError("План не был добавлен к списку планов пользователя")
         }
+
+        //
+        validatePlanDel(idPlan)
 
         //
         mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isHidden: true])
@@ -247,8 +257,6 @@ class Plan_upd extends RgmMdbUtils {
     private void checkPlanTasks(long idPlan) {
         Store st = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan])
 
-        mdb.outTable(st)
-
         // Создадим задания
         Task_upd taskUpd = mdb.create(Task_upd)
         TaskGenerator tg = mdb.create(TaskGeneratorImpl)
@@ -309,10 +317,19 @@ group by
     void validatePlanEdit(long idPlan) {
         Plan_list list = mdb.create(Plan_list)
         StoreRecord rec = list.getPlanUsr(idPlan)
-
         //
         if (!rec.getBoolean("isOwner")) {
             throw new XError("Пользователь не имеет права редактировать план")
+        }
+    }
+
+    void validatePlanDel(long idPlan) {
+        long idUsr = getCurrentUserId()
+        UsrUpd upd = mdb.create(UsrUpd)
+        long planDefault = upd.getPlanDefault(idUsr)
+        //
+        if (idPlan == planDefault) {
+            throw new XError("Невозможно удалить план по умолчанию")
         }
     }
 

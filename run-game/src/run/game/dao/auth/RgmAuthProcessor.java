@@ -36,19 +36,25 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
             }
 
             //
-            return createAuthUser(rec.getLong("id"), rec.getString("login"), rec.getString("text"));
+            return createAuthUser(mdb, rec.getLong("id"), rec.getString("login"), rec.getString("text"));
 
         } finally {
             mdb.disconnect();
         }
     }
 
-    protected AuthUser createAuthUser(long id, String login, String text) {
+    protected AuthUser createAuthUser(Mdb mdb, long id, String login, String text) throws Exception {
         Map<String, Object> attrs = new LinkedHashMap<>();
         attrs.put("id", id);
         attrs.put("login", login);
         attrs.put("text", text);
 
+        // План "Мои слова"
+        UsrUpd upd = mdb.create(UsrUpd.class);
+        long planDefault = upd.getPlanDefault(id);
+        attrs.put("planDefault", planDefault);
+
+        //
         return new DefaultAuthUser(attrs);
     }
 

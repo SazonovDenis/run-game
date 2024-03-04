@@ -4,11 +4,15 @@
 
     <domain name="UsrPlan" parent="tab.id" tag.db="true"
             title="Информация о доступе пользователя к плану">
+
         <field name="plan" parent="Plan/ref"/>
         <field name="usr" parent="Usr/ref"/>
 
+
         <!-- Эти поля пользователь может установить сам для себя -->
+
         <field name="isHidden" parent="boolean" title="План скрыт для пользователя"/>
+
 
         <!-- Эти поля пользователь может установить для другого пользователя, если сам является автором -->
 
@@ -20,9 +24,10 @@
 
         <field name="isAllowed" parent="boolean" title="Пользователю разрешен доступ">
             <!--@
-            Так помечаются планы, доступные для пользователя.
+            Так помечаются общие планы, доступные для пользователя.
             -->
         </field>
+
 
         <!-- Обеспечим уникальность -->
         <dbindex name="main" fields="usr,plan" unique="true"/>

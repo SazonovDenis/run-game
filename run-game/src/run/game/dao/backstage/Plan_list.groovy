@@ -102,6 +102,7 @@ select
     coalesce(UsrPlan.isHidden, 0) isHidden,
     coalesce(UsrPlan.isOwner, 0) isOwner,
     coalesce(UsrPlan.isAllowed, 0) isAllowed,
+    (case when PlanTag_access_default.plan is null then 0 else 1 end) as isDefault,
     
     coalesce(Cube_UsrPlan.count, 0) count,
     coalesce(Cube_UsrPlan.countFull, 0) countFull,
@@ -112,6 +113,11 @@ from
     Plan
     left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
     left join Cube_UsrPlan on (Plan.id = Cube_UsrPlan.plan and UsrPlan.usr = :usr)
+    left join PlanTag PlanTag_access_default on (
+        UsrPlan.usr = :usr and
+        UsrPlan.plan = PlanTag_access_default.plan and
+        PlanTag_access_default.tag = $RgmDbConst.Tag_plan_access_default
+    ) 
 )
 
 select 

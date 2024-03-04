@@ -2,6 +2,7 @@ package run.game.testdata.fixture
 
 import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
+import run.game.dao.auth.*
 import run.game.util.*
 
 /**
@@ -11,11 +12,18 @@ class Usr_fb extends BaseFixtureBuilder {
 
     protected void onBuild() {
         FixtureTable fxUsr = fx.table("Usr")
+        fxUsr.rangeId(2000)
 
         // Заполним из наших csv
-        Store stTagCsv = fxUsr.getStore()
+        Store stUsr = mdb.createStore("Usr")
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)
-        utils.addFromCsv(stTagCsv, "res:run/game/testdata/csv/Usr.csv")
+        utils.addFromCsv(stUsr, "res:run/game/testdata/csv/Usr.csv")
+
+        //
+        UsrUpd upd = mdb.create(UsrUpd.class)
+        for (StoreRecord recUsr : stUsr) {
+            upd.ins(recUsr.values)
+        }
     }
 
 }

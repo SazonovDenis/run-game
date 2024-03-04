@@ -6,6 +6,7 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.dao.backstage.*
 
 public class UsrUpd extends RgmMdbUtils {
 
@@ -60,9 +61,40 @@ public class UsrUpd extends RgmMdbUtils {
         long id = mdb.insertRec("Usr", params)
 
 
+        // --- Создадим окружение пользователя
+
+        // План "Мои слова"
+        Plan_upd planUpd = mdb.create(Plan_upd)
+        planUpd.insInternal(
+                [text: "Мои слова", isPublic: false],
+                [],
+                [[tag: RgmDbConst.Tag_plan_access_default]],
+                [usr: id, isOwner: true]
+        )
+
+
         // ---
         return loadRec(id)
     }
+
+
+    long getPlanDefault(long idUsr) {
+        String sql =
+                """
+select
+    PlanTag_access_default.plan
+from 
+    UsrPlan
+    join PlanTag PlanTag_access_default on (
+        UsrPlan.usr = :usr and
+        UsrPlan.plan = PlanTag_access_default.plan and
+        PlanTag_access_default.tag = $RgmDbConst.Tag_plan_access_default
+    ) 
+"""
+        long planDefault = mdb.loadQueryRecord(sql, [usr: idUsr, isDefault: true]).getLong("plan");
+        return planDefault
+    }
+
 
     @DaoMethod
     public StoreRecord upd(Map params) {

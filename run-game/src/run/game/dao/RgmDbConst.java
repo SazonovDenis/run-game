@@ -15,6 +15,7 @@ public class RgmDbConst {
     public static long Tag_word_translate_direction_rus_eng = 201;
     public static long Tag_word_translate_direction_rus_kaz = 202;
     public static long Tag_word_translate_direction_kaz_rus = 203;
+    public static long Tag_plan_access_default = 300;  // План по умолчанию
 
     public static long TagType_word_lang = 1001;  // Язык слова
     public static long TagType_word_translate_direction = 1002;  // Направление перевода слова
@@ -24,6 +25,6 @@ public class RgmDbConst {
     public static long TagType_level_grade = 1006;  // Уровень сложности
     public static long TagType_top_list = 1007;  // Топ ххх слов
     public static long TagType_word_sound_info = 1008;  // Свойства звукового файла
-    public static long TagType_access = 2000;  // Уровень доступа
+    public static long TagType_plan_access = 3000;  // Уровень доступа к плану
 
 }

@@ -37,12 +37,13 @@
 
     <domain name="Fact.list" parent="id">
 
-        <field name="item" parent="Item/id"/>
-        <field name="itemValue" parent="Item/value"/>
         <field name="factDataType" parent="Fact/dataType"/>
         <field name="factValue" parent="Fact/value"/>
 
         <field name="factTag" parent="object"/>
+
+        <field name="item" parent="Item/id"/>
+        <field name="itemValue" parent="Item/value"/>
 
     </domain>
 

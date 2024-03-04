@@ -163,6 +163,7 @@ select
     Item.value itemValue,
     
     Fact.id,
+    Fact.id fact,
     Fact.dataType factDataType,
     Fact.value factValue
 

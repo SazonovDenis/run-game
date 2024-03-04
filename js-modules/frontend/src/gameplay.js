@@ -45,21 +45,6 @@ export default {
         ctx.gameplay = null
     },
 
-    async getUserInfo() {
-        let res = await apx.jcBase.ajax.request({
-            url: "auth/getUserInfo",
-        })
-
-        this.globalState.user.id = res.data.id
-        this.globalState.user.login = res.data.login
-        this.globalState.user.text = res.data.text
-        this.globalState.user.color = res.data.color
-        //
-        if (!this.globalState.user.id) {
-            this.globalState.user.id = 0
-        }
-    },
-
     /**
      * Грузим новое задание с сервера
      */
@@ -402,7 +387,7 @@ export default {
     },
 
     /**
-     * Записывает данные пользователя (нпример, пришедшие от ajax-запроса авторизации auth/login)
+     * Записывает данные пользователя data (например, пришедшие от ajax-запроса авторизации auth/login)
      * в переменную apx.cfg.userInfo (которая возвращается фунцией auth.getUserInfo).
      *
      * Это дает состояние залогиненности в приложение.
@@ -416,8 +401,9 @@ export default {
         userInfo.id = data.id
         userInfo.login = data.login
         userInfo.text = data.text
-        userInfo.color = data.color
         userInfo.guest = data.guest
+        userInfo.color = data.color
+        userInfo.planDefault = data.planDefault
     },
 
     /**
@@ -430,8 +416,9 @@ export default {
         userInfo.id = null
         userInfo.login = null
         userInfo.text = null
-        userInfo.color = null
         userInfo.guest = null
+        userInfo.color = null
+        userInfo.planDefault = null
     },
 
 

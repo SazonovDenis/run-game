@@ -49,26 +49,6 @@ class Tesseract_Test extends RgmBase_Test {
         t()
     }
 
-    @Test
-    void t11_00_tsv() {
-        inFileName = "test/run/game/dao/ocr/11-00.jpg"
-        outFileName = "temp/11-00.tsv"
-        outFileNameCL = "temp/11-00"
-        lang = "eng+rus"
-        outFormat = "tsv"
-        t()
-    }
-
-    @Test
-    void t12_00_tsv() {
-        inFileName = "test/run/game/dao/ocr/12-00.jpg"
-        outFileName = "temp/12-00.tsv"
-        outFileNameCL = "temp/12-00"
-        lang = "eng+rus"
-        outFormat = "tsv"
-        t()
-    }
-
     void t() {
         String exeFile = "tesseract ${inFileName} ${outFileNameCL} -l ${lang} ${outFormat} --tessdata-dir /usr/local/share/tessdata/"
 

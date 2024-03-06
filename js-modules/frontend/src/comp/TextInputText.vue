@@ -31,16 +31,16 @@
 <script>
 
 import {daoApi} from "../dao"
-import TaskList from "./TaskList"
 import MenuContainer from "./MenuContainer"
 
 export default {
 
     components: {
-        MenuContainer, TaskList
+        MenuContainer,
     },
 
     props: {
+        planId: null,
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
     },
@@ -64,7 +64,7 @@ export default {
             let resApi
             try {
                 daoApi.waitShow = false
-                resApi = await daoApi.loadStore("m/Game/findItems", [valueNow])
+                resApi = await daoApi.loadStore("m/Game/findItems", [valueNow, this.planId])
             } finally {
                 daoApi.waitShow = true
             }
@@ -75,10 +75,6 @@ export default {
             this.items.length = 0
             for (let item of items) {
                 this.items.push(item)
-            }
-            // Для красивого отступа от последнего элемента todo сделать красивее
-            if (this.items.length > 5) {
-                this.items.push({})
             }
 
             // Уведомим родителя

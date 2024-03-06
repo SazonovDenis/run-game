@@ -36,12 +36,16 @@
             <q-separator/>
 
 
-            <div class="row q-mb-sm">
+<!--
+            <div class="row q-mb-sm bg-white" ref="stickyElement"
+                 :class="{ 'sticky-filter-panel': sticky_filter }">
+-->
+            <div class="row q-mb-sm bg-white">
 
                 <div class="q-mr-sm">
 
                     <q-input
-                        style="max-width: 9em"
+                        style="max-width: 10em"
                         dense outlined clearable
                         v-model="filterText"
                         placeholder="Поиск"
@@ -111,7 +115,7 @@
                 <q-btn no-caps
                        color="red-7"
                        icon="del"
-                       label="Удалить план"
+                       label="Удалить уровень"
                        size="1.2em"
                        @click="onPlanDelete"
                 />
@@ -203,6 +207,8 @@ export default {
                         showHidden: false,
             */
             filterText: null,
+
+            //sticky_filter: false,
         }
     },
 
@@ -367,6 +373,19 @@ export default {
             })
         },
 
+/*
+        handleScroll() {
+            const element = this.$refs.stickyElement;
+            if (element) {
+                const offset = element.offsetTop;
+                if (window.pageYOffset + 40 > offset) {
+                    this.sticky_filter = true;
+                } else {
+                    this.sticky_filter = false;
+                }
+            }
+        }
+*/
     },
 
 
@@ -420,16 +439,15 @@ export default {
         // --- Сортировка по умолчанию
         this.sortField = "ratingAsc"
 
-        // Для красивого отступа от последнего элемента todo сделать красивее
-        if (this.tasks.length > 5) {
-            this.tasks.push({})
-        }
-
         //
         this.dataLoaded = true
+
+        // ---
+        //window.addEventListener('scroll', this.handleScroll);
     },
 
     unmounted() {
+        //window.removeEventListener('scroll', this.handleScroll);
     },
 
 }
@@ -450,6 +468,17 @@ hr {
     font-size: 1.5em;
     text-align: center;
 }
+
+/*
+.sticky-filter-panel {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    padding: 10px 0;
+    width: 100%;
+    z-index: 1000;
+}
+*/
 
 </style>
 

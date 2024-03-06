@@ -51,6 +51,11 @@ class Ocr extends RgmMdbUtils {
     String tesseract(String inFileName, String lang) {
         String outFileName = UtFile.removeExt(inFileName)
 
+        // Для отладки
+        if (getApp().getEnv().isDev()) {
+            inFileName = "run-game/test/run/game/dao/ocr/alice.jpg"
+        }
+
         //
         String exeFile = "tesseract ${inFileName} ${outFileName} -l ${lang} --tessdata-dir /usr/local/share/tessdata/"
 

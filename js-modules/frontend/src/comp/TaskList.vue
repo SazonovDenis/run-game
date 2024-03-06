@@ -1,111 +1,152 @@
 <template>
 
-    <q-list _bordered _separator>
+    <q-list>
         <template v-for="(taskItem, index) in tasks">
-            <q-item v-if="!taskItem.factQuestion" v-ripple>
-                <div style="height: 3em">&nbsp;</div>
-            </q-item>
 
-            <q-item v-else-if="isItemShown(taskItem)"
-                    :class="getClassItemRow(taskItem, index)"
-                    clickable v-ripple>
+            <q-slide-item @left="onLeft($event, taskItem)"
+                          @right="onRight($event, taskItem)">
 
-                <q-item-section top avatar v-if="showAnswerResult">
-                    <div
-                        :class="getClassAnswerResult(taskItem) + ' task-state-state'">
+                <template v-slot:left
+                          v-if="actionLeftSlide && actionLeftSlide.hidden !== true">
+                    <div class="row">
+                        <div v-if="actionLeftSlide.icon">
+                            <q-icon left :name="itemMenuIcon(actionLeftSlide, taskItem)"/>
+                        </div>
+                        <div :class="!actionLeftSlide.info?'slide-left-no-info':''">
+                            <div class="slide-label">
+                                {{ actionLeftSlide.label }}
+                            </div>
+                            <div class="slide-info" v-if="actionLeftSlide.info">
+                                {{ actionLeftSlide.info }}
+                            </div>
+                        </div>
                     </div>
-                </q-item-section>
+                </template>
+
+                <template v-slot:right
+                          v-if="actionRightSlide && actionRightSlide.hidden !== true">
+                    <div class="slide-label">
+                        {{ actionRightSlide.label }}
+                        <q-icon v-if="actionRightSlide.icon"
+                                :name="itemMenuIcon(actionRightSlide, taskItem)"/>
+                    </div>
+                    <div class="slide-info" v-if="actionRightSlide.info">
+                        {{ actionRightSlide.info }}
+                    </div>
+                </template>
 
 
-                <q-item-section>
+                <q-item v-if="isItemShown(taskItem)"
+                        :class="getClassItemRow(taskItem, index)"
+                        clickable v-ripple>
 
-                    <q-item-label overline class="question"
-                                  v-if="isFactFirstAnswer(taskItem, index)">
-
-                        <TaskValue v-if="showTaskData"
-                                   :task="taskItem.taskQuestion"
-                                   :doShowText="true"/>
-
-                        <TaskValue v-else
-                                   :task="taskItem.question"
-                                   :doShowText="true"/>
-
-                    </q-item-label>
+                    <q-item-section top avatar v-if="showAnswerResult">
+                        <div
+                            :class="getClassAnswerResult(taskItem) + ' task-state-state'">
+                        </div>
+                    </q-item-section>
 
 
-                    <q-item-label class="answer">
+                    <q-item-section>
 
-                        <TaskValue v-if="showTaskData"
-                                   :task="taskItem.taskAnswer"
-                                   :doShowText="true"/>
+                        <q-item-label overline class="question"
+                                      v-if="isFactFirstAnswer(taskItem, index)">
 
-                        <TaskValue v-else
-                                   :task="taskItem.answer"
-                                   :doShowText="true"/>
+                            <TaskValue v-if="showTaskData"
+                                       :task="taskItem.taskQuestion"
+                                       :doShowText="true"/>
 
-                    </q-item-label>
+                            <TaskValue v-else
+                                       :task="taskItem.question"
+                                       :doShowText="true"/>
 
-                </q-item-section>
+                        </q-item-label>
 
 
-                <q-item-section top side v-if="showEdit">
+                        <q-item-label class="answer">
 
-                    <div class="text-grey-8 q-gutter-xs">
+                            <TaskValue v-if="showTaskData"
+                                       :task="taskItem.taskAnswer"
+                                       :doShowText="true"/>
 
-                        <template v-for="menuItem in itemsMenu">
-                            <q-btn v-if="!menuItem.hidden"
-                                   dense round
-                                   :flat="!itemMenuOutline(menuItem, taskItem)"
-                                   :outline="itemMenuOutline(menuItem, taskItem)"
-                                   size="1.2em"
-                                   :icon="itemMenuIcon(menuItem, taskItem)"
-                                   :color="itemMenuColor(menuItem, taskItem)"
-                                   @click="itemMenuClick(menuItem, taskItem)"
+                            <TaskValue v-else
+                                       :task="taskItem.answer"
+                                       :doShowText="true"/>
+
+                        </q-item-label>
+
+                    </q-item-section>
+
+
+                    <q-item-section top side v-if="showEdit">
+
+                        <div class="text-grey-8 q-gutter-xs">
+
+                            <template v-for="menuItem in itemsMenu">
+                                <q-btn v-if="menuItem.hidden !== true"
+                                       dense round
+                                       :flat="!itemMenuOutline(menuItem, taskItem)"
+                                       :outline="itemMenuOutline(menuItem, taskItem)"
+                                       size="1.2em"
+                                       :icon="itemMenuIcon(menuItem, taskItem)"
+                                       :color="itemMenuColor(menuItem, taskItem)"
+                                       @click="itemMenuClick(menuItem, taskItem)"
+                                />
+                            </template>
+
+
+                            <!--
+                            <q-btn flat dense round
+                                   icon="more-h"
+                                   size="1.0em"
                             />
-                        </template>
+                            -->
+
+                        </div>
+
+                    </q-item-section>
 
 
-                        <!--
-                        <q-btn flat dense round
-                               icon="more-h"
-                               size="1.0em"
-                        />
-                        -->
+                    <q-item-section top side>
 
-                    </div>
+                        <div v-if="showAnswerResult" style="min-width: 2em">
 
-                </q-item-section>
+                            <q-badge
+                                v-if="taskItem.ratingTaskDiff > 0"
+                                color="green-5"
+                                :label="'+'+taskItem.ratingTaskDiff"/>
 
+                            <q-badge
+                                v-if="taskItem.ratingTaskDiff < 0"
+                                color="red-5"
+                                :label="taskItem.ratingTaskDiff"/>
+                        </div>
 
-                <q-item-section top side>
+                        <div v-else style="min-width: 2em">
 
-                    <div v-if="showAnswerResult" style="min-width: 2em">
+                            <q-badge
+                                :text-color="getRatingTextColor(taskItem.ratingTask)"
+                                :color="getRatingColor(taskItem.ratingTask)"
+                                :label="taskItem.ratingTask"/>
+                        </div>
 
-                        <q-badge
-                            v-if="taskItem.ratingTaskDiff > 0"
-                            color="green-5"
-                            :label="'+'+taskItem.ratingTaskDiff"/>
-
-                        <q-badge
-                            v-if="taskItem.ratingTaskDiff < 0"
-                            color="red-5"
-                            :label="taskItem.ratingTaskDiff"/>
-                    </div>
-
-                    <div v-else style="min-width: 2em">
-
-                        <q-badge
-                            :text-color="getRatingTextColor(taskItem.ratingTask)"
-                            :color="getRatingColor(taskItem.ratingTask)"
-                            :label="taskItem.ratingTask"/>
-                    </div>
-
-                </q-item-section>
+                    </q-item-section>
 
 
-            </q-item>
+                </q-item>
+
+            </q-slide-item>
 
         </template>
+
+        <!--
+        Элемент для последнего "пустого" элемента.
+        Чтобы кнопки списка не загораживали последнюю строку
+        -->
+        <q-item>
+            <div style="height: 2em">&nbsp;</div>
+        </q-item>
+
     </q-list>
 
 </template>
@@ -135,10 +176,26 @@ export default {
         showEdit: false,
         tasks: null,
         itemsMenu: null,
+        actionLeftSlide: null,
+        actionRightSlide: null,
         filter: null,
     },
 
     methods: {
+
+        onLeft(event, taskItem) {
+            event.reset()
+            if (this.actionLeftSlide && this.actionLeftSlide.hidden !== true) {
+                this.actionLeftSlide.onClick(taskItem)
+            }
+        },
+
+        onRight(event, taskItem) {
+            event.reset()
+            if (this.actionRightSlide && this.actionLeftSlide.hidden !== true) {
+                this.actionRightSlide.onClick(taskItem)
+            }
+        },
 
         itemMenuOutline(menuItem, taskItem) {
             if (menuItem.outline) {
@@ -211,9 +268,9 @@ export default {
 
         getClassItemRow(task, index) {
             if (index === 0 || this.isFactFirstAnswer(task, index)) {
-                return "item-first-answer"
+                return "item-first"
             } else {
-                return "item-next-answer"
+                return "item-next"
             }
         },
 
@@ -245,11 +302,11 @@ export default {
             return ""
         },
 
-        isItemShown(task) {
+        isItemShown(item) {
             if (!this.filter) {
                 return true
             } else {
-                return this.filter(task)
+                return this.filter(item)
             }
         },
 
@@ -302,14 +359,27 @@ export default {
     margin-right: 0.3em;
 }
 
-.item-first-answer {
+.item-first {
     border-top: 1px solid silver;
 }
 
-.item-next-answer {
+.item-next {
     padding-top: 0;
     _padding-top: 0.2em;
     _padding-bottom: 0.2em;
+}
+
+.slide-label {
+    font-size: 110%;
+}
+
+.slide-left-no-info {
+    align-items: center;
+    display: flex;
+}
+
+.slide-info {
+    font-size: 70%;
 }
 
 </style>

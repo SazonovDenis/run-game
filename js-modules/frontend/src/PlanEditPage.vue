@@ -5,13 +5,12 @@
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
 
-
-        <div v-if="viewMode==='editPlan'">
+        <div v-if="canEditPlan() && viewMode==='editPlan'">
 
             <q-input class="q-mb-sm"
                      dense outlined
                      :disable="!canEditPlan()"
-                     label="Название плана"
+                     label="Название уровня"
                      v-model="planText"
             />
 
@@ -23,23 +22,29 @@
                 v-model:hiddenCount="hiddenCount"
             />
 
+            <div class="scroll-area" style="height: calc(100% - 14em)">
 
-            <TaskList
-                v-if="itemsExternal.length > 0"
-                :showEdit="true"
-                :tasks="itemsExternal"
-                :itemsMenu="itemsMenu_modeEdit"
-                :filter="filterExt"
-            >
+                <TaskList
+                    v-if="itemsExternal.length > 0"
+                    :showEdit="true"
+                    :tasks="itemsExternal"
+                    :itemsMenu="itemsMenu_modeEdit"
+                    :filter="filterExt"
+                    :actionRightSlide="actionDelete"
+                    :actionLeftSlide="actionHide"
+                >
 
-            </TaskList>
+                </TaskList>
+
+            </div>
 
         </div>
 
 
-        <div v-if="viewMode==='addByText'">
+        <div v-if="canEditItemList() && viewMode==='addByText'">
 
             <TextInputText
+                :planId="plan.id"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
             >
@@ -60,6 +65,7 @@
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filterLoaded"
+                :actionLeftSlide="actionHide"
             >
 
             </TaskList>
@@ -67,9 +73,10 @@
         </div>
 
 
-        <div v-if="viewMode==='addByPhoto'">
+        <div v-if="canEditItemList() && viewMode==='addByPhoto'">
 
             <TextInputPhoto
+                :planId="plan.id"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
             >
@@ -99,6 +106,7 @@
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filterLoaded"
+                :actionLeftSlide="actionHide"
             />
 
         </div>
@@ -108,7 +116,7 @@
 
             <q-input v-if="!this.plan" class="q-mb-sm"
                      dense outlined
-                     label="Название плана"
+                     label="Название уровня"
                      v-model="planText"
             />
 
@@ -152,6 +160,54 @@
         </div>
 
 
+        <q-page-sticky
+            position="top-right"
+            :offset="[0, -40]"
+            style="z-index: 10000;"
+        >
+
+            <div
+                _style="position: absolute; top: -3em;">
+
+                <q-btn
+                    v-if="canEditPlan() && this.viewMode !== 'editPlan'"
+                    round
+                    color="purple-4"
+                    class="q-ma-xs"
+                    style="top: -0.2em;"
+                    size="1.2em"
+                    icon="edit"
+                    @click="this.setViewMode('editPlan')"
+                />
+
+                <q-btn
+                    v-if="canEditItemList() && this.viewMode !== 'addByText'"
+                    rounded
+                    color="yellow-10"
+                    class="q-ma-xs"
+                    align="left"
+                    _style="width: 4em; height: 2.5em; top: -0.2em; right: -1.5em;"
+                    size="1.5em"
+                    icon="word-add-keyboard"
+                    @click="this.setViewMode('addByText')"
+                />
+
+                <q-btn
+                    v-if="canEditItemList() && this.viewMode !== 'addByPhoto'"
+                    rounded
+                    color="yellow-9"
+                    class="q-ma-xs"
+                    align="left"
+                    _style="width: 4em; height: 2.5em; top: -0.2em; right: -1.5em;"
+                    size="1.5em"
+                    icon="word-add-photo"
+                    @click="this.setViewMode('addByPhoto')"
+                />
+            </div>
+
+        </q-page-sticky>
+
+
         <template v-slot:footer>
 
             <q-footer>
@@ -159,39 +215,7 @@
                 <q-toolbar class="bg-grey-1 text-black" style="min-height: 4em">
 
 
-                    <div class="row " style="width: 100%">
-                        <div
-                            style="position: absolute; top: -3em;">
-
-                            <q-btn v-if="plan && this.viewMode !== 'editPlan'"
-                                   round
-                                   color="purple-4"
-                                   class="q-ma-xs"
-                                   icon="edit"
-                                   size="1.2em"
-                                   @click="this.setViewMode('editPlan')"
-                            />
-
-                            <q-btn
-                                v-if="this.canEditPlan() && this.viewMode !== 'addByText'"
-                                round
-                                color="yellow-10"
-                                class="q-ma-xs"
-                                size="1.2em"
-                                icon="word-add-keyboard"
-                                @click="this.setViewMode('addByText')"
-                            />
-
-                            <q-btn
-                                v-if="this.canEditPlan() && this.viewMode !== 'addByPhoto'"
-                                round
-                                color="yellow-9"
-                                class="q-ma-xs"
-                                size="1.2em"
-                                icon="word-add-photo"
-                                @click="this.setViewMode('addByPhoto')"
-                            />
-                        </div>
+                    <div class="row" style="width: 100%">
 
                         <div class="row" style="flex-grow: 10; align-content: end">
                             <div style="flex-grow: 10">
@@ -312,12 +336,44 @@ export default {
         plan: null,
         planItems: null,
 
+        doEditPlan: {
+            type: Boolean,
+            default: true,
+        },
+        doEditHidden: {
+            type: Boolean,
+            default: true,
+        },
+        doEditItemList: {
+            type: Boolean,
+            default: true,
+        },
+
         defaultViewMode: null,
         frameReturn: null,
         frameReturnProps: null,
     },
 
     data() {
+        let actionHide = {
+            label: "Скрыть везде",
+            //info: "Слово больше не появится в играх",
+            outline: this.itemHideMenuOutline,
+            icon: this.itemHideMenuIcon,
+            color: this.itemHideMenuColor,
+            onClick: this.itemHideMenuClick,
+            hidden: !this.canEditHidden(),
+        };
+
+        let actionDelete = {
+            label: "Убрать из уровня",
+            //info: "слово из этого плана",
+            icon: this.takeRemoveMenuIcon,
+            color: this.takeRemoveMenuColor,
+            onClick: this.takeRemoveMenuClick,
+            hidden: !this.canEditItemList(),
+        }
+
         return {
             planText: null,
 
@@ -339,6 +395,9 @@ export default {
             showHidden: false,
             showHiddenLoaded: false,
 
+            actionHide: actionHide,
+            actionDelete: actionDelete,
+
             itemsMenu_modeAddFact: [
                 {
                     outline: this.itemHideMenuOutline,
@@ -355,18 +414,8 @@ export default {
             ],
 
             itemsMenu_modeEdit: [
-                {
-                    outline: this.itemHideMenuOutline,
-                    icon: this.itemHideMenuIcon,
-                    color: this.itemHideMenuColor,
-                    onClick: this.itemHideMenuClick,
-                },
-                {
-                    icon: this.takeRemoveMenuIcon,
-                    color: this.takeRemoveMenuColor,
-                    onClick: this.takeRemoveMenuClick,
-                    hidden: !this.canEditPlan(),
-                },
+                actionHide,
+                actionDelete,
             ],
 
             itemsMenu_modeViewItemsDel: [
@@ -381,7 +430,7 @@ export default {
                     icon: this.takeRemoveMenuIcon,
                     color: this.takeRemoveMenuColor,
                     onClick: this.takeRemoveMenuClick,
-                    hidden: !this.canEditPlan(),
+                    hidden: !this.canEditItemList(),
                 },
             ],
 
@@ -417,7 +466,7 @@ export default {
 
         title() {
             if (this.viewMode === "editPlan") {
-                return "Редактирование плана"
+                return "Редактирование уровня"
             } else if (this.viewMode === "addByPhoto") {
                 return "Добавление слов"
             } else if (this.viewMode === "addByText") {
@@ -432,7 +481,7 @@ export default {
                 if (this.plan) {
                     return "Добавленные слова"
                 } else {
-                    return "Создание плана"
+                    return "Создание уровня"
                 }
             }
         },
@@ -441,7 +490,7 @@ export default {
             if (this.plan) {
                 return "Сохранить"
             } else {
-                return "Создать план"
+                return "Создать уровень"
             }
         },
 
@@ -464,6 +513,18 @@ export default {
     },
 
     methods: {
+
+        canEditPlan() {
+            return this.doEditPlan && (!this.plan || this.plan.isOwner === true)
+        },
+
+        canEditHidden() {
+            return this.doEditHidden
+        },
+
+        canEditItemList() {
+            return this.doEditItemList
+        },
 
         selectAll() {
             let itemsAdd = []
@@ -504,16 +565,31 @@ export default {
 
         itemsOnChange() {
 
-            // Для новой порции слов учтем, какие мы только что скрыли и добавили
+            // Для новой порции слов учтем, какие мы только что скрыли и показали
             for (let item of this.itemsLoaded) {
+                //
                 let posItemsHideAdd = utils.itemPosInItems(item, this.itemsHideAdd)
                 if (posItemsHideAdd !== -1) {
                     item.isHidden = true
                 }
-
+                //
                 let posItemsHideDel = utils.itemPosInItems(item, this.itemsHideDel)
                 if (posItemsHideDel !== -1) {
                     item.isHidden = false
+                }
+            }
+
+            // Для новой порции слов учтем, какие мы только что добавили и удалили
+            for (let item of this.itemsLoaded) {
+                //
+                let posItemsAdd = utils.itemPosInItems(item, this.itemsAdd)
+                if (posItemsAdd !== -1) {
+                    item.isInPlan = true
+                }
+                //
+                let posItemsDel = utils.itemPosInItems(item, this.itemsDel)
+                if (posItemsDel !== -1) {
+                    item.isInPlan = false
                 }
             }
 
@@ -530,11 +606,6 @@ export default {
                 return false
             }
 
-            //
-            if (taskItem.isDeleted && !this.showHiddenLoaded) {
-                return false
-            }
-
             return true
         },
 
@@ -548,7 +619,7 @@ export default {
             }
 
             //
-            if (taskItem.isDeleted && !this.showHidden) {
+            if (!taskItem.isInPlan) {
                 return false
             }
 
@@ -669,23 +740,6 @@ export default {
 
         itemHideMenuColor(taskItem) {
             return "grey-7"
-/*
-            if (taskItem.isHidden) {
-                let p = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                if (p !== -1) {
-                    return "grey-7"
-                } else {
-                    return "grey-7"
-                }
-            } else {
-                let p = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                if (p !== -1) {
-                    return "grey-7"
-                } else {
-                    return "grey-7"
-                }
-            }
-*/
         },
 
         itemHideMenuClick(taskItem) {
@@ -699,24 +753,10 @@ export default {
             //
             if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
                 this.setViewMode(this.defaultViewMode)
-                /*
-                                if (this.canEditPlan()) {
-                                    this.setViewMode("addByText")
-                                } else {
-                                    this.setViewMode("editPlan")
-                                }
-                */
             }
             //
             if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
                 this.setViewMode(this.defaultViewMode)
-                /*
-                                if (this.canEditPlan()) {
-                                    this.setViewMode("addByText")
-                                } else {
-                                    this.setViewMode("editPlan")
-                                }
-                */
             }
         },
 
@@ -733,7 +773,7 @@ export default {
         },
 
         itemAddMenuIcon(taskItem) {
-            if (this.itemIsAdded(taskItem)) {
+            if (this.itemIsInPlan(taskItem)) {
                 let p = utils.itemPosInItems(taskItem, this.itemsAdd)
                 if (p !== -1) {
                     return "del"
@@ -749,24 +789,10 @@ export default {
 
         itemAddMenuColor(taskItem) {
             return "grey-8"
-
-/*
-            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
-            if (p !== -1 || posItemsExt !== -1) {
-                if (p !== -1) {
-                    return "green-6"
-                } else {
-                    return "grey-7"
-                }
-            } else {
-                return "grey-7"
-            }
-*/
         },
 
         itemAddMenuClick(taskItem) {
-            if (this.itemIsAdded(taskItem)) {
+            if (this.itemIsInPlan(taskItem)) {
                 this.itemDel(taskItem)
             } else {
                 this.itemAdd(taskItem)
@@ -776,14 +802,12 @@ export default {
         /* -------------------------------- */
 
         takeRemoveMenuIcon(taskItem) {
-            if (this.itemIsAdded(taskItem)) {
+            if (this.itemIsInPlan(taskItem)) {
                 let p = utils.itemPosInItems(taskItem, this.itemsAdd)
                 if (p !== -1) {
                     return "del"
-                    //return "quasar.stepper.done"
                 } else {
                     return "del"
-                    //return "quasar.stepper.done"
                 }
             } else {
                 return "add"
@@ -792,33 +816,25 @@ export default {
 
         takeRemoveMenuColor(taskItem) {
             return "grey-8"
-/*
-            let p = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (p !== -1) {
-                return "red-6"
-            } else {
-                return "grey-8"
-            }
-*/
         },
 
         takeRemoveMenuClick(taskItem) {
-            if (this.itemIsAdded(taskItem)) {
+            if (this.itemIsInPlan(taskItem)) {
                 this.itemDel(taskItem)
             } else {
                 this.itemAdd(taskItem)
             }
 
             //
-            if (this.itemsDel.length === 0 && this.viewMode === "viewItemsDel") {
-                this.setViewMode("addByText")
+            if (this.itemsDel.length === 0) {
+                this.setViewMode(this.defaultViewMode)
             }
         },
 
         /* -------------------------------- */
 
         itemDeleteMenuIcon(taskItem) {
-            if (this.itemIsAdded(taskItem)) {
+            if (this.itemIsInPlan(taskItem)) {
                 return "del"
             } else {
                 return "add"
@@ -827,18 +843,10 @@ export default {
 
         itemDeleteMenuColor(taskItem) {
             return "grey-8"
-/*
-            let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (p !== -1) {
-                return "red-6"
-            } else {
-                return "grey-7"
-            }
-*/
         },
 
         itemDeleteMenuClick(taskItem) {
-            if (this.itemIsAdded(taskItem)) {
+            if (this.itemIsInPlan(taskItem)) {
                 this.itemDel(taskItem)
             } else {
                 this.itemAdd(taskItem)
@@ -847,13 +855,6 @@ export default {
             //
             if (this.itemsAdd.length === 0) {
                 this.setViewMode(this.defaultViewMode)
-                /*
-                                if (this.canEditPlan()) {
-                                    this.setViewMode("addByText")
-                                } else {
-                                    this.setViewMode("editPlan")
-                                }
-                */
             }
         },
 
@@ -865,12 +866,18 @@ export default {
         itemAdd(taskItem) {
             console.info("itemAdd", taskItem)
 
+            //
+            if (this.itemIsHidden(taskItem)) {
+                this.itemHideDel(taskItem)
+            }
+
+            //
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
             let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
 
             // Согласуем нахождение Item в других списках
-            if (posItemsExt === -1 && posItemsAdd === -1) {
+            if (posItemsDel === -1 && /*posItemsExt === -1 &&*/ posItemsAdd === -1) {
                 this.itemsAdd.push(taskItem)
             }
             //
@@ -878,26 +885,29 @@ export default {
                 this.itemsDel.splice(posItemsDel, 1)
             }
             //
-            if (taskItem.isHidden) {
-                let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                if (posItemsHideAdd !== -1) {
-                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                }
-                //
-                let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
-                    this.itemsHideDel.push(taskItem)
-                }
-            }
+            /*
+                        if (taskItem.isHidden) {
+                            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                            if (posItemsHideAdd !== -1) {
+                                this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                            }
+                            //
+                            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                            if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+                                this.itemsHideDel.push(taskItem)
+                            }
+                        }
+            */
+
 
             // Собственное состояние
-            taskItem.isHidden = false
-            //taskItem.isDeleted = false
+            taskItem.isInPlan = true
+            //taskItem.isHidden = false
 
-            // Подправим состояние "isHidden" в основном списке
+            // Подправим состояние в основном списке
             if (posItemsExt !== -1) {
+                this.itemsExternal[posItemsExt].isInPlan = true
                 this.itemsExternal[posItemsExt].isHidden = false
-                this.itemsExternal[posItemsExt].isDeleted = false
             }
 
             //
@@ -911,6 +921,7 @@ export default {
         itemDel(taskItem) {
             console.info("itemDel", taskItem)
 
+            //
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
             let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
@@ -920,29 +931,30 @@ export default {
                 this.itemsAdd.splice(posItemsAdd, 1)
             }
             //
-            if (posItemsExt !== -1 && posItemsDel === -1) {
+            if (posItemsAdd === -1 &&/*posItemsExt !== -1 &&*/ posItemsDel === -1) {
                 this.itemsDel.push(taskItem)
             }
             //
-            if (taskItem.isHidden) {
-                let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                if (posItemsHideAdd !== -1) {
-                    this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                }
-                //
-                let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                if (posItemsHideDel === -1) {
-                    this.itemsHideDel.splice(posItemsHideDel, 1)
-                }
-            }
+            /*
+                        let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
+                        if (posItemsHideAdd !== -1) {
+                            this.itemsHideAdd.splice(posItemsHideAdd, 1)
+                        }
+                        //
+                        let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
+                        if (posItemsHideDel === -1) {
+                            this.itemsHideDel.splice(posItemsHideDel, 1)
+                        }
+            */
+
 
             // Собственное состояние
-            taskItem.isHidden = false
+            taskItem.isInPlan = false
 
             // Подправим состояние "isHidden" в основном списке
             if (posItemsExt !== -1) {
-                this.itemsExternal[posItemsExt].isHidden = false
-                this.itemsExternal[posItemsExt].isDeleted = true
+                //this.itemsExternal[posItemsExt].isHidden = false
+                this.itemsExternal[posItemsExt].isInPlan = false
             }
 
             //
@@ -953,6 +965,7 @@ export default {
         itemHideAdd(taskItem) {
             // Собственное состояние
             taskItem.isHidden = true
+            //taskItem.isInPlan = false
             taskItem.isKnownGood = false
             taskItem.isKnownBad = false
 
@@ -965,21 +978,25 @@ export default {
             if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
                 this.itemsHideAdd.push(taskItem)
             }
-            if (posItemsDel !== -1) {
-                this.itemsDel.splice(posItemsDel, 1)
-            }
+            /*
+                        if (posItemsDel !== -1) {
+                            this.itemsDel.splice(posItemsDel, 1)
+                        }
+            */
             if (posItemsHideDel !== -1) {
                 this.itemsHideDel.splice(posItemsHideDel, 1)
             }
-            if (posItemsAdd !== -1) {
-                this.itemsAdd.splice(posItemsAdd, 1)
-            }
+            /*
+                        if (posItemsAdd !== -1) {
+                            this.itemsAdd.splice(posItemsAdd, 1)
+                        }
+            */
 
             // Подправим состояние "isHidden" в основном списке
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             if (posItemsExt !== -1) {
                 this.itemsExternal[posItemsExt].isHidden = true
-                this.itemsExternal[posItemsExt].isDeleted = false
+                //this.itemsExternal[posItemsExt].isInPlan = false
             }
 
             //
@@ -999,7 +1016,7 @@ export default {
             if (posItemsHideAdd !== -1) {
                 this.itemsHideAdd.splice(posItemsHideAdd, 1)
             }
-            if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
+            if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
                 this.itemsHideDel.push(taskItem)
             }
 
@@ -1017,23 +1034,27 @@ export default {
         /**
          * @returns {boolean} true, если taskItem находится в плане или будет добавлен при сохранении
          */
-        itemIsAdded(taskItem) {
-            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
-            if (posItemsDel !== -1) {
-                return false;
-            }
+        itemIsInPlan(taskItem) {
+            return taskItem.isInPlan
 
-            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
-            if (posItemsExt !== -1) {
-                return true;
-            }
+            /*
+                        let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+                        if (posItemsDel !== -1) {
+                            return false;
+                        }
 
-            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
-            if (posItemsAdd !== -1) {
-                return true;
-            }
+                        let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+                        if (posItemsExt !== -1) {
+                            return true;
+                        }
 
-            return false;
+                        let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+                        if (posItemsAdd !== -1) {
+                            return true;
+                        }
+
+                        return false;
+            */
         },
 
         /**
@@ -1045,7 +1066,7 @@ export default {
 
         itemsAddItems(taskItems) {
             for (let taskItem of taskItems) {
-                if (!this.itemIsAdded(taskItem)) {
+                if (!this.itemIsInPlan(taskItem)) {
                     this.itemAdd(taskItem)
                 }
             }
@@ -1071,11 +1092,6 @@ export default {
 
         clickItemsHideDelText() {
             this.setViewMode("viewItemsHideDel")
-        },
-
-
-        canEditPlan() {
-            return !this.plan || this.plan.isOwner === true
         },
 
 
@@ -1153,13 +1169,17 @@ export default {
                     // Редактируем план
                     let recPlan = {id: planId, text: this.planText}
                     await daoApi.invoke('m/Plan/upd', [recPlan])
-
-                    // Добавляем слова в существующий план
-                    await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
-
-                    // Удаляем слова в существующем плане
-                    await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
                 }
+
+            }
+
+            // Состав плана
+            if (this.canEditItemList()) {
+                // Добавляем слова в существующий план
+                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
+
+                // Удаляем слова в существующем плане
+                await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
             }
 
             // Скрытые и показанные факты
@@ -1167,9 +1187,24 @@ export default {
 
 
             //
-            apx.showFrame({
-                frame: '/plan', props: {planId: planId}
-            })
+            if (this.frameReturn) {
+                apx.showFrame({
+                    frame: this.frameReturn,
+                    props: this.frameReturnProps,
+                })
+                return
+            } else {
+                apx.showFrame({
+                    frame: '/',
+                })
+                return
+            }
+
+            /*
+                        apx.showFrame({
+                            frame: '/plan', props: {planId: planId}
+                        })
+            */
 
         },
 
@@ -1201,6 +1236,13 @@ export default {
             // Еще не созданный план
             let planTextDt = apx.date.toDisplayStr(apx.date.today())
             this.planText = "Уровень " + planTextDt
+        }
+
+
+        // Проставим поле "isInPlan = true" - это нужно при редактировании
+        for (let i = 0; i < this.itemsExternal.length; i++) {
+            let task = this.itemsExternal[i]
+            task.isInPlan = true
         }
 
 

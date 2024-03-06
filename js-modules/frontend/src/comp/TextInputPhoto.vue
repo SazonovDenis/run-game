@@ -1,7 +1,7 @@
 <template>
 
-    <div>
-        <div>
+    <div style="position: relative">
+        <div v-if="isDev" style="position: absolute; z-index: 10; padding: 5px">
             info: {{ info }}
         </div>
 
@@ -26,18 +26,22 @@
             <div class="photo-btn-div">
 
                 <q-btn v-if="isCameraCapturing===true"
-                       round
-                       class="photo-btn"
+                       rounded
+                       class="photo-btn photo-btn-still"
                        color="accent"
                        icon="image"
+                       no-caps
+                       label="Распознать с камеры"
                        @click="onTakePicture"
                 />
 
                 <q-btn v-if="isCameraCapturing===false && dataLoaded===true"
-                       round
-                       class="photo-btn"
+                       rounded
+                       class="photo-btn photo-btn-clear"
                        color="primary"
-                       icon="del"
+                       _icon="del"
+                       no-caps
+                       label="Новый снимок"
                        @click="onNewPicture"
                 />
 
@@ -66,6 +70,7 @@
 
 <script>
 
+import {apx} from "../vendor"
 import {daoApi} from "../dao"
 import TaskList from "./TaskList"
 import MenuContainer from "./MenuContainer"
@@ -77,9 +82,9 @@ export default {
     },
 
     props: {
+        planId: null,
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
-        //onAddItems: {type: Function},
     },
 
     data() {
@@ -104,6 +109,10 @@ export default {
     },
 
     computed: {
+
+        isDev() {
+            return apx.jcBase.cfg.envDev
+        },
 
         getClassCameraInit() {
             if (this.wasCameraInit === false) {
@@ -281,7 +290,7 @@ export default {
 
         async loadData(dataImage) {
             //
-            let resApi = await daoApi.loadStore('m/Game/findStill', [dataImage])
+            let resApi = await daoApi.loadStore('m/Game/findStill', [dataImage, this.planId])
 
             // Заполним родительский список
             let items = resApi.records
@@ -289,10 +298,6 @@ export default {
             this.items.length = 0
             for (let item of items) {
                 this.items.push(item)
-            }
-            // Для красивого отступа от последнего элемента todo сделать красивее
-            if (this.items.length > 5) {
-                this.items.push({})
             }
 
             // Уведомим родителя
@@ -343,14 +348,21 @@ export default {
 
 .photo-btn-div {
     position: absolute;
-    bottom: 1.5rem;
-    right: 1rem;
-    opacity: 0.8;
+    bottom: 1em;
+    right: 0.5em;
 }
 
 .photo-btn {
-    height: 4rem;
-    width: 4rem;
+    height: 3em;
+    _width: 4em;
+}
+
+.photo-btn-still {
+    opacity: 0.7;
+}
+
+.photo-btn-clear {
+    opacity: 0.8;
 }
 
 #video {
@@ -394,10 +406,12 @@ export default {
 }
 
 .photo-state-wait {
+    padding: 1em 0;
     color: grey;
 }
 
 .photo-state-error {
+    padding: 1em 0;
     color: #850000;
 }
 

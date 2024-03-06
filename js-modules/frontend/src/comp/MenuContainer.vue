@@ -1,7 +1,7 @@
 <template>
     <q-layout view="hHh lpR fFf" style="user-select: none;">
 
-        <q-header reveal elevated class="bg-primary text-white">
+        <q-header _reveal elevated class="bg-primary text-white">
             <q-toolbar>
                 <q-toolbar-title>
                     <q-avatar
@@ -30,25 +30,40 @@
                      style="height: calc(100% - 204px); margin-top: 204px;">
                     <div
                         class="q-scrollarea__container scroll relative-position fit hide-scrollbar">
-                        <div class="q-scrollarea__content absolute"><!---->
+                        <div class="q-scrollarea__content absolute">
+
+                            <div class="q-item__label q-item__label--header"
+                                 style="margin-top: 1em"
+                                 @click="onGameInfo()">Последняя игра
+                            </div>
+                            <!--
+                                                        <div class="q-item__label q-item__label&#45;&#45;header"
+                                                             @click="onLevels()">Общие уровни
+                                                        </div>
+                            -->
+                            <div class="q-item__label q-item__label--header"
+                                 @click="onMyLevels()">Уровни
+                            </div>
+                            <!--
+                                                        <div class="q-item__label q-item__label&#45;&#45;header"
+                                                             @click="onStill()">Still
+                                                        </div>
+                                                        <div class="q-item__label q-item__label&#45;&#45;header"
+                                                             @click="onStill1()">Still1
+                                                        </div>
+                            -->
+
                             <div class="q-mt-md q-item__label q-item__label--header"
-                                 @click="onMain()">Главная страница
+                                 @click="onUser()">Данные игрока
                             </div>
-                            <div class="q-item__label q-item__label--header"
-                                 @click="onGameInfo()">Текущая игра
+
+                            <q-separator/>
+
+                            <div class="q-mt-md q-item__label q-item__label--header"
+                                 @click="onAbout()">Об игре
                             </div>
-                            <div class="q-item__label q-item__label--header"
-                                 @click="onLevels()">Уровни
-                            </div>
-                            <div class="q-item__label q-item__label--header"
-                                 @click="onMyLevels()">Мои уровни
-                            </div>
-                            <div class="q-item__label q-item__label--header"
-                                 @click="onStill()">Still
-                            </div>
-                            <div class="q-item__label q-item__label--header"
-                                 @click="onStill1()">Still1
-                            </div>
+
+
                             <div class="text-grey" style="padding: 25px 16px 16px;">
                                 <!--
                                 <p><em>Right Drawer has intended scroll</em></p>
@@ -260,6 +275,11 @@ export default {
             })
         },
 
+        onAbout: function() {
+            apx.showFrame({
+                frame: '/about',
+            })
+        },
         onUser: function() {
             if (auth.isAuth()) {
                 apx.showFrame({

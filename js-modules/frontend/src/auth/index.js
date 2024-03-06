@@ -14,8 +14,8 @@ export default {
      * Аутентифицирован ли пользователь
      */
     isAuth: function() {
-        let ui = this.getUserInfo()
-        if (!ui || ui.guest) {
+        let userInfo = this.getUserInfo()
+        if (!userInfo || userInfo.guest) {
             return false
         } else {
             return true

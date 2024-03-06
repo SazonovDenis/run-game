@@ -282,6 +282,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // План
         StoreRecord recPlan = mdb.createStoreRecord("Plan.server")
         recPlan.setValues(recPlanRaw.getValues())
+        if (recPlan.getBoolean("isOwner")) {
+            recPlan.setValue("isAllowed", true)
+        }
 
         // Факты в плане - список
         Store stPlanFacts = mdb.createStore("PlanFact.list")
@@ -311,19 +314,19 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     @DaoMethod
-    Store findItems(String text) {
+    Store findItems(String text, long idPlan) {
         // Ищем Item по text
         Item_list itemsList = mdb.create(Item_list)
         Store stItem = itemsList.find(text)
 
         // Превратим список Item в список пар фактов
         Set itemIds = stItem.getUniqueValues("item")
-        return loadFactList(itemIds)
+        return loadFactList(itemIds, idPlan)
     }
 
 
     @DaoMethod
-    Store findStill(String imgBase64) {
+    Store findStill(String imgBase64, long idPlan) {
         // Получим список text
         Ocr ocr = mdb.create(Ocr)
         List listText = ocr.parseStill(imgBase64)
@@ -340,7 +343,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Превратим список Item в список пар фактов (сгенерим комбинации)
         Set itemIds = stItem.getUniqueValues("id")
-        Store stFact = loadFactList(itemIds)
+        Store stFact = loadFactList(itemIds, idPlan)
 
         // Обеспечим порядок, как в исходном тексте
         Map<Object, List<StoreRecord>> factsByItems = StoreUtils.collectGroupBy_records(stFact, ["item"])
@@ -360,12 +363,12 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    Store loadFactList(Set itemIds) {
+    Store loadFactList(Set itemIds, long idPlan) {
         Store stFacts = mdb.createStore("PlanFact.list")
 
         // Факты в плане - список
         long idUsr = getCurrentUserId()
-        Store stPlanFactsRaw = mdb.loadQuery(sqlItemFactsStatistic(itemIds), [usr: idUsr])
+        Store stPlanFactsRaw = mdb.loadQuery(sqlItemFactsStatistic(itemIds), [usr: idUsr, plan: idPlan])
 
         //
         for (StoreRecord recTaskRaw : stPlanFactsRaw) {
@@ -911,6 +914,7 @@ select
     UsrFact.isHidden,
     UsrFact.isKnownGood,
     UsrFact.isKnownBad,
+    (case when PlanFact.id is null then 0 else 1 end) isInPlan,
     
     coalesce(Cube_UsrFact.ratingTask, 0) ratingTask,
     coalesce(Cube_UsrFact.ratingQuickness, 0) ratingQuickness
@@ -931,6 +935,11 @@ from
         UsrFact.usr = :usr and
         UsrFact.factQuestion = Fact_Spelling.id and 
         UsrFact.factAnswer = Fact_Translate.id 
+    )
+    left join PlanFact on (
+        PlanFact.plan = :plan and
+        PlanFact.factQuestion = Fact_Spelling.id and 
+        PlanFact.factAnswer = Fact_Translate.id 
     )
     left join Cube_UsrFact on (
         Cube_UsrFact.usr = :usr and 

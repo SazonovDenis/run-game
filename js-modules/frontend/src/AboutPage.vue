@@ -1,6 +1,6 @@
 <template>
 
-    <MenuContainer title="Главная">
+    <MenuContainer title="Об игре">
 
         <template v-slot:footerContent>
             <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
@@ -100,13 +100,13 @@ export default {
 
         levels() {
             apx.showFrame({
-                frame: '/LevelChoice'/*, props: {prop1: 1}*/
+                frame: '/levels'
             })
         },
 
         gameInfo() {
             apx.showFrame({
-                frame: '/gameInfo', props: {prop1: 1}
+                frame: '/gameInfo'
             })
         },
 

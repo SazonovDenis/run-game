@@ -2,42 +2,114 @@
 
     <MenuContainer :title="title">
 
-        <q-list bordered separator>
+        <q-tabs
+            v-model="viewPlanType"
+            no-caps
+            inline-label
+            class="bg-grey-1 _shadow-5 q-my-sm"
+        >
+            <q-tab name="pesonal" label="Мои уровни" _icon="alarm"/>
+            <q-tab name="common" label="Библиотека" _icon="mail"/>
+            <q-tab name="deleted" label="Удаленные" _icon="del"/>
+        </q-tabs>
 
-            <template v-for="plan in plans">
 
-                <q-item clickable @click="onPlanClick(plan.plan)">
+        <LevelsFilterBar
+            v-model:filterText="filterText"
+            v-model:sortField="sortField"
+        />
 
-                    <q-item-section top avatar>
-                        <q-avatar icon="folder" color="grey-4" text-color="white"/>
-                    </q-item-section>
 
-                    <q-item-section>
-                        {{ plan.planText }}
-                    </q-item-section>
+        <q-scroll-area class="q-scroll-area" style="height: calc(100% - 11em);">
 
-                    <q-item-section top side>
 
-                        <div clas="row">
+            <q-list>
 
-                            <q-badge
-                                color="green-5"
-                                :label="plan.ratingTask + ' / ' + plan.count"/>
+                <template v-for="plan in plans">
 
-                        </div>
+                    <q-item v-if="isItemShown(plan)"
+                            class="item-first"
+                            clickable v-ripple
+                    >
 
-                    </q-item-section>
+                        <q-item-section top avatar>
+                            <q-avatar icon="folder" color="grey-4"
+                                      text-color="white"/>
+                        </q-item-section>
 
+                        <q-item-section @click="onPlanClick(plan.plan)">
+                            {{ plan.planText }}
+                        </q-item-section>
+
+
+                        <q-item-section top side>
+
+                            <div class="text-grey-8 q-gutter-xs">
+
+                                <q-btn
+                                    v-if="plan.isPublic && plan.isAllowed && viewPlanType==='pesonal'"
+                                    dense round flat
+                                    size="1.2em"
+                                    icon="del"
+                                    color="grey-8"
+                                    @click="delUsrPlan(plan)"
+                                />
+
+                                <q-btn
+                                    v-if="plan.isPublic && !plan.isAllowed && viewPlanType==='common'"
+                                    dense round flat
+                                    size="1.2em"
+                                    icon="add"
+                                    color="green-9"
+                                    @click="addUsrPlan(plan)"
+                                />
+
+
+                                <!--
+                                                                <q-btn flat dense round
+                                                                       icon="more-h"
+                                                                       size="1.0em"
+                                                                />
+                                -->
+
+                            </div>
+
+                        </q-item-section>
+
+
+                        <q-item-section top side>
+
+                            <div clas="row">
+
+                                <q-badge
+                                    color="green-5"
+                                    :label="plan.ratingTask + ' / ' + plan.count"/>
+
+                            </div>
+
+                        </q-item-section>
+
+                    </q-item>
+
+                </template>
+
+                <!--
+                Элемент для последнего "пустого" элемента.
+                Чтобы кнопки списка не загораживали последнюю строку
+                -->
+                <q-item>
+                    <div style="height: 3em">&nbsp;</div>
                 </q-item>
 
-            </template>
-
-        </q-list>
+            </q-list>
 
 
-        <q-page-sticky v-if="showEdit"
+        </q-scroll-area>
+
+
+        <q-page-sticky v-if="showEdit && viewPlanType !== 'common'"
                        position="bottom-right"
-                       :offset="[18, 18]">
+                       :offset="[20, 10]">
             <q-fab style="height: 4.1em; width: 4.1em;"
                    color="purple"
                    icon="add"
@@ -61,7 +133,6 @@
             </q-fab>
         </q-page-sticky>
 
-
     </MenuContainer>
 
 </template>
@@ -70,21 +141,22 @@
 
 import {apx} from './vendor'
 import gameplay from "./gameplay"
-import ctx from "./gameplayCtx"
 import auth from "./auth"
+import LevelsFilterBar from "./comp/LevelsFilterBar"
 import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
+import {daoApi} from "run-game-frontend/src/dao"
 
 export default {
 
     components: {
-        MenuContainer, TasksStatistic
+        MenuContainer, LevelsFilterBar, TasksStatistic
     },
 
     props: {
         title: {
             type: String,
-            default: "Мои уровни"
+            default: "Уровни"
         },
         onLevelClick: {
             type: Function,
@@ -99,11 +171,36 @@ export default {
     data() {
         return {
             plans: [],
-            globalState: ctx.getGlobalState(),
+            //globalState: ctx.getGlobalState(),
+
+            viewPlanType: "pesonal",
+
+            filterText: "",
+            sortField: "ratingAsc",
         }
     },
 
+    watch: {
+
+        viewPlanType: function(viewPlanType, oldVal) {
+            this.loadPlans(viewPlanType)
+        },
+
+        sortField: function(value, old) {
+            this.plans.sort(this.compareFunction)
+        }
+
+    },
+
     methods: {
+
+        isItemShown(item) {
+            if (!this.filter) {
+                return true
+            } else {
+                return this.filter(item)
+            }
+        },
 
         onPlanClick(planId) {
             if (this.onLevelClick) {
@@ -120,15 +217,104 @@ export default {
         },
 
         onCreateLevel() {
+            let userInfo = auth.getUserInfo()
+
             apx.showFrame({
-                frame: '/planEdit', props: {}
+                frame: '/planEdit', props: {planId: userInfo.plan}
             })
         },
 
         onAddLevel() {
-            apx.showFrame({
-                frame: '/planList'
-            })
+            this.viewPlanType = "common"
+            /*
+                        apx.showFrame({
+                            frame: '/planList'
+                        })
+            */
+        },
+
+        compareFunction(v1, v2) {
+            if (this.sortField === "ratingAsc") {
+                if (v1.ratingTask > v2.ratingTask) {
+                    return 1
+                } else if (v1.ratingTask < v2.ratingTask) {
+                    return -1
+                } else {
+                    return 0
+                }
+            } else if (this.sortField === "ratingDesc") {
+                if (v1.ratingTask < v2.ratingTask) {
+                    return 1
+                } else if (v1.ratingTask > v2.ratingTask) {
+                    return -1
+                } else {
+                    return 0
+                }
+            } else {
+                // По умолчанию сортируем по lastDt, а потом по рейтингу
+                if (v1.lastDt > v2.lastDt) {
+                    return 1
+                } else if (v1.lastDt < v2.lastDt) {
+                    return -1
+                } else if (v1.lastDt === v2.lastDt && v1.ratingTask > v2.ratingTask) {
+                    return 1
+                } else if (v1.lastDt === v2.lastDt && v1.ratingTask < v2.ratingTask) {
+                    return -1
+                } else {
+                    return 0
+                }
+            }
+        },
+
+        filter(plan) {
+            if (!this.filterText) {
+                return true
+            }
+
+            if (this.contains(this.filterText, plan.planText)) {
+                return true
+            }
+
+            return false
+        },
+
+        contains(filter, value) {
+            if (!filter) {
+                return true
+            }
+
+            if (!value) {
+                return false
+            }
+
+            if (value.toLowerCase().includes(filter.toLowerCase())) {
+                return true
+            } else {
+                return false
+            }
+        },
+
+        async delUsrPlan(plan) {
+            await daoApi.invoke('m/Plan/delUsrPlan', [plan.id])
+            plan.isAllowed = false
+        },
+
+        async addUsrPlan(plan) {
+            await daoApi.invoke('m/Plan/addUsrPlan', [plan.id])
+            plan.isAllowed = true
+        },
+
+        async loadPlans(viewPlanType) {
+            if (viewPlanType === "pesonal") {
+                this.plans = await gameplay.api_getPlans()
+            } else if (viewPlanType === "common") {
+                this.plans = await gameplay.api_getPlansPublic()
+            } else if (viewPlanType === "deleted") {
+                this.plans = []
+            }
+
+            //
+            this.plans.sort(this.compareFunction)
         },
 
     },
@@ -141,12 +327,11 @@ export default {
             return
         }
 
-        //
-        this.plans = await gameplay.api_getPlans()
+        await this.loadPlans(this.viewPlanType)
     },
 
-
 }
+
 </script>
 
 <style>
@@ -160,6 +345,10 @@ export default {
 
     font-size: 120%;
     color: #2d2d2d;
+}
+
+.item-first {
+    border-top: 1px solid silver;
 }
 
 

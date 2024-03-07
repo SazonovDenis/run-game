@@ -24,7 +24,11 @@ class RgmBase_Test extends Apx_Test {
         authSvc = app.bean(AuthService.class)
 
         //
-        setCurrentUser(new DefaultUserPasswdAuthToken("admin", "111"))
+        setCurrentUser("admin", "111")
+    }
+
+    void setCurrentUser(String login, String password) {
+        setCurrentUser(new DefaultUserPasswdAuthToken(login, password))
         println("CurrentUser: " + authSvc.getCurrentUser().attrs)
     }
 

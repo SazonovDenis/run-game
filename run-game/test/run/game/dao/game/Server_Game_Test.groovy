@@ -5,7 +5,9 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
+import run.game.dao.auth.*
 import run.game.dao.backstage.*
+import run.game.util.*
 
 class Server_Game_Test extends RgmBase_Test {
 
@@ -252,8 +254,17 @@ class Server_Game_Test extends RgmBase_Test {
     }
 
     @Test
-    void testGameProcess() {
-        long idPlan = 1000
+    void testGameProcess_PlanPublic() {
+        Store stPlans = mdb.loadQuery("select Plan.id from Plan where Plan.isPublic = 1 order by id")
+        long idPlan = stPlans.get(0).getLong("id")
+
+        //
+        Plan_upd planUpd = mdb.create(Plan_upd)
+        try {
+            planUpd.addUsrPlan(idPlan)
+        } catch (Exception e) {
+            println(e.message)
+        }
 
         // Статистика по уровню
         printTaskStatisticByPlan(idPlan)
@@ -263,6 +274,79 @@ class Server_Game_Test extends RgmBase_Test {
 
         // Обновленная статистика по уровню
         printTaskStatisticByPlan(idPlan)
+    }
+
+    @Test
+    void testGameProcess_PlanDefault() {
+        long idUsr = getCurrentUserId()
+        UsrUpd upd = mdb.create(UsrUpd)
+        long idPlan = upd.getPlanDefault(idUsr)
+
+        //
+        checkOrAddPlanFact(idPlan)
+
+        // Статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+
+        // Игра
+        doGameProcess(idPlan)
+
+        // Обновленная статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+    }
+
+    @Test
+    void testGameProcess_Plans() {
+        Store stPlans = mdb.loadQuery("select Plan.id from Plan where Plan.isPublic = 1 order by id")
+
+        for (StoreRecord recPlan : stPlans) {
+            long idPlan = recPlan.getLong("id")
+
+            //
+            Plan_upd planUpd = mdb.create(Plan_upd)
+            try {
+                planUpd.addUsrPlan(idPlan)
+            } catch (Exception e) {
+                println(e.message)
+            }
+
+            // Статистика по уровню
+            printTaskStatisticByPlan(idPlan)
+
+            // Игра
+            doGameProcess(idPlan)
+
+            // Обновленная статистика по уровню
+            printTaskStatisticByPlan(idPlan)
+        }
+    }
+
+    @Test
+    void testGameProcess_Users() {
+        testGameProcess_PlanPublic()
+
+        println()
+        setCurrentUser("user1010", null)
+        testGameProcess_PlanPublic()
+
+        println()
+        setCurrentUser("user1011", null)
+        testGameProcess_PlanPublic()
+    }
+
+
+    void checkOrAddPlanFact(idPlan) {
+        ServerImpl srv = mdb.create(ServerImpl)
+        DataBox plan = srv.getPlanTasks(idPlan)
+        Store stPlanFacts = plan.get("tasks")
+
+        //
+        if (stPlanFacts.size() < 10) {
+            Store stFact = srv.findItems("ora", idPlan)
+            //
+            Plan_upd upd = mdb.create(Plan_upd)
+            upd.addFact(idPlan, DataUtils.storeToList(stFact))
+        }
     }
 
     @Test
@@ -321,10 +405,10 @@ class Server_Game_Test extends RgmBase_Test {
             println()
             println("game")
             mdb.outTable(game.get("game"))
-            println()
-            println("gameTasks")
-            mdb.outTable(game.get("tasks"))
-            println()
+            // println()
+            // println("gameTasks")
+            // mdb.outTable(game.get("tasks"))
+            // println()
             println("statistic")
             mdb.outTable(game.get("statistic"))
 
@@ -337,7 +421,9 @@ class Server_Game_Test extends RgmBase_Test {
     void printTaskStatisticByPlan(long idPlan) {
         Server srv = mdb.create(ServerImpl)
         DataBox box = srv.getPlanTasks(idPlan)
-        mdb.outTable(box.get("tasks"))
+        println()
+        println("Plan [" + idPlan + "] statistic")
+        mdb.outTable(box.get("statistic"))
     }
 
     long doGameProcess(long idPlan) {

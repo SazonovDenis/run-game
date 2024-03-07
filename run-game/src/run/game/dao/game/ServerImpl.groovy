@@ -153,7 +153,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Сортируем задания по рейтингу
         stPlanTasks.sort("ratingTask,ratingQuickness")
-        mdb.outTable(stPlanTasks)
+        //mdb.outTable(stPlanTasks)
 
         // Теперь выберем задания на игру
         long taskForGameCount = 0

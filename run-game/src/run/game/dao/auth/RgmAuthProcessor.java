@@ -43,15 +43,15 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         }
     }
 
-    protected AuthUser createAuthUser(Mdb mdb, long id, String login, String text) throws Exception {
+    protected AuthUser createAuthUser(Mdb mdb, long idUsr, String login, String text) throws Exception {
         Map<String, Object> attrs = new LinkedHashMap<>();
-        attrs.put("id", id);
+        attrs.put("id", idUsr);
         attrs.put("login", login);
         attrs.put("text", text);
 
         // План "Мои слова"
         UsrUpd upd = mdb.create(UsrUpd.class);
-        long planDefault = upd.getPlanDefault(id);
+        long planDefault = upd.getPlanDefault(idUsr);
         attrs.put("planDefault", planDefault);
 
         //

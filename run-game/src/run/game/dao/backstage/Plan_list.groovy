@@ -10,9 +10,7 @@ class Plan_list extends RgmMdbUtils {
 
 
     /**
-     * Список собственных планов (уровней) пользователя.
-     * С рейтингом, сортированный по некоторому критерию, например по самому отстающему
-     * или по запланированному учителем.
+     *
      */
     @DaoMethod
     StoreRecord getPlanUsr(long plan) {
@@ -111,10 +109,15 @@ select
     
 from
     Plan
-    left join UsrPlan on (Plan.id = UsrPlan.plan and UsrPlan.usr = :usr)
-    left join Cube_UsrPlan on (Plan.id = Cube_UsrPlan.plan and UsrPlan.usr = :usr)
+    left join UsrPlan on (
+        Plan.id = UsrPlan.plan and 
+        UsrPlan.usr = :usr
+    )
+    left join Cube_UsrPlan on (
+        Plan.id = Cube_UsrPlan.plan and 
+        Cube_UsrPlan.usr = :usr
+    )
     left join PlanTag PlanTag_access_default on (
-        UsrPlan.usr = :usr and
         UsrPlan.plan = PlanTag_access_default.plan and
         PlanTag_access_default.tag = $RgmDbConst.Tag_plan_access_default
     ) 

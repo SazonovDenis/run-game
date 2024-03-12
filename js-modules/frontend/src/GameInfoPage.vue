@@ -1,6 +1,8 @@
 <template>
 
-    <MenuContainer :title="title">
+    <MenuContainer
+        tabMenuName="GameInfoPage"
+        :title="title">
 
         <div v-if="dataLoaded"
              class="col justify-center _q-mt-lg _q-mb-lg11 _q-gutter-md">
@@ -136,7 +138,7 @@ export default {
             if (!this.localState.game || !this.localState.game.id) {
                 return ""
             } else if (this.localState.game.done) {
-                return "Последняя игра"
+                return null //"Последняя игра"
             } else {
                 return "Текушая игра"
             }

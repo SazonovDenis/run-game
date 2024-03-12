@@ -1,6 +1,8 @@
 <template>
 
-    <MenuContainer :title="title">
+    <MenuContainer
+        tabMenuName="LevelsPage"
+        :title="title">
 
         <q-tabs
             v-model="viewPlanType"
@@ -156,7 +158,7 @@ export default {
     props: {
         title: {
             type: String,
-            default: "Уровни"
+            default: null
         },
         onLevelClick: {
             type: Function,

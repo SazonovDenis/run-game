@@ -1,30 +1,100 @@
 <template>
     <q-layout view="hHh lpR fFf" style="user-select: none;">
 
-        <q-header _reveal elevated class="bg-primary text-white">
-            <q-toolbar>
-                <q-toolbar-title>
-                    <q-avatar
-                        style="width: 0.8em; height: 0.8em; margin-right: 0.2em"
-                        @click="onTopLeftIcon()"
-                    >
-                        <img :src="iconTopLeft">
-                    </q-avatar>
-                    <span v-if="title">
-                        {{ title }}
-                    </span>
-                    <span v-else>
-                        Word strike
-                    </span>
-                </q-toolbar-title>
+        <q-header elevated _class="bg-primary text-white">
 
-                <q-btn dense flat round icon="menu" @click="toggleRightDrawer"/>
+            <q-toolbar class="bg-primary text-white">
+
+
+                <div v-if="title" class="row">
+
+                    <div style="width: 3em; height: 2em;" @click="onTopLeftIcon()">
+                        <img
+                            style="width: 2em; height: 2em;"
+                            :src="iconTopLeft">
+                    </div>
+
+                    <q-toolbar-title>
+
+                        <div class="">{{ title }}</div>
+
+                    </q-toolbar-title>
+
+                </div>
+
+
+                <div v-if="!title">
+
+                    <q-space/>
+
+                    <q-tabs
+                        v-model="mainTab"
+                        no-caps
+                        dense
+
+                        mobile-arrows
+                        inline-label
+
+                        shrink
+
+                        class="q-gutter-x-md bg-primary text-white"
+                    >
+
+                        <q-tab name="PlanEditPage" label="Слова" @click="onMainPage()"
+                               _icon="user"/>
+                        <q-tab name="LevelsPage" label="Уровни" @click="onMyLevels()"
+                               _icon="mail"/>
+                        <q-tab name="GameInfoPage" label="Игры" @click="onGameInfo()"
+                               _icon="del"/>
+                        <!--
+                                        <q-tab name="deleted1" label="Данные игрока" _icon="del"/>
+                                        <q-tab name="deleted2" label="Настройки" _icon="del"/>
+                                        <q-tab name="deleted3" label="О программе" _icon="del"/>
+                        -->
+
+
+                    </q-tabs>
+
+                </div>
+
+                <q-space/>
+
+
+                <slot name="menuBarRight">
+
+                    <div class="menuBarDropdown">
+
+                        <q-btn-dropdown
+                            auto-close
+                            flat
+                            icon="menu">
+
+                            <q-list>
+                                <q-item class="q-mt-md" clickable
+                                        @click="onUser()">
+                                    <q-item-section>Данные игрока</q-item-section>
+                                </q-item>
+
+                                <q-item class="q-my-md" clickable
+                                        @click="onAbout()">
+                                    <q-item-section>О программе</q-item-section>
+                                </q-item>
+                            </q-list>
+
+                        </q-btn-dropdown>
+
+                    </div>
+
+                </slot>
+
+
             </q-toolbar>
         </q-header>
 
+        <!--
         <q-drawer v-model="rightDrawerOpen" side="right" overlay behavior="mobile"
                   elevated>
-            <!-- drawer content -->
+            &lt;!&ndash; drawer content &ndash;&gt;
             <div class="q-drawer__content fit scroll">
                 <div class="q-scrollarea"
                      style="height: calc(100% - 204px); margin-top: 204px;">
@@ -32,112 +102,64 @@
                         class="q-scrollarea__container scroll relative-position fit hide-scrollbar">
                         <div class="q-scrollarea__content absolute">
 
-                            <div class="q-item__label q-item__label--header"
+                            <div class="q-item__label q-item__label&#45;&#45;header"
                                  style="margin-top: 1em"
                                  @click="onGameInfo()">Последняя игра
                             </div>
-                            <!--
+                            &lt;!&ndash;
                                                         <div class="q-item__label q-item__label&#45;&#45;header"
                                                              @click="onLevels()">Общие уровни
                                                         </div>
-                            -->
-                            <div class="q-item__label q-item__label--header"
+                            &ndash;&gt;
+                            <div class="q-item__label q-item__label&#45;&#45;header"
                                  @click="onMyLevels()">Уровни
                             </div>
-                            <!--
+                            &lt;!&ndash;
                                                         <div class="q-item__label q-item__label&#45;&#45;header"
                                                              @click="onStill()">Still
                                                         </div>
                                                         <div class="q-item__label q-item__label&#45;&#45;header"
                                                              @click="onStill1()">Still1
                                                         </div>
-                            -->
+                            &ndash;&gt;
 
-                            <div class="q-mt-md q-item__label q-item__label--header"
+                            <div class="q-mt-md q-item__label q-item__label&#45;&#45;header"
                                  @click="onUser()">Данные игрока
                             </div>
 
                             <q-separator/>
 
-                            <div class="q-mt-md q-item__label q-item__label--header"
+                            <div class="q-mt-md q-item__label q-item__label&#45;&#45;header"
                                  @click="onAbout()">Об игре
                             </div>
 
 
                             <div class="text-grey" style="padding: 25px 16px 16px;">
-                                <!--
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                <p><em>Right Drawer has intended scroll</em></p>
-                                -->
                             </div>
-                        </div><!----></div><!---->
+                        </div>
+                    </div>
                     <div
-                        class="q-scrollarea__bar q-scrollarea__bar--v absolute-right q-scrollarea__bar--invisible"
+                        class="q-scrollarea__bar q-scrollarea__bar&#45;&#45;v absolute-right q-scrollarea__bar&#45;&#45;invisible"
                         aria-hidden="true"></div>
                     <div
-                        class="q-scrollarea__bar q-scrollarea__bar--h absolute-bottom q-scrollarea__bar--invisible"
+                        class="q-scrollarea__bar q-scrollarea__bar&#45;&#45;h absolute-bottom q-scrollarea__bar&#45;&#45;invisible"
                         aria-hidden="true"></div>
                     <div
-                        class="q-scrollarea__thumb q-scrollarea__thumb--v absolute-right q-scrollarea__thumb--invisible"
+                        class="q-scrollarea__thumb q-scrollarea__thumb&#45;&#45;v absolute-right q-scrollarea__thumb&#45;&#45;invisible"
                         aria-hidden="true" style="top: 365.517px; height: 341px;"></div>
                     <div
-                        class="q-scrollarea__thumb q-scrollarea__thumb--h absolute-bottom q-scrollarea__thumb--invisible"
+                        class="q-scrollarea__thumb q-scrollarea__thumb&#45;&#45;h absolute-bottom q-scrollarea__thumb&#45;&#45;invisible"
                         aria-hidden="true" style="left: 0px; width: 299px;"></div>
                 </div>
-                <div class="q-img q-img--menu absolute-top" role="img"
+                <div class="q-img q-img&#45;&#45;menu absolute-top" role="img"
                      style="height: 204px;">
                     <div style="padding-bottom: 82.5195%;"></div>
                     <div class="q-img__container absolute-full"><img
-                        class="q-img__image q-img__image--with-transition q-img__image--loaded"
+                        class="q-img__image q-img__image&#45;&#45;with-transition q-img__image&#45;&#45;loaded"
                         loading="lazy" fetchpriority="auto" aria-hidden="true"
                         draggable="false" v-bind:src="material"
                         style="object-fit: cover; object-position: 50% 50%;"></div>
-                    <div class="q-img__content absolute-full q-anchor--skip">
+                    <div class="q-img__content absolute-full q-anchor&#45;&#45;skip">
                         <div class="absolute-bottom bg-transparent"
                              @click="onUser()">
                             <div class="q-avatar q-mb-sm" style="font-size: 56px;">
@@ -156,6 +178,7 @@
 
         </q-drawer>
 
+        -->
 
         <q-page-container>
 
@@ -208,19 +231,21 @@ import gameplay from "../gameplay"
 import LogoGame from "./LogoGame"
 
 export default {
-    name: "MenuContainer",
 
     components: {
         LogoGame
     },
 
     props: {
+        tabMenuName: null,
         frameReturn: null,
         frameReturnProps: null,
         title: null,
         showFooter: false,
         menu: [],
     },
+
+    //^c разобрал главное меню
 
     created() {
         let globalState = ctx.getGlobalState()
@@ -229,6 +254,7 @@ export default {
 
     data: function() {
         return {
+            mainTab: this.tabMenuName,
             userInfo: auth.getUserInfo(),
             globalState: ctx.getGlobalState(),
         }
@@ -260,6 +286,13 @@ export default {
         },
     },
 
+
+    watch: {
+        mainTab(v1, v2) {
+            console.info(v1, v2)
+        }
+    },
+
     methods: {
         onTopLeftIcon: function() {
             if (this.frameReturn) {
@@ -275,11 +308,18 @@ export default {
             })
         },
 
+        onMainPage: function() {
+            apx.showFrame({
+                frame: '/',
+            })
+        },
+
         onAbout: function() {
             apx.showFrame({
                 frame: '/about',
             })
         },
+
         onUser: function() {
             if (auth.isAuth()) {
                 apx.showFrame({
@@ -291,31 +331,31 @@ export default {
                 })
             }
         },
+
         onLevels: function() {
             apx.showFrame({
                 frame: '/planList',
             })
         },
+
         onMyLevels: function() {
             apx.showFrame({
                 frame: '/levels',
             })
         },
-        onStill: function() {
-            apx.showFrame({
-                frame: '/still',
-            })
-        },
-        onStill1: function() {
-            apx.showFrame({
-                frame: '/still1',
-            })
-        },
+
         onGameInfo: function() {
+            //this.mainTab = "games"
+
             apx.showFrame({
                 frame: '/gameInfo',
             })
         },
+    },
+
+    mounted() {
+        console.info("this.tabMenuName: " + this.tabMenuName)
+        this.mainTab = this.tabMenuName
     },
 
     setup() {
@@ -353,6 +393,12 @@ export default {
     align-items: center;
 
     height: 10em;
+}
+
+.menuBarDropdown {
+    width: 2em;
+    display: flex;
+    align-content: center;
 }
 
 </style>

@@ -1,6 +1,7 @@
 <template>
     <MenuContainer
         :title="title"
+        tabMenuName="PlanEditPage"
         :frameReturn="frameReturn"
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
@@ -166,16 +167,20 @@
             style="z-index: 10000;"
         >
 
-            <div
-                _style="position: absolute; top: -3em;">
+
+        </q-page-sticky>
+
+
+        <template v-slot:menuBarRight>
+
+            <div style="display: flex;">
 
                 <q-btn
                     v-if="canEditPlan() && this.viewMode !== 'editPlan'"
-                    round
+                    rounded
                     color="purple-4"
-                    class="q-ma-xs"
-                    style="top: -0.2em;"
-                    size="1.2em"
+                    class="q-my-xnone q-mx-xs"
+                    size="1.3em"
                     icon="edit"
                     @click="this.setViewMode('editPlan')"
                 />
@@ -184,10 +189,9 @@
                     v-if="canEditItemList() && this.viewMode !== 'addByText'"
                     rounded
                     color="yellow-10"
-                    class="q-ma-xs"
+                    class="q-my-xnone q-mx-xs"
                     align="left"
-                    _style="width: 4em; height: 2.5em; top: -0.2em; right: -1.5em;"
-                    size="1.5em"
+                    size="1.3em"
                     icon="word-add-keyboard"
                     @click="this.setViewMode('addByText')"
                 />
@@ -195,17 +199,16 @@
                 <q-btn
                     v-if="canEditItemList() && this.viewMode !== 'addByPhoto'"
                     rounded
-                    color="yellow-9"
-                    class="q-ma-xs"
+                    color="yellow-8"
+                    class="q-my-xnone q-mx-xs"
                     align="left"
-                    _style="width: 4em; height: 2.5em; top: -0.2em; right: -1.5em;"
-                    size="1.5em"
+                    size="1.3em"
                     icon="word-add-photo"
                     @click="this.setViewMode('addByPhoto')"
                 />
             </div>
 
-        </q-page-sticky>
+        </template>
 
 
         <template v-slot:footer>
@@ -326,7 +329,6 @@ import ctx from "./gameplayCtx"
 
 
 export default {
-    name: "PlanEditPage",
 
     components: {
         MenuContainer, TaskListFilterBar, TextInputPhoto, TextInputText, TaskList
@@ -465,7 +467,9 @@ export default {
     computed: {
 
         title() {
-            if (this.viewMode === "editPlan") {
+            if (!this.doEditPlan) {
+                   return null
+            } else if (this.viewMode === "editPlan") {
                 return "Редактирование уровня"
             } else if (this.viewMode === "addByPhoto") {
                 return "Добавление слов"

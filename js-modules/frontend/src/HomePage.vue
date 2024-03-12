@@ -11,7 +11,7 @@
 
 <script>
 
-import WordPage from "./WordPage"
+import WordsPage from "./WordsPage"
 import PlanEditPage from "./PlanEditPage"
 import auth from "./auth"
 import {daoApi} from "run-game-frontend/src/dao"
@@ -19,9 +19,11 @@ import {apx} from "run-game-frontend/src/vendor"
 
 export default {
 
+    name: "HomePage",
+
     components: {
         PlanEditPage,
-        WordPage,
+        WordsPage,
     },
 
     data() {

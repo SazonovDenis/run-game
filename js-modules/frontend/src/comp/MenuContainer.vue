@@ -99,7 +99,7 @@
             <!-- slot footer -->
             <slot name="footer">
 
-                <q-toolbar class="bg-grey-8 text-white">
+                <q-toolbar :class="getFooterClass">
                     <q-toolbar-title>
 
                         <q-avatar
@@ -144,15 +144,15 @@ export default {
         frameReturnProps: null,
         title: null,
         showFooter: false,
+        footerMode: "",
         menu: [],
     },
-
-    //^c разобрал главное меню
 
     created() {
         let globalState = ctx.getGlobalState()
         gameplay.init(globalState)
     },
+
 
     data: function() {
         return {
@@ -162,12 +162,20 @@ export default {
         }
     },
 
+
     computed: {
         getFooterDisplay() {
             if (this.showFooter) {
                 return "block"
             } else {
                 return "none"
+            }
+        },
+        getFooterClass() {
+            if (this.footerMode === "error") {
+                return "bg-red-5 text-yellow-12"
+            } else {
+                return "bg-grey-7 text-white"
             }
         },
         iconTopLeft() {
@@ -191,9 +199,9 @@ export default {
 
     watch: {
         mainTab(v1, v2) {
-            console.info(v1, v2)
         }
     },
+
 
     methods: {
         onTopLeftIcon: function() {
@@ -253,10 +261,12 @@ export default {
         },
     },
 
+
     mounted() {
         console.info("this.tabMenuName: " + this.tabMenuName)
         this.mainTab = this.tabMenuName
     },
+
 
 }
 </script>

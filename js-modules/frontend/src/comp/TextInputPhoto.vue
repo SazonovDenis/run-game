@@ -35,7 +35,7 @@
                        @click="onTakePicture"
                 />
 
-                <q-btn v-if="isCameraCapturing===false && dataLoaded===true"
+                <q-btn v-if="isCameraCapturing===false && searchDone===true"
                        rounded
                        class="photo-btn photo-btn-clear"
                        color="primary"
@@ -49,11 +49,11 @@
 
         </div>
 
-        <div :class="'photo-camera-state photo-state-wait ' + getClassCameraInit">
+        <div :class="'rgm-state-text photo-state-wait ' + getClassCameraInit">
             Инициализация камеры
         </div>
 
-        <div :class="'photo-camera-state photo-state-error ' + getClassCameraInitFalil">
+        <div :class="'rgm-state-text photo-state-error ' + getClassCameraInitFalil">
             Нет доступа к камере
         </div>
 
@@ -98,7 +98,7 @@ export default {
             wasCameraInitOk: false,
             isCameraCapturing: false,
 
-            dataLoaded: false,
+            searchDone: false,
 
             video: null,
             canvas: null,
@@ -264,7 +264,7 @@ export default {
             var data = canvas.toDataURL('image/png');
             photo.setAttribute('src', data);
 
-            this.dataLoaded = false
+            this.searchDone = false
         },
 
         async takePicture() {
@@ -291,10 +291,12 @@ export default {
         async loadData(dataImage) {
             //
             let resApi = await daoApi.loadStore('m/Game/findStill', [dataImage, this.planId])
+            let items = resApi.records
+
+            //
+            this.searchDone = true
 
             // Заполним родительский список
-            let items = resApi.records
-            //
             this.items.length = 0
             for (let item of items) {
                 this.items.push(item)
@@ -302,20 +304,19 @@ export default {
 
             // Уведомим родителя
             if (this.itemsOnChange) {
-                this.itemsOnChange()
+                this.itemsOnChange(this.searchDone)
             }
-
-            //
-            this.dataLoaded = true
         },
 
         clearData() {
+            this.searchDone = false
+
             // Очистим родительский список
             this.items.length = 0
 
             // Уведомим родителя
             if (this.itemsOnChange) {
-                this.itemsOnChange()
+                this.itemsOnChange(this.searchDone)
             }
 
         },
@@ -386,7 +387,7 @@ export default {
     display: none;
 }
 
-.photo-camera-state {
+.state-text {
     font-size: 3em;
     text-align: center;
 

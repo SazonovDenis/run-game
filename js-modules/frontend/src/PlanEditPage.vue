@@ -23,10 +23,11 @@
                 v-model:hiddenCount="hiddenCount"
             />
 
-            <div class="scroll-area" style="height: calc(100% - 14em)">
+
+            <div _class="scroll-area" _style="height: calc(100% - 14em)">
 
                 <TaskList
-                    v-if="itemsExternal.length > 0"
+                    v-if="(!showHidden && visibleCount > 0) || (showHidden && hiddenCount > 0)"
                     :showEdit="true"
                     :tasks="itemsExternal"
                     :itemsMenu="itemsMenu_modeEdit"
@@ -36,6 +37,16 @@
                 >
 
                 </TaskList>
+
+                <div v-else-if="hiddenCount > 0"
+                     class="rgm-state-text">
+                    В уровне есть только скрытые слова
+                </div>
+
+                <div v-else
+                     class="rgm-state-text">
+                    В уровне нет ни одного слова
+                </div>
 
             </div>
 
@@ -61,12 +72,13 @@
             </TextInputText>
 
             <TaskList
-                v-if="itemsLoaded.length > 0"
+                v-if="itemsSearchDone"
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filterLoaded"
                 :actionLeftSlide="actionHide"
+                messageNoItems="Слова не найдены"
             >
 
             </TaskList>
@@ -102,12 +114,13 @@
             </TextInputPhoto>
 
             <TaskList
-                v-if="itemsLoaded.length > 0"
+                v-if="itemsSearchDone"
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filterLoaded"
                 :actionLeftSlide="actionHide"
+                messageNoItems="Слова на фото не найдены"
             />
 
         </div>
@@ -380,13 +393,16 @@ export default {
 
             itemsExternal: [],
             itemsLoaded: [],
+            itemsSearchDone: false,
 
             itemsAdd: [],
             itemsDel: [],
             itemsHideAdd: [],
             itemsHideDel: [],
 
+            visibleCount: 0,
             hiddenCount: 0,
+
             hiddenCountLoaded: 0,
 
             filterText: "",
@@ -467,7 +483,7 @@ export default {
             if (!this.doEditPlan) {
                 return null
             } else if (this.viewMode === "editPlan") {
-                return "Редактирование уровня"
+                return "Редактирование"
             } else if (this.viewMode === "addByPhoto") {
                 return "Добавление слов"
             } else if (this.viewMode === "addByText") {
@@ -549,11 +565,19 @@ export default {
         calcHiddenCountExternal() {
             this.hiddenCount = 0
             for (let item of this.itemsExternal) {
-                if (item.isHidden) {
+                if (item.isHidden && item.isInPlan) {
                     this.hiddenCount = this.hiddenCount + 1
                 }
             }
             //
+            this.visibleCount = 0
+            for (let item of this.itemsExternal) {
+                if (!item.isHidden && item.isInPlan) {
+                    this.visibleCount = this.visibleCount + 1
+                }
+            }
+
+            // Если скрытых нет, то выключаем режим "показать скрытые"
             if (this.hiddenCount === 0) {
                 this.showHidden = false
             }
@@ -566,13 +590,15 @@ export default {
                     this.hiddenCountLoaded = this.hiddenCountLoaded + 1
                 }
             }
-            //
-            if (this.hiddenCountLoaded === 0) {
-                this.showHiddenLoaded = false
+
+            // Если скрытых нет, то выключаем режим "показать скрытые"
+            if (this.hiddenCount === 0) {
+                this.showHidden = false
             }
         },
 
-        itemsOnChange() {
+        itemsOnChange(searchDone) {
+            this.itemsSearchDone = searchDone
 
             // Для новой порции слов учтем, какие мы только что скрыли и показали
             for (let item of this.itemsLoaded) {
@@ -873,7 +899,7 @@ export default {
          * После сохранения taskItem будет в плане и не скрыт
          */
         itemAdd(taskItem) {
-            console.info("itemAdd", taskItem)
+            //console.info("itemAdd", taskItem)
 
             //
             if (this.itemIsHidden(taskItem)) {
@@ -893,25 +919,10 @@ export default {
             if (posItemsDel !== -1) {
                 this.itemsDel.splice(posItemsDel, 1)
             }
-            //
-            /*
-                        if (taskItem.isHidden) {
-                            let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                            if (posItemsHideAdd !== -1) {
-                                this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                            }
-                            //
-                            let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                            if (posItemsHideDel === -1 && posItemsHideAdd === -1) {
-                                this.itemsHideDel.push(taskItem)
-                            }
-                        }
-            */
 
 
             // Собственное состояние
             taskItem.isInPlan = true
-            //taskItem.isHidden = false
 
             // Подправим состояние в основном списке
             if (posItemsExt !== -1) {
@@ -928,7 +939,7 @@ export default {
          * После сохранения taskItem не будет в плане
          */
         itemDel(taskItem) {
-            console.info("itemDel", taskItem)
+            //console.info("itemDel", taskItem)
 
             //
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
@@ -943,18 +954,6 @@ export default {
             if (posItemsAdd === -1 &&/*posItemsExt !== -1 &&*/ posItemsDel === -1) {
                 this.itemsDel.push(taskItem)
             }
-            //
-            /*
-                        let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
-                        if (posItemsHideAdd !== -1) {
-                            this.itemsHideAdd.splice(posItemsHideAdd, 1)
-                        }
-                        //
-                        let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
-                        if (posItemsHideDel === -1) {
-                            this.itemsHideDel.splice(posItemsHideDel, 1)
-                        }
-            */
 
 
             // Собственное состояние
@@ -974,32 +973,21 @@ export default {
         itemHideAdd(taskItem) {
             // Собственное состояние
             taskItem.isHidden = true
-            //taskItem.isInPlan = false
             taskItem.isKnownGood = false
             taskItem.isKnownBad = false
 
             // Согласуем нахождение Item в других списках
-            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
-            let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+            //let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
+            //let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
             let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
             let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
 
             if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
                 this.itemsHideAdd.push(taskItem)
             }
-            /*
-                        if (posItemsDel !== -1) {
-                            this.itemsDel.splice(posItemsDel, 1)
-                        }
-            */
             if (posItemsHideDel !== -1) {
                 this.itemsHideDel.splice(posItemsHideDel, 1)
             }
-            /*
-                        if (posItemsAdd !== -1) {
-                            this.itemsAdd.splice(posItemsAdd, 1)
-                        }
-            */
 
             // Подправим состояние "isHidden" в основном списке
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
@@ -1045,25 +1033,6 @@ export default {
          */
         itemIsInPlan(taskItem) {
             return taskItem.isInPlan
-
-            /*
-                        let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
-                        if (posItemsDel !== -1) {
-                            return false;
-                        }
-
-                        let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
-                        if (posItemsExt !== -1) {
-                            return true;
-                        }
-
-                        let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
-                        if (posItemsAdd !== -1) {
-                            return true;
-                        }
-
-                        return false;
-            */
         },
 
         /**

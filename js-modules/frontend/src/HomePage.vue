@@ -1,27 +1,45 @@
 <template>
+
     <div>
-        <div v-if="dataLoaded">
-            <PlanEditPage
-                :plan="plan"
-                :doEditPlan="false"
-            />
-        </div>
+
+        <PlanEditPage
+            v-if="dataLoaded"
+            :plan="plan"
+            :doEditPlan="false"
+        />
+
+
+        <MenuContainer
+            v-if="!dataLoaded"
+            :showFooter="true"
+            footerMode="error"
+        >
+
+            <template v-slot:footerContent >
+                <div>{{ error }}</div>
+            </template>
+
+        </MenuContainer>
     </div>
+
+
 </template>
 
 <script>
 
+import auth from "./auth"
+import {daoApi} from "./dao"
+import {apx} from "./vendor"
+import MenuContainer from "./comp/MenuContainer"
 import WordsPage from "./WordsPage"
 import PlanEditPage from "./PlanEditPage"
-import auth from "./auth"
-import {daoApi} from "run-game-frontend/src/dao"
-import {apx} from "run-game-frontend/src/vendor"
 
 export default {
 
     name: "HomePage",
 
     components: {
+        MenuContainer,
         PlanEditPage,
         WordsPage,
     },
@@ -29,6 +47,7 @@ export default {
     data() {
         return {
             dataLoaded: false,
+            error: null,
             plan: null,
             defaultViewMode: "addByText",
         }
@@ -43,21 +62,25 @@ export default {
             return
         }
 
-        //
-        let userInfo = auth.getUserInfo()
-        let planId = userInfo.planDefault
+        try {
+            //
+            let userInfo = auth.getUserInfo()
+            let planDefaultId = userInfo.planDefault
 
-        //
-        let resApi = await daoApi.loadStore(
-            'm/Plan/getPlanUsr', [planId]
-        )
-        let planDefault = resApi.records[0]
+            //
+            let resApi = await daoApi.loadStore(
+                'm/Plan/getPlanUsr', [planDefaultId]
+            )
+            let planDefault = resApi.records[0]
 
-        //
-        this.plan = planDefault
+            //
+            this.plan = planDefault
 
-        //
-        this.dataLoaded = true
+            //
+            this.dataLoaded = true
+        } catch(e) {
+            this.error = e.message
+        }
     }
 
 }

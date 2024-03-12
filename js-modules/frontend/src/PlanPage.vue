@@ -36,11 +36,9 @@
             <q-separator/>
 
 
-<!--
-            <div class="row q-mb-sm bg-white" ref="stickyElement"
-                 :class="{ 'sticky-filter-panel': sticky_filter }">
--->
-            <div class="row q-mb-sm bg-white">
+            <div class="row q-mb-sm bg-white"
+                 v-if="visibleCount > 0"
+            >
 
                 <div class="q-mr-sm">
 
@@ -92,20 +90,20 @@
 
                 </q-btn-dropdown>
 
-
-                <!--
-                <q-toggle v-model="showHidden" label="Скрытые"/>
-                -->
-
             </div>
 
 
             <TaskList
+                v-if="visibleCount > 0"
                 :showEdit="true"
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
                 :filter="filter"
             />
+            <div v-else
+                 class="rgm-state-text">
+                В уровне нет ни одного слова
+            </div>
 
 
             <q-page-sticky
@@ -170,6 +168,9 @@ export default {
 
     props: {
         planId: null,
+        frameReturn: null,
+        frameReturnProps: null,
+
     },
 
     components: {
@@ -185,8 +186,8 @@ export default {
             itemsMenu: [],
 
             dataLoaded: false,
-            frameReturn: null,
-            frameReturnProps: null,
+            visibleCount: 0,
+            hiddenCount: 0,
 
             sortFieldMenu: false,
             sortField: "",
@@ -345,7 +346,11 @@ export default {
                     planItems: this.tasks,
                     defaultViewMode: "editPlan",
                     frameReturn: "/plan",
-                    frameReturnProps: {planId: this.planId}
+                    frameReturnProps: {
+                        planId: this.planId,
+                        frameReturn: this.frameReturn,
+                        frameReturnProps: this.frameReturnProps,
+                    }
                 }
             })
         },
@@ -358,7 +363,11 @@ export default {
                     planItems: this.tasks,
                     defaultViewMode: "addByText",
                     frameReturn: "/plan",
-                    frameReturnProps: {planId: this.planId}
+                    frameReturnProps: {
+                        planId: this.planId,
+                        frameReturn: this.frameReturn,
+                        frameReturnProps: this.frameReturnProps,
+                    }
                 }
             })
         },
@@ -373,19 +382,37 @@ export default {
             })
         },
 
-/*
-        handleScroll() {
-            const element = this.$refs.stickyElement;
-            if (element) {
-                const offset = element.offsetTop;
-                if (window.pageYOffset + 40 > offset) {
-                    this.sticky_filter = true;
-                } else {
-                    this.sticky_filter = false;
+        /*
+                handleScroll() {
+                    const element = this.$refs.stickyElement;
+                    if (element) {
+                        const offset = element.offsetTop;
+                        if (window.pageYOffset + 40 > offset) {
+                            this.sticky_filter = true;
+                        } else {
+                            this.sticky_filter = false;
+                        }
+                    }
+                }
+        */
+
+        calcHiddenCountLoaded() {
+            this.hiddenCount = 0
+            for (let item of this.tasks) {
+                if (item.isHidden) {
+                    this.hiddenCount = this.hiddenCount + 1
                 }
             }
-        }
-*/
+
+            this.visibleCount = 0
+            for (let item of this.tasks) {
+                if (!item.isHidden) {
+                    this.visibleCount = this.visibleCount + 1
+                }
+            }
+        },
+
+
     },
 
 
@@ -438,6 +465,9 @@ export default {
 
         // --- Сортировка по умолчанию
         this.sortField = "ratingAsc"
+
+        //
+        this.calcHiddenCountLoaded()
 
         //
         this.dataLoaded = true

@@ -214,7 +214,13 @@ export default {
 
         onPlanClickDefault(planId) {
             apx.showFrame({
-                frame: '/plan', props: {planId: planId}
+                frame: '/plan',
+                props: {
+                    planId: planId,
+                    frameReturn: "/levels",
+                    frameReturnProps: {},
+                },
+
             })
         },
 

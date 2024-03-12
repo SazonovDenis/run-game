@@ -43,6 +43,7 @@ export default {
     data() {
         return {
             filterText: "",
+            searchDone: false,
         }
     },
 
@@ -55,18 +56,24 @@ export default {
     watch: {
 
         async filterText(valueNow, valuePrior) {
-            // Установка daoApi.waitShow = false и оборачивание в try/finally - чтобы не дергался фокус
-            let resApi
-            try {
-                daoApi.waitShow = false
-                resApi = await daoApi.loadStore("m/Game/findItems", [valueNow, this.planId])
-            } finally {
-                daoApi.waitShow = true
+            this.searchDone = false
+
+            let items = []
+            if (valueNow && valueNow.length >= 2) {
+                // Установка daoApi.waitShow = false и оборачивание в try/finally - чтобы не дергался фокус
+                try {
+                    daoApi.waitShow = false
+                    //
+                    let resApi = await daoApi.loadStore("m/Game/findItems", [valueNow, this.planId])
+                    items = resApi.records
+                    //
+                    this.searchDone = true
+                } finally {
+                    daoApi.waitShow = true
+                }
             }
 
             // Заполним родительский список
-            let items = resApi.records
-            //
             this.items.length = 0
             for (let item of items) {
                 this.items.push(item)
@@ -74,7 +81,7 @@ export default {
 
             // Уведомим родителя
             if (this.itemsOnChange) {
-                this.itemsOnChange()
+                this.itemsOnChange(this.searchDone)
             }
         },
 

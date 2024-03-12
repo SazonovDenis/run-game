@@ -1,6 +1,6 @@
 <template>
 
-    <q-list>
+    <q-list v-if="tasks.length > 0">
         <template v-for="(taskItem, index) in tasks">
 
             <q-slide-item @left="onLeft($event, taskItem)"
@@ -10,7 +10,8 @@
                           v-if="actionLeftSlide && actionLeftSlide.hidden !== true">
                     <div class="row">
                         <div v-if="actionLeftSlide.icon">
-                            <q-icon left :name="itemMenuIcon(actionLeftSlide, taskItem)"/>
+                            <q-icon left
+                                    :name="itemMenuIcon(actionLeftSlide, taskItem)"/>
                         </div>
                         <div :class="!actionLeftSlide.info?'slide-left-no-info':''">
                             <div class="slide-label">
@@ -139,15 +140,24 @@
 
         </template>
 
+
         <!--
         Элемент для последнего "пустого" элемента.
         Чтобы кнопки списка не загораживали последнюю строку
         -->
-        <q-item>
+        <q-item v-if="showLastItemPadding">
             <div style="height: 2em">&nbsp;</div>
         </q-item>
 
+
     </q-list>
+
+
+    <div v-else
+         class="rgm-state-text">
+        {{ messageNoItems }}
+    </div>
+
 
 </template>
 
@@ -156,6 +166,7 @@
 import TaskValue from "./TaskValue"
 
 export default {
+
     name: "TaskList",
 
     components: {
@@ -172,6 +183,14 @@ export default {
          * что полезно при просмотре списка фактов в плане.
          */
         showTaskData: false,
+
+        showLastItemPadding: false,
+
+        messageNoItems: {
+            type: String,
+            default: "Список пуст"
+        },
+
         showAnswerResult: false,
         showEdit: false,
         tasks: null,

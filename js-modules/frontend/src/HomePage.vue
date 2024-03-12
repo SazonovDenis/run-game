@@ -3,14 +3,14 @@
     <div>
 
         <PlanEditPage
-            v-if="dataLoaded"
             :plan="plan"
+            :showFooter="false"
             :doEditPlan="false"
         />
 
 
         <MenuContainer
-            v-if="!dataLoaded"
+            v-if="!dataLoaded && error"
             :showFooter="true"
             footerMode="error"
         >
@@ -20,6 +20,7 @@
             </template>
 
         </MenuContainer>
+
     </div>
 
 
@@ -48,7 +49,7 @@ export default {
         return {
             dataLoaded: false,
             error: null,
-            plan: null,
+            plan: {},
             defaultViewMode: "addByText",
         }
     },

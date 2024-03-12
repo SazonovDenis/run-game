@@ -6,7 +6,7 @@
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
 
-        <div v-if="canEditPlan() && viewMode==='editPlan'">
+        <div v-if="viewMode==='editPlan'">
 
             <q-input class="q-mb-sm"
                      dense outlined
@@ -548,7 +548,7 @@ export default {
         },
 
         canEditItemList() {
-            return this.doEditItemList
+            return this.doEditItemList && (!this.plan || this.plan.isOwner === true)
         },
 
         selectAll() {

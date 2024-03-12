@@ -532,7 +532,7 @@ export default {
     methods: {
 
         wasChanges() {
-            return (this.plan && this.plan.planText !== this.planText) ||
+            return (this.plan && this.plan.planText && this.planText && this.plan.planText !== this.planText) ||
                 this.itemsAdd.length > 0 ||
                 this.itemsDel.length > 0 ||
                 this.itemsHideAdd.length > 0 ||

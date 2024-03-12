@@ -4,7 +4,6 @@
 
         <PlanEditPage
             :plan="plan"
-            :showFooter="false"
             :doEditPlan="false"
         />
 

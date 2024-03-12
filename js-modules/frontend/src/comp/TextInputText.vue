@@ -1,28 +1,23 @@
 <template>
 
-    <div>
+    <div class="row q-ma-sm">
 
-        <div class="row q-mb-sm">
+        <q-input
+            dense outlined clearable
+            debounce="300"
+            ref="filterText"
+            v-model="filterText"
+            placeholder="Поиск"
+        >
 
-            <q-input
-                dense outlined clearable
-                debounce="300"
-                ref="filterText"
-                v-model="filterText"
-                placeholder="Поиск"
-            >
+            <template v-slot:append v-if="!filterText">
+                <q-icon name="search"/>
+            </template>
 
-                <template v-slot:append v-if="!filterText">
-                    <q-icon name="search"/>
-                </template>
-
-            </q-input>
+        </q-input>
 
 
-            <slot name="toolbar"></slot>
-
-
-        </div>
+        <slot name="toolbar"></slot>
 
     </div>
 

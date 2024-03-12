@@ -213,7 +213,7 @@
 
         <template v-slot:footer>
 
-            <q-footer>
+            <q-footer v-if="wasChanges()">
 
                 <q-toolbar class="bg-grey-1 text-black" style="min-height: 4em">
 
@@ -273,31 +273,26 @@
 
                             </template>
 
-                            <template
-                                v-if="(plan && plan.planText !== planText) || itemsAdd.length > 0 || itemsDel.length > 0 || itemsHideAdd.length > 0 || itemsHideDel.length > 0">
 
-                                <template v-if="!plan && viewMode !== 'viewItemsAdd'">
+                            <template v-if="!plan && viewMode !== 'viewItemsAdd'">
 
-                                    <q-btn
-                                        no-caps
-                                        class="q-ma-sm"
-                                        label="Далее"
-                                        @click="btnNextClick()"
-                                    />
+                                <q-btn
+                                    no-caps
+                                    class="q-ma-sm"
+                                    label="Далее"
+                                    @click="btnNextClick()"
+                                />
 
-                                </template>
+                            </template>
 
-                                <template v-else>
+                            <template v-else>
 
-                                    <q-btn
-                                        no-caps
-                                        class="q-ma-sm"
-                                        :label="btnSaveTitle"
-                                        @click="btnSaveClick()"
-                                    />
-
-                                </template>
-
+                                <q-btn
+                                    no-caps
+                                    class="q-ma-sm"
+                                    :label="btnSaveTitle"
+                                    @click="btnSaveClick()"
+                                />
 
                             </template>
 
@@ -307,6 +302,8 @@
                 </q-toolbar>
 
             </q-footer>
+
+            <div v-else class="bg-white"/>
 
         </template>
 
@@ -468,7 +465,7 @@ export default {
 
         title() {
             if (!this.doEditPlan) {
-                   return null
+                return null
             } else if (this.viewMode === "editPlan") {
                 return "Редактирование уровня"
             } else if (this.viewMode === "addByPhoto") {
@@ -517,6 +514,14 @@ export default {
     },
 
     methods: {
+
+        wasChanges() {
+            return (this.plan && this.plan.planText !== this.planText) ||
+                this.itemsAdd.length > 0 ||
+                this.itemsDel.length > 0 ||
+                this.itemsHideAdd.length > 0 ||
+                this.itemsHideDel.length > 0;
+        },
 
         canEditPlan() {
             return this.doEditPlan && (!this.plan || this.plan.isOwner === true)

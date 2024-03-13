@@ -107,7 +107,7 @@
 
 
             <q-page-sticky
-                v-if="plan.isOwner === true && tasks.length === 0"
+                v-if="canDeletePlan()"
                 position="bottom-left"
                 :offset="[10, 10]">
                 <q-btn no-caps
@@ -320,6 +320,13 @@ export default {
 
         isAuth() {
             return auth.isAuth()
+        },
+
+        canDeletePlan(){
+            let userInfo = auth.getUserInfo()
+            let planDefaultId = userInfo.planDefault
+
+            return this.plan.id !== planDefaultId && this.plan.isOwner === true && this.tasks.length === 0
         },
 
         async gameStart() {

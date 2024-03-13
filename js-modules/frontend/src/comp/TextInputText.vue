@@ -5,9 +5,10 @@
         <q-input
             dense outlined clearable
             debounce="300"
+            style="max-width: 12em;"
             ref="filterText"
             v-model="filterText"
-            placeholder="Поиск"
+            placeholder="Поиск в словаре"
         >
 
             <template v-slot:append v-if="!filterText">

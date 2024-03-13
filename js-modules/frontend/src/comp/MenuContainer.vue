@@ -3,7 +3,8 @@
 
         <q-header elevated _class="bg-primary text-white">
 
-            <q-toolbar class="bg-primary text-white">
+            <q-toolbar class="bg-primary text-white"
+                       style="padding-right: 0;">
 
 
                 <div v-if="title" class="row">
@@ -52,7 +53,9 @@
                 <!-- slot menuBarRight -->
                 <slot name="menuBarRight">
 
-                    <div class="menuBarDropdown">
+                    <div
+                        v-if="!this.frameReturn"
+                        class="menuBarDropdown">
 
                         <q-btn-dropdown
                             auto-close
@@ -275,9 +278,6 @@ export default {
 <style lang="less" scoped>
 
 .menuBarDropdown {
-    width: 2em;
-    display: flex;
-    align-content: center;
 }
 
 </style>

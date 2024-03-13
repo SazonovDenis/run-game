@@ -88,7 +88,7 @@ void saveUsrFacts(List<Map> usrFacts, long idPlan) {
 ~~~
 
 Параметр "план" (idPlan) не нужен для бизнес-логики, только для кубов.
-Заменить на нормальный пересчет
+Заменить на нормальный пересчет (ведь потенциально задействуются многи планы)
 
 
 ### /home/dvsa/projects/jc2-projects/run-game/js-modules/frontend/src/comp/TaskList.vue

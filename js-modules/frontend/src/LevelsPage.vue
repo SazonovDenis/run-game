@@ -12,7 +12,6 @@
         >
             <q-tab name="pesonal" label="Мои уровни" _icon="alarm"/>
             <q-tab name="common" label="Библиотека" _icon="mail"/>
-            <q-tab name="deleted" label="Удаленные" _icon="del"/>
         </q-tabs>
 
 
@@ -35,8 +34,9 @@
                     >
 
                         <q-item-section top avatar>
-                            <q-avatar icon="folder" color="grey-4"
-                                      text-color="white"/>
+                            <q-avatar v-if="plan.isDefault" icon="star" color="grey-2" text-color="yellow-8"/>
+                            <q-avatar v-else-if="plan.isPublic" icon="folder-open" color="grey-2" text-color="grey-8"/>
+                            <q-avatar v-else icon="user" color="grey-2" text-color="grey-6"/>
                         </q-item-section>
 
                         <q-item-section @click="onPlanClick(plan.plan)">
@@ -173,7 +173,6 @@ export default {
     data() {
         return {
             plans: [],
-            //globalState: ctx.getGlobalState(),
 
             viewPlanType: "pesonal",
 
@@ -225,20 +224,16 @@ export default {
         },
 
         onCreateLevel() {
-            let userInfo = auth.getUserInfo()
-
             apx.showFrame({
-                frame: '/planEdit', props: {planId: userInfo.plan}
+                frame: '/planEdit', props: {
+                    frameReturn: "/levels",
+                    frameReturnProps: {},
+                }
             })
         },
 
         onAddLevel() {
             this.viewPlanType = "common"
-            /*
-                        apx.showFrame({
-                            frame: '/planList'
-                        })
-            */
         },
 
         compareFunction(v1, v2) {
@@ -248,7 +243,14 @@ export default {
                 } else if (v1.ratingTask < v2.ratingTask) {
                     return -1
                 } else {
-                    return 0
+                    // Если рейтинг одинаковый - то сложнее тот, у кого больше слов
+                    if (v1.count < v2.count) {
+                        return 1
+                    } else if (v1.count > v2.count) {
+                        return -1
+                    } else {
+                        return 0
+                    }
                 }
             } else if (this.sortField === "ratingDesc") {
                 if (v1.ratingTask < v2.ratingTask) {
@@ -256,7 +258,14 @@ export default {
                 } else if (v1.ratingTask > v2.ratingTask) {
                     return -1
                 } else {
-                    return 0
+                    // Если рейтинг одинаковый - то сложнее тот, у кого больше слов
+                    if (v1.count < v2.count) {
+                        return 1
+                    } else if (v1.count > v2.count) {
+                        return -1
+                    } else {
+                        return 0
+                    }
                 }
             } else {
                 // По умолчанию сортируем по lastDt, а потом по рейтингу
@@ -319,6 +328,15 @@ export default {
                 this.plans = await gameplay.api_getPlansPublic()
             } else if (viewPlanType === "deleted") {
                 this.plans = []
+            }
+
+            // Заполним plan.isDefault
+            for (let plan of this.plans) {
+                let userInfo = auth.getUserInfo()
+                let planDefaultId = userInfo.planDefault
+                if (plan.id === planDefaultId) {
+                    plan.isDefault = true
+                }
             }
 
             //

@@ -56,7 +56,7 @@
         <div v-if="canEditItemList() && viewMode==='addByText'">
 
             <TextInputText
-                :planId="plan.id"
+                :planId="planId"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
             >
@@ -89,7 +89,7 @@
         <div v-if="canEditItemList() && viewMode==='addByPhoto'">
 
             <TextInputPhoto
-                :planId="plan.id"
+                :planId="planId"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
             >
@@ -478,6 +478,14 @@ export default {
 
 
     computed: {
+
+        planId() {
+            if (this.plan) {
+                return this.plan.id
+            } else {
+                return 0
+            }
+        },
 
         title() {
             if (!this.doEditPlan) {
@@ -1133,57 +1141,49 @@ export default {
             // ---
             // Вызов api
 
-
-            // План
             let planId
             if (!this.plan) {
-                // Создаем новый план и добавляем слова
+                // Создаем новый план и добавляем все слова
                 let recPlan = {text: this.planText}
                 planId = await daoApi.invoke('m/Plan/ins', [recPlan, stPlanFactAdd, []])
             } else {
                 planId = this.plan.id
 
+                // Редактируем сам план
                 if (this.canEditPlan()) {
-                    // Редактируем план
                     let recPlan = {id: planId, text: this.planText}
                     await daoApi.invoke('m/Plan/upd', [recPlan])
                 }
 
-            }
+                // Редактируем состав плана
+                if (this.canEditItemList()) {
+                    // Добавляем слова в существующий план
+                    await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
 
-            // Состав плана
-            if (this.canEditItemList()) {
-                // Добавляем слова в существующий план
-                await daoApi.invoke('m/Plan/addFact', [planId, stPlanFactAdd])
-
-                // Удаляем слова в существующем плане
-                await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
+                    // Удаляем слова в существующем плане
+                    await daoApi.invoke('m/Plan/delFact', [planId, stPlanFactDel])
+                }
             }
 
             // Скрытые и показанные факты
             await ctx.gameplay.api_saveUsrFacts(stPlanFactHideAddHideDel, planId)
 
 
-            //
+            // ---
+            // Возврат, если есть куда
+
             if (this.frameReturn) {
                 apx.showFrame({
                     frame: this.frameReturn,
                     props: this.frameReturnProps,
                 })
                 return
-            } else {
-                apx.showFrame({
-                    frame: '/',
-                })
-                return
             }
 
-            /*
-                        apx.showFrame({
-                            frame: '/plan', props: {planId: planId}
-                        })
-            */
-
+            //
+            apx.showFrame({
+                frame: '/',
+            })
         },
 
     },

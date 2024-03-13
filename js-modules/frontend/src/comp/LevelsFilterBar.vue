@@ -7,9 +7,9 @@
             @update:modelValue="updateParent('filterText', $event)"
 
             class="q-mr-sm"
-            style="flex-grow: 10"
+            style="max-width: 12em; flex-grow: 10;"
             dense outlined clearable
-            placeholder="Поиск"
+            placeholder="Поиск уровня"
         >
 
             <template v-slot:append v-if="!inputFilterText">

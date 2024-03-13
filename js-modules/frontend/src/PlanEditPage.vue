@@ -234,9 +234,8 @@
                     <div class="row" style="width: 100%">
 
                         <div class="row" style="flex-grow: 10; align-content: end">
-                            <div style="flex-grow: 10">
-                                &nbsp;
-                            </div>
+
+                            <q-space/>
 
                             <template v-if="itemsAdd.length > 0">
 
@@ -291,7 +290,7 @@
 
                                 <q-btn
                                     no-caps
-                                    class="q-ma-sm"
+                                    class="q-ma-xs"
                                     label="Далее"
                                     @click="btnNextClick()"
                                 />
@@ -302,7 +301,7 @@
 
                                 <q-btn
                                     no-caps
-                                    class="q-ma-sm"
+                                    class="q-ma-xs"
                                     :label="btnSaveTitle"
                                     @click="btnSaveClick()"
                                 />

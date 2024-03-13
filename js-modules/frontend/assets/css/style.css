@@ -18,6 +18,7 @@
   text-underline-offset: 0.3em;
 }
 
+
 /* Можно самому устроить scroll-area */
 .scroll-area {
   position: absolute;
@@ -27,9 +28,10 @@
   overflow: scroll;
 }
 
+
 /* Фикс для q-scroll-area, без него получается нулевой размер */
 .q-scroll-area {
-  position: absolute!important;
+  position: absolute !important;
   height: calc(100%);
   width: 100%;
 }

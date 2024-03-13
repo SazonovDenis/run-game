@@ -19,8 +19,6 @@ export function run() {
         {path: '/user', frame: import('./UserInfoPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
-        {path: '/still', frame: import('./StillPage')},
-        {path: '/still1', frame: import('./StillPage1')},
         {path: '/planList', frame: import('./PlanList')},
     ]
 

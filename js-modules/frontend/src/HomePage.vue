@@ -31,7 +31,6 @@ import auth from "./auth"
 import {daoApi} from "./dao"
 import {apx} from "./vendor"
 import MenuContainer from "./comp/MenuContainer"
-import WordsPage from "./WordsPage"
 import PlanEditPage from "./PlanEditPage"
 
 export default {
@@ -41,7 +40,6 @@ export default {
     components: {
         MenuContainer,
         PlanEditPage,
-        WordsPage,
     },
 
     data() {

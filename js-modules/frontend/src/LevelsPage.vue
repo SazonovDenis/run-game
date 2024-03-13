@@ -362,7 +362,7 @@ export default {
 
         async loadPlans(viewPlanType) {
             if (viewPlanType === "pesonal") {
-                this.plans = await gameplay.api_getPlans()
+                this.plans = await gameplay.api_getPlansVisible()
             } else if (viewPlanType === "common") {
                 this.plans = await gameplay.api_getPlansPublic()
             } else if (viewPlanType === "deleted") {

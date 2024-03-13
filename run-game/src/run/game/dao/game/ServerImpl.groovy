@@ -277,7 +277,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         //
         Plan_list list = mdb.create(Plan_list)
-        StoreRecord recPlanRaw = list.getPlanUsr(idPlan)
+        StoreRecord recPlanRaw = list.getPlan(idPlan)
 
         // План
         StoreRecord recPlan = mdb.createStoreRecord("Plan.server")

@@ -25,7 +25,7 @@ class Server_Game_Test extends RgmBase_Test {
         Store stPublic
 
         //
-        stUsr = list.getPlansUsr()
+        stUsr = list.getPlansVisible()
         stPublic = list.getPlansPublic()
         //
         println()
@@ -41,7 +41,7 @@ class Server_Game_Test extends RgmBase_Test {
         println("addPlan, idPlan: " + idPlan)
 
         // ---
-        stUsr = list.getPlansUsr()
+        stUsr = list.getPlansVisible()
         stPublic = list.getPlansPublic()
         //
         println()
@@ -58,7 +58,7 @@ class Server_Game_Test extends RgmBase_Test {
 
 
         // ---
-        stUsr = list.getPlansUsr()
+        stUsr = list.getPlansVisible()
         stPublic = list.getPlansPublic()
         //
         println()
@@ -78,7 +78,7 @@ class Server_Game_Test extends RgmBase_Test {
         Store stPublic
 
         //
-        stUsr = list.getPlansUsr()
+        stUsr = list.getPlansVisible()
         stPublic = list.getPlansPublic()
         //
         println()
@@ -94,7 +94,7 @@ class Server_Game_Test extends RgmBase_Test {
         println("hideUsrPlan, idPlan: " + idPlan)
 
         // ---
-        stUsr = list.getPlansUsr()
+        stUsr = list.getPlansVisible()
         stPublic = list.getPlansPublic()
         //
         println()
@@ -111,7 +111,7 @@ class Server_Game_Test extends RgmBase_Test {
 
 
         // ---
-        stUsr = list.getPlansUsr()
+        stUsr = list.getPlansVisible()
         stPublic = list.getPlansPublic()
         //
         println()

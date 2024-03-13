@@ -67,7 +67,7 @@ export default {
 
             //
             let resApi = await daoApi.loadStore(
-                'm/Plan/getPlanUsr', [planDefaultId]
+                'm/Plan/getPlan', [planDefaultId]
             )
             let planDefault = resApi.records[0]
 

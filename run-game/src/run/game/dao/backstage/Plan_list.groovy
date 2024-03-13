@@ -8,13 +8,12 @@ import run.game.dao.*
 
 class Plan_list extends RgmMdbUtils {
 
-
     /**
      *
      */
     @DaoMethod
-    StoreRecord getPlanUsr(long plan) {
-        Map params = [isPrivate: true, plan: plan]
+    StoreRecord getPlan(long plan) {
+        Map params = [plan: plan]
         Store st = getPlansInternal(params)
 
         //
@@ -29,23 +28,22 @@ class Plan_list extends RgmMdbUtils {
     }
 
     /**
-     * Список собственных планов (уровней) пользователя.
-     * С рейтингом, сортированный по некоторому критерию, например по самому отстающему
-     * или по запланированному учителем.
+     * Список планов (уровней), доступных пользователю.
+     * С рейтингом.
      */
     @DaoMethod
-    Store getPlansUsr() {
-        Map params = [isPrivate: true, isHidden: false]
+    Store getPlansVisible() {
+        Map params = [accessModeVisible: true, isHidden: false]
         return getPlansInternal(params)
     }
 
     /**
-     * Список общедоступных планов (уровней),
-     * не еще не добавленных к списку планов пользователя.
+     * Список общедоступных планов (уровней).
+     * С рейтингом.
      */
     @DaoMethod
     Store getPlansPublic() {
-        Map params = [isPublic: true, isHidden: false]
+        Map params = [accessModePublic: true, isHidden: false]
         return getPlansInternal(params)
     }
 
@@ -59,22 +57,29 @@ class Plan_list extends RgmMdbUtils {
 
         //
         SqlFilter filter = SqlFilter.create(mdb, sqlPlansUsr(), params)
+
         //
+        filter.addWhere("plan", "equal")
         filter.addWhere("isPublic", "equal")
         filter.addWhere("isHidden", "equal")
-        filter.addWhere("plan", "equal")
 
-        //
+        // Все публичные планы (включая подключенные)
         SqlFilterBuilder part_public = { SqlFilterContext ctx ->
-            ctx.addPart("accessMode", "and (isOwner = 0 and isAllowed = 0 and isPublic = 1)")
+            ctx.addPart("accessModeFilter", "and (isPublic = 1)")
         }
-        filter.addWhere("isNotMy", part_public)
+        filter.addWhere("accessModePublic", part_public)
 
-        //
-        SqlFilterBuilder part_private = { SqlFilterContext ctx ->
-            ctx.addPart("accessMode", "and (isOwner = 1 or isAllowed = 1)")
+        // Личные + подключенные публичные
+        SqlFilterBuilder part_visible = { SqlFilterContext ctx ->
+            ctx.addPart("accessModeFilter", "and (isOwner = 1 or isAllowed = 1)")
         }
-        filter.addWhere("isPrivate", part_private)
+        filter.addWhere("accessModeVisible", part_visible)
+
+        // Только личные
+        SqlFilterBuilder part_privateOnly = { SqlFilterContext ctx ->
+            ctx.addPart("accessModeFilter", "and (isOwner = 1)")
+        }
+        filter.addWhere("accessModePrivateOnly", part_privateOnly)
 
         //
         filter.load(res)
@@ -87,6 +92,19 @@ class Plan_list extends RgmMdbUtils {
     private String sqlPlansUsr() {
         return """ 
 with 
+
+Cube_Plan as (
+
+select 
+    PlanFact.plan,
+    count(*) as count 
+from
+    PlanFact
+group by
+    PlanFact.plan
+
+),
+
 
 Tab_Plans as (
 
@@ -102,7 +120,7 @@ select
     coalesce(UsrPlan.isAllowed, 0) isAllowed,
     (case when PlanTag_access_default.plan is null then 0 else 1 end) as isDefault,
     
-    coalesce(Cube_UsrPlan.count, 0) count,
+    coalesce(Cube_UsrPlan.count, Cube_Plan.count, 0) count,
     coalesce(Cube_UsrPlan.countFull, 0) countFull,
     coalesce(Cube_UsrPlan.ratingTask, 0) ratingTask,
     coalesce(Cube_UsrPlan.ratingQuickness, 0) ratingQuickness
@@ -112,6 +130,9 @@ from
     left join UsrPlan on (
         Plan.id = UsrPlan.plan and 
         UsrPlan.usr = :usr
+    )
+    left join Cube_Plan on (
+        Plan.id = Cube_Plan.plan 
     )
     left join Cube_UsrPlan on (
         Plan.id = Cube_UsrPlan.plan and 
@@ -123,14 +144,17 @@ from
     ) 
 )
 
+
 select 
     * 
 from
     Tab_Plans
-where
+where   
     (1=1) and
-    (isOwner = 1 or isAllowed = 1 or isPublic = 1)
-    /*part:accessMode*/    
+    -- Обязательный фильтр доступа
+    (isOwner = 1 or isAllowed = 1 or isPublic = 1) 
+    -- Опциональный фильтр
+    /*part:accessModeFilter*/    
 """
     }
 

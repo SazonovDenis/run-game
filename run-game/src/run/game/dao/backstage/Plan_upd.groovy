@@ -316,7 +316,7 @@ group by
 
     void validatePlanEdit(long idPlan) {
         Plan_list list = mdb.create(Plan_list)
-        StoreRecord rec = list.getPlanUsr(idPlan)
+        StoreRecord rec = list.getPlan(idPlan)
         //
         if (!rec.getBoolean("isOwner")) {
             throw new XError("Пользователь не имеет права редактировать план")

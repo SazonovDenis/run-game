@@ -160,11 +160,13 @@ export default {
 
         onPictureClick() {
             console.log("onPictureClick")
+/*
             if (this.isCameraCapturing) {
                 this.onTakePicture()
             } else {
                 this.onNewPicture()
             }
+*/
         },
 
         onTakePicture() {

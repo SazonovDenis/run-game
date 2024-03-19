@@ -135,6 +135,8 @@ import auth from "../auth"
 import gameplay from "../gameplay"
 import LogoGame from "./LogoGame"
 
+import {useQuasar} from 'quasar'
+
 export default {
 
     components: {
@@ -268,6 +270,12 @@ export default {
     mounted() {
         console.info("this.tabMenuName: " + this.tabMenuName)
         this.mainTab = this.tabMenuName
+
+
+        let quasar = useQuasar()
+        console.log(quasar.platform.is)
+        apx.cfg.is = quasar.platform.is
+
     },
 
 

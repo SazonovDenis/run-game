@@ -5,7 +5,8 @@
         <q-input
             dense outlined clearable
             debounce="300"
-            style="max-width: 12em;"
+            :type="getTypeInput()"
+            :class="getClassInput()"
             ref="filterText"
             v-model="filterText"
             placeholder="Поиск в словаре"
@@ -28,6 +29,7 @@
 
 import {daoApi} from "../dao"
 import MenuContainer from "./MenuContainer"
+import {apx} from "../vendor"
 
 export default {
 
@@ -48,7 +50,25 @@ export default {
         }
     },
 
-    methods: {},
+    methods: {
+
+        getTypeInput() {
+            if (apx.cfg.is.desktop) {
+                return "textarea"
+            } else {
+                return "text"
+            }
+        },
+
+        getClassInput() {
+            if (apx.cfg.is.desktop) {
+                return "input-desktop"
+            } else {
+                return "input-mobile"
+            }
+        },
+
+    },
 
     async mounted() {
         this.$refs.filterText.focus()
@@ -93,5 +113,13 @@ export default {
 </script>
 
 <style scoped>
+
+.input-desktop {
+    width: 100%;
+}
+
+.input-mobile {
+    max-width: 12em;
+}
 
 </style>

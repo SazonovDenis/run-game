@@ -41,6 +41,7 @@ export default {
         planId: null,
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
+        isToolbarUsed: {type: Boolean},
     },
 
     data() {
@@ -61,10 +62,10 @@ export default {
         },
 
         getClassInput() {
-            if (apx.cfg.is.desktop) {
-                return "input-desktop"
+            if (apx.cfg.is.desktop || !this.isToolbarUsed) {
+                return "input-wide"
             } else {
-                return "input-mobile"
+                return "input-narrow"
             }
         },
 
@@ -114,11 +115,11 @@ export default {
 
 <style scoped>
 
-.input-desktop {
+.input-wide {
     width: 100%;
 }
 
-.input-mobile {
+.input-narrow {
     max-width: 12em;
 }
 

@@ -59,6 +59,7 @@
                 :planId="planId"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
+                :isToolbarUsed="this.hiddenCountLoaded > 0"
             >
 
                 <template v-slot:toolbar>

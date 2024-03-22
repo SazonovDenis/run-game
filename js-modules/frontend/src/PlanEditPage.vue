@@ -93,6 +93,7 @@
                 :planId="planId"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
+                :itemOnClick="itemOnClick"
             >
 
                 <template v-slot:toolbar>
@@ -402,7 +403,6 @@ export default {
 
             visibleCount: 0,
             hiddenCount: 0,
-
             hiddenCountLoaded: 0,
 
             filterText: "",
@@ -584,11 +584,6 @@ export default {
                     this.visibleCount = this.visibleCount + 1
                 }
             }
-
-            // Если скрытых нет, то выключаем режим "показать скрытые"
-            if (this.hiddenCount === 0) {
-                this.showHidden = false
-            }
         },
 
         calcHiddenCountLoaded() {
@@ -598,11 +593,21 @@ export default {
                     this.hiddenCountLoaded = this.hiddenCountLoaded + 1
                 }
             }
+        },
 
+        checkShowHiddenMode() {
             // Если скрытых нет, то выключаем режим "показать скрытые"
             if (this.hiddenCount === 0) {
                 this.showHidden = false
             }
+            if (this.hiddenCountLoaded === 0) {
+                this.showHiddenLoaded = false
+            }
+        },
+
+        itemOnClick(item) {
+            console.info(item)
+            this.itemAddMenuClick(item)
         },
 
         itemsOnChange(searchDone) {
@@ -638,6 +643,8 @@ export default {
 
             // Удобнее держать отдельную переменную this.hiddenCount
             this.calcHiddenCountLoaded()
+            this.calcHiddenCountExternal()
+            this.checkShowHiddenMode()
         },
 
         filterLoaded(taskItem) {
@@ -941,6 +948,7 @@ export default {
             //
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
+            this.checkShowHiddenMode()
         },
 
         /**
@@ -976,6 +984,7 @@ export default {
             //
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
+            this.checkShowHiddenMode()
         },
 
         itemHideAdd(taskItem) {
@@ -1007,6 +1016,7 @@ export default {
             //
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
+            this.checkShowHiddenMode()
         },
 
         itemHideDel(taskItem) {
@@ -1034,6 +1044,7 @@ export default {
             //
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
+            this.checkShowHiddenMode()
         },
 
         /**
@@ -1058,8 +1069,9 @@ export default {
             }
 
             //
-            this.calcHiddenCountExternal()
             this.calcHiddenCountLoaded()
+            this.calcHiddenCountExternal()
+            this.checkShowHiddenMode()
         },
 
         /* -------------------------------- */

@@ -139,4 +139,20 @@
     </domain>
 
 
+    <domain name="ItemData" parent="tab.id"
+            title="Данные по сущности">
+        <!--@
+        Заранее собранные данные по словам (эталонный звук, перевод и т.п.).
+        -->
+
+        <field name="item" parent="Item/ref" title="О какой сущности"/>
+
+        <field name="valueSpelling" parent="string" size="200"/>
+        <field name="valueTranslate" parent="string" size="200"/>
+        <field name="valueSound" parent="string" size="200"/>
+        <field name="valueImage" parent="string" size="200"/>
+
+    </domain>
+
+
 </root>

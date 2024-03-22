@@ -16,8 +16,20 @@
                 <canvas id="canvas"></canvas>
 
                 <div :class="'photo ' + getClassPhoto">
-                    <img id="photo"
-                         alt="The screen capture will appear in this box.">
+                    <img
+                        ref="photo"
+                        id="photo"
+                        alt="The screen capture will appear in this box.">
+
+                    <div class="photo-word-positions">
+                        <div v-for="position in itemPositions"
+                             class="photo-word-position"
+                             @click="itemPositionClick(position)"
+                             :style="getItemPositionSyle(position)"
+                        >
+
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -85,6 +97,7 @@ export default {
         planId: null,
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
+        itemOnClick: {type: Function},
     },
 
     data() {
@@ -105,6 +118,9 @@ export default {
             photo: null,
 
             info: null,
+
+            itemPositions: [],
+            itemsPositionsIdx: {},
         }
     },
 
@@ -158,15 +174,77 @@ export default {
 
     methods: {
 
-        onPictureClick() {
-            console.log("onPictureClick")
-/*
-            if (this.isCameraCapturing) {
-                this.onTakePicture()
+        getItemPositionSyle(itemPosition) {
+            let videoWidth = this.width
+            let videoHeight = this.height
+            //
+            let image = this.$refs.photo
+            let imageWidth = image.clientWidth - 5
+            let imageHeight = image.clientHeight - 5
+
+            //
+            let kWidth = imageWidth / videoWidth
+
+            //
+            let itemId = itemPosition.item
+            let item = this.itemsPositionsIdx[itemId]
+            //
+            let isItem
+            let isHidden
+            let isInPlan
+            //
+            if (item) {
+                isItem = true
+                isHidden = item.isHidden
+                isInPlan = item.isInPlan
             } else {
-                this.onNewPicture()
+                isItem = false
+                isInPlan = false
+                isHidden = false
             }
-*/
+
+            let borderColor
+            let backgroundColor
+
+            if (isHidden) {
+                borderColor = "rgba(20, 20, 230, 0.2)"
+                backgroundColor = "rgba(20, 20, 230, 0.2)"
+            } else if (isItem) {
+                if (isInPlan) {
+                    borderColor = "rgba(20, 230, 20, 0.4)"
+                    backgroundColor = "rgba(20, 230, 20, 0.4)"
+                } else {
+                    borderColor = "rgb(20, 230, 20)"
+                    backgroundColor = "rgba(20, 230, 20, 0.04)"
+                }
+            } else {
+                borderColor = "rgba(230, 22, 22, 0.4)"
+                backgroundColor = "none"
+            }
+
+
+            return {
+                borderColor: borderColor,
+                backgroundColor: backgroundColor,
+                left: Math.round(itemPosition.left * kWidth) + "px",
+                top: Math.round(itemPosition.top * kWidth) + "px",
+                width: Math.round(itemPosition.width * kWidth) + "px",
+                height: Math.round(itemPosition.height * kWidth) + "px",
+            }
+        },
+
+        itemPositionClick(itemPosition) {
+            console.info(itemPosition)
+            // //
+            let itemId = itemPosition.item
+            let item = this.itemsPositionsIdx[itemId]
+            if (item && this.itemOnClick) {
+                this.itemOnClick(item)
+            }
+        },
+
+        onPictureClick() {
+            //console.log("onPictureClick")
         },
 
         onTakePicture() {
@@ -177,7 +255,7 @@ export default {
 
         onNewPicture() {
             console.log("onNewPicture")
-            this.clearphoto();
+            this.clearPhoto();
             this.clearData()
             this.isCameraCapturing = true
         },
@@ -230,7 +308,7 @@ export default {
             }
 
             //
-            th.clearphoto();
+            th.clearPhoto();
         },
 
         onCanplay() {
@@ -258,7 +336,7 @@ export default {
             }
         },
 
-        clearphoto() {
+        clearPhoto() {
             var context = canvas.getContext('2d');
             context.fillStyle = "#AAA";
             context.fillRect(0, 0, canvas.width, canvas.height);
@@ -286,25 +364,52 @@ export default {
                 //
                 await this.loadData(dataImage)
             } else {
-                this.clearphoto();
+                this.clearPhoto();
             }
         },
 
         async loadData(dataImage) {
             //
             let resApi = await daoApi.loadStore('m/Game/findStill', [dataImage, this.planId])
-            let items = resApi.records
+            let resItems = resApi.facts.records
+            let resItemsPositions = resApi.positions.records
 
             //
             this.searchDone = true
 
-            // Заполним родительский список
+
+            // --- Заполним родительский список
+
+            // items
             this.items.length = 0
-            for (let item of items) {
+            for (let item of resItems) {
                 this.items.push(item)
             }
 
-            // Уведомим родителя
+            // positions
+            let plainPositions = []
+            for (let item of resItemsPositions) {
+                let positions = item.positions
+                for (let itemPosition of positions) {
+                    itemPosition.item = item.item
+                    plainPositions.push(itemPosition)
+                }
+            }
+            //
+            this.itemPositions.length = 0
+            for (let p of plainPositions) {
+                this.itemPositions.push(p)
+            }
+
+            // Создадим индекс по item - для обработки кликов
+            this.itemsPositionsIdx = {}
+            for (let item of this.items) {
+                let itemId = item.item
+                this.itemsPositionsIdx[itemId] = item
+            }
+
+
+            // --- Уведомим родителя
             if (this.itemsOnChange) {
                 this.itemsOnChange(this.searchDone)
             }
@@ -315,6 +420,10 @@ export default {
 
             // Очистим родительский список
             this.items.length = 0
+
+            // Очистим свои списки
+            this.itemPositions = []
+            this.itemsPositionsIdx = {}
 
             // Уведомим родителя
             if (this.itemsOnChange) {
@@ -343,6 +452,7 @@ export default {
 
 .photo {
     display: inline-block;
+    position: relative;
 }
 
 .photo-container {
@@ -416,6 +526,20 @@ export default {
 .photo-state-error {
     padding: 1em 0;
     color: #850000;
+}
+
+.photo-word-positions {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.photo-word-position {
+    position: absolute;
+    color: rgba(192, 192, 192, 0.4);
+    border-radius: 3px;
+    border-width: 1px;
+    border-style: solid;
 }
 
 </style>

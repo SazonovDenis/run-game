@@ -19,7 +19,7 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
         // ---
         // Найдем сущности по тексту
-        Store stItem = itemsList.loadBySpelling(itemsText)
+        Store stItem = itemsList.findText(itemsText)
 
         //
         //println()

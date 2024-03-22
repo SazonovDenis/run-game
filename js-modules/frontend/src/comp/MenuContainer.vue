@@ -4,12 +4,19 @@
         <q-header elevated _class="bg-primary text-white">
 
             <q-toolbar class="bg-primary text-white"
-                       style="padding-right: 0;">
+                       style="padding-left: 0; padding-right: 0;">
 
+                <q-btn
+                    v-if="!title"
+                    _dense flat round icon="menu"
+                    @click="toggleRightDrawer"
+                />
 
                 <div v-if="title" class="row">
 
-                    <div style="width: 3em; height: 2em;" @click="onTopLeftIcon()">
+                    <div
+                        style="width: 3em; height: 2em; text-align: center;"
+                        @click="onTopLeftIcon()">
                         <img
                             style="width: 2em; height: 2em;"
                             :src="iconTopLeft">
@@ -53,37 +60,105 @@
                 <!-- slot menuBarRight -->
                 <slot name="menuBarRight">
 
-                    <div
-                        v-if="!this.frameReturn"
-                        class="menuBarDropdown">
-
-                        <q-btn-dropdown
-                            auto-close
-                            flat
-                            icon="menu">
-
-                            <q-list>
-                                <q-item class="q-mt-md" clickable
-                                        @click="onUser()">
-                                    <q-item-section>Данные игрока</q-item-section>
-                                </q-item>
-
-                                <q-item class="q-my-md" clickable
-                                        @click="onAbout()">
-                                    <q-item-section>О программе</q-item-section>
-                                </q-item>
-                            </q-list>
-
-                        </q-btn-dropdown>
-
-                    </div>
-
                 </slot>
                 <!-- -->
 
 
             </q-toolbar>
         </q-header>
+
+
+        <q-drawer v-model="rightDrawerOpen" side="left" overlay behavior="mobile"
+                  elevated>
+            <!-- drawer content -->
+            <div class="q-drawer__content fit scroll">
+                <div class="q-scrollarea"
+                     style="height: calc(100% - 204px); margin-top: 204px;">
+                    <div
+                        class="q-scrollarea__container scroll relative-position fit hide-scrollbar">
+                        <div class="q-scrollarea__content absolute">
+
+                            <div class="q-item__label q-item__label--header"
+                                 style="margin-top: 1em"
+                                 @click="onGameInfo()">Последняя игра
+                            </div>
+
+                            <div class="q-item__label q-item__label--header"
+                                 @click="onMyLevels()">Уровни
+                            </div>
+
+
+                            <div class="q-mt-md q-item__label q-item__label--header"
+                                 @click="onUser()">Данные игрока
+                            </div>
+
+
+                            <q-separator/>
+
+
+                            <div class="q-mt-md q-item__label q-item__label--header"
+                                 @click="onAbout()">Об игре
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div
+                        class="q-scrollarea__bar q-scrollarea__bar--v absolute-right q-scrollarea__bar--invisible"
+                        aria-hidden="true">
+                    </div>
+
+                    <div
+                        class="q-scrollarea__bar q-scrollarea__bar--h absolute-bottom q-scrollarea__bar--invisible"
+                        aria-hidden="true">
+
+                    </div>
+
+                    <div
+                        class="q-scrollarea__thumb q-scrollarea__thumb--v absolute-right q-scrollarea__thumb--invisible"
+                        aria-hidden="true" style="top: 365.517px; height: 341px;">
+
+                    </div>
+
+                    <div
+                        class="q-scrollarea__thumb q-scrollarea__thumb--h absolute-bottom q-scrollarea__thumb--invisible"
+                        aria-hidden="true" style="left: 0px; width: 299px;">
+                    </div>
+                </div>
+
+                <div class="q-img q-img--menu absolute-top" role="img"
+                     style="height: 204px;">
+
+                    <div style="padding-bottom: 82.5195%;">
+
+                    </div>
+
+                    <div class="q-img__container absolute-full">
+                        <img
+                            class="q-img__image q-img__image--with-transition q-img__image--loaded"
+                            loading="lazy" fetchpriority="auto" aria-hidden="true"
+                            draggable="false" v-bind:src="material"
+                            style="object-fit: cover; object-position: 50% 50%;">
+                    </div>
+
+                    <div class="q-img__content absolute-full q-anchor--skip">
+                        <div class="absolute-bottom bg-transparent"
+                             @click="onUser()">
+                            <div class="q-avatar q-mb-sm" style="font-size: 56px;">
+                                <div
+                                    class="q-avatar__content row flex-center overflow-hidden">
+                                    <img v-bind:src="avatar">
+                                </div>
+                            </div>
+                            <div class="text-weight-bold">{{ userInfo.text }}
+                            </div>
+                            <div>{{ userInfo.id }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </q-drawer>
 
 
         <q-page-container>
@@ -162,6 +237,8 @@ export default {
     data: function() {
         return {
             mainTab: this.tabMenuName,
+            rightDrawerOpen: false,
+
             userInfo: auth.getUserInfo(),
             globalState: ctx.getGlobalState(),
         }
@@ -209,6 +286,10 @@ export default {
 
 
     methods: {
+        toggleRightDrawer() {
+            this.rightDrawerOpen = !this.rightDrawerOpen
+        },
+
         onTopLeftIcon: function() {
             if (this.frameReturn) {
                 apx.showFrame({

@@ -22,7 +22,7 @@ class Item_list_Test extends RgmBase_Test {
 
 
         //
-        stItem = itemsList.find(itemText_0)
+        stItem = itemsList.findWord(itemText_0)
 
         println()
         println("findBySpelling: '" + itemText_0 + "'")
@@ -30,7 +30,7 @@ class Item_list_Test extends RgmBase_Test {
 
 
         //
-        stItem = itemsList.find(itemText_1)
+        stItem = itemsList.findWord(itemText_1)
 
         println()
         println("findBySpelling: '" + itemText_1 + "'")
@@ -48,7 +48,7 @@ class Item_list_Test extends RgmBase_Test {
 
 
         //
-        stItem = itemsList.loadBySpelling([itemText_0])
+        stItem = itemsList.findText([itemText_0])
 
         println()
         println("loadBySpelling: '" + itemText_0 + "'")
@@ -56,7 +56,7 @@ class Item_list_Test extends RgmBase_Test {
 
 
         //
-        stItem = itemsList.loadBySpelling([itemText_1])
+        stItem = itemsList.findText([itemText_1])
 
         println()
         println("loadBySpelling: '" + itemText_1 + "'")
@@ -64,7 +64,7 @@ class Item_list_Test extends RgmBase_Test {
 
 
         //
-        stItem = itemsList.loadBySpelling(itemsText)
+        stItem = itemsList.findText(itemsText)
 
         println()
         println("loadBySpelling: '" + itemsText + "'")
@@ -100,7 +100,7 @@ class Item_list_Test extends RgmBase_Test {
 
         //
         String fileName = "test/run/game/dao/backstage/Item_list_Test.txt"
-        Store stItem = itemsList.loadBySpelling(fileName)
+        Store stItem = itemsList.findTextFromFile(fileName)
 
         println()
         println("loadBySpelling, file: '" + fileName + "'")

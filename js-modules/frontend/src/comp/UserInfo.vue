@@ -86,7 +86,7 @@ export default {
 
     data() {
         return {
-            user_password_isHidden: true
+            user_password_isHidden: true,
         }
     },
 

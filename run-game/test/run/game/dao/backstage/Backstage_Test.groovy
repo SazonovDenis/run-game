@@ -6,13 +6,12 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
-import run.game.util.DataUtils
+import run.game.util.*
 
 @Disabled
 class Backstage_Test extends RgmBase_Test {
 
     long item = 1030
-    String _itemText = "cream"
     String itemText = "emerald"
     Collection<String> itemsText = ["orange", "green", "blue"]
 
@@ -25,7 +24,7 @@ class Backstage_Test extends RgmBase_Test {
 
         //
         Item_list itemsList = mdb.create(Item_list)
-        Store stItem = itemsList.loadBySpelling([itemText])
+        Store stItem = itemsList.findText([itemText])
         //
         println()
         println("Items by value '" + itemText + "'")
@@ -98,7 +97,7 @@ class Backstage_Test extends RgmBase_Test {
         // ---
         // Найдем сущности по тексту
         Item_list itemsList = mdb.create(Item_list)
-        Store stItem = itemsList.loadBySpelling(itemsText)
+        Store stItem = itemsList.findText(itemsText)
 
         //
         println()
@@ -151,7 +150,7 @@ class Backstage_Test extends RgmBase_Test {
         // ---
         // Найдем сущности по тексту
         Item_list itemsList = mdb.create(Item_list)
-        Store stItem = itemsList.loadBySpelling(itemsText)
+        Store stItem = itemsList.findText(itemsText)
 
         //
         println()

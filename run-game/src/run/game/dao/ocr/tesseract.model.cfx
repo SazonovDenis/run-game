@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <domain name="Tesseract.tsv">
+
+        <field name="level" parent="int"/>
+        <field name="page_num" parent="int"/>
+        <field name="block_num" parent="int"/>
+        <field name="par_num" parent="int"/>
+        <field name="line_num" parent="int"/>
+        <field name="word_num" parent="int"/>
+        <field name="left" parent="int"/>
+        <field name="top" parent="int"/>
+        <field name="width" parent="int"/>
+        <field name="height" parent="int"/>
+        <field name="conf" parent="int"/>
+        <field name="text" parent="string"/>
+
+    </domain>
+
+    <domain name="Tesseract.items">
+
+        <field name="item" parent="Item/ref"/>
+        <field name="itemValue" parent="string"/>
+        <field name="positions" parent="object"/>
+
+    </domain>
+
+</root>

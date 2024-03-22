@@ -7,9 +7,11 @@ import jandcode.core.store.*
 import run.game.dao.*
 import run.game.model.service.*
 import run.game.testdata.fixture.*
-import run.game.util.*
 
 class Item_list extends BaseMdbUtils {
+
+
+    int MAX_COUNT_FOUND = 10
 
     /**
      * Ищем Item по фрагменту написания,
@@ -19,46 +21,59 @@ class Item_list extends BaseMdbUtils {
      * @return Store структуры Item
      */
     @DaoMethod
-    Store find(String itemText) {
-        Store stFacts = mdb.createStore("Fact.list")
+    Store find(String text) {
+        // Текст с разделителями?
+        List lst = text.split("[ \n\r]")
 
-        if (itemText == null || itemText.length() <= 1) {
-            return stFacts
+        //
+        if (lst.size() > 1) {
+            // Ищем много слов целиком
+            return findText(lst)
+        } else {
+            // Ищем одно слово по фрагменту
+            return findWord(text)
         }
-        itemText = itemText.toLowerCase()
+    }
+
+    Store findWord(String wordText) {
+        Store stItem = mdb.createStore("Item.list")
+
+        //
+        wordText = wordText.toLowerCase()
+        wordText = wordText.trim()
 
         //
         Fact_list list = mdb.create(Fact_list)
 
-        int MAX_COUNT = 10
-
         //
         int count = 0
-        Store stFact = list.findFactsByValueDataType(itemText, RgmDbConst.DataType_word_spelling)
+        Store stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
         for (StoreRecord rec : stFact) {
             count++
-            if (count > MAX_COUNT) {
+            if (count > MAX_COUNT_FOUND) {
                 break
             }
 
-            stFacts.add(rec.getValues())
+            //stFacts.add(rec.getValues())
+            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
         }
 
         //
         count = 0
-        stFact = list.findFactsByValueDataType(itemText, RgmDbConst.DataType_word_translate)
+        stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_translate)
         for (StoreRecord rec : stFact) {
             count++
-            if (count > MAX_COUNT) {
+            if (count > MAX_COUNT_FOUND) {
                 break
             }
 
-            stFacts.add(rec.getValues())
+            //stFacts.add(rec.getValues())
+            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
         }
 
 
         //
-        return stFacts
+        return stItem
     }
 
 
@@ -69,9 +84,9 @@ class Item_list extends BaseMdbUtils {
      * @param itemsText список слов
      * @return Store со списком Item
      */
-    Store loadBySpelling(Collection<String> itemsText) {
+    Store findText(Collection<String> itemsText) {
         // Очищаем слова
-        Collection<String> itemsTextFiltered = filterAndTransformText(itemsText)
+        Collection<String> itemsTextFiltered = filterAndSplitText(itemsText)
 
         // Формируем пары из продряд идущих слов.
         Collection<String> itemsTextPairs = createPairs(itemsTextFiltered)
@@ -90,7 +105,7 @@ class Item_list extends BaseMdbUtils {
      * @param fileName файл со списком слов
      * @return Store структуры Item
      */
-    Store loadBySpelling(String fileName) {
+    Store findTextFromFile(String fileName) {
         // Грузим слова из файла
         Collection<String> itemsText = readTextFromFile(fileName)
 
@@ -195,7 +210,7 @@ where
         Collection<String> itemsText = strFile.split()
 
         // Очищаем слова
-        Collection<String> itemsTextFiltered = filterAndTransformText(itemsText)
+        Collection<String> itemsTextFiltered = filterAndSplitText(itemsText)
 
         //
         return itemsTextFiltered
@@ -207,32 +222,39 @@ where
      * @param words список слов
      * @return очищенный список слов
      */
-    Collection<String> filterAndTransformText(Collection<String> words) {
+    public static Collection<String> filterAndSplitText(Collection<String> words) {
         Collection<String> res = new ArrayList<>()
 
         for (String word : words) {
-            Collection<String> words1 = splitWord(word)
+            Collection<String> words1 = filterAndSplitWord(word)
             if (words1 != null) {
-                res.addAll(filterAndTransformText(words1))
-                continue
-            }
-
-            //
-            word = filterWord(word)
-            if (word == null) {
-                continue
-            }
-
-            //
-            res.add(word)
-
-            //
-            words1 = tranformWord(word)
-            if (words1 != null) {
-                res.addAll(filterAndTransformText(words1))
+                res.addAll(words1)
             }
         }
 
+        return res
+    }
+
+
+    public static Collection<String> filterAndSplitWord(String word) {
+        Collection<String> res = new ArrayList<>()
+
+        Collection<String> words1 = splitWord(word)
+        if (words1 != null) {
+            res.addAll(filterAndSplitText(words1))
+            return res
+        }
+
+        //
+        word = filterWord(word)
+        if (word == null) {
+            return res
+        }
+
+        //
+        res.add(word)
+
+        //
         return res
     }
 
@@ -256,7 +278,7 @@ where
     }
 
 
-    private String filterWord(String word) {
+    public static String filterWord(String word) {
         //
         if (word == null)
             return null
@@ -288,7 +310,7 @@ where
      * @param wordEng
      * @return дополнительные формы слова
      */
-    private Collection<String> tranformWord(String wordEng) {
+    public static Collection<String> transformWord(String wordEng) {
         if (wordEng.endsWith("s")) {
             wordEng = wordEng.substring(0, wordEng.length() - 1)
             return [wordEng]
@@ -299,10 +321,15 @@ where
             return [wordEng]
         }
 
+        if (wordEng.endsWith("ing")) {
+            wordEng = wordEng.substring(0, wordEng.length() - 3)
+            return [wordEng]
+        }
+
         return null
     }
 
-    private Collection<String> splitWord(String word) {
+    public static Collection<String> splitWord(String word) {
         Collection<String> words
 
         words = word.split("[^a-zA-Z0-9']")

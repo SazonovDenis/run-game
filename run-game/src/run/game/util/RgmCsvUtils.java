@@ -7,7 +7,7 @@ import jandcode.core.store.*;
 import java.io.*;
 
 /**
- * Чтение и запись из csv нашего формата
+ * Чтение и запись из csv нашего формата ("csv.rgm")
  * Разделитель - tab.
  */
 public class RgmCsvUtils extends BaseMdbUtils {

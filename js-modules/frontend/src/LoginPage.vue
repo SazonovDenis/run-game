@@ -27,7 +27,8 @@
                             </template>
                         </q-input>
 
-                        <q-input v-model="login"
+                        <q-input v-if="!loginIsGenerated(login) || user_login_isShown"
+                                 v-model="login"
                                  label="Почта или телефон"
                                  outlined
                                  stack-label
@@ -37,7 +38,8 @@
                             </template>
                         </q-input>
 
-                        <q-input v-model="password"
+                        <q-input v-if="!loginIsGenerated(login) || user_login_isShown"
+                                 v-model="password"
                                  outlined
                                  stack-label
                                  :dense="true"
@@ -58,6 +60,15 @@
                                 />
                             </template>
                         </q-input>
+
+                        <div v-if="loginIsGenerated(login) && !user_login_isShown"
+                             class="row justify-left q-mt-lg q-mb-lg11"
+                             style="_padding-top: 1em"
+                             @click="user_login_isShown = true">
+
+                            <span class="rgm-link-soft">Дополнительно</span>
+                        </div>
+
 
                         <div class="row justify-center q-mt-lg q-mb-lg11">
                             <jc-btn kind="primary" :label="loginModeText"
@@ -101,7 +112,7 @@
                             <span> {{ text }} </span>
                         </div>
 
-                        <div>
+                        <div v-if="!loginIsGenerated(login)">
                             <q-icon name="mail"
                                     style="padding: 0 0.3em;" size="1.5em"
                                     color="gray-600"/>
@@ -181,7 +192,7 @@
                                 <span> {{ user.text }} </span>
                             </div>
 
-                            <div>
+                            <div v-if="!loginIsGenerated(user.login)">
                                 <q-icon name="mail" style="padding: 0 0.3em;"
                                         size="1.5em" color="gray-600"/>
                                 <span> {{ user.login }} </span>
@@ -277,6 +288,7 @@ export default {
             //
             globalState: ctx.getGlobalState(),
             //
+            user_login_isShown: false,
             user_password_isHidden: true,
         }
     },
@@ -301,6 +313,14 @@ export default {
     computed: {},
 
     methods: {
+
+        loginIsGenerated(login) {
+            if (!login) {
+                return true
+            }
+
+            return login.length === 32
+        },
 
         checkLoginMode() {
             if (this.text) {
@@ -401,6 +421,7 @@ export default {
             this.text = null
             this.login = null
             this.password = null
+            //
             this.checkLoginMode()
         },
 

@@ -179,8 +179,8 @@ export default {
             let videoHeight = this.height
             //
             let image = this.$refs.photo
-            let imageWidth = image.clientWidth - 5
-            let imageHeight = image.clientHeight - 5
+            let imageWidth = image.clientWidth
+            let imageHeight = image.clientHeight
 
             //
             let kWidth = imageWidth / videoWidth

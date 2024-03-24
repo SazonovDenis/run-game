@@ -171,6 +171,18 @@
 
         </q-page-container>
 
+        <q-page-sticky
+            v-if="!isFullScreen()"
+            position="bottom-left"
+            :offset="[5, 5]">
+            <q-btn color="grey-7"
+                   style="opacity: 0.4"
+                   icon="fullscreen-open"
+                   size="1.3em"
+                   @click="onFullscreen()"
+            />
+        </q-page-sticky>
+
 
         <q-footer reveal :style="{display: getFooterDisplay}">
 
@@ -208,6 +220,7 @@ import ctx from "../gameplayCtx"
 import {apx} from "../vendor"
 import auth from "../auth"
 import gameplay from "../gameplay"
+import utils from "../utils"
 import LogoGame from "./LogoGame"
 
 import {useQuasar} from 'quasar'
@@ -286,6 +299,13 @@ export default {
 
 
     methods: {
+        isFullScreen() {
+            return document.fullscreenElement != null
+        },
+        onFullscreen() {
+            utils.openFullscreen()
+        },
+
         toggleRightDrawer() {
             this.rightDrawerOpen = !this.rightDrawerOpen
         },

@@ -5,26 +5,26 @@
             info: {{ info }}
         </div>
 
-        <div class="photo-container" :class="getClassCamera">
+        <div class="camera-container" :class="getClassCamera">
 
             <div _class="contentarea" @click="onPictureClick">
 
-                <div :class="'video ' + getClassVideo">
-                    <video id="video">Video stream not available.</video>
+                <div :class="'video-container ' + getClassVideo">
+                    <video id="video">Video stream will appear in this box</video>
                 </div>
 
                 <canvas id="canvas"></canvas>
 
-                <div :class="'photo ' + getClassPhoto">
+                <div :class="'photo-container ' + getClassPhoto">
                     <img
                         ref="photo"
                         id="photo"
-                        alt="The screen capture will appear in this box.">
+                        alt="The screen capture will appear in this box">
 
                     <div class="photo-word-positions">
                         <div v-for="position in itemPositions"
                              class="photo-word-position"
-                             @click="itemPositionClick(position)"
+                             @click="onItemPositionClick(position)"
                              :style="getItemPositionSyle(position)"
                         >
 
@@ -102,7 +102,7 @@ export default {
 
     data() {
         return {
-            width: 1024, // We will scale the photo width to this
+            width: 1280, // We will scale the photo width to this
             height: 0,  // This will be computed based on the input stream
 
             wasCameraInit: false,
@@ -233,7 +233,7 @@ export default {
             }
         },
 
-        itemPositionClick(itemPosition) {
+        onItemPositionClick(itemPosition) {
             console.info(itemPosition)
             // //
             let itemId = itemPosition.item
@@ -248,13 +248,13 @@ export default {
         },
 
         onTakePicture() {
-            console.log("onTakePicture")
+            //console.log("onTakePicture")
             this.takePicture();
             this.isCameraCapturing = false
         },
 
         onNewPicture() {
-            console.log("onNewPicture")
+            //console.log("onNewPicture")
             this.clearPhoto();
             this.clearData()
             this.isCameraCapturing = true
@@ -272,6 +272,7 @@ export default {
                 //
                 navigator.mediaDevices.getUserMedia({
                     video: {
+                        width: { ideal: 1280 },
                         facingMode: 'environment'
                     },
                     audio: false
@@ -446,16 +447,16 @@ export default {
 
 <style scoped>
 
-.video {
-    display: inline-block;
-}
-
-.photo {
-    display: inline-block;
+.camera-container {
     position: relative;
 }
 
+.video-container {
+    display: inline-block;
+}
+
 .photo-container {
+    display: inline-block;
     position: relative;
 }
 

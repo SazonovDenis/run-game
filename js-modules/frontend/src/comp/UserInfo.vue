@@ -14,11 +14,28 @@
     </div>
 
     <div>
-        <q-input v-model="user.login"
-                 label="Почта или телефон"
-                 outlined
-                 stack-label
-                 :dense="true">
+        <q-input
+            v-if="!loginIsGenerated(user.login)"
+            v-model="user.login"
+            label="Почта или телефон"
+            outlined
+            stack-label
+            :dense="true">
+            <template #prepend>
+                <q-icon
+                    name="mail"
+                    size="1em"
+                    color="gray-600"/>
+            </template>
+        </q-input>
+
+        <q-input
+            v-else
+            v-model="user.loginNewValue"
+            label="Почта или телефон"
+            outlined
+            stack-label
+            :dense="true">
             <template #prepend>
                 <q-icon
                     name="mail"
@@ -75,12 +92,16 @@ export default {
                 return "Гость"
             }
         },
-        color() {
-            if (this.user.id > 0) {
-                return this.user.color
-            } else {
-                return "grey"
+     },
+
+    methods: {
+
+        loginIsGenerated(login) {
+            if (!login) {
+                return true
             }
+
+            return login.length === 32
         },
     },
 

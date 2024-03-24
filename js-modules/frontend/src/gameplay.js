@@ -349,7 +349,7 @@ export default {
         })
 
         //
-        await this.assignAuthUserInfo(res.data)
+        this.setAuthUserInfo(res.data)
     },
 
     async api_updUsr(userInfo) {
@@ -361,7 +361,7 @@ export default {
         })
 
         //
-        await this.assignAuthUserInfo(res.data)
+        this.setAuthUserInfo(res.data)
     },
 
     async api_register(text, login, password) {
@@ -371,7 +371,7 @@ export default {
         })
 
         //
-        await this.assignAuthUserInfo(res.data)
+        this.setAuthUserInfo(res.data)
     },
 
     async api_logout() {
@@ -396,7 +396,7 @@ export default {
      *
      * @param data данные пользователя
      */
-    async assignAuthUserInfo(data) {
+    setAuthUserInfo(data) {
         let userInfo = auth.getUserInfo()
         userInfo.id = data.id
         userInfo.login = data.login

@@ -47,7 +47,6 @@
 import {apx} from "./vendor"
 import auth from "./auth"
 import gameplay from "./gameplay"
-import ctx from "./gameplayCtx"
 import MenuContainer from "./comp/MenuContainer"
 import UserInfo from "./comp/UserInfo"
 import utils from "./utils"
@@ -60,8 +59,7 @@ export default {
 
     data() {
         return {
-            userInfo: auth.getUserInfo(),
-            globalState: ctx.getGlobalState(),
+            userInfo: {},
         }
     },
 
@@ -81,6 +79,9 @@ export default {
         },
 
         async doUsrUpd() {
+            if (this.userInfo.loginNewValue) {
+                this.userInfo.login = this.userInfo.loginNewValue
+            }
             await gameplay.api_updUsr(this.userInfo)
 
             //
@@ -88,6 +89,9 @@ export default {
                 let ui = auth.getUserInfo()
                 utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
             }
+
+            //
+            this.goMain()
         },
 
     },
@@ -99,6 +103,15 @@ export default {
                 frame: '/login', props: {prop1: 1}
             })
         }
+
+        //
+        let authUserInfo = auth.getUserInfo()
+        this.userInfo.id = authUserInfo.id
+        this.userInfo.login = authUserInfo.login
+        this.userInfo.text = authUserInfo.text
+        this.userInfo.guest = authUserInfo.guest
+        this.userInfo.color = authUserInfo.color
+        this.userInfo.planDefault = authUserInfo.planDefault
     },
 
 }

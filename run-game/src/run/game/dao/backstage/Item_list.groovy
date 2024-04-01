@@ -36,7 +36,7 @@ class Item_list extends BaseMdbUtils {
     }
 
     Store findWord(String wordText) {
-        Store stItem = mdb.createStore("Item.list")
+        Store stItem = mdb.createStore("Item.find")
 
         //
         wordText = wordText.toLowerCase()
@@ -68,7 +68,7 @@ class Item_list extends BaseMdbUtils {
             }
 
             //stFacts.add(rec.getValues())
-            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
+            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue"), fact: rec.getValue("id")])
         }
 
 
@@ -127,14 +127,14 @@ class Item_list extends BaseMdbUtils {
      * @return слова, найденные в словаре
      */
     Store loadBySpelling(Collection<String> itemsText, Collection<String> wordsNotFound) {
-        Store stItem = mdb.createStore("Item.list")
+        Store stItem = mdb.createStore("Item.find")
 
         // Получаем из кэша spelling для всех слов
         WordCacheService wordService = mdb.getModel().bean(WordCacheService)
         StoreIndex idxFacts = wordService.getIdxFacts()
 
 
-        // Отберем среди itemsText те слова, котрые мы знаем (idxFacts)
+        // Отберем среди itemsText те слова, котрые есть в наших словарях
         Set<String> setItemsText = new HashSet<>()
         for (String itemText : itemsText) {
             // Повторы не нужны
@@ -151,27 +151,6 @@ class Item_list extends BaseMdbUtils {
                 wordsNotFound.add(itemText)
             }
         }
-
-
-/*
-        todo: теги пока не нужны и не используются
-        // Загрузим тэги
-        Store stItemTag = mdb.loadQuery(sqlItemTag(stItem.getUniqueValues("id")))
-        Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "item")
-
-        // Заполним поле тэги (itemTag)
-        for (StoreRecord recItem : stItem) {
-            List<StoreRecord> lstRecItemTag = mapItemsTag.get(recItem.getLong("id"))
-            if (lstRecItemTag != null) {
-                // Превратим список тэгов в Map тегов
-                Map<Long, String> mapItemTag = new HashMap<>()
-                for (StoreRecord recItemTag : lstRecItemTag) {
-                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
-                }
-                recItem.setValue("itemTag", mapItemTag)
-            }
-        }
-*/
 
 
         //

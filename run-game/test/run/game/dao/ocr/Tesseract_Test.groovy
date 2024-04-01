@@ -14,21 +14,6 @@ class Tesseract_Test extends RgmBase_Test {
     String lang = "eng"
     String outFormat = ""
 
-    @Test
-    void t1() {
-        inFileName = "test/run/game/dao/ocr/1.jpg"
-        outFileName = "temp/1.txt"
-        outFileNameCL = "temp/1"
-        t()
-    }
-
-    @Test
-    void t2() {
-        inFileName = "test/run/game/dao/ocr/2.jpg"
-        outFileName = "temp/2.txt"
-        outFileNameCL = "temp/2"
-        t()
-    }
 
     @Test
     void t11() {

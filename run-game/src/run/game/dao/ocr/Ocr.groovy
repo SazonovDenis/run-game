@@ -145,7 +145,7 @@ class Ocr extends RgmMdbUtils {
 
         // Для отладки
         if (getApp().getEnv().isDev() && !getApp().getEnv().isTest()) {
-            inFileName = "run-game/test/run/game/dao/ocr/alice.jpg"
+            inFileName = "run-game/test/run/game/dao/ocr/orange.jpg"
         }
 
         //

@@ -8,7 +8,6 @@ import jandcode.core.store.*;
  */
 public interface WordCacheService extends Comp {
 
-
     /**
      * Известные факты (индекс по значению)
      */

@@ -1,7 +1,11 @@
 <template>
+
+
     <q-layout view="hHh lpR fFf" style="user-select: none;">
 
+
         <q-header elevated _class="bg-primary text-white">
+
 
             <q-toolbar class="bg-primary text-white"
                        style="padding-left: 0; padding-right: 0;">
@@ -65,6 +69,8 @@
 
 
             </q-toolbar>
+
+
         </q-header>
 
 
@@ -170,6 +176,7 @@
             <!-- -->
 
         </q-page-container>
+
 
         <q-page-sticky
             v-if="!isFullScreen()"

@@ -85,7 +85,7 @@
         <field name="isKnownBad" parent="UsrFact/isKnownBad"/>
         <field name="isInPlan" parent="boolean"/>
 
-        <!-- Рейтинг фактоа -->
+        <!-- Рейтинг факта -->
         <field name="ratingTask" parent="double" scale="3"
                title="Рейтинг за ответы"/>
         <field name="ratingQuickness" parent="double" scale="3"

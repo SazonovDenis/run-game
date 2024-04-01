@@ -18,14 +18,6 @@ import static org.junit.jupiter.api.Assertions.*
  */
 public class CubeBase_Test extends MolapBase_Test {
 
-    ////////////////////
-    ////////////////////
-    ////////////////////
-    // todo тест на конвертацию координат от другого куба - массово
-    ////////////////////
-    ////////////////////
-    ////////////////////
-
 
     String cubeName
 

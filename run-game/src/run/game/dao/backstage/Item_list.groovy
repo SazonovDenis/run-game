@@ -14,16 +14,16 @@ class Item_list extends BaseMdbUtils {
     int MAX_COUNT_FOUND = 10
 
     /**
-     * Ищем Item по фрагменту написания,
+     * Ищем Item или Fact по фрагменту написания,
      * среди наших словарных слов
      *
      * @param itemText фрагмент для поиска
-     * @return Store структуры Item
+     * @return Store структуры "Item.find"
      */
     @DaoMethod
     Store find(String text) {
         // Текст с разделителями?
-        List lst = text.split("[ \n\r]")
+        Collection<String> lst = filterAndSplitWord(text)
 
         //
         if (lst.size() > 1) {
@@ -39,8 +39,7 @@ class Item_list extends BaseMdbUtils {
         Store stItem = mdb.createStore("Item.find")
 
         //
-        wordText = wordText.toLowerCase()
-        wordText = wordText.trim()
+        wordText = wordText.toLowerCase().trim()
 
         //
         Fact_list list = mdb.create(Fact_list)
@@ -54,7 +53,6 @@ class Item_list extends BaseMdbUtils {
                 break
             }
 
-            //stFacts.add(rec.getValues())
             stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
         }
 
@@ -67,7 +65,6 @@ class Item_list extends BaseMdbUtils {
                 break
             }
 
-            //stFacts.add(rec.getValues())
             stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue"), fact: rec.getValue("id")])
         }
 
@@ -276,7 +273,7 @@ where
 
         //
         if ((UtWord.isAlphasEng(word) || UtWord.isAlphasKaz(word)) && word.length() > 1) {
-            return word.toLowerCase()
+            return word.toLowerCase().trim()
         }
 
         //

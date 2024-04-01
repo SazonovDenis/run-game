@@ -15,7 +15,9 @@
 
     <!-- Item_list -->
 
-    <domain name="Item.list" parent="Item">
+    <domain name="Item.find" parent="Item">
+
+        <field name="fact" parent="Fact/ref"/>
 
         <field name="itemTag" parent="object"/>
 

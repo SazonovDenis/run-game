@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Plan.list.csv">
+        <field name="planName" parent="string"/>
+        <field name="planText" parent="string"/>
+        <field name="planTags" parent="string"/>
+    </domain>
+
+
+</root>

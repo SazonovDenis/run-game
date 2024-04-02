@@ -1,70 +1,69 @@
+amber
+aqua
 aquamarine
+ash
+azure
 beige
-snowy
-snow-white
-white
-turquoise
-pale
-wine red
+black
+blue
 bordeaux
-claret red
 bronze
-yellow green
-yellow
-pearl
-green
-goldenrod
+brown
+claret red
+copper
+coral
+cream
+dark
+dull
+emerald
+firebrick
+forest green
 gold
 golden
-emerald
-indigo
-firebrick
-coral
-brown
-red
-cream
-azure
-lime green
-lemon
-salmon
-raspberry
-copper
+goldenrod
+gray
+green
+grey
 honeydew
-aqua
-sky blue
+indigo
+ivory
+khaki
+lemon
+light-green
+lilac
+lime
+lime green
+magenta
+maroon
+navy
 olive
 orange
-sienna
-ash
+pale
 peach
 peachpuff
-sand-coloured
-purple
+pearl
 pink
-light-green
-light
+pistachio
+plum
+purple
+raspberry
+red
+rose
+salmon
+sand-coloured
+sea foam
+seagreen
+sienna
 silver
 silvery
-grey
-gray
-blue
-lilac
-plum
-ivory
+sky blue
+snow-white
+snowy
 steel gray
-maroon
-dark
-navy (blue)
 terracotta
-dull
-purple
+turquoise
 violet
-pistachio
-magenta
-fuchsia
-khaki
-forest green
-seagreen
-sea foam
-black
-amber
+white
+wine red
+yellow
+yellow green

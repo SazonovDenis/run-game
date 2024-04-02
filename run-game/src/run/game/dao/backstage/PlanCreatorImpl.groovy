@@ -1,5 +1,7 @@
 package run.game.dao.backstage
 
+import jandcode.commons.UtFile
+import jandcode.commons.error.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
@@ -14,12 +16,20 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         Item_list itemsList = mdb.create(Item_list)
 
         //
-        Collection<String> itemsText = itemsList.readTextFromFile(fileNameText)
+        String strFile = UtFile.loadString(fileNameText)
+        Collection<String> itemsText = strFile.split("\n")
+        //Collection<String> itemsText = itemsList.readTextFromFile(fileNameText)
 
 
         // ---
         // Найдем сущности по тексту
-        Store stItem = itemsList.findText(itemsText)
+        Collection<String> wordsNotFound = new HashSet<>()
+        Store stItem = itemsList.loadBySpelling(itemsText, wordsNotFound)
+
+        //
+        if (wordsNotFound.size() != 0) {
+            throw new XError("Не найдены слова: " + wordsNotFound.toString())
+        }
 
         //
         //println()
@@ -43,31 +53,26 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
             stItemFactCombinations.copyTo(stFactCombinations)
         }
 
-        //
-        //println()
-        //println("FactCombinations:")
-        //mdb.outTable(stFactCombinations, 15)
+
+        // ---
+        // Сортируем
+        stFactCombinations.sort("factQuestion,factAnswer")
 
 
         // ---
         // Сохраним комбинации фактов в файл
-
-        //
-        //RgmCsvUtils.saveToCsv(stItem, "temp/Item.csv")
         RgmCsvUtils.saveToCsv(stFactCombinations, new File(fileNameFactsCombinations))
     }
 
 
-    void factsCombinations_to_Plan(String fileName, String planName) {
+    long factsCombinations_to_Plan(String planName, String planFactFileName) {
         // ---
         // Загрузим комбинации фактов
 
         //
-        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
-
-        //
         Store stFactCombinations = mdb.createStore("FactCombinations")
-        utils.addFromCsv(stFactCombinations, fileName)
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
+        utils.addFromCsv(stFactCombinations, planFactFileName)
 
 
         // ---
@@ -93,7 +98,10 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         //
         Plan_upd planUpd = mdb.create(Plan_upd)
         //
-        planUpd.insInternal(recPlan.getValues(), DataUtils.storeToList(stPlanFact), DataUtils.storeToList(stPlanTag), null)
+        long planId = planUpd.insInternal(recPlan.getValues(), DataUtils.storeToList(stPlanFact), DataUtils.storeToList(stPlanTag), null)
+
+        //
+        return planId
     }
 
 
@@ -102,10 +110,8 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         // Загрузим комбинации фактов
 
         //
-        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
-
-        //
         Store stFactCombinations = mdb.createStore("FactCombinations")
+        RgmCsvUtils utils = mdb.create(RgmCsvUtils)
         utils.addFromCsv(stFactCombinations, fileName)
 
 

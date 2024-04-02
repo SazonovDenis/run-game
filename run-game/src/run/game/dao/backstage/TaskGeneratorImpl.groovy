@@ -12,7 +12,6 @@ import run.game.model.service.*
 import run.game.testdata.fixture.*
 import run.game.util.*
 
-//@CompileStatic
 public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
     Rnd rnd

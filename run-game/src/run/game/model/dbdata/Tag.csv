@@ -6,4 +6,5 @@ id,tagType,value
 201,1002,rus-eng
 202,1002,rus-kaz
 203,1002,kaz-rus
+204,1002,eng-eng
 300,1010,default

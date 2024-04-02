@@ -1,0 +1,12 @@
+black
+white
+gray
+red
+orange
+yellow
+green
+cyan
+blue
+violet
+magenta
+pink

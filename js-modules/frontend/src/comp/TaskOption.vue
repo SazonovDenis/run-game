@@ -20,7 +20,14 @@
              v-on:touchcancel="onTouchCancel"
              v-on:click="no-click"
         >
-            <span>{{ taskOption.valueTranslate }}</span>
+            <span v-if="taskOption.valueTranslate">
+                {{ taskOption.valueTranslate }}
+            </span>
+
+            <span v-if="taskOption.valueSpelling">
+                {{ taskOption.valueSpelling }}
+            </span>
+
         </div>
     </div>
 </template>

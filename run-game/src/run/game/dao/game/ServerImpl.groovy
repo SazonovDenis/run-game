@@ -1007,7 +1007,9 @@ where
      */
     void convertFactToFlatRecord(StoreRecord recTaskSource, StoreRecord resTask) {
         String fieldName = dataTypeFieldNames.get(recTaskSource.getLong("dataType"))
-        resTask.setValue(fieldName, recTaskSource.getValue("value"))
+        if (!UtCnv.isEmpty(fieldName)) {
+            resTask.setValue(fieldName, recTaskSource.getValue("value"))
+        }
     }
 
     void convertFactsToFlatRecord(Store stFactData, Collection<String> keyFields, Store stDest, String fieldDest) {

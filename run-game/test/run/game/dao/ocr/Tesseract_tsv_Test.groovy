@@ -3,6 +3,8 @@ package run.game.dao.ocr
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.process.*
+import jandcode.commons.stopwatch.DefaultStopwatch
+import jandcode.commons.stopwatch.Stopwatch
 import jandcode.core.dbm.std.DataBox
 import jandcode.core.store.*
 import org.apache.commons.io.*
@@ -153,8 +155,13 @@ class Tesseract_tsv_Test extends RgmBase_Test {
     }
 
     void t() {
+        Stopwatch sw = new DefaultStopwatch("ocr.parseStill")
+        sw.start()
+
+        //
         String exeFile = "tesseract ${inFileName} ${outFileNameCL} -l ${lang} ${outFormat} --tessdata-dir /usr/local/share/tessdata/"
 
+        //
         RunCmd runCmd = new RunCmd()
         //runCmd.setDir(getApp().getAppdir())
         runCmd.setShowout(false)
@@ -166,12 +173,19 @@ class Tesseract_tsv_Test extends RgmBase_Test {
             throw new XError("error in {0}:\n{1}", exeFile, r)
         }
 
+        //
+        sw.stop()
+
+        //
         println()
         println("---")
         println("outFileName: " + outFileName)
         String text = UtFile.loadString(outFileName)
         println(text)
         println("---")
+
+        //
+        println(sw.toString())
     }
 
 }

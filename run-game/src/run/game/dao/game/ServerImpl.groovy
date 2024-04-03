@@ -771,6 +771,33 @@ where
     }
 
 
+    String sqlFactData_PlanItem() {
+        return """
+select 
+    PlanFact.factQuestion, 
+    PlanFact.factAnswer, 
+    
+    Fact.item,
+    Fact.dataType,
+    Fact.value
+
+from 
+    PlanFact
+    -- Факт, который привязан к PlanFact.factQuestion
+    join Fact PlanFact_Fact on (
+        PlanFact.factQuestion = PlanFact_Fact.id
+    )
+    -- Факты нужных типов для Fact.item
+    join Fact on (
+        PlanFact_Fact.item = Fact.item and
+        Fact.dataType in (${RgmDbConst.DataType_word_spelling + "," + RgmDbConst.DataType_word_sound})
+    )
+
+where
+    PlanFact.plan = :plan 
+"""
+    }
+
     String sqlFactData_PlanQuestion() {
         return """
 select 
@@ -783,14 +810,9 @@ select
 
 from 
     PlanFact
-    -- Факт того типа, который привязан к PlanFact
-    join Fact PlanFact_Fact on (
-        PlanFact.factQuestion = PlanFact_Fact.id
-    )
-    -- Факты всех типов данных для Fact.item
+    -- Факт, который привязан к PlanFact.factQuestion
     join Fact on (
-        PlanFact_Fact.item = Fact.item and
-        Fact.dataType in (${RgmDbConst.DataType_word_spelling + "," + RgmDbConst.DataType_word_sound})
+        PlanFact.factQuestion = Fact.id
     )
 
 where
@@ -810,6 +832,7 @@ select
 
 from 
     PlanFact
+    -- Факт, который привязан к PlanFact.factAnswer
     join Fact on (
         PlanFact.factAnswer = Fact.id
     )
@@ -973,12 +996,16 @@ where
      */
     void fillFactBodyPlan(Store stTasks, long idPlan) {
         // Данные вопроса и ответа
-        Store sqlFactData_Question = mdb.loadQuery(sqlFactData_PlanQuestion(), [plan: idPlan])
-        Store sqlFactData_Answer = mdb.loadQuery(sqlFactData_PlanAnswer(), [plan: idPlan])
+        Store stFactData_Question = mdb.loadQuery(sqlFactData_PlanQuestion(), [plan: idPlan])
+        Store stFactData_Answer = mdb.loadQuery(sqlFactData_PlanAnswer(), [plan: idPlan])
 
         // Размажем
-        convertFactsToFlatRecord(sqlFactData_Question, ["factQuestion", "factAnswer"], stTasks, "question")
-        convertFactsToFlatRecord(sqlFactData_Answer, ["factQuestion", "factAnswer"], stTasks, "answer")
+        convertFactsToFlatRecord(stFactData_Question, ["factQuestion"], stTasks, "question")
+        convertFactsToFlatRecord(stFactData_Answer, ["factAnswer"], stTasks, "answer")
+
+        // Дополнительные данные Item
+        Store stFactData_Item = mdb.loadQuery(sqlFactData_PlanItem(), [plan: idPlan])
+        convertFactsToFlatRecord(stFactData_Item, ["factQuestion"], stTasks, "question")
     }
 
     void fillFactBodyGame(Store stTasks, long idGame, long idUsr) {
@@ -1007,7 +1034,7 @@ where
      */
     void convertFactToFlatRecord(StoreRecord recTaskSource, StoreRecord resTask) {
         String fieldName = dataTypeFieldNames.get(recTaskSource.getLong("dataType"))
-        if (!UtCnv.isEmpty(fieldName)) {
+        if (!UtCnv.isEmpty(fieldName) && resTask.isValueNull(fieldName)) {
             resTask.setValue(fieldName, recTaskSource.getValue("value"))
         }
     }

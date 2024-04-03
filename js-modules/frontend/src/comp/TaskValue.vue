@@ -2,7 +2,7 @@
 
     <template v-if="taskHasSound">
 
-        <div class="row" @click="play(task)">
+        <div class="row" @click="play()">
 
             <div class="task-sound">
                 <template v-if="canPlaySound">
@@ -77,9 +77,15 @@ export default {
         }
     },
 
+    watch: {
+        task: function() {
+            this.taskSoundLoaded = false
+        }
+    },
+
     methods: {
 
-        play(task) {
+        play() {
             if (this.canPlaySound) {
                 try {
                     this.audio.play()

@@ -322,7 +322,7 @@ export default {
             return auth.isAuth()
         },
 
-        canDeletePlan(){
+        canDeletePlan() {
             let userInfo = auth.getUserInfo()
             let planDefaultId = userInfo.planDefault
 

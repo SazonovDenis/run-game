@@ -287,17 +287,17 @@ where
      * @return дополнительные формы слова
      */
     public static Collection<String> transformWord(String wordEng) {
-        if (wordEng.endsWith("s")) {
+        if (wordEng.endsWith("s") && wordEng.length() >= 3) {
             wordEng = wordEng.substring(0, wordEng.length() - 1)
             return [wordEng]
         }
 
-        if (wordEng.endsWith("ed")) {
+        if (wordEng.endsWith("ed") && wordEng.length() >= 4) {
             wordEng = wordEng.substring(0, wordEng.length() - 1)
             return [wordEng]
         }
 
-        if (wordEng.endsWith("ing")) {
+        if (wordEng.endsWith("ing") && wordEng.length() >= 5) {
             wordEng = wordEng.substring(0, wordEng.length() - 3)
             return [wordEng]
         }

@@ -495,24 +495,24 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    Set<Map> splitTextItemSinglePosition(Set<Map> textItemPositions, List<String> words, String word) {
+    Set<Map> splitTextItemSinglePosition(Set<Map> textItemPositions, List<String> words, String thisWord) {
         Set<Map> res = new HashSet<>()
 
         //
         int wordsCarsCount = 0
-        for (String word1 : words) {
-            wordsCarsCount = wordsCarsCount + word1.size()
+        for (String word : words) {
+            wordsCarsCount = wordsCarsCount + word.size()
         }
         //
         int wordCharPos = 0
-        for (String word1 : words) {
-            if (word.equals(word1)) {
+        for (String word : words) {
+            if (thisWord.equals(word)) {
                 break
             }
-            wordCharPos = wordCharPos + word1.size()
+            wordCharPos = wordCharPos + word.size()
         }
         //
-        int wordCarsCount = word.size()
+        int wordCarsCount = thisWord.size()
 
         //
         for (Map textItemSinglePosition : textItemPositions) {

@@ -1,34 +1,51 @@
-factQuestion	factAnswer	factValueQuestion	factValueAnswer	factTagQuestion	factTagAnswer
-9706	2000	1000-puzzle-english/mp3/freedictionary_UK/white.mp3	белый	{1008=freedictionary_uk}	{1002=eng-rus}
-9716	2000	1000-puzzle-english/mp3/SteveElliott_UK/white.mp3	белый	{1008=steveelliott_uk}	{1002=eng-rus}
-125722	2000	8000-wordsteps/mp3/white.mp3	белый	{}	{1002=eng-rus}
-10817	3942	1000-puzzle-english/mp3/freedictionary_UK/blue.mp3	голубой	{1008=freedictionary_uk}	{1002=eng-rus}
-10827	3942	1000-puzzle-english/mp3/SteveElliott_UK/blue.mp3	голубой	{1008=steveelliott_uk}	{1002=eng-rus}
-125703	3942	8000-wordsteps/mp3/blue.mp3	голубой	{}	{1002=eng-rus}
-17552	2024	1000-puzzle-english/mp3/freedictionary_UK/yellow.mp3	желтый	{1008=freedictionary_uk}	{1002=eng-rus}
-17562	2024	1000-puzzle-english/mp3/SteveElliott_UK/yellow.mp3	желтый	{1008=steveelliott_uk}	{1002=eng-rus}
-125724	2024	8000-wordsteps/mp3/yellow.mp3	желтый	{}	{1002=eng-rus}
-11865	2030	1000-puzzle-english/mp3/collins_UK/green.mp3	зеленый	{1008=collins_uk}	{1002=eng-rus}
-11856	2030	1000-puzzle-english/mp3/freedictionary_UK/green.mp3	зеленый	{1008=freedictionary_uk}	{1002=eng-rus}
-125710	2030	8000-wordsteps/mp3/green.mp3	зеленый	{}	{1002=eng-rus}
-10136	2051	1000-puzzle-english/mp3/collins_UK/red.mp3	красный	{1008=collins_uk}	{1002=eng-rus}
-10127	2051	1000-puzzle-english/mp3/freedictionary_UK/red.mp3	красный	{1008=freedictionary_uk}	{1002=eng-rus}
-125717	2051	8000-wordsteps/mp3/red.mp3	красный	{}	{1002=eng-rus}
-41469	2087	10000-kreekly/mp3/Joey/orange.mp3	оранжевый	{1008=joey}	{1002=eng-rus}
-41472	2087	10000-kreekly/mp3/Justin/orange.mp3	оранжевый	{1008=justin}	{1002=eng-rus}
-125498	2087	8000-wordsteps/mp3/orange.mp3	оранжевый	{}	{1002=eng-rus}
-81774	2108	10000-kreekly/mp3/Joanna/pink.mp3	розовый	{1008=joanna}	{1002=eng-rus}
-81770	2108	10000-kreekly/mp3/Joey/pink.mp3	розовый	{1008=joey}	{1002=eng-rus}
-125713	2108	8000-wordsteps/mp3/pink.mp3	розовый	{}	{1002=eng-rus}
-19729	2126	1000-puzzle-english/mp3/collins_UK/gray.mp3	серый	{1008=collins_uk}	{1002=eng-rus}
-19720	2126	1000-puzzle-english/mp3/freedictionary_UK/gray.mp3	серый	{1008=freedictionary_uk}	{1002=eng-rus}
-135539	2126	8000-wordsteps/mp3/gray.mp3	серый	{}	{1002=eng-rus}
-10817	2129	1000-puzzle-english/mp3/freedictionary_UK/blue.mp3	синий	{1008=freedictionary_uk}	{1002=eng-rus}
-10827	2129	1000-puzzle-english/mp3/SteveElliott_UK/blue.mp3	синий	{1008=steveelliott_uk}	{1002=eng-rus}
-125703	2129	8000-wordsteps/mp3/blue.mp3	синий	{}	{1002=eng-rus}
-103415	21036	10000-kreekly/mp3/Kendra/violet.mp3	фиолетовый	{1008=kendra}	{1002=eng-rus}
-103420	21036	10000-kreekly/mp3/Matthew/violet.mp3	фиолетовый	{1008=matthew}	{1002=eng-rus}
-103419	21036	10000-kreekly/mp3/Salli/violet.mp3	фиолетовый	{1008=salli}	{1002=eng-rus}
-10356	2184	1000-puzzle-english/mp3/freedictionary_UK/black.mp3	черный	{1008=freedictionary_uk}	{1002=eng-rus}
-10366	2184	1000-puzzle-english/mp3/SteveElliott_UK/black.mp3	черный	{1008=steveelliott_uk}	{1002=eng-rus}
-125692	2184	8000-wordsteps/mp3/black.mp3	черный	{}	{1002=eng-rus}
+itemValue	factValueQuestion	factValueAnswer	factDataTypeQuestion	factDataTypeAnswer
+black	1000-puzzle-english/mp3/SteveElliott_UK/black.mp3	черный	1003	1002
+black	1000-puzzle-english/mp3/collins_US/black.mp3	черный	1003	1002
+black	10000-kreekly/mp3/Matthew/black.mp3	черный	1003	1002
+black	10000-kreekly/mp3/Salli/black.mp3	черный	1003	1002
+black	8000-wordsteps/mp3/black.mp3	черный	1003	1002
+blue	1000-puzzle-english/mp3/SteveElliott_UK/blue.mp3	синий	1003	1002
+blue	1000-puzzle-english/mp3/campbridge_UK/blue.mp3	синий	1003	1002
+blue	1000-puzzle-english/mp3/collins_UK/blue.mp3	синий	1003	1002
+blue	10000-kreekly/mp3/Joey/blue.mp3	синий	1003	1002
+blue	10000-kreekly/mp3/Salli/blue.mp3	синий	1003	1002
+gray	1000-puzzle-english/mp3/vocalware_hugh_UK/gray.mp3	серый	1003	1002
+gray	10000-kreekly/mp3/Ivy/gray.mp3	серый	1003	1002
+gray	10000-kreekly/mp3/Joanna/gray.mp3	серый	1003	1002
+gray	10000-kreekly/mp3/Justin/gray.mp3	серый	1003	1002
+gray	10000-kreekly/mp3/Kimberly/gray.mp3	серый	1003	1002
+green	1000-puzzle-english/mp3/SteveElliott_UK/green.mp3	зеленый	1003	1002
+green	1000-puzzle-english/mp3/campbridge_UK/green.mp3	зеленый	1003	1002
+green	1000-puzzle-english/mp3/freedictionary_UK/green.mp3	зеленый	1003	1002
+green	1000-puzzle-english/mp3/macmillan_UK/green.mp3	зеленый	1003	1002
+green	10000-kreekly/mp3/Justin/green.mp3	зеленый	1003	1002
+orange	10000-kreekly/mp3/Justin/orange.mp3	оранжевый	1003	1002
+orange	10000-kreekly/mp3/Kendra/orange.mp3	оранжевый	1003	1002
+orange	10000-kreekly/mp3/Kimberly/orange.mp3	оранжевый	1003	1002
+orange	10000-kreekly/mp3/Matthew/orange.mp3	оранжевый	1003	1002
+orange	8000-wordsteps/mp3/orange.mp3	оранжевый	1003	1002
+pink	10000-kreekly/mp3/Justin/pink.mp3	розовый	1003	1002
+pink	10000-kreekly/mp3/Kimberly/pink.mp3	розовый	1003	1002
+pink	10000-kreekly/mp3/Matthew/pink.mp3	розовый	1003	1002
+pink	10000-kreekly/mp3/Salli/pink.mp3	розовый	1003	1002
+pink	8000-wordsteps/mp3/pink.mp3	розовый	1003	1002
+red	1000-puzzle-english/mp3/collins_UK/red.mp3	красный	1003	1002
+red	1000-puzzle-english/mp3/vocalware_hugh_UK/red.mp3	красный	1003	1002
+red	10000-kreekly/mp3/Ivy/red.mp3	красный	1003	1002
+red	10000-kreekly/mp3/Joanna/red.mp3	красный	1003	1002
+red	10000-kreekly/mp3/Matthew/red.mp3	красный	1003	1002
+violet	10000-kreekly/mp3/Joey/violet.mp3	фиолетовый	1003	1002
+violet	10000-kreekly/mp3/Justin/violet.mp3	фиолетовый	1003	1002
+violet	10000-kreekly/mp3/Kendra/violet.mp3	фиолетовый	1003	1002
+violet	10000-kreekly/mp3/Matthew/violet.mp3	фиолетовый	1003	1002
+violet	10000-kreekly/mp3/Salli/violet.mp3	фиолетовый	1003	1002
+white	1000-puzzle-english/mp3/SteveElliott_UK/white.mp3	белый	1003	1002
+white	1000-puzzle-english/mp3/campbridge_US/white.mp3	белый	1003	1002
+white	1000-puzzle-english/mp3/collins_UK/white.mp3	белый	1003	1002
+white	1000-puzzle-english/mp3/freedictionary_US/white.mp3	белый	1003	1002
+white	10000-kreekly/mp3/Matthew/white.mp3	белый	1003	1002
+yellow	1000-puzzle-english/mp3/SteveElliott_UK/yellow.mp3	желтый	1003	1002
+yellow	1000-puzzle-english/mp3/freedictionary_US/yellow.mp3	желтый	1003	1002
+yellow	1000-puzzle-english/mp3/macmillan_UK/yellow.mp3	желтый	1003	1002
+yellow	1000-puzzle-english/mp3/yandex_UK/yellow.mp3	желтый	1003	1002
+yellow	10000-kreekly/mp3/Joey/yellow.mp3	желтый	1003	1002

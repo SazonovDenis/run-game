@@ -1,13 +1,13 @@
-factQuestion	factAnswer	factValueQuestion	factValueAnswer	factTagQuestion	factTagAnswer
-1998	2000	white	белый	{}	{1002=eng-rus}
-2019	2021	yellow green	желто-зеленый	{}	{1002=eng-rus}
-2022	2024	yellow	желтый	{}	{1002=eng-rus}
-2028	2030	green	зеленый	{}	{1002=eng-rus}
-2049	2051	red	красный	{}	{1002=eng-rus}
-2085	2087	orange	оранжевый	{}	{1002=eng-rus}
-2106	2108	pink	розовый	{}	{1002=eng-rus}
-2124	2126	gray	серый	{}	{1002=eng-rus}
-2127	2129	blue	синий	{}	{1002=eng-rus}
-2158	21036	violet	фиолетовый	{}	{1002=eng-rus}
-2164	2166	magenta	фуксин	{}	{1002=eng-rus}
-2182	2184	black	черный	{}	{1002=eng-rus}
+itemValue	factValueQuestion	factValueAnswer	factDataTypeQuestion	factDataTypeAnswer
+black	black	черный	1001	1002
+blue	blue	синий	1001	1002
+cyan	cyan	сине-зелёный	1001	1002
+gray	gray	серый	1001	1002
+green	green	зеленый	1001	1002
+magenta	magenta	фуксин	1001	1002
+orange	orange	оранжевый	1001	1002
+pink	pink	розовый	1001	1002
+red	red	красный	1001	1002
+violet	violet	фиолетовый	1001	1002
+white	white	белый	1001	1002
+yellow	yellow	желтый	1001	1002

@@ -27,20 +27,6 @@ import java.util.*;
 public interface TaskGenerator {
 
     /**
-     * Генерит комбинации известных фактов для сущности,
-     * ограничивая выборку фактов параметрами dataType и factTag.
-     *
-     * @param item             Сущность
-     * @param dataTypeQuestion
-     * @param dataTypeAnswer
-     * @param factTagQuestion
-     * @param factTagAnswer
-     * @return Store с комбинациями фактов (factQuestion + factAnswer)
-     */
-    Store generateItemFactsCombinations(long item, long dataTypeQuestion, long dataTypeAnswer, Collection<Long> factTagQuestion, Collection<Long> factTagAnswer);
-
-
-    /**
      * Сгенерить задание для пары фактов
      * Создает задание и неправильные варианты ответа к нему.
      *

@@ -1,31 +1,51 @@
-factQuestion	factAnswer	factValueQuestion	factValueAnswer	factTagQuestion	factTagAnswer
-10356	2182	1000-puzzle-english/mp3/freedictionary_UK/black.mp3	black	{1008=freedictionary_uk}	{}
-89515	2182	10000-kreekly/mp3/Matthew/black.mp3	black	{1008=matthew}	{}
-125692	2182	8000-wordsteps/mp3/black.mp3	black	{}	{}
-10817	2127	1000-puzzle-english/mp3/freedictionary_UK/blue.mp3	blue	{1008=freedictionary_uk}	{}
-95823	2127	10000-kreekly/mp3/Matthew/blue.mp3	blue	{1008=matthew}	{}
-125703	2127	8000-wordsteps/mp3/blue.mp3	blue	{}	{}
-19720	2124	1000-puzzle-english/mp3/freedictionary_UK/gray.mp3	gray	{1008=freedictionary_uk}	{}
-28499	2124	10000-kreekly/mp3/Matthew/gray.mp3	gray	{1008=matthew}	{}
-135539	2124	8000-wordsteps/mp3/gray.mp3	gray	{}	{}
-11856	2028	1000-puzzle-english/mp3/freedictionary_UK/green.mp3	green	{1008=freedictionary_uk}	{}
-11862	2028	1000-puzzle-english/mp3/campbridge_US/green.mp3	green	{1008=campbridge_us}	{}
-125710	2028	8000-wordsteps/mp3/green.mp3	green	{}	{}
-41469	2085	10000-kreekly/mp3/Joey/orange.mp3	orange	{1008=joey}	{}
-41475	2085	10000-kreekly/mp3/Matthew/orange.mp3	orange	{1008=matthew}	{}
-125498	2085	8000-wordsteps/mp3/orange.mp3	orange	{}	{}
-81770	2106	10000-kreekly/mp3/Joey/pink.mp3	pink	{1008=joey}	{}
-81776	2106	10000-kreekly/mp3/Matthew/pink.mp3	pink	{1008=matthew}	{}
-125713	2106	8000-wordsteps/mp3/pink.mp3	pink	{}	{}
-10127	2049	1000-puzzle-english/mp3/freedictionary_UK/red.mp3	red	{1008=freedictionary_uk}	{}
-57631	2049	10000-kreekly/mp3/Matthew/red.mp3	red	{1008=matthew}	{}
-125717	2049	8000-wordsteps/mp3/red.mp3	red	{}	{}
-103414	2158	10000-kreekly/mp3/Joey/violet.mp3	violet	{1008=joey}	{}
-103415	2158	10000-kreekly/mp3/Kendra/violet.mp3	violet	{1008=kendra}	{}
-103420	2158	10000-kreekly/mp3/Matthew/violet.mp3	violet	{1008=matthew}	{}
-9706	1998	1000-puzzle-english/mp3/freedictionary_UK/white.mp3	white	{1008=freedictionary_uk}	{}
-57639	1998	10000-kreekly/mp3/Joey/white.mp3	white	{1008=joey}	{}
-125722	1998	8000-wordsteps/mp3/white.mp3	white	{}	{}
-17552	2022	1000-puzzle-english/mp3/freedictionary_UK/yellow.mp3	yellow	{1008=freedictionary_uk}	{}
-17558	2022	1000-puzzle-english/mp3/campbridge_US/yellow.mp3	yellow	{1008=campbridge_us}	{}
-125724	2022	8000-wordsteps/mp3/yellow.mp3	yellow	{}	{}
+itemValue	factValueQuestion	factValueAnswer	factDataTypeQuestion	factDataTypeAnswer
+black	1000-puzzle-english/mp3/collins_UK/black.mp3	black	1003	1001
+black	1000-puzzle-english/mp3/freedictionary_UK/black.mp3	black	1003	1001
+black	1000-puzzle-english/mp3/peterBaker_UK/black.mp3	black	1003	1001
+black	1000-puzzle-english/mp3/vocalware_hugh_UK/black.mp3	black	1003	1001
+black	10000-kreekly/mp3/Joanna/black.mp3	black	1003	1001
+blue	1000-puzzle-english/mp3/SteveElliott_UK/blue.mp3	blue	1003	1001
+blue	1000-puzzle-english/mp3/howjsay_UK/blue.mp3	blue	1003	1001
+blue	1000-puzzle-english/mp3/yandex_UK/blue.mp3	blue	1003	1001
+blue	10000-kreekly/mp3/Kendra/blue.mp3	blue	1003	1001
+blue	10000-kreekly/mp3/Salli/blue.mp3	blue	1003	1001
+gray	1000-puzzle-english/mp3/freedictionary_UK/gray.mp3	gray	1003	1001
+gray	10000-kreekly/mp3/Ivy/gray.mp3	gray	1003	1001
+gray	10000-kreekly/mp3/Joanna/gray.mp3	gray	1003	1001
+gray	10000-kreekly/mp3/Justin/gray.mp3	gray	1003	1001
+gray	8000-wordsteps/mp3/gray.mp3	gray	1003	1001
+green	1000-puzzle-english/mp3/collins_US/green.mp3	green	1003	1001
+green	1000-puzzle-english/mp3/freedictionary_UK/green.mp3	green	1003	1001
+green	1000-puzzle-english/mp3/freedictionary_US/green.mp3	green	1003	1001
+green	1000-puzzle-english/mp3/macmillan_UK/green.mp3	green	1003	1001
+green	10000-kreekly/mp3/Kendra/green.mp3	green	1003	1001
+orange	10000-kreekly/mp3/Joanna/orange.mp3	orange	1003	1001
+orange	10000-kreekly/mp3/Justin/orange.mp3	orange	1003	1001
+orange	10000-kreekly/mp3/Kimberly/orange.mp3	orange	1003	1001
+orange	10000-kreekly/mp3/Matthew/orange.mp3	orange	1003	1001
+orange	10000-kreekly/mp3/Salli/orange.mp3	orange	1003	1001
+pink	10000-kreekly/mp3/Joey/pink.mp3	pink	1003	1001
+pink	10000-kreekly/mp3/Justin/pink.mp3	pink	1003	1001
+pink	10000-kreekly/mp3/Kimberly/pink.mp3	pink	1003	1001
+pink	10000-kreekly/mp3/Salli/pink.mp3	pink	1003	1001
+pink	8000-wordsteps/mp3/pink.mp3	pink	1003	1001
+red	1000-puzzle-english/mp3/collins_UK/red.mp3	red	1003	1001
+red	1000-puzzle-english/mp3/freedictionary_US/red.mp3	red	1003	1001
+red	1000-puzzle-english/mp3/peterBaker_UK/red.mp3	red	1003	1001
+red	10000-kreekly/mp3/Ivy/red.mp3	red	1003	1001
+red	10000-kreekly/mp3/Joanna/red.mp3	red	1003	1001
+violet	10000-kreekly/mp3/Joanna/violet.mp3	violet	1003	1001
+violet	10000-kreekly/mp3/Joey/violet.mp3	violet	1003	1001
+violet	10000-kreekly/mp3/Kimberly/violet.mp3	violet	1003	1001
+violet	10000-kreekly/mp3/Matthew/violet.mp3	violet	1003	1001
+violet	10000-kreekly/mp3/Salli/violet.mp3	violet	1003	1001
+white	1000-puzzle-english/mp3/campbridge_UK/white.mp3	white	1003	1001
+white	1000-puzzle-english/mp3/campbridge_US/white.mp3	white	1003	1001
+white	1000-puzzle-english/mp3/freedictionary_UK/white.mp3	white	1003	1001
+white	1000-puzzle-english/mp3/vocalware_hugh_UK/white.mp3	white	1003	1001
+white	10000-kreekly/mp3/Salli/white.mp3	white	1003	1001
+yellow	1000-puzzle-english/mp3/collins_UK/yellow.mp3	yellow	1003	1001
+yellow	1000-puzzle-english/mp3/freedictionary_UK/yellow.mp3	yellow	1003	1001
+yellow	1000-puzzle-english/mp3/howjsay_UK/yellow.mp3	yellow	1003	1001
+yellow	10000-kreekly/mp3/Ivy/yellow.mp3	yellow	1003	1001
+yellow	8000-wordsteps/mp3/yellow.mp3	yellow	1003	1001

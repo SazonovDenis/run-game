@@ -39,6 +39,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
             "200-puzzle-english",
             "5000-studynow",
             "8000-wordsteps",
+            "manual",
             "level",
     ]
 

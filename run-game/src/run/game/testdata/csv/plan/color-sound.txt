@@ -18,7 +18,6 @@ green
 ivory
 lemon
 light
-light-green
 lilac
 navy
 olive
@@ -32,9 +31,7 @@ purple
 raspberry
 red
 salmon
-sand-coloured
 silver
-snow-white
 violet
 white
 yellow

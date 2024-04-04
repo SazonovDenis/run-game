@@ -1,6 +1,6 @@
 package run.game.dao.backstage
 
-import jandcode.commons.UtFile
+import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
@@ -9,6 +9,7 @@ import run.game.util.*
 
 class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
+    public limitQuestion = 0
 
     void text_to_FactsCombinations(String fileNameText, long dataTypeQuestion, long dataTypeAnswer, String fileNameFactsCombinations) {
         // ---
@@ -31,12 +32,6 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
             throw new XError("Не найдены слова: " + wordsNotFound.toString())
         }
 
-        //
-        //println()
-        //println("Items by value '" + itemsText + "'")
-        //mdb.outTable(stItem, 5)
-
-
         // ---
         // Найдем комбинации фактов для каждой сущности
 
@@ -44,24 +39,94 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         Store stFactCombinations = mdb.createStore("FactCombinations")
 
         //
-        TaskGenerator tg = mdb.create(TaskGeneratorImpl)
         for (StoreRecord recItem : stItem) {
             long item = recItem.getLong("id")
-            Store stItemFactCombinations = tg.generateItemFactsCombinations(item, dataTypeQuestion, dataTypeAnswer, null, null)
-
-            //
+            Store stItemFactCombinations = generateItemFactsCombinations(item, dataTypeQuestion, dataTypeAnswer, limitQuestion, 0)
             stItemFactCombinations.copyTo(stFactCombinations)
         }
 
 
         // ---
         // Сортируем
-        stFactCombinations.sort("factQuestion,factAnswer")
+        stFactCombinations.sort("itemValue,factValueAnswer,factValueQuestion")
 
 
         // ---
         // Сохраним комбинации фактов в файл
         RgmCsvUtils.saveToCsv(stFactCombinations, new File(fileNameFactsCombinations))
+    }
+
+    /**
+     * Генерит комбинации известных фактов для сущности,
+     * ограничивая выборку фактов параметрами dataType и factTag.
+     *
+     * @param item Сущность
+     * @param dataTypeQuestion
+     * @param dataTypeAnswer
+     * @return Store с комбинациями фактов (factQuestion + factAnswer)
+     */
+    public Store generateItemFactsCombinations(long item, long dataTypeQuestion, long dataTypeAnswer, int limitQuestion, int limitAnswer) {
+        Store res = mdb.createStore("FactCombinations")
+
+        // Загружаем список фактов для "вопроса" и "ответа"
+        Fact_list list = mdb.create(Fact_list)
+        Store stQuestionLoaded = list.loadFactsByDataType(item, dataTypeQuestion)
+        Store stAnswer = list.loadFactsByDataType(item, dataTypeAnswer)
+
+        //
+        if (stQuestionLoaded.size() == 0) {
+            throw new XError("Не найден dataTypeQuestion: " + dataTypeQuestion + ", item: " + list.loadItem(item).getString("value"))
+        }
+        if (stAnswer.size() == 0) {
+            throw new XError("Не найден dataTypeAnswer: " + dataTypeAnswer + ", item: " + list.loadItem(item).getString("value"))
+        }
+
+        // Ограничим количество
+        Store stQuestion = mdb.createStore("Fact.list")
+        if (limitQuestion > 0) {
+            // Нужное число уникальных случайных позиций
+            Set<Integer> stPos = new HashSet<>()
+            Random rnd = new Random()
+            while (stPos.size() < limitQuestion && stPos.size() < stQuestionLoaded.size()) {
+                stPos.add(rnd.nextInt(stQuestionLoaded.size()))
+            }
+
+            // Наберем записей по случайным позициям
+            for (int pos : stPos) {
+                StoreRecord rec = stQuestionLoaded.get(pos)
+                stQuestion.add(rec)
+            }
+        } else {
+            stQuestionLoaded.copyTo(stQuestion)
+        }
+
+
+        // Перебираем факты: "факт вопрос" и "факт ответ", для каждой пары
+        for (StoreRecord recQuestion : stQuestion) {
+            for (StoreRecord recAnswer : stAnswer) {
+                Map mapFactTagQuestion = new HashMap()
+                Map mapFactTagAnswer = new HashMap()
+                //
+
+                //
+                res.add([
+                        item                : recQuestion.getLong("item"),
+                        itemValue           : recQuestion.getString("itemValue"),
+                        factQuestion        : recQuestion.getLong("id"),
+                        factAnswer          : recAnswer.getLong("id"),
+                        factValueQuestion   : recQuestion.getString("factValue"),
+                        factValueAnswer     : recAnswer.getString("factValue"),
+                        factDataTypeQuestion: recQuestion.getLong("factDataType"),
+                        factDataTypeAnswer  : recAnswer.getLong("factDataType"),
+                        factTagQuestion     : mapFactTagQuestion,
+                        factTagAnswer       : mapFactTagAnswer,
+                ])
+            }
+        }
+
+
+        //
+        return res
     }
 
 
@@ -89,7 +154,34 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
 
         // PlanFact
-        stFactCombinations.copyTo(stPlanFact)
+        Fact_list list = mdb.create(Fact_list)
+        // В таблице stFactCombinations перечислены пары фактов по значению - найдем их id
+        for (StoreRecord recFactCombinations : stFactCombinations) {
+            String factValueQuestion = recFactCombinations.getString("factValueQuestion")
+            String factValueAnswer = recFactCombinations.getString("factValueAnswer")
+            long factDataTypeQuestion = recFactCombinations.getLong("factDataTypeQuestion")
+            long factDataTypeAnswer = recFactCombinations.getLong("factDataTypeAnswer")
+
+            Store stFactQuestion = list.loadFactsByValueDataType(factValueQuestion, factDataTypeQuestion)
+            long itemQuestion = stFactQuestion.get(0).getLong("item")
+            Store stFactAnswer = list.loadFactsByValueDataType(itemQuestion, factValueAnswer, factDataTypeAnswer)
+
+            //
+            if (stFactAnswer.size() == 0) {
+                mdb.outTable(recFactCombinations)
+                mdb.outTable(stFactQuestion)
+                mdb.outTable(stFactAnswer)
+                throw new XError("stFactQuestion.size() == 0")
+            }
+
+            long factQuestion = stFactQuestion.get(0).getLong("id")
+            long factAnswer = stFactAnswer.get(0).getLong("id")
+
+            stPlanFact.add([
+                    factQuestion: factQuestion,
+                    factAnswer  : factAnswer,
+            ])
+        }
 
 
         // ---

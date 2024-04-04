@@ -23,6 +23,12 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
+    public Store loadFactsByValueDataType(long item, String value, long dataType) {
+        Store st = mdb.createStore("Fact.list")
+        mdb.loadQuery(st, sqlItemFactsByValueDataType(), [item: item, value: value, dataType: dataType])
+        return st
+    }
+
     public Store findFactsByValueDataType(String value, long dataType) {
         Store st = mdb.createStore("Fact.list")
         mdb.loadQuery(st, sqlFactsByValueDataTypeLike(), [value: "%" + value + "%", dataType: dataType])
@@ -148,6 +154,30 @@ from
     join Fact on (Fact.item = Item.id)
 
 where
+    Fact.value = :value and
+    Fact.dataType = :dataType
+
+order by
+    Fact.id
+"""
+    }
+
+    String sqlItemFactsByValueDataType() {
+        return """
+select
+    Item.id item,
+    Item.value itemValue,
+    
+    Fact.id,
+    Fact.dataType factDataType,
+    Fact.value factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+
+where
+    Fact.item = :item and
     Fact.value = :value and
     Fact.dataType = :dataType
 

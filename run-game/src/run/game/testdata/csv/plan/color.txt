@@ -13,6 +13,7 @@ claret red
 copper
 coral
 cream
+cyan
 dark
 dull
 emerald

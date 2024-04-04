@@ -1,5 +1,14 @@
 ### Ошибки
 
+### генерация неправильных ответов, когда есть совпадения
+Например, для цветов
+
+purple-фиолетовый
+violet-фиолетовый
+
+для вопроса "purple-фиолетовый"   
+не должен найтись неправильный ответ "violet-фиолетовый" 
+
 ### /home/dvsa/projects/jc2-projects/run-game/data/web-grab/5000-studynow/mp3/as\ well\ as.mp3
    
 нет звука
@@ -54,11 +63,6 @@
 рейтинг по каждому Task, и показаны лишние рейтинги по каждому Task, а нужно чтобы рейтинг
 был только для фактов.
 
-### run.game.dao.backstage.TaskGeneratorImpl.generateItemFactsCombinations
-
-не использованы factTagQuestion, factTagAnswer, т.е. нет возможности указать
-тип плана (звук -> перевод, написание -> перевод), 
-задействовать тэги "сложность"
 
 ### run.game.dao.backstage.TaskGeneratorImpl.prepareValuesFalse
 

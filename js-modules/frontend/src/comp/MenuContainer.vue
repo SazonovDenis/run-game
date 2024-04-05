@@ -199,10 +199,12 @@
                 <q-toolbar :class="getFooterClass">
                     <q-toolbar-title>
 
+<!--
                         <q-avatar
                             style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
                             <img v-bind:src="iconBottomLeft">
                         </q-avatar>
+-->
 
                     </q-toolbar-title>
 

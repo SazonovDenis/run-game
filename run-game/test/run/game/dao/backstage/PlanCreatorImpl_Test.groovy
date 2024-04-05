@@ -76,7 +76,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
     @Test
     void factsCombinations_to_Plan() {
         String planName = "Plan #" + XDateTime.now().toString().substring(0, 19).replace(":", "-")
-        String fileNameFactsCombinations = "res:run/game/testdata/csv/plan/kz.products-kz-ru.csv"
+        String fileNameFactsCombinations = "res:run/game/testdata/csv/plan/color-base-ru-en.csv"
 
         PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
         planCreator.factsCombinations_to_Plan(planName, fileNameFactsCombinations)

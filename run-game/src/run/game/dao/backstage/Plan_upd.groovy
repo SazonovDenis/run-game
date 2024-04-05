@@ -255,14 +255,14 @@ class Plan_upd extends RgmMdbUtils {
      * @param planFact
      */
     private void checkPlanTasks(long idPlan) {
-        Store st = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan])
+        Store stPlanTasks = mdb.loadQuery(sqlPlanTasks(), [plan: idPlan])
 
         // Создадим задания
         Task_upd taskUpd = mdb.create(Task_upd)
         TaskGenerator tg = mdb.create(TaskGeneratorImpl)
 
         //
-        for (StoreRecord rec : st) {
+        for (StoreRecord rec : stPlanTasks) {
             if (rec.getLong("taskCount") == 0) {
                 // Создадим задание
                 long idFactQuestion = rec.getLong("factQuestion")

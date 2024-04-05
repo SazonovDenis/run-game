@@ -153,44 +153,21 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
 
         // PlanFact
-        Fact_list list = mdb.create(Fact_list)
-        // В таблице stFactCombinations перечислены пары фактов по значению - найдем их id
-        for (StoreRecord recFactCombinations : stFactCombinations) {
-            String factValueQuestion = recFactCombinations.getString("factValueQuestion")
-            String factValueAnswer = recFactCombinations.getString("factValueAnswer")
-            long factDataTypeQuestion = recFactCombinations.getLong("factDataTypeQuestion")
-            long factDataTypeAnswer = recFactCombinations.getLong("factDataTypeAnswer")
+        generatePlanFact(stFactCombinations, stPlanFact)
 
-            // Ищем все item, у которых есть такое значение факта
-            Store stFactQuestion = list.loadFactsByValueDataType(factValueQuestion, factDataTypeQuestion)
 
-            // Бывает, что на одно factValueQuestion имеется несколько разных item,
-            // например если искать по translate "быстро", то найдется несколько
-            // разных spelling ("fast", "quickly"). Поэтому factValueAnswer ищем среди всех вариантов.
-            Store stFactAnswer
-            for (StoreRecord recFactQuestion : stFactQuestion) {
-                long item = recFactQuestion.getLong("item")
-                stFactAnswer = list.loadFactsByValueDataType(item, factValueAnswer, factDataTypeAnswer)
-                if (stFactAnswer.size() != 0) {
-                    break
-                }
-            }
+        // ---
+        // Формируем задания
 
-            //
-            if (stFactAnswer.size() == 0) {
-                mdb.outTable(recFactCombinations)
-                mdb.outTable(stFactQuestion)
-                mdb.outTable(stFactAnswer)
-                throw new XError("stFactAnswer.size() == 0")
-            }
+        // Формируем два задания так, чтобы неправильные ответы брались из элементов плана
+        Collection<String> answerFalseValues = stFactCombinations.getUniqueValues("factValueAnswer")
+        for (int n = 1; n <= 2; n++) {
+            createAndSaveTask(stPlanFact, answerFalseValues)
+        }
 
-            long factQuestion = stFactQuestion.get(0).getLong("id")
-            long factAnswer = stFactAnswer.get(0).getLong("id")
-
-            stPlanFact.add([
-                    factQuestion: factQuestion,
-                    factAnswer  : factAnswer,
-            ])
+        // Формируем еще два задания так, чтобы неправильные ответы брались из всех слов
+        for (int n = 1; n <= 2; n++) {
+            createAndSaveTask(stPlanFact, null)
         }
 
 
@@ -216,23 +193,79 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)
         utils.addFromCsv(stFactCombinations, fileName)
 
-
-        // ---
-        // Сгенерим задания
-
         // PlanFact
         Store stPlanFact = mdb.createStore("PlanFact")
         stFactCombinations.copyTo(stPlanFact)
 
-        //
+
+        // ---
+        // Сгенерим задания
+
+        // Формируем задания так, чтобы неправильные ответы брались из элементов плана
+        Collection<String> answerFalseValues = stFactCombinations.getUniqueValues("factValueAnswer")
+        createAndSaveTask(stPlanFact, answerFalseValues)
+    }
+
+
+    void generatePlanFact(Store stFactCombinations, Store stPlanFact) {
+        Fact_list list = mdb.create(Fact_list)
+        // В таблице stFactCombinations перечислены пары фактов по значению - найдем их id
+        for (StoreRecord recFactCombinations : stFactCombinations) {
+            String factValueQuestion = recFactCombinations.getString("factValueQuestion")
+            String factValueAnswer = recFactCombinations.getString("factValueAnswer")
+            long factDataTypeQuestion = recFactCombinations.getLong("factDataTypeQuestion")
+            long factDataTypeAnswer = recFactCombinations.getLong("factDataTypeAnswer")
+
+            // Ищем все item, у которых есть такое значение факта
+            Store stFactQuestion = list.loadFactsByValueDataType(factValueQuestion, factDataTypeQuestion)
+
+            // Бывает, что на одно factValueQuestion имеется несколько разных item,
+            // например если искать по translate "быстро", то найдется несколько
+            // разных spelling ("fast", "quickly"). Поэтому factValueAnswer ищем среди всех вариантов.
+            // todo А еще если искать по переводу "зеленый", то получим сразу два item: "жасыл" (kz) и "green" (en),
+            // что вообще-то требует фильтрации по направлению.
+            // Когда будет много языков романской группы - вообще сложно будет
+            StoreRecord recFactAnswer = null
+            StoreRecord recFactQuestion = null
+            for (StoreRecord recFactQuestionSelected : stFactQuestion) {
+                long item = recFactQuestionSelected.getLong("item")
+                Store stFactAnswer = list.loadFactsByValueDataType(item, factValueAnswer, factDataTypeAnswer)
+                if (stFactAnswer.size() != 0) {
+                    recFactQuestion = recFactQuestionSelected
+                    recFactAnswer = stFactAnswer.get(0)
+                }
+            }
+
+
+            //
+            if (recFactAnswer == null) {
+                mdb.outTable(recFactCombinations)
+                mdb.outTable(stFactQuestion)
+                throw new XError("recFactAnswer == null")
+            }
+
+            long factQuestion = recFactQuestion.getLong("id")
+            long factAnswer = recFactAnswer.getLong("id")
+
+            stPlanFact.add([
+                    factQuestion: factQuestion,
+                    factAnswer  : factAnswer,
+            ])
+        }
+    }
+
+
+    void createAndSaveTask(Store stPlanFact, Collection<String> answerFalseValues) {
+        // ---
+        // Сгенерим задания
         TaskGenerator tg = mdb.create(TaskGeneratorImpl)
         List<DataBox> tasks = new ArrayList<>()
 
         //
-        for (StoreRecord recFactCombinations : stPlanFact) {
-            long idFactQuestion = recFactCombinations.getLong("factQuestion")
-            long idFactAnswer = recFactCombinations.getLong("factAnswer")
-            DataBox task = tg.generateTask(idFactQuestion, idFactAnswer, null)
+        for (StoreRecord recPlanFact : stPlanFact) {
+            long idFactQuestion = recPlanFact.getLong("factQuestion")
+            long idFactAnswer = recPlanFact.getLong("factAnswer")
+            DataBox task = tg.generateTask(idFactQuestion, idFactAnswer, answerFalseValues)
 
             //
             tasks.add(task)
@@ -241,14 +274,13 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
 
         // ---
         // Сохраняем задания
-
-        //
         Task_upd taskUpd = mdb.create(Task_upd)
 
         //
         for (DataBox task : tasks) {
             taskUpd.saveTask(task)
         }
+
     }
 
 

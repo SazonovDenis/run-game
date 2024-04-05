@@ -416,69 +416,6 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         return res
     }
 
-/*
-    private Collection<DataBox> createTasks___(long idItem, long dataTypeQuestion, long dataTypeAnswer) {
-        return createTasks___(idItem, dataTypeQuestion, dataTypeAnswer, 100)
-    }
-*/
-
-    /**
-     * Создает задания и неправильные варианты ответа к ним.
-     *
-     * @param idItem Дла какой сущности
-     * @param tagQuestion Факт какого типа пойдет как вопрос
-     * @param tagAnswer Факт какого типа пойдет как ответ
-     * @return Список {task: rec, options: [rec]}
-     */
-    private Collection<DataBox> createTasks___(long idItem, long dataTypeQuestion, long dataTypeAnswer, int limit) {
-        Collection<DataBox> res = new ArrayList<>()
-
-        // Загружаем список фактов для "вопроса" и "ответа"
-        Fact_list list = mdb.create(Fact_list)
-        Store stQuestion = list.loadFactsByDataType(idItem, dataTypeQuestion)
-        Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
-
-        //
-        if (stQuestion.size() == 0) {
-            throw new XError("Не найден dataTypeQuestion: " + dataTypeQuestion + ", item: " + list.loadItem(idItem).getString("value"))
-        }
-        if (stAnswer.size() == 0) {
-            throw new XError("Не найден dataTypeAnswer: " + dataTypeAnswer + ", item: " + list.loadItem(idItem).getString("value"))
-        }
-
-        // Перебираем факты: "факт вопрос" и "факт ответ", для каждой пары
-        int nQuestion = 0
-        for (StoreRecord recQuestion : stQuestion) {
-            long idFactQuestion = recQuestion.getLong("id")
-
-            for (StoreRecord recAnswer : stAnswer) {
-                long idFactAnswer = recAnswer.getLong("id")
-
-                // Формируем задание
-                try {
-                    DataBox task = createTask(idFactQuestion, idFactAnswer)
-                    res.add(task)
-                } catch (Exception e) {
-                    println(e.message)
-                }
-            }
-
-            //
-            nQuestion = nQuestion + 1
-            if (nQuestion >= limit) {
-                break
-            }
-        }
-
-        if (res.size() == 0) {
-            throw new XError("Не удалось сформировать ни одного задания, item: " + list.loadItem(idItem).getString("value"))
-        }
-
-
-        //
-        return res
-    }
-
 
     /**
      * Подбирает неправильные варинаты для правильного, стараясь подобрать похожие по написанию

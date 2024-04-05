@@ -11,6 +11,8 @@ import run.game.dao.backstage.*;
 import run.game.model.service.*;
 import run.game.util.*;
 
+import java.util.*;
+
 
 /**
  * Хранилище разной информации, закешированной при старте.
@@ -21,7 +23,7 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     private Mdb mdb;
 
     //
-    private StoreIndex idxFacts;
+    private Map<Object, List<StoreRecord>> idxFacts;
     private Store stFactSpelling;
     private Store stFactTranslate;
     private StoreIndex idxOcrStopWords;
@@ -40,7 +42,7 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     }
 
     @Override
-    public StoreIndex getIdxFacts() {
+    public Map<Object, List<StoreRecord>> getIdxFacts() {
         return idxFacts;
     }
 
@@ -73,7 +75,7 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
         Store stFact = mdb.createStore("Fact.list");
         stFactSpelling.copyTo(stFact);
         stFactTranslate.copyTo(stFact);
-        idxFacts = stFact.getIndex("factValue");
+        idxFacts = StoreUtils.collectGroupBy_records(stFact, "factValue");
 
         // Стоп-слова при разборе сфотографировании текста
         Store stOcrStopWords = mdb.createStore("OcrStopWords");

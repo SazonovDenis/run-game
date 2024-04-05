@@ -1,7 +1,11 @@
 <template>
     <div class="row task-bar">
 
-        <TaskValue :task="task" :doShowText="doShowText" class="task-value"/>
+        <TaskValue class="task-value"
+                   :task="task"
+                   :showTaskHint="state.showTaskHint"
+                   :doShowText="doShowText"
+        />
 
         <div class="task-help-icon">
             <q-icon size="2em" name="help" @click="showHint"/>
@@ -78,15 +82,26 @@ export default {
 
         onSoundLoaded() {
             this.state.taskSoundLoaded = true
-            //console.info("onSoundLoaded: " + this.audio.src)
-            //
-            this.audio.play()
+
+            // Автоматически играем звук, если тип попроса это разрешает (тап вопроса - правописание или звук)
+            if (this.canPlaySoundAuto()) {
+                this.audio.play()
+            }
         },
 
         onSoundError() {
             this.state.taskSoundLoaded = false
             //console.info("onSoundError: " + this.audio.src)
         },
+
+        canPlaySoundAuto() {
+            return (
+                this.state.showTaskHint ||
+                this.task.dataType === dbConst.DataType_word_sound ||
+                this.task.dataType === dbConst.DataType_word_spelling
+            )
+        },
+
 
     },
 
@@ -109,18 +124,14 @@ export default {
                 this.task != null &&
                 this.task.valueSound != null &&
                 this.state.taskSoundLoaded &&
-                (
-                    this.state.showTaskHint ||
-                    this.task.dataType === dbConst.DataType_word_sound ||
-                    this.task.dataType === dbConst.DataType_word_spelling
-                )
+                this.canPlaySoundAuto()
             )
         },
 
         doShowText() {
             return (
                 this.task != null &&
-                this.task.valueSpelling != null &&
+                (this.task.valueSpelling != null || this.task.valueTranslate != null) &&
                 (
                     this.state.showTaskHint ||
                     this.task.dataType !== dbConst.DataType_word_sound

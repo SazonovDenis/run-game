@@ -1,6 +1,12 @@
 planName	planText	planTags
 color-base	Цвета базовые (en-ru) 	200
+color-base-ru-en	Цвета базовые (ru-en) 	201
 color-base-sound-en-ru	Цвета базовые (en-ru, аудио)	200
 color-base-sound-en-en	Цвета базовые (en-en, аудио)	204
 color	Цвета (en-ru)	200
 color-sound	Цвета (en-en, аудио)	204
+kz.numbers	Числа (kz-ru)	203
+kz.numbers-sound	Числа (kz-ru, аудио)	203
+kz.products-kz-ru	Продукты (kz-ru)	203
+kz.products-ru-kz	Продукты (ru-kz)	202
+kz.products-sound-kz-ru	Продукты (kz-ru, аудио)	203

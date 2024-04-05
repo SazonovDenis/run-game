@@ -58,6 +58,7 @@
 
 import {apx} from "../vendor"
 import utils from '../utils'
+import dbConst from "run-game-frontend/src/dao/dbConst"
 
 
 /**
@@ -68,7 +69,14 @@ export default {
 
     props: {
         task: {},
-        doShowText: true,
+        doShowText: {
+            type: Boolean,
+            default: true,
+        },
+        showTaskHint: {
+            type: Boolean,
+            default: true,
+        },
     },
 
     data() {
@@ -93,7 +101,9 @@ export default {
                     console.error(e)
                 }
             } else {
-                this.loadAudioTask()
+                if (!this.taskSoundLoaded) {
+                    this.loadAudioTask()
+                }
             }
         },
 
@@ -112,15 +122,26 @@ export default {
 
         onSoundLoaded() {
             this.taskSoundLoaded = true
-            //console.info("onSoundLoaded: " + this.audio.src)
-            //
-            this.audio.play()
+
+            // Автоматически играем звук, если тип попроса это разрешает (тап вопроса - правописание или звук)
+            if (this.canPlaySoundAuto()) {
+                this.audio.play()
+            }
         },
 
         onSoundError() {
             this.taskSoundLoaded = false
             //console.info("onSoundError: " + this.audio.src)
         },
+
+        canPlaySoundAuto() {
+            return (
+                this.showTaskHint ||
+                this.task.dataType === dbConst.DataType_word_sound ||
+                this.task.dataType === dbConst.DataType_word_spelling
+            )
+        },
+
 
     },
 
@@ -142,7 +163,8 @@ export default {
             return (
                 this.task != null &&
                 this.task.valueSound != null &&
-                this.taskSoundLoaded
+                this.taskSoundLoaded &&
+                this.canPlaySoundAuto()
             )
         },
 

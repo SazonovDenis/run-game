@@ -975,17 +975,20 @@ where
     void fillFactBody(Store stTasks) {
         // Дополним факты в плане "богатыми" данными для вопроса и ответа
         Set itemIds = stTasks.getUniqueValues("item")
+        Set factQuestionIds = stTasks.getUniqueValues("factQuestion")
         Set factAnswerIds = stTasks.getUniqueValues("factAnswer")
 
         // Факты каждого типа для списка itemIds
-        Store stFactData_spelling = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.DataType_word_spelling))
+        Store stFactData_question = mdb.loadQuery(sqlFactData_Facts(factQuestionIds, "factQuestion"))
+        Store stFactData_answer = mdb.loadQuery(sqlFactData_Facts(factAnswerIds, "factAnswer"))
+        //Store stFactData_spelling = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.DataType_word_spelling))
         Store stFactData_sound = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.DataType_word_sound))
-        Store stFactData_translate = mdb.loadQuery(sqlFactData_Facts(factAnswerIds, "factAnswer"))
 
         // Размажем
-        convertFactsToFlatRecord(stFactData_spelling, ["item"], stTasks, "question")
+        convertFactsToFlatRecord(stFactData_question, ["factQuestion"], stTasks, "question")
+        convertFactsToFlatRecord(stFactData_answer, ["factAnswer"], stTasks, "answer")
+        //convertFactsToFlatRecord(stFactData_spelling, ["item"], stTasks, "question")
         convertFactsToFlatRecord(stFactData_sound, ["item"], stTasks, "question")
-        convertFactsToFlatRecord(stFactData_translate, ["factAnswer"], stTasks, "answer")
     }
 
     /**
@@ -995,15 +998,15 @@ where
      * Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
      */
     void fillFactBodyPlan(Store stTasks, long idPlan) {
-        // Данные вопроса и ответа
+        // Факты вопроса и ответа
         Store stFactData_Question = mdb.loadQuery(sqlFactData_PlanQuestion(), [plan: idPlan])
         Store stFactData_Answer = mdb.loadQuery(sqlFactData_PlanAnswer(), [plan: idPlan])
 
-        // Размажем
+        // Размажем факты вопроса и ответа
         convertFactsToFlatRecord(stFactData_Question, ["factQuestion"], stTasks, "question")
         convertFactsToFlatRecord(stFactData_Answer, ["factAnswer"], stTasks, "answer")
 
-        // Дополнительные данные Item
+        // Дополнительные факты Item
         Store stFactData_Item = mdb.loadQuery(sqlFactData_PlanItem(), [plan: idPlan])
         convertFactsToFlatRecord(stFactData_Item, ["factQuestion"], stTasks, "question")
     }
@@ -1028,15 +1031,34 @@ where
 
     /**
      * Запись типа Fact раскладываем в "плоскую" запись.
-     * Берем пару полей recTaskSource.dataType+recTaskSource.value и заполняем
+     * Берем пару полей recFact.dataType+recFact.value и заполняем
      * соответствующее поле (valueSound, valueTranslate, valueSpelling или valuePicture),
-     * в зависимости от recTaskSource.dataType.
+     * в зависимости от recFact.dataType.
      */
-    void convertFactToFlatRecord(StoreRecord recTaskSource, StoreRecord resTask) {
-        String fieldName = dataTypeFieldNames.get(recTaskSource.getLong("dataType"))
-        if (!UtCnv.isEmpty(fieldName) && resTask.isValueNull(fieldName)) {
-            resTask.setValue(fieldName, recTaskSource.getValue("value"))
+    void convertFactToFlatRecord(StoreRecord recFact, StoreRecord recTask) {
+        long sourceDatatype = recFact.getLong("dataType")
+        String destFieldName = dataTypeFieldNames.get(sourceDatatype)
+        if (UtCnv.isEmpty(destFieldName)) {
+            return
         }
+
+        // Если поле уже заполнено - не заполняем
+        if (!recTask.isValueNull(destFieldName)) {
+            return
+        }
+
+        // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
+        if (sourceDatatype == RgmDbConst.DataType_word_spelling && !recTask.isValueNull("valueTranslate")) {
+            return
+        }
+
+        // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
+        if (sourceDatatype == RgmDbConst.DataType_word_translate && !recTask.isValueNull("valueSpelling")) {
+            return
+        }
+
+        //
+        recTask.setValue(destFieldName, recFact.getValue("value"))
     }
 
     void convertFactsToFlatRecord(Store stFactData, Collection<String> keyFields, Store stDest, String fieldDest) {
@@ -1048,13 +1070,15 @@ where
 
             //
             StoreRecord recTaskQuestion = mdb.createStoreRecord("Task.fields")
-
             recTaskQuestion.setValues(recDest.getValue(fieldDest))
 
+            //
             List<StoreRecord> lstFact = mapFacts.get(key)
             for (StoreRecord recFact : lstFact) {
                 convertFactToFlatRecord(recFact, recTaskQuestion)
             }
+
+            //
             recDest.setValue(fieldDest, recTaskQuestion.getValues())
         }
 

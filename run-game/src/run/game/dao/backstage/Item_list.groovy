@@ -27,14 +27,21 @@ class Item_list extends BaseMdbUtils {
 
         //
         if (lst.size() > 1) {
-            // Ищем много слов целиком
+            // Ищем сразу много слов по точному написанию
             return findText(lst)
         } else {
-            // Ищем одно слово по фрагменту
+            // Ищем одно слово по слову или фрагменту
             return findWord(text)
         }
     }
 
+    /**
+     * Ищем Item по фрагменту написания или перевода,
+     * среди наших словарных слов
+     *
+     * @param itemsText слово или фрагмент
+     * @return Store со списком Item
+     */
     Store findWord(String wordText) {
         Store stItem = mdb.createStore("Item.find")
 
@@ -45,27 +52,54 @@ class Item_list extends BaseMdbUtils {
         Fact_list list = mdb.create(Fact_list)
 
         //
+        Set<Long> setItems = new HashSet<>()
+
+
+        // word_spelling
         int count = 0
         Store stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
-        for (StoreRecord rec : stFact) {
-            count++
-            if (count > MAX_COUNT_FOUND) {
-                break
-            }
-
-            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
-        }
 
         //
-        count = 0
-        stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_translate)
         for (StoreRecord rec : stFact) {
             count++
             if (count > MAX_COUNT_FOUND) {
                 break
             }
 
-            stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue"), fact: rec.getValue("id")])
+            long item = rec.getLong("item")
+
+            // Повторы не нужны
+            if (setItems.contains(item)) {
+                continue
+            }
+
+            //
+            stItem.add([id: item, value: rec.getValue("itemValue")])
+            setItems.add(item)
+        }
+
+
+        // word_translate
+        count = 0
+        stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_translate)
+
+        //
+        for (StoreRecord rec : stFact) {
+            count++
+            if (count > MAX_COUNT_FOUND) {
+                break
+            }
+
+            long item = rec.getLong("item")
+
+            // Повторы не нужны
+            if (setItems.contains(item)) {
+                continue
+            }
+
+            //
+            stItem.add([id: item, value: rec.getValue("itemValue"), fact: rec.getValue("id")])
+            setItems.add(item)
         }
 
 
@@ -75,7 +109,7 @@ class Item_list extends BaseMdbUtils {
 
 
     /**
-     * Ищем Item по точному написанию,
+     * Ищем Item по точному написанию или переводу,
      * среди наших словарных слов
      *
      * @param itemsText список слов
@@ -96,7 +130,7 @@ class Item_list extends BaseMdbUtils {
 
 
     /**
-     * Ищем Item по точному написанию,
+     * Ищем Item по точному написанию или переводу,
      * среди наших словарных слов
      *
      * @param fileName файл со списком слов
@@ -117,7 +151,7 @@ class Item_list extends BaseMdbUtils {
 
 
     /**
-     * Ищем Item по точному написанию
+     * Ищем Item по точному написанию или переводу
      *
      * @param itemsText очищенный список слов
      * @param wordsNotFound для слов, не найденных в словаре
@@ -126,28 +160,50 @@ class Item_list extends BaseMdbUtils {
     Store loadBySpelling(Collection<String> itemsText, Collection<String> wordsNotFound) {
         Store stItem = mdb.createStore("Item.find")
 
-        // Получаем из кэша spelling для всех слов
+        // Получаем из кэша spelling и translate для всех слов
         WordCacheService wordService = mdb.getModel().bean(WordCacheService)
-        StoreIndex idxFacts = wordService.getIdxFacts()
-
+        Map<Object, List<StoreRecord>> idxFacts = wordService.getIdxFacts()
 
         // Отберем среди itemsText те слова, котрые есть в наших словарях
-        Set<String> setItemsText = new HashSet<>()
+        Set<Long> setItems = new HashSet<>()
         for (String itemText : itemsText) {
-            // Повторы не нужны
-            if (setItemsText.contains(itemText)) {
-                continue
-            }
+            List<StoreRecord> recs = idxFacts.get(itemText)
+            if (recs != null) {
+                for (StoreRecord rec : recs) {
+                    long item = rec.getLong("item")
 
-            //
-            StoreRecord rec = idxFacts.get(itemText)
-            if (rec != null) {
-                stItem.add([id: rec.getValue("item"), value: rec.getValue("itemValue")])
-                setItemsText.add(itemText)
+                    // Повторы не нужны
+                    if (setItems.contains(item)) {
+                        continue
+                    }
+
+                    //
+                    stItem.add([id: item, value: rec.getValue("itemValue")])
+                    setItems.add(item)
+                }
             } else {
                 wordsNotFound.add(itemText)
             }
         }
+
+/*
+        // Загрузим тэги для item
+        Store stItemTag = mdb.loadQuery(sqlItemTag(stItem.getUniqueValues("id")))
+        Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "item")
+
+        // Заполним поле тэги (itemTag)
+        for (StoreRecord recItem : stItem) {
+            List<StoreRecord> lstRecItemTag = mapItemsTag.get(recItem.getLong("id"))
+            if (lstRecItemTag != null) {
+                // Превратим список тэгов в Map тегов
+                Map<Long, String> mapItemTag = new HashMap<>()
+                for (StoreRecord recItemTag : lstRecItemTag) {
+                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
+                }
+                recItem.setValue("itemTag", mapItemTag)
+            }
+        }
+*/
 
 
         //
@@ -308,7 +364,8 @@ where
     public static Collection<String> splitWord(String word) {
         Collection<String> words
 
-        words = word.split("[^a-zA-Z0-9']")
+        //words = word.split("[^a-zA-Z0-9']")
+        words = word.split("[ -/\\\\,.]")
         if (words.size() > 1) {
             return words
         }

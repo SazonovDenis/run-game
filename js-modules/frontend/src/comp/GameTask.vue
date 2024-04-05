@@ -17,7 +17,6 @@ import TaskValue from "./TaskValue"
 
 
 /**
- *  * СТАРЫЙ !!!!!!!
  * Задание. Пара: вопрос и ответ
  */
 export default {

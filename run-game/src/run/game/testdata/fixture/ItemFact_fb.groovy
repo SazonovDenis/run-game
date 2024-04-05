@@ -151,10 +151,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         //
                         List<String> soundFilesArr = getSoundFiles(dirBase + dir + "/mp3/", dirsSound, word_1)
 
-                        if (word_1.equals("апельсин")) {
-                            println("")
-                        }
-
                         // Первый раз встретили слово?
                         StoreRecord recItem = itemsMap.get(word_1)
                         if (recItem == null) {

@@ -19,7 +19,6 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
         //
         String strFile = UtFile.loadString(fileNameText)
         Collection<String> itemsText = strFile.split("\n")
-        //Collection<String> itemsText = itemsList.readTextFromFile(fileNameText)
 
 
         // ---
@@ -162,16 +161,27 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
             long factDataTypeQuestion = recFactCombinations.getLong("factDataTypeQuestion")
             long factDataTypeAnswer = recFactCombinations.getLong("factDataTypeAnswer")
 
+            // Ищем все item, у которых есть такое значение факта
             Store stFactQuestion = list.loadFactsByValueDataType(factValueQuestion, factDataTypeQuestion)
-            long itemQuestion = stFactQuestion.get(0).getLong("item")
-            Store stFactAnswer = list.loadFactsByValueDataType(itemQuestion, factValueAnswer, factDataTypeAnswer)
+
+            // Бывает, что на одно factValueQuestion имеется несколько разных item,
+            // например если искать по translate "быстро", то найдется несколько
+            // разных spelling ("fast", "quickly"). Поэтому factValueAnswer ищем среди всех вариантов.
+            Store stFactAnswer
+            for (StoreRecord recFactQuestion : stFactQuestion) {
+                long item = recFactQuestion.getLong("item")
+                stFactAnswer = list.loadFactsByValueDataType(item, factValueAnswer, factDataTypeAnswer)
+                if (stFactAnswer.size() != 0) {
+                    break
+                }
+            }
 
             //
             if (stFactAnswer.size() == 0) {
                 mdb.outTable(recFactCombinations)
                 mdb.outTable(stFactQuestion)
                 mdb.outTable(stFactAnswer)
-                throw new XError("stFactQuestion.size() == 0")
+                throw new XError("stFactAnswer.size() == 0")
             }
 
             long factQuestion = stFactQuestion.get(0).getLong("id")

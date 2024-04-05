@@ -3,6 +3,8 @@ package run.game.model.service;
 import jandcode.core.*;
 import jandcode.core.store.*;
 
+import java.util.*;
+
 /**
  *
  */
@@ -11,7 +13,7 @@ public interface WordCacheService extends Comp {
     /**
      * Известные факты (индекс по значению)
      */
-    StoreIndex getIdxFacts();
+    Map<Object, List<StoreRecord>> getIdxFacts();
 
     Store getStFactSpelling();
 

@@ -5,6 +5,7 @@
         <PlanEditPage
             :plan="plan"
             :doEditPlan="false"
+            defaultViewMode="addByText"
         />
 
 
@@ -14,7 +15,7 @@
             footerMode="error"
         >
 
-            <template v-slot:footerContent >
+            <template v-slot:footerContent>
                 <div>{{ error }}</div>
             </template>
 
@@ -47,7 +48,6 @@ export default {
             dataLoaded: false,
             error: null,
             plan: {},
-            defaultViewMode: "addByText",
         }
     },
 

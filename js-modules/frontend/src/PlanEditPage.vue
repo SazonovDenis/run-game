@@ -605,6 +605,27 @@ export default {
             }
         },
 
+        checkViewMode() {
+            if (this.itemsAdd.length === 0 && this.viewMode === "viewItemsAdd") {
+                this.setViewMode(this.defaultViewMode)
+            }
+
+            //
+            if (this.itemsDel.length === 0 && this.viewMode === "viewItemsDel") {
+                this.setViewMode(this.defaultViewMode)
+            }
+
+            //
+            if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
+                this.setViewMode(this.defaultViewMode)
+            }
+
+            //
+            if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
+                this.setViewMode(this.defaultViewMode)
+            }
+        },
+
         itemOnClick(item) {
             console.info(item)
             this.itemAddMenuClick(item)
@@ -801,13 +822,7 @@ export default {
 
 
             //
-            if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
-                this.setViewMode(this.defaultViewMode)
-            }
-            //
-            if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
-                this.setViewMode(this.defaultViewMode)
-            }
+            this.checkViewMode()
         },
 
         /* -------------------------------- */
@@ -876,9 +891,7 @@ export default {
             }
 
             //
-            if (this.itemsDel.length === 0) {
-                this.setViewMode(this.defaultViewMode)
-            }
+            this.checkViewMode()
         },
 
         /* -------------------------------- */
@@ -903,9 +916,7 @@ export default {
             }
 
             //
-            if (this.itemsAdd.length === 0) {
-                this.setViewMode(this.defaultViewMode)
-            }
+            this.checkViewMode()
         },
 
         /* -------------------------------- */
@@ -971,13 +982,11 @@ export default {
                 this.itemsDel.push(taskItem)
             }
 
-
             // Собственное состояние
             taskItem.isInPlan = false
 
-            // Подправим состояние "isHidden" в основном списке
+            // Подправим состояние "isInPlan" в основном списке
             if (posItemsExt !== -1) {
-                //this.itemsExternal[posItemsExt].isHidden = false
                 this.itemsExternal[posItemsExt].isInPlan = false
             }
 
@@ -994,11 +1003,14 @@ export default {
             taskItem.isKnownBad = false
 
             // Согласуем нахождение Item в других списках
-            //let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
-            //let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)
+            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
+            let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
             let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
             let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
 
+            if (posItemsAdd !== -1) {
+                this.itemsAdd.splice(posItemsAdd, 1)
+            }
             if (posItemsHideAdd === -1 && posItemsHideDel === -1) {
                 this.itemsHideAdd.push(taskItem)
             }
@@ -1007,10 +1019,8 @@ export default {
             }
 
             // Подправим состояние "isHidden" в основном списке
-            let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             if (posItemsExt !== -1) {
                 this.itemsExternal[posItemsExt].isHidden = true
-                //this.itemsExternal[posItemsExt].isInPlan = false
             }
 
             //

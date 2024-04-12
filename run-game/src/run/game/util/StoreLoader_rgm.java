@@ -10,7 +10,7 @@ import java.io.*;
 
 /**
  * Загрузка из csv нашего формата
- * Разделитель - tab.
+ * Разделитель - tab, строки не оборачиваются в кавычки.
  */
 public class StoreLoader_rgm extends BaseStoreLoader {
 
@@ -22,7 +22,8 @@ public class StoreLoader_rgm extends BaseStoreLoader {
         b.setNullString(StoreConsts.NULL_STRING_VALUE);
         b.setTrim(true);
         b.setIgnoreSurroundingSpaces(true);
-        b.setQuote('"');
+        //b.setQuote('"');
+        b.setQuote(null);
         CSVFormat fmt = b.build();
 
         try (CSVParser prs = fmt.parse(reader)) {

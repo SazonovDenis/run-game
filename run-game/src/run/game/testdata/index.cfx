@@ -13,6 +13,8 @@
         <fixture-suite name="base">
             <fixture-builder name="usr"
                              class="run.game.testdata.fixture.Usr_fb"/>
+            <fixture-builder name="link"
+                             class="run.game.testdata.fixture.Link_fb"/>
 
             <fixture-builder name="tag"
                              class="run.game.testdata.fixture.Tag_fb"/>

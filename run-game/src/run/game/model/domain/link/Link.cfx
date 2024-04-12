@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Link" parent="tab.id" tag.db="true"
+            title="Связи пользователя">
+        <!--@
+        -->
+        <field name="usr" parent="Usr/ref" />
+        <field name="link" parent="Usr/ref"/>
+        <field name="linkType" parent="LinkType/ref"/>
+
+        <field name="isCommited" parent="boolean" title="Связь подтверждена"/>
+
+        <!-- Обеспечим уникальность -->
+        <dbindex name="main" fields="usr,link" unique="true"/>
+    </domain>
+
+
+</root>

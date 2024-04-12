@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="LinkType" parent="tab.dict" tag.db="true"
+            title="Тип связи пользователя">
+        <!--@
+        -->
+    </domain>
+
+
+</root>

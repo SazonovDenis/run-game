@@ -2,10 +2,10 @@ id	login	text	password
 1000	admin	Administrator	111
 1010	user1010	User0
 1011	user1011	User1
-1012	user1012	User2
-1013	user1013	User3
-1014	user1014	User4
-1015	user1015	User5
+1012	user1012	Папа
+1013	user1013	Сын
+1014	user1014	Дочь
+1015	user1015	Учитель
 1016	user1016	Гость 1
 1017	user1017	Гость 2
 1018	user1018	Гость 3

@@ -219,14 +219,20 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
             // Ищем все item, у которых есть такое значение факта
             Store stFactQuestion = list.loadFactsByValueDataType(factValueQuestion, factDataTypeQuestion)
 
+            //
+            if (stFactQuestion.size() == 0) {
+                mdb.outTable(recFactCombinations)
+                throw new XError("stFactQuestion.size() == 0")
+            }
+
             // Бывает, что на одно factValueQuestion имеется несколько разных item,
             // например если искать по translate "быстро", то найдется несколько
             // разных spelling ("fast", "quickly"). Поэтому factValueAnswer ищем среди всех вариантов.
             // todo А еще если искать по переводу "зеленый", то получим сразу два item: "жасыл" (kz) и "green" (en),
             // что вообще-то требует фильтрации по направлению.
             // Когда будет много языков романской группы - вообще сложно будет
-            StoreRecord recFactAnswer = null
             StoreRecord recFactQuestion = null
+            StoreRecord recFactAnswer = null
             for (StoreRecord recFactQuestionSelected : stFactQuestion) {
                 long item = recFactQuestionSelected.getLong("item")
                 Store stFactAnswer = list.loadFactsByValueDataType(item, factValueAnswer, factDataTypeAnswer)
@@ -236,7 +242,6 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
                 }
             }
 
-
             //
             if (recFactAnswer == null) {
                 mdb.outTable(recFactCombinations)
@@ -244,6 +249,7 @@ class PlanCreatorImpl extends RgmMdbUtils implements PlanCreator {
                 throw new XError("recFactAnswer == null")
             }
 
+            //
             long factQuestion = recFactQuestion.getLong("id")
             long factAnswer = recFactAnswer.getLong("id")
 

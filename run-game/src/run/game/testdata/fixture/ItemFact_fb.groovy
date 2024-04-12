@@ -124,6 +124,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                 // Заполним из наших csv
                 Store stCsv = mdb.createStore("dat.csv")
                 utils.addFromCsv(stCsv, fileCsv)
+                //
+                println("  size: " + stCsv.size())
 
                 //
                 logCube.logStepStart(stCsv.size())

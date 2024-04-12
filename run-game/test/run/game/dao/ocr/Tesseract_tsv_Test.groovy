@@ -3,9 +3,8 @@ package run.game.dao.ocr
 import jandcode.commons.*
 import jandcode.commons.error.*
 import jandcode.commons.process.*
-import jandcode.commons.stopwatch.DefaultStopwatch
-import jandcode.commons.stopwatch.Stopwatch
-import jandcode.core.dbm.std.DataBox
+import jandcode.commons.stopwatch.*
+import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.apache.commons.io.*
 import org.junit.jupiter.api.*
@@ -41,16 +40,16 @@ class Tesseract_tsv_Test extends RgmBase_Test {
 
         //
         ServerImpl srv = mdb.create(ServerImpl)
-        DataBox res  = srv.findStill(imgBase64, 0)
+        DataBox res = srv.findStill(imgBase64, 0)
         Store stFact = res.get("facts")
         Store positions = res.get("positions")
 
         //
-        println ()
-        println ("stFact")
+        println()
+        println("stFact")
         mdb.outTable(stFact)
-        println ()
-        println ("positions")
+        println()
+        println("positions")
         mdb.outTable(positions)
     }
 

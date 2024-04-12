@@ -17,7 +17,7 @@ class Plan_fb extends BaseFixtureBuilder {
         utils.addFromCsv(stPlan, fileName)
 
         //
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        PlanCreator planCreator = mdb.create(PlanCreator)
 
         //
         for (StoreRecord recPlan : stPlan) {

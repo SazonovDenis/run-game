@@ -4,7 +4,7 @@ import jandcode.commons.datetime.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 
-class PlanCreatorImpl_Test extends RgmBase_Test {
+class PlanCreator_Test extends RgmBase_Test {
 
 
     def planDefs = [
@@ -39,7 +39,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         String fileName = "test/run/game/dao/backstage/PlanCreator_Test.txt"
         String fileNameFactsCombinations = "temp/PlanCreator_FactCombinations.csv"
 
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        PlanCreator planCreator = mdb.create(PlanCreator)
         planCreator.text_to_FactsCombinations(
                 fileName,
                 RgmDbConst.DataType_word_spelling,
@@ -50,7 +50,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
 
     @Test
     void text_to_FactsCombinations_list() {
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        PlanCreator planCreator = mdb.create(PlanCreator)
 
         //
         for (Map planDef : planDefs) {
@@ -78,14 +78,14 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         String planName = "Plan #" + XDateTime.now().toString().substring(0, 19).replace(":", "-")
         String fileNameFactsCombinations = "res:run/game/testdata/csv/plan/color-base-ru-en.csv"
 
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        PlanCreator planCreator = mdb.create(PlanCreator)
         planCreator.factsCombinations_to_Plan(planName, fileNameFactsCombinations)
     }
 
 
     @Test
     void factsCombinations_to_Plan_list() {
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        PlanCreator planCreator = mdb.create(PlanCreator)
 
         //
         for (Map planDef : planDefsA) {
@@ -114,7 +114,7 @@ class PlanCreatorImpl_Test extends RgmBase_Test {
         //
         String fileName = "temp/PlanCreator_FactCombinations.csv"
 
-        PlanCreatorImpl planCreator = mdb.create(PlanCreatorImpl)
+        PlanCreator planCreator = mdb.create(PlanCreator)
         planCreator.factsCombinations_to_Task(fileName)
     }
 

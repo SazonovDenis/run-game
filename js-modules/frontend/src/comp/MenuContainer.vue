@@ -199,12 +199,12 @@
                 <q-toolbar :class="getFooterClass">
                     <q-toolbar-title>
 
-<!--
-                        <q-avatar
-                            style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
-                            <img v-bind:src="iconBottomLeft">
-                        </q-avatar>
--->
+                        <!--
+                                                <q-avatar
+                                                    style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
+                                                    <img v-bind:src="iconBottomLeft">
+                                                </q-avatar>
+                        -->
 
                     </q-toolbar-title>
 
@@ -253,6 +253,13 @@ export default {
     created() {
         let globalState = ctx.getGlobalState()
         gameplay.init(globalState)
+
+        //
+        this.mainTab = this.tabMenuName
+
+        //
+        let quasar = useQuasar()
+        Jc.cfg.is = quasar.platform.is
     },
 
 
@@ -374,18 +381,6 @@ export default {
                 frame: '/gameInfo',
             })
         },
-    },
-
-
-    mounted() {
-        console.info("this.tabMenuName: " + this.tabMenuName)
-        this.mainTab = this.tabMenuName
-
-
-        let quasar = useQuasar()
-        console.log(quasar.platform.is)
-        apx.cfg.is = quasar.platform.is
-
     },
 
 

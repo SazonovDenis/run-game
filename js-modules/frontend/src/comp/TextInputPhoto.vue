@@ -7,7 +7,7 @@
 
         <div class="camera-container" :class="getClassCamera">
 
-            <div _class="contentarea" @click="onPictureClick">
+            <div @click="onPictureClick">
 
                 <div :class="'video-container ' + getClassVideo">
                     <video id="video">Video stream will appear in this box</video>
@@ -86,6 +86,7 @@ import {apx} from "../vendor"
 import {daoApi} from "../dao"
 import TaskList from "./TaskList"
 import MenuContainer from "./MenuContainer"
+import ctx from "../gameplayCtx"
 
 export default {
 
@@ -104,6 +105,9 @@ export default {
         return {
             width: 1280, // We will scale the photo width to this
             height: 0,  // This will be computed based on the input stream
+
+            imageClientWidth: null,
+            imageClientHeight: null,
 
             wasCameraInit: false,
             wasCanplay: false,
@@ -178,9 +182,8 @@ export default {
             let videoWidth = this.width
             let videoHeight = this.height
             //
-            let image = this.$refs.photo
-            let imageWidth = image.clientWidth
-            let imageHeight = image.clientHeight
+            let imageWidth = this.imageClientWidth
+            let imageHeight = this.imageClientHeight
 
             //
             let kWidth = imageWidth / videoWidth
@@ -223,7 +226,8 @@ export default {
             }
 
 
-            return {
+            //
+            let res = {
                 borderColor: borderColor,
                 backgroundColor: backgroundColor,
                 left: Math.round(itemPosition.left * kWidth) + "px",
@@ -231,6 +235,8 @@ export default {
                 width: Math.round(itemPosition.width * kWidth) + "px",
                 height: Math.round(itemPosition.height * kWidth) + "px",
             }
+
+            return res
         },
 
         onItemPositionClick(itemPosition) {
@@ -248,18 +254,27 @@ export default {
         },
 
         onTakePicture() {
-            //console.log("onTakePicture")
             this.takePicture();
             this.isCameraCapturing = false
         },
 
         onNewPicture() {
-            //console.log("onNewPicture")
+            this.clearData(true)
             this.clearPhoto();
-            this.clearData()
             this.isCameraCapturing = true
         },
 
+        onItemsCleared() {
+            this.clearData(false)
+            this.clearPhoto();
+            this.isCameraCapturing = true
+        },
+
+        onEditModeChanged() {
+            if (!this.wasCameraInit){
+                this.startup()
+            }
+        },
 
         startup() {
             let th = this
@@ -272,7 +287,7 @@ export default {
                 //
                 navigator.mediaDevices.getUserMedia({
                     video: {
-                        width: { ideal: 1280 },
+                        width: {ideal: 1280},
                         facingMode: 'environment'
                     },
                     audio: false
@@ -313,28 +328,19 @@ export default {
         },
 
         onCanplay() {
-            if (!this.wasCanplay) {
-                ///////////////////////////////
-                console.info("video: " + video.videoWidth + "x" + video.videoHeight)
-                this.info = "video: " + video.videoWidth + "x" + video.videoHeight
-                ///////////////////////////////
+            ///////////////////////////////
+            console.info("video: " + video.videoWidth + "x" + video.videoHeight)
+            this.info = "video: " + video.videoWidth + "x" + video.videoHeight + ", this: " + this.width + "x" + this.height
+            ///////////////////////////////
 
-                this.height = video.videoHeight / (video.videoWidth / this.width);
-                //
-                /*
-                                if (isNaN(this.height)) {
-                                    this.height = this.width / (4 / 3);
-                                }
-                */
+            //
+            this.height = video.videoHeight / (video.videoWidth / this.width);
 
-                this.info = "video: " + video.videoWidth + "x" + video.videoHeight + ", this: " + this.width + "x" + this.height
-
-                //
-                video.setAttribute('width', this.width);
-                video.setAttribute('height', this.height);
-                canvas.setAttribute('width', this.width);
-                canvas.setAttribute('height', this.height);
-            }
+            //
+            video.setAttribute('width', this.width);
+            video.setAttribute('height', this.height);
+            canvas.setAttribute('width', this.width);
+            canvas.setAttribute('height', this.height);
         },
 
         clearPhoto() {
@@ -349,8 +355,13 @@ export default {
         },
 
         async takePicture() {
+            //
+            this.imageClientWidth = video.clientWidth
+            this.imageClientHeight = video.clientHeight
+
+            //
             var canvasContext = canvas.getContext('2d');
-            if (this.width && this.height) {
+            if (this.wasCameraInitOk) {
                 //canvas.width = this.width;
                 //canvas.height = this.height;
                 canvasContext.drawImage(video, 0, 0, this.width, this.height);
@@ -416,7 +427,7 @@ export default {
             }
         },
 
-        clearData() {
+        clearData(doEmitParent) {
             this.searchDone = false
 
             // Очистим родительский список
@@ -427,7 +438,7 @@ export default {
             this.itemsPositionsIdx = {}
 
             // Уведомим родителя
-            if (this.itemsOnChange) {
+            if (this.itemsOnChange && doEmitParent) {
                 this.itemsOnChange(this.searchDone)
             }
 
@@ -435,9 +446,14 @@ export default {
 
     },
 
+    mounted() {
+        ctx.eventBus.on('itemsCleared', this.onItemsCleared)
+        ctx.eventBus.on('editModeChanged', this.onEditModeChanged)
+    },
 
-    async mounted() {
-        this.startup()
+    unmounted() {
+        ctx.eventBus.off('itemsCleared', this.onItemsCleared)
+        ctx.eventBus.off('editModeChanged', this.onEditModeChanged)
     },
 
 

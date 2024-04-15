@@ -29,7 +29,8 @@
 
 import {daoApi} from "../dao"
 import MenuContainer from "./MenuContainer"
-import {apx} from "../vendor"
+import ctx from "run-game-frontend/src/gameplayCtx"
+import {nextTick} from 'vue'
 
 export default {
 
@@ -54,7 +55,7 @@ export default {
     methods: {
 
         getTypeInput() {
-            if (apx.cfg.is.desktop) {
+            if (Jc.cfg.is.desktop) {
                 return "textarea"
             } else {
                 return "text"
@@ -62,17 +63,34 @@ export default {
         },
 
         getClassInput() {
-            if (apx.cfg.is.desktop || !this.isToolbarUsed) {
+            if (Jc.cfg.is.desktop || !this.isToolbarUsed) {
                 return "input-wide"
             } else {
                 return "input-narrow"
             }
         },
 
+        onItemsCleared() {
+            // Фильтр очищаем, ведь ищем заново
+            this.filterText = ""
+        },
+
+        doFocusFilterText() {
+            console.info("f")
+            this.$refs.filterText.focus()
+        },
+
     },
 
     async mounted() {
-        this.$refs.filterText.focus()
+        ctx.eventBus.on('itemsCleared', this.onItemsCleared)
+
+        // Только через setTimeout удается добиться попадания фокуса на input
+        setTimeout(this.doFocusFilterText, 500);
+    },
+
+    unmounted() {
+        ctx.eventBus.off('itemsCleared', this.onItemsCleared)
     },
 
     watch: {

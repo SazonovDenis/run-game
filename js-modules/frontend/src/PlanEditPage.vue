@@ -24,7 +24,7 @@
             />
 
 
-            <div _class="scroll-area" _style="height: calc(100% - 14em)">
+            <div>
 
                 <TaskList
                     v-if="(!showHidden && visibleCount > 0) || (showHidden && hiddenCount > 0)"
@@ -53,7 +53,7 @@
         </div>
 
 
-        <div v-if="canEditItemList() && viewMode==='addByText'">
+        <div v-show="canEditItemList() && viewMode==='addByText'">
 
             <TextInputText
                 :planId="planId"
@@ -87,7 +87,7 @@
         </div>
 
 
-        <div v-if="canEditItemList() && viewMode==='addByPhoto'">
+        <div v-show="canEditItemList() && viewMode==='addByPhoto'">
 
             <TextInputPhoto
                 :planId="planId"
@@ -391,6 +391,7 @@ export default {
             planText: null,
 
             viewMode: "addByText",
+            editMode: "addByText",
 
             itemsExternal: [],
             itemsLoaded: [],
@@ -1105,14 +1106,47 @@ export default {
 
         setViewMode(viewMode) {
             if (viewMode !== this.viewMode) {
-                // Фильтр очищаем, ведь ищем заново
-                this.filterText = ""
 
-                // Ранее загруженные слова очищаем, ведь ищем заново
-                this.itemsLoaded.length = 0
-                this.itemsOnChange()
+                // Смена только режим просмотра или еще и режима ввода
+                if (this.isEditModeChanged(this.viewMode, viewMode)) {
+                    // Фильтр очищаем, ведь ищем заново
+                    this.filterText = ""
+
+                    // Ранее загруженные слова очищаем, ведь ищем заново
+                    this.itemsLoaded.length = 0
+                    this.itemsOnChange()
+
+                    // Уведомим кому надо.
+                    // Дочерние элементы почистят свои дополнительные данные.
+                    // Например, ввод по фото - очистит расположение найденных слов на фото.
+                    // Ввод по текту - очистит поисковое слово.
+                    ctx.eventBus.emit('itemsCleared')
+
+                    //
+                    //console.info("editMode: " + this.editMode + " -> " + viewMode)
+
+                    // Сменился не только режим просмотра, но и режим ввода
+                    this.editMode = viewMode
+
+                    // Уведомим кому надо.
+                    // Например, ввод по фото откроет камеру.
+                    ctx.eventBus.emit('editModeChanged')
+                }
+
+                //
+                //console.info("viewMode: " + this.viewMode + " -> " + viewMode)
+
+                //
+                this.viewMode = viewMode
             }
-            this.viewMode = viewMode
+        },
+
+        isEditModeChanged(viewModeNow, viewModeNew) {
+            if (viewModeNew.startsWith("add") && this.editMode !== viewModeNew) {
+                return true
+            } else {
+                return false
+            }
         },
 
         btnNextClick() {

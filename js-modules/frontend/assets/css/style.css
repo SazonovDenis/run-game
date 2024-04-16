@@ -11,10 +11,18 @@
 }
 
 
+.rgm-link {
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: rgba(56, 134, 203, 0.7);
+  text-underline-offset: 0.3em;
+}
+
 .rgm-link-soft {
   text-decoration: underline;
   text-decoration-style: dashed;
-  text-decoration-color: rgb(56 134 203);
+  text-decoration-color: rgb(56, 134, 203);
   text-underline-offset: 0.3em;
 }
 

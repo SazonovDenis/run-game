@@ -30,6 +30,10 @@ export default {
         ctx.eventBus.on("showHint", this.onShowHint)
         //
         ctx.eventBus.on("*", this.onEvent)
+
+
+        //
+        daoApi.onAfterInvokeError = this.onAfterInvokeError
     },
 
     shutdown() {
@@ -44,6 +48,34 @@ export default {
         //
         ctx.gameplay = null
     },
+
+    //
+    onAfterInvokeError(res) {
+        let ERROR_CODE = {
+            USER_NOT_SET: "RGM_USER_NOT_SET"
+        }
+
+        //
+        let message = res?.error?.message
+
+        //
+        if (message && message.includes(ERROR_CODE.USER_NOT_SET)) {
+            //
+            console.error(res)
+
+            //
+            apx.showFrame({
+                frame: '/login'
+            })
+
+            // Сами обработали ошибку
+            return true
+        }
+
+        // Не обработали ошибку
+        return false
+    },
+
 
     /**
      * Грузим новое задание с сервера

@@ -25,7 +25,7 @@ public class RgmMdbUtils extends BaseMdbUtils {
         AuthUser user = getCurrentUser();
         long id = UtCnv.toLong(user.getAttrs().getLong("id"));
         if (id == 0) {
-            throw new XError("Пользователь не указан");
+            throw new XError("Пользователь не указан [RGM_USER_NOT_SET]");
         }
         return id;
     }

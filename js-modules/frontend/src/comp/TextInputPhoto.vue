@@ -35,27 +35,22 @@
             </div>
 
 
-            <div class="photo-btn-div">
+            <q-icon v-if="isCameraCapturing===true"
+                    class="photo-btn photo-btn-still"
+                    name="circle"
+                    color="white"
+                    size="3.5em"
+                    @click="onTakePicture"
+            />
 
-                <q-btn v-if="isCameraCapturing===true"
-                       rounded
-                       class="photo-btn photo-btn-still"
-                       color="accent"
-                       icon="image"
-                       no-caps
-                       label="Распознать с камеры"
-                       @click="onTakePicture"
-                />
-
-                <q-btn v-if="isCameraCapturing===false && searchDone===true"
-                       rounded
-                       class="photo-btn photo-btn-clear"
-                       color="primary"
-                       _icon="del"
-                       no-caps
-                       label="Новый снимок"
-                       @click="onNewPicture"
-                />
+            <q-btn v-if="isCameraCapturing===false && searchDone===true"
+                   rounded
+                   class="photo-btn photo-btn-clear"
+                   color="accent"
+                   no-caps
+                   label="Новый снимок"
+                   @click="onNewPicture"
+            />
 
             </div>
 
@@ -271,7 +266,7 @@ export default {
         },
 
         onEditModeChanged() {
-            if (!this.wasCameraInit){
+            if (!this.wasCameraInit) {
                 this.startup()
             }
         },
@@ -355,29 +350,27 @@ export default {
         },
 
         async takePicture() {
+            if (!this.wasCameraInitOk) {
+                return
+            }
+
             //
             this.imageClientWidth = video.clientWidth
             this.imageClientHeight = video.clientHeight
 
             //
             var canvasContext = canvas.getContext('2d');
-            if (this.wasCameraInitOk) {
-                //canvas.width = this.width;
-                //canvas.height = this.height;
-                canvasContext.drawImage(video, 0, 0, this.width, this.height);
+            canvasContext.drawImage(video, 0, 0, this.width, this.height);
 
-                var dataImage = canvas.toDataURL('image/png');
-                photo.setAttribute('src', dataImage);
+            var dataImage = canvas.toDataURL('image/png');
+            photo.setAttribute('src', dataImage);
 
-                ///////////////////////////////
-                this.info = "size: " + dataImage.length + ", " + this.width + "x" + this.height
-                ///////////////////////////////
+            ///////////////////////////////
+            this.info = "size: " + dataImage.length + ", " + this.width + "x" + this.height
+            ///////////////////////////////
 
-                //
-                await this.loadData(dataImage)
-            } else {
-                this.clearPhoto();
-            }
+            //
+            await this.loadData(dataImage)
         },
 
         async loadData(dataImage) {
@@ -476,22 +469,28 @@ export default {
     position: relative;
 }
 
-.photo-btn-div {
-    position: absolute;
-    bottom: 1em;
-    right: 0.5em;
-}
-
 .photo-btn {
-    height: 3em;
-    _width: 4em;
+    position: absolute;
 }
 
 .photo-btn-still {
+    left: 50%;
+    margin-left: -0.5em;
+    bottom: 0.2em;
+
     opacity: 0.7;
+
+    border: 2px solid;
+    border-radius: 10em;
 }
 
 .photo-btn-clear {
+    height: 3em;
+    right: 0.5em;
+    bottom: 0.9em;
+
+    padding: 0 1.5em;
+
     opacity: 0.8;
 }
 

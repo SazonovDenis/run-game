@@ -30,7 +30,6 @@
 import {daoApi} from "../dao"
 import MenuContainer from "./MenuContainer"
 import ctx from "run-game-frontend/src/gameplayCtx"
-import {nextTick} from 'vue'
 
 export default {
 
@@ -76,8 +75,10 @@ export default {
         },
 
         doFocusFilterText() {
-            console.info("f")
-            this.$refs.filterText.focus()
+            let elFilterText = this.$refs.filterText
+            if (elFilterText) {
+                elFilterText.focus()
+            }
         },
 
     },

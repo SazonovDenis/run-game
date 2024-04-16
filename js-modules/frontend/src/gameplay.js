@@ -60,10 +60,6 @@ export default {
 
         //
         if (message && message.includes(ERROR_CODE.USER_NOT_SET)) {
-            //
-            console.error(res)
-
-            //
             apx.showFrame({
                 frame: '/login'
             })

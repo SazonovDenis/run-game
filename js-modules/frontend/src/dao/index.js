@@ -71,17 +71,14 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
             }).catch((resp) => {
                 let jsonResp = resp.response && resp.response.data
 
-                // ---
+                // ------
                 // Добавлено для проекта Rgm
-                // ---
-                if (th.onAfterInvokeError) {
-                    if (th.onAfterInvokeError(jsonResp)) {
-                        return
-                    }
+                if (th.onAfterInvokeError && th.onAfterInvokeError(jsonResp)) {
+                    // Ошибку обработал тот, кто захотел, дальнейшая обработка не нужна.
+                    console.error(jsonResp)
+                    return
                 }
-                // ---
-                // ---
-                // ---
+                // ------
 
                 if (Jc.cfg.envDev) {
                     console.groupCollapsed(`%c${id} [${th.url}] ${methodName}`, 'color: red;')

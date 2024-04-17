@@ -94,6 +94,7 @@
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
                 :itemOnClick="itemOnClick"
+                :itemsMenu="itemsMenu_modeAddFact"
             >
 
                 <template v-slot:toolbar>
@@ -115,18 +116,30 @@
 
             </TextInputPhoto>
 
-            <TaskList
-                v-if="itemsSearchDone"
-                :showEdit="true"
-                :tasks="itemsLoaded"
-                :itemsMenu="itemsMenu_modeAddFact"
-                :filter="filterLoaded"
-                :actionLeftSlide="actionHide"
-                messageNoItems="Слова на фото не найдены"
-            />
+            <!--
+                        <TaskList
+                            v-if="itemsSearchDone"
+                            :showEdit="true"
+                            :tasks="itemsLoaded"
+                            :itemsMenu="itemsMenu_modeAddFact"
+                            :filter="filterLoaded"
+                            :actionLeftSlide="actionHide"
+                            messageNoItems="Слова на фото не найдены"
+                        />
+            -->
 
         </div>
 
+
+        <div v-if="viewMode==='viewItemsLoaded'">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsLoaded"
+                :itemsMenu="itemsMenu_modeAddFact"
+            />
+
+        </div>
 
         <div v-if="viewMode==='viewItemsAdd'">
 
@@ -228,7 +241,7 @@
 
         <template v-slot:footer>
 
-            <q-footer v-if="wasChanges()">
+            <q-footer v-if="wasChanges() || itemsLoaded.length > 0">
 
                 <q-toolbar class="bg-grey-1 text-black" style="min-height: 4em">
 
@@ -236,6 +249,18 @@
                     <div class="row" style="width: 100%">
 
                         <div class="row" style="flex-grow: 10; align-content: end">
+
+                            <template v-if="itemsLoaded.length > 0">
+
+                                <div
+                                    class="q-ma-xs items-count-info"
+                                    @click="clickItemsLoadedText()">
+                                    <span class="rgm-link">
+                                        {{ itemsLoadedText }}
+                                    </span>
+                                </div>
+
+                            </template>
 
                             <q-space/>
 
@@ -291,6 +316,7 @@
                             <template v-if="!plan && viewMode !== 'viewItemsAdd'">
 
                                 <q-btn
+                                    v-if="!immediateSaveMode"
                                     no-caps
                                     class="q-ma-xs"
                                     label="Далее"
@@ -302,6 +328,7 @@
                             <template v-else>
 
                                 <q-btn
+                                    v-if="!immediateSaveMode"
                                     no-caps
                                     class="q-ma-xs"
                                     :label="btnSaveTitle"
@@ -348,6 +375,12 @@ export default {
     props: {
         plan: null,
         planItems: null,
+
+
+        immediateSaveMode: {
+            type: Boolean,
+            default: false,
+        },
 
         doEditPlan: {
             type: Boolean,
@@ -520,6 +553,10 @@ export default {
             }
         },
 
+        itemsLoadedText() {
+            return "Найдено: " + this.itemsLoaded.length
+        },
+
         itemsAddText() {
             return "Добавлено: " + this.itemsAdd.length
         },
@@ -569,7 +606,6 @@ export default {
             }
             this.itemsAddItems(itemsAdd)
         },
-
 
         calcHiddenCountExternal() {
             this.hiddenCount = 0
@@ -628,13 +664,13 @@ export default {
         },
 
         itemOnClick(item) {
-            console.info(item)
             this.itemAddMenuClick(item)
         },
 
         itemsOnChange(searchDone) {
             this.itemsSearchDone = searchDone
 
+            /*
             // Для новой порции слов учтем, какие мы только что скрыли и показали
             for (let item of this.itemsLoaded) {
                 //
@@ -662,6 +698,23 @@ export default {
                     item.isInPlan = false
                 }
             }
+            */
+
+            // Раскидаем по спискам
+            this.itemsAdd = []
+            this.itemsHideAdd = []
+            for (let item of this.itemsLoaded) {
+                //
+                if (item.isInPlan === true) {
+                    this.itemsAdd.push(item)
+                }
+
+                //
+                if (item.isHidden === true) {
+                    this.itemsHideAdd.push(item)
+                }
+            }
+
 
             // Удобнее держать отдельную переменную this.hiddenCount
             this.calcHiddenCountLoaded()
@@ -961,6 +1014,10 @@ export default {
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
             this.checkShowHiddenMode()
+
+
+            // Синхронизируем с сревером
+            this.api_itemAdd(taskItem)
         },
 
         /**
@@ -995,6 +1052,10 @@ export default {
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
             this.checkShowHiddenMode()
+
+
+            // Синхронизируем с сревером
+            this.api_itemDel(taskItem)
         },
 
         itemHideAdd(taskItem) {
@@ -1028,6 +1089,10 @@ export default {
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
             this.checkShowHiddenMode()
+
+
+            // Синхронизируем с сревером
+            this.api_itemHideAddDel(taskItem)
         },
 
         itemHideDel(taskItem) {
@@ -1056,7 +1121,69 @@ export default {
             this.calcHiddenCountLoaded()
             this.calcHiddenCountExternal()
             this.checkShowHiddenMode()
+
+
+            // Синхронизируем с сревером
+            this.api_itemHideAddDel(taskItem)
         },
+
+
+        api_itemAdd(item) {
+            if (!this.immediateSaveMode) {
+                return
+            }
+
+            //
+            if (!this.plan) {
+                return
+            }
+            let planId = this.plan.id
+
+            //
+            let recPlanFact = {
+                factQuestion: item.factQuestion,
+                factAnswer: item.factAnswer,
+            }
+
+            // Добавляем слова в существующий план
+            daoApi.invoke('m/Plan/addFact', [planId, [recPlanFact]])
+        },
+
+        api_itemDel(item) {
+            if (!this.immediateSaveMode) {
+                return
+            }
+
+            //
+            if (!this.plan) {
+                return
+            }
+            let planId = this.plan.id
+
+            //
+            let recPlanFact = {
+                factQuestion: item.factQuestion,
+                factAnswer: item.factAnswer,
+            }
+
+            // Удаляем слова в существующем плане
+            daoApi.invoke('m/Plan/delFact', [planId, [recPlanFact]])
+        },
+
+        api_itemHideAddDel(item) {
+            if (!this.immediateSaveMode) {
+                return
+            }
+
+            //
+            let recItem = {
+                isHidden: item.isHidden,
+            }
+
+            // Скрытые и показанные факты
+            ctx.gameplay.api_saveUsrFact(item.factQuestion, item.factAnswer, recItem)
+        },
+
 
         /**
          * @returns {boolean} true, если taskItem находится в плане или будет добавлен при сохранении
@@ -1086,6 +1213,10 @@ export default {
         },
 
         /* -------------------------------- */
+
+        clickItemsLoadedText() {
+            this.setViewMode("viewItemsLoaded")
+        },
 
         clickItemsAddText() {
             this.setViewMode("viewItemsAdd")
@@ -1154,6 +1285,10 @@ export default {
         },
 
         async btnSaveClick() {
+            if (this.immediateSaveMode) {
+                return
+            }
+
             // ---
             // Параметры для вызова api
 
@@ -1161,36 +1296,40 @@ export default {
             // Добавленные факты
             let stPlanFactAdd = []
             for (let item of this.itemsAdd) {
-                stPlanFactAdd.push({
-                    factAnswer: item.factAnswer,
+                let recPlanFact = {
                     factQuestion: item.factQuestion,
-                })
+                    factAnswer: item.factAnswer,
+                }
+                stPlanFactAdd.push(recPlanFact)
             }
 
             // Удаленные факты
             let stPlanFactDel = []
             for (let item of this.itemsDel) {
-                stPlanFactDel.push({
-                    factAnswer: item.factAnswer,
+                let recPlanFact = {
                     factQuestion: item.factQuestion,
-                })
+                    factAnswer: item.factAnswer,
+                }
+                stPlanFactDel.push(recPlanFact)
             }
 
             // Скрытые и показанные факты
             let stPlanFactHideAddHideDel = []
             for (let item of this.itemsHideAdd) {
-                stPlanFactHideAddHideDel.push({
+                let recPlanFact = {
                     isHidden: item.isHidden,
-                    factAnswer: item.factAnswer,
                     factQuestion: item.factQuestion,
-                })
+                    factAnswer: item.factAnswer,
+                }
+                stPlanFactHideAddHideDel.push(recPlanFact)
             }
             for (let item of this.itemsHideDel) {
-                stPlanFactHideAddHideDel.push({
+                let recPlanFact = {
                     isHidden: item.isHidden,
-                    factAnswer: item.factAnswer,
                     factQuestion: item.factQuestion,
-                })
+                    factAnswer: item.factAnswer,
+                }
+                stPlanFactHideAddHideDel.push(recPlanFact)
             }
 
 

@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+import jandcode.commons.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
@@ -86,11 +87,14 @@ class Task_upd extends RgmMdbUtils {
             return
         }
 
+        //
         StoreRecord recUsrFactNow = mdb.loadQueryRecord(
-                "select * from UsrFact where usr = :usr and factQuestion = :factQuestion and factAnswer = :factAnswertask",
+                "select * from UsrFact where usr = :usr and factQuestion = :factQuestion and factAnswer = :factAnswer",
                 [usr: idUsr, factQuestion: factQuestion, factAnswer: factAnswer],
                 false
         )
+
+        //
         if (recUsrFactNow == null) {
             dataUsrFact.put("id", null)
             dataUsrFact.put("usr", idUsr)
@@ -99,15 +103,16 @@ class Task_upd extends RgmMdbUtils {
             mdb.insertRec("UsrFact", dataUsrFact)
         } else {
             dataUsrFact.put("id", recUsrFactNow.getLong("id"))
-            dataUsrFact.put("usr", idUsr)
-            dataUsrFact.put("factQuestion", factQuestion)
-            dataUsrFact.put("factAnswer", factAnswer)
             mdb.updateRec("UsrFact", dataUsrFact)
         }
     }
 
     boolean isEmptyUsrFact(Map dataUsrFact) {
-        return dataUsrFact == null || (!dataUsrFact.get("isHidden") && !dataUsrFact.get("isKnownGood") && !dataUsrFact.get("isKnownBad"))
+        return dataUsrFact == null || (
+                !UtCnv.toBoolean(dataUsrFact.get("isHidden")) &&
+                        !UtCnv.toBoolean(dataUsrFact.get("isKnownGood")) &&
+                        !UtCnv.toBoolean(dataUsrFact.get("isKnownBad"))
+        )
     }
 
 

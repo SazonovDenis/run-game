@@ -52,7 +52,6 @@
                    @click="onNewPicture"
             />
 
-            </div>
 
         </div>
 
@@ -63,6 +62,14 @@
         <div :class="'rgm-state-text photo-state-error ' + getClassCameraInitFalil">
             Нет доступа к камере
         </div>
+
+        <TaskList
+            v-if="searchDone"
+            :showEdit="true"
+            :tasks="itemsSelectedList"
+            :itemsMenu="itemsMenu"
+            messageNoItems="Слова на фото не найдены"
+        />
 
 
         <div class="row">
@@ -94,6 +101,7 @@ export default {
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
         itemOnClick: {type: Function},
+        itemsMenu: {type: Array, default: []},
     },
 
     data() {
@@ -118,8 +126,11 @@ export default {
 
             info: null,
 
+            itemsSelectedList: [],
+
             itemPositions: [],
             itemsPositionsIdx: {},
+            itemsPositionsIdxList: {},
         }
     },
 
@@ -185,32 +196,33 @@ export default {
 
             //
             let itemId = itemPosition.item
-            let item = this.itemsPositionsIdx[itemId]
+            //let item = this.itemsPositionsIdx[itemId]
+            let itemsLst = this.itemsPositionsIdxList[itemId]
+
             //
-            let isItem
-            let isHidden
-            let isInPlan
+            let isItem = false
+            let isHidden = false
+            let isInPlan = false
             //
-            if (item) {
-                isItem = true
-                isHidden = item.isHidden
-                isInPlan = item.isInPlan
-            } else {
-                isItem = false
-                isInPlan = false
-                isHidden = false
+            if (itemsLst) {
+                for (let i = 0; i < itemsLst.length; i++) {
+                    let item = itemsLst[i]
+                    isItem = true
+                    isHidden = isHidden || item.isHidden
+                    isInPlan = isInPlan || item.isInPlan
+                }
             }
 
             let borderColor
             let backgroundColor
 
-            if (isHidden) {
-                borderColor = "rgba(20, 20, 230, 0.2)"
-                backgroundColor = "rgba(20, 20, 230, 0.2)"
-            } else if (isItem) {
+            if (isItem) {
                 if (isInPlan) {
                     borderColor = "rgba(20, 230, 20, 0.4)"
                     backgroundColor = "rgba(20, 230, 20, 0.4)"
+                } else if (isHidden) {
+                    borderColor = "rgba(20, 20, 230, 0.2)"
+                    backgroundColor = "rgba(20, 20, 230, 0.2)"
                 } else {
                     borderColor = "rgb(20, 230, 20)"
                     backgroundColor = "rgba(20, 230, 20, 0.04)"
@@ -235,13 +247,35 @@ export default {
         },
 
         onItemPositionClick(itemPosition) {
-            console.info(itemPosition)
-            // //
+            let itemsLst = this.findItemsList(itemPosition)
+            console.info("onItemPosition click", itemsLst)
+
+            //
+            this.itemsSelectedList = itemsLst
+
+            //
+            if (this.itemOnClick) {
+                for (let item1 of itemsLst) {
+                    this.itemOnClick(item1)
+                }
+            }
+        },
+
+        findItemsList(itemPosition) {
             let itemId = itemPosition.item
             let item = this.itemsPositionsIdx[itemId]
-            if (item && this.itemOnClick) {
-                this.itemOnClick(item)
+            let itemsLst = this.itemsPositionsIdxList[itemId]
+
+            //console.info(itemPosition)
+            //console.info("item", item)
+            //console.info("itemsLst", itemsLst)
+
+            //
+            if (!itemsLst) {
+                itemsLst = []
             }
+
+            return itemsLst
         },
 
         onPictureClick() {
@@ -408,9 +442,17 @@ export default {
 
             // Создадим индекс по item - для обработки кликов
             this.itemsPositionsIdx = {}
+            this.itemsPositionsIdxList = {}
             for (let item of this.items) {
                 let itemId = item.item
                 this.itemsPositionsIdx[itemId] = item
+                //
+                let lst = this.itemsPositionsIdxList[itemId]
+                if (!lst) {
+                    lst = []
+                    this.itemsPositionsIdxList[itemId] = lst
+                }
+                lst.push(item)
             }
 
 
@@ -427,8 +469,11 @@ export default {
             this.items.length = 0
 
             // Очистим свои списки
+            this.itemsSelectedList = []
+            //
             this.itemPositions = []
             this.itemsPositionsIdx = {}
+            this.itemsPositionsIdxList = {}
 
             // Уведомим родителя
             if (this.itemsOnChange && doEmitParent) {

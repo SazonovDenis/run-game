@@ -265,6 +265,7 @@ export default {
         onCreateLevel() {
             apx.showFrame({
                 frame: '/planEdit', props: {
+                    immediateSaveMode: false,
                     frameReturn: "/levels",
                     frameReturnProps: {},
                 }

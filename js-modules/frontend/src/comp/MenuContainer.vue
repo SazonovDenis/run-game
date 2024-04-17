@@ -4,7 +4,7 @@
     <q-layout view="hHh lpR fFf" style="user-select: none;">
 
 
-        <q-header elevated style="z-index: 1000000000000">
+        <q-header elevated style="z-index: 3000">
 
 
             <q-toolbar class="bg-primary text-white"

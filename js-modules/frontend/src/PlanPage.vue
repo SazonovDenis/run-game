@@ -389,20 +389,6 @@ export default {
             })
         },
 
-        /*
-                handleScroll() {
-                    const element = this.$refs.stickyElement;
-                    if (element) {
-                        const offset = element.offsetTop;
-                        if (window.pageYOffset + 40 > offset) {
-                            this.sticky_filter = true;
-                        } else {
-                            this.sticky_filter = false;
-                        }
-                    }
-                }
-        */
-
         calcHiddenCountLoaded() {
             this.hiddenCount = 0
             for (let item of this.tasks) {
@@ -505,17 +491,6 @@ hr {
     font-size: 1.5em;
     text-align: center;
 }
-
-/*
-.sticky-filter-panel {
-    position: fixed;
-    top: 40px;
-    left: 0;
-    padding: 10px 0;
-    width: 100%;
-    z-index: 1000;
-}
-*/
 
 </style>
 

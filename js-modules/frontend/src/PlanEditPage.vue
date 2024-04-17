@@ -1146,7 +1146,7 @@ export default {
             }
 
             // Добавляем слова в существующий план
-            daoApi.invoke('m/Plan/addFact', [planId, [recPlanFact]])
+            daoApi.invoke('m/Plan/addFact', [planId, [recPlanFact]], {waitShow: false})
         },
 
         api_itemDel(item) {
@@ -1167,7 +1167,7 @@ export default {
             }
 
             // Удаляем слова в существующем плане
-            daoApi.invoke('m/Plan/delFact', [planId, [recPlanFact]])
+            daoApi.invoke('m/Plan/delFact', [planId, [recPlanFact]], {waitShow: false})
         },
 
         api_itemHideAddDel(item) {

@@ -4,14 +4,16 @@
 import {apx} from '../vendor'
 import * as cnv from '@jandcode/base/src/cnv'
 import * as ajax from '@jandcode/base/src/ajax'
+import * as base from '@jandcode/base/src/base'
 import * as error from '@jandcode/base/src/error'
+import {Store} from '@jandcode/apx/src/data/store'
 
 // уровень вызова для timer
 let _levelInvoke = 0
 
 /**
  * Json Rpc клиент для выполнения запросов к api, предоставленному модулем
- * jandcode-core-apx и приправленного особенностями МОИМИ.
+ * jandcode-core-apx и приправленного особенностями проекта.
  */
 export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
 
@@ -19,14 +21,50 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
         super(options)
     }
 
-    //////
+    /**
+     * Полная копия библиотечного метода JsonRpcClient.loadStore,
+     * за исключением возможности указать конфигурацию вызова
+     */
+    async loadStore(methodName, methodParams, cfg) {
+        let cfgInvoke = {
+            waitShow: this.waitShow
+        }
+        Object.assign(cfgInvoke, cfg);
+
+        //
+        let res = await this.invoke(methodName, methodParams, cfgInvoke)
+        return new Store(res)
+    }
 
     /**
-     * Вызвать реальный метод json rpc
-     * Порлная копия библиотечного метода JsonRpcClient.__invokeReal,
+     * Полная копия библиотечного метода JsonRpcClient.invoke,
+     * за исключением возможности указать конфигурацию вызова
+     */
+    async invoke(methodName, methodParams, cfg) {
+        let cfgInvoke = {
+            waitShow: this.waitShow
+        }
+        Object.assign(cfgInvoke, cfg);
+
+        //
+        if (arguments.length < 2) {
+            throw new Error('Не верное число агрументов')
+        }
+        if (!cnv.isArray(methodParams) && !cnv.isObject(methodParams)) {
+            throw new Error('Параметры метода должны быть массивом или объектом')
+        }
+        let id = base.nextId('json-rpc-')
+
+        //
+        return await this.__invokeReal(id, methodName, methodParams, cfgInvoke)
+    }
+
+
+    /**
+     * Полная копия библиотечного метода JsonRpcClient.__invokeReal,
      * за исключением возможности добавить перехватчик ошибок onAfterInvokeError
      */
-    __invokeReal(id, methodName, methodParams) {
+    __invokeReal(id, methodName, methodParams, cfgInvoke) {
         let th = this
         let params = {}
         //
@@ -50,7 +88,7 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
                 url: th.url,
                 params: params,
                 data: data,
-                waitShow: th.waitShow,
+                waitShow: cfgInvoke.waitShow,
             }).then((resp) => {
                 try {
                     // уведомляем

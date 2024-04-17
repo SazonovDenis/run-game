@@ -101,17 +101,10 @@ export default {
 
             let items = []
             if (valueNow && valueNow.length >= 2) {
-                // Установка daoApi.waitShow = false и оборачивание в try/finally - чтобы не дергался фокус
-                try {
-                    daoApi.waitShow = false
-                    //
-                    let resApi = await daoApi.loadStore("m/Game/findItems", [valueNow, this.planId])
-                    items = resApi.records
-                    //
-                    this.searchDone = true
-                } finally {
-                    daoApi.waitShow = true
-                }
+                let resApi = await daoApi.loadStore("m/Game/findItems", [valueNow, this.planId], {waitShow: false})
+                items = resApi.records
+                //
+                this.searchDone = true
             }
 
             // Заполним родительский список

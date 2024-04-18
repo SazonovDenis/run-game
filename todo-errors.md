@@ -221,14 +221,17 @@ default.methods.isFactFirstAnswer
 ```
 ...
 This per-
-fomance
+formance
 is by-
 pass
+sixty-
+four
+times
 ...
 ```
 
 Если между словами стоит дефис и следующее слово на другой строке и не найдены оба слова
-"per" и "fomance", то искать "perfomance".
+"per" и "formance", то искать "performance", при этом "sixty-four" остается не слитым словом.
 
 Пример пары "by" и "pass" говорит о том, что слитое слово "bypass" предпочтительнее
 отдельных слов.

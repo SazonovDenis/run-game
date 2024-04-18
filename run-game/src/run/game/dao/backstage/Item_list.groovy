@@ -363,21 +363,25 @@ where
      * @return дополнительные формы слова
      */
     public static Collection<String> transformWord(String wordEng) {
+        // boys -> boy
         if (wordEng.endsWith("s") && wordEng.length() >= 3) {
             wordEng = wordEng.substring(0, wordEng.length() - 1)
             return [wordEng]
         }
 
+        // mined -> mine
         if (wordEng.endsWith("ed") && wordEng.length() >= 4) {
             wordEng = wordEng.substring(0, wordEng.length() - 1)
             return [wordEng]
         }
 
+        // dreaming -> dream
         if (wordEng.endsWith("ing") && wordEng.length() >= 5) {
             wordEng = wordEng.substring(0, wordEng.length() - 3)
             return [wordEng]
         }
 
+        //
         return null
     }
 

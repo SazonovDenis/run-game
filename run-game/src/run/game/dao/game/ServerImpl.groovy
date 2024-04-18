@@ -543,29 +543,72 @@ public class ServerImpl extends RgmMdbUtils implements Server {
      * @param textItemsPosition
      */
     void splitOcrResult(Store stText, Map<String, Set> textItems, List textItemsPosition) {
-        for (StoreRecord rec : stText) {
+        for (int i = 0; i < stText.size(); i++) {
+            StoreRecord rec = stText.get(i)
+
             //
             int conf = rec.getInt("conf")
-            String text = rec.getString("text")
 
             //
-            if (conf > 0 && text.trim().length() > 0) {
-                Map textPosition = [
-                        text  : text,
-                        left  : rec.getInt("left"),
-                        top   : rec.getInt("top"),
-                        width : rec.getInt("width"),
-                        height: rec.getInt("height"),
-                ]
-                textItemsPosition.add(textPosition)
+            String text = rec.getString("text")
+            text = text.trim()
 
+            //
+            if (conf == 0 || text.length() == 0) {
+                continue
+            }
+
+
+            // Слияние по переносам
+            Map textPositionNext = null
+            if (i < stText.size() - 2) {
+                StoreRecord recNext = stText.get(i + 2)
+                int line_num = rec.getInt("line_num")
+                int line_numNext = recNext.getInt("line_num")
+                String textNext = recNext.getString("text")
+                textNext = textNext.trim()
                 //
-                Set textItemPositions = textItems.get(text)
-                if (textItemPositions == null) {
-                    textItemPositions = new HashSet()
-                    textItems.put(text, textItemPositions)
+                if (text.endsWith("-") && (line_numNext - line_num) == 1) {
+                    text = text.substring(0, text.length() - 1) + textNext
+
+                    textPositionNext = [
+                            text  : text,
+                            left  : recNext.getInt("left"),
+                            top   : recNext.getInt("top"),
+                            width : recNext.getInt("width"),
+                            height: recNext.getInt("height"),
+                    ]
+
+                    //
+                    i = i + 2
                 }
-                textItemPositions.add(textPosition)
+            }
+
+            // Формируем позицию
+            if (textPositionNext != null) {
+                textItemsPosition.add(textPositionNext)
+            }
+
+            //
+            Map textPosition = [
+                    text  : text,
+                    left  : rec.getInt("left"),
+                    top   : rec.getInt("top"),
+                    width : rec.getInt("width"),
+                    height: rec.getInt("height"),
+            ]
+            textItemsPosition.add(textPosition)
+
+            //
+            Set textItemPositions = textItems.get(text)
+            if (textItemPositions == null) {
+                textItemPositions = new HashSet()
+                textItems.put(text, textItemPositions)
+            }
+            textItemPositions.add(textPosition)
+            //
+            if (textPositionNext != null) {
+                textItemPositions.add(textPositionNext)
             }
         }
     }

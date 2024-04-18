@@ -34,6 +34,7 @@ class Tesseract_tsv_Test extends RgmBase_Test {
         //inFileName = "test/run/game/dao/ocr/11-00.jpg"
         //inFileName = "test/run/game/dao/ocr/orange.jpg"
         inFileName = "test/run/game/dao/ocr/rgm13528344128969128628.png"
+        //inFileName = "test/run/game/dao/ocr/dear-friend.jpg"
 
         byte[] imgData = FileUtils.readFileToByteArray(new File(inFileName))
         String imgBase64 = UtString.encodeBase64(imgData)
@@ -55,7 +56,7 @@ class Tesseract_tsv_Test extends RgmBase_Test {
 
     @Test
     void t_11_00_ocr_parseStill() {
-        inFileName = "test/run/game/dao/ocr/11-00.jpg"
+        //inFileName = "test/run/game/dao/ocr/11-00.jpg"
         inFileName = "test/run/game/dao/ocr/orange.jpg"
         byte[] imgData = FileUtils.readFileToByteArray(new File(inFileName))
         String imgBase64 = UtString.encodeBase64(imgData)
@@ -72,8 +73,10 @@ class Tesseract_tsv_Test extends RgmBase_Test {
 
     @Test
     void t_11_00_ocr_parseStillMarkup() {
-        inFileName = "test/run/game/dao/ocr/11-00.jpg"
-        inFileName = "test/run/game/dao/ocr/orange.jpg"
+        //inFileName = "test/run/game/dao/ocr/11-00.jpg"
+        //inFileName = "test/run/game/dao/ocr/orange.jpg"
+        inFileName = "test/run/game/dao/ocr/rgm13528344128969128628.png"
+        //inFileName = "test/run/game/dao/ocr/dear-friend.jpg"
         byte[] imgData = FileUtils.readFileToByteArray(new File(inFileName))
         String imgBase64 = UtString.encodeBase64(imgData)
 

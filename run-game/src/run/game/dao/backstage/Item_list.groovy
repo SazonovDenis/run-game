@@ -55,9 +55,29 @@ class Item_list extends BaseMdbUtils {
         Set<Long> setItems = new HashSet<>()
 
 
+        // ---
+        // word_spelling - точное соответствие
+        Store stFact = list.loadFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
+
+        //
+        for (StoreRecord rec : stFact) {
+            long item = rec.getLong("item")
+
+            // Повторы не нужны
+            if (setItems.contains(item)) {
+                continue
+            }
+
+            //
+            stItem.add([id: item, value: rec.getValue("itemValue")])
+            setItems.add(item)
+        }
+
+
+        // ---
         // word_spelling
         int count = 0
-        Store stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
+        stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
 
         //
         for (StoreRecord rec : stFact) {

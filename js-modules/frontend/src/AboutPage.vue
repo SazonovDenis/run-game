@@ -33,14 +33,10 @@
                     каждое слово.
                 </div>
 
-<!--
-                <div style="margin-top: 1.5em;">
-
-                </div>
--->
 
                 <div class="">
-                    Нужно сыграть уровень несколько раз, чтобы набрать в нем максимальное число очков.
+                    Нужно сыграть уровень несколько раз, чтобы набрать в нем максимальное
+                    число очков.
                 </div>
             </div>
 
@@ -63,6 +59,37 @@
                             @click="levels()">
                     </jc-btn>
                 </div>
+            </div>
+
+
+            <q-separator/>
+
+
+            <div class="q-pa-sm" _class="row" style="margin-top: 1.5em;">
+
+                <div class="rgm-link-soft q-pa-sm"
+                     @click="about_isShown = true">
+                    Создатели
+                </div>
+
+                <template v-if="about_isShown">
+                    <div class="q-pa-sm">
+                        <span class="value-label">Идея и разработка: </span> <span
+                        class="value-value">ТОО &laquo;Wordsrike&raquo;</span>
+                    </div>
+                    <div class="q-pa-sm">
+                        <span class="value-label">Библиотека: </span> <span
+                        class="value-value">Кравченко Сергей</span>
+                    </div>
+                    <div class="q-pa-sm">
+                        <span class="value-label">Графика и анимация: </span> <span
+                        class="value-value">Сазонова Наталья</span>
+                    </div>
+                    <div class="q-pa-sm">
+                        <span class="value-label">Тестирование: </span> <span
+                        class="value-value">Сазонов Павел</span>
+                    </div>
+                </template>
             </div>
 
         </div>
@@ -93,6 +120,8 @@ export default {
     data() {
         return {
             globalState: ctx.getGlobalState(),
+
+            about_isShown: false,
         }
     },
 
@@ -164,6 +193,14 @@ export default {
 
 hr {
     margin: 1.5em 0;
+}
+
+.value-label {
+    color: #4e4e4e;
+}
+
+.value-value {
+    color: #34558b;
 }
 
 

@@ -327,17 +327,21 @@ export default {
         },
 
         onTopLeftIcon: function() {
-            if (this.frameReturn) {
+            if (!this.frameReturn) {
                 apx.showFrame({
-                    frame: this.frameReturn,
-                    props: this.frameReturnProps,
+                    frame: '/',
                 })
                 return
             }
 
-            apx.showFrame({
-                frame: '/',
-            })
+            if (this.frameReturn instanceof Function) {
+                this.frameReturn(this.frameReturnProps)
+            } else {
+                apx.showFrame({
+                    frame: this.frameReturn,
+                    props: this.frameReturnProps,
+                })
+            }
         },
 
         onMainPage: function() {

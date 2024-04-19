@@ -74,6 +74,11 @@ export default {
             this.filterText = ""
         },
 
+        onFocus(){
+            // Только через setTimeout удается добиться попадания фокуса на input
+            setTimeout(this.doFocusFilterText, 500);
+        },
+
         doFocusFilterText() {
             let elFilterText = this.$refs.filterText
             if (elFilterText) {
@@ -86,8 +91,8 @@ export default {
     async mounted() {
         ctx.eventBus.on('itemsCleared', this.onItemsCleared)
 
-        // Только через setTimeout удается добиться попадания фокуса на input
-        setTimeout(this.doFocusFilterText, 500);
+        //
+        this.onFocus()
     },
 
     unmounted() {

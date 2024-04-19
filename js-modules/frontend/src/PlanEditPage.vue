@@ -2,11 +2,11 @@
     <MenuContainer
         :title="title"
         tabMenuName="PlanEditPage"
-        :frameReturn="frameReturn"
+        :frameReturn="getFrameReturn"
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
 
-        <div v-if="viewMode==='editPlan'">
+        <div v-if="frameMode==='editPlan'">
 
             <q-input class="q-mb-sm"
                      dense outlined
@@ -53,20 +53,21 @@
         </div>
 
 
-        <div v-show="canEditItemList() && viewMode==='addByText'">
+        <div v-show="canEditItemList() && frameMode==='addByText'">
 
             <TextInputText
                 :planId="planId"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
                 :isToolbarUsed="this.hiddenCountLoaded > 0"
+                ref="textInputText"
             >
 
                 <template v-slot:toolbar>
                     <q-toggle
-                        v-if="this.hiddenCountLoaded > 0"
+                        v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
                         v-model="showHiddenLoaded"
-                        :label="'Скрытые (' + this.hiddenCountLoaded + ')'"/>
+                        :label="'Известные (' + this.hiddenCountLoaded + ')'"/>
                 </template>
 
 
@@ -87,7 +88,7 @@
         </div>
 
 
-        <div v-show="canEditItemList() && viewMode==='addByPhoto'">
+        <div v-show="canEditItemList() && frameMode==='addByPhoto'">
 
             <TextInputPhoto
                 :planId="planId"
@@ -131,7 +132,7 @@
         </div>
 
 
-        <div v-if="viewMode==='viewItemsLoaded'">
+        <div v-if="frameMode==='viewItemsLoaded'">
 
             <TaskList
                 :showEdit="true"
@@ -141,7 +142,7 @@
 
         </div>
 
-        <div v-if="viewMode==='viewItemsAdd'">
+        <div v-if="frameMode==='viewItemsAdd'">
 
             <q-input v-if="!this.plan" class="q-mb-sm"
                      dense outlined
@@ -157,7 +158,7 @@
 
         </div>
 
-        <div v-if="viewMode==='viewItemsDel'">
+        <div v-if="frameMode==='viewItemsDel'">
 
             <TaskList
                 :showEdit="true"
@@ -167,7 +168,7 @@
 
         </div>
 
-        <div v-if="viewMode==='viewItemsHideAdd'">
+        <div v-if="frameMode==='viewItemsHideAdd'">
 
             <TaskList
                 :showEdit="true"
@@ -178,7 +179,7 @@
         </div>
 
 
-        <div v-if="viewMode==='viewItemsHideDel'">
+        <div v-if="frameMode==='viewItemsHideDel'">
 
             <TaskList
                 :showEdit="true"
@@ -199,40 +200,40 @@
         </q-page-sticky>
 
 
-        <template v-slot:menuBarRight>
+        <template v-slot:menuBarRight v-if="!isModeView()">
 
             <div style="display: flex;">
 
                 <q-btn
-                    v-if="canEditPlan() && this.viewMode !== 'editPlan'"
+                    v-if="canEditPlan() && this.frameMode !== 'editPlan'"
                     rounded
                     color="purple-4"
                     class="q-my-xnone q-mx-xs"
                     size="1.3em"
                     icon="edit"
-                    @click="this.setViewMode('editPlan')"
+                    @click="this.setFrameMode('editPlan')"
                 />
 
                 <q-btn
-                    v-if="canEditItemList() && this.viewMode !== 'addByText'"
+                    v-if="canEditItemList() && this.frameMode !== 'addByText'"
                     rounded
                     color="yellow-10"
                     class="q-my-xnone q-mx-xs"
                     align="left"
                     size="1.3em"
                     icon="word-add-keyboard"
-                    @click="this.setViewMode('addByText')"
+                    @click="this.setFrameMode('addByText')"
                 />
 
                 <q-btn
-                    v-if="canEditItemList() && this.viewMode !== 'addByPhoto'"
+                    v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
                     rounded
                     color="yellow-8"
                     class="q-my-xnone q-mx-xs"
                     align="left"
                     size="1.3em"
                     icon="word-add-photo"
-                    @click="this.setViewMode('addByPhoto')"
+                    @click="this.setFrameMode('addByPhoto')"
                 />
             </div>
 
@@ -241,7 +242,7 @@
 
         <template v-slot:footer>
 
-            <q-footer v-if="wasChanges() || itemsLoaded.length > 0">
+            <q-footer v-if="wasChanges()">
 
                 <q-toolbar class="bg-grey-1 text-black" style="min-height: 4em">
 
@@ -250,17 +251,19 @@
 
                         <div class="row" style="flex-grow: 10; align-content: end">
 
-                            <template v-if="itemsLoaded.length > 0">
+                            <!--
+                                                        <template v-if="itemsLoaded.length > 0">
 
-                                <div
-                                    class="q-ma-xs items-count-info"
-                                    @click="clickItemsLoadedText()">
-                                    <span class="rgm-link">
-                                        {{ itemsLoadedText }}
-                                    </span>
-                                </div>
+                                                            <div
+                                                                class="q-ma-xs items-count-info"
+                                                                @click="clickItemsLoadedText()">
+                                                                <span class="rgm-link">
+                                                                    {{ itemsLoadedText }}
+                                                                </span>
+                                                            </div>
 
-                            </template>
+                                                        </template>
+                            -->
 
                             <q-space/>
 
@@ -313,7 +316,7 @@
                             </template>
 
 
-                            <template v-if="!plan && viewMode !== 'viewItemsAdd'">
+                            <template v-if="!plan && frameMode !== 'viewItemsAdd'">
 
                                 <q-btn
                                     v-if="!immediateSaveMode"
@@ -328,7 +331,7 @@
                             <template v-else>
 
                                 <q-btn
-                                    v-if="!immediateSaveMode"
+                                    v-if="!immediateSaveMode && wasChanges()"
                                     no-caps
                                     class="q-ma-xs"
                                     :label="btnSaveTitle"
@@ -379,6 +382,11 @@ export default {
 
         immediateSaveMode: {
             type: Boolean,
+            default: true,
+        },
+
+        hideHiddenMode: {
+            type: Boolean,
             default: false,
         },
 
@@ -395,36 +403,38 @@ export default {
             default: true,
         },
 
-        defaultViewMode: null,
+        defaultMode: null,
         frameReturn: null,
         frameReturnProps: null,
     },
 
     data() {
         let actionHide = {
-            label: "Скрыть везде",
+            label: "Знаю",
             //info: "Слово больше не появится в играх",
             outline: this.itemHideMenuOutline,
             icon: this.itemHideMenuIcon,
             color: this.itemHideMenuColor,
+            textColor: this.itemHideMenuTextColor,
             onClick: this.itemHideMenuClick,
-            hidden: !this.canEditHidden(),
+            hidden: this.itemHideMenuHidden,
         };
 
         let actionDelete = {
-            label: "Убрать из уровня",
+            //label: "Убрать из уровня",
             //info: "слово из этого плана",
-            icon: this.takeRemoveMenuIcon,
-            color: this.takeRemoveMenuColor,
-            onClick: this.takeRemoveMenuClick,
-            hidden: !this.canEditItemList(),
+            icon: this.itemDeleteMenuIcon,
+            color: this.itemDeleteMenuColor,
+            onClick: this.itemDeleteMenuClick,
+            hidden: this.itemAddDelMenuHidden,
         }
 
         return {
             planText: null,
 
-            viewMode: "addByText",
+            frameMode: "addByText",
             editMode: "addByText",
+            frameModePrior: null,
 
             itemsExternal: [],
             itemsLoaded: [],
@@ -449,9 +459,11 @@ export default {
 
             itemsMenu_modeAddFact: [
                 {
+                    label: "Знаю",
                     outline: this.itemHideMenuOutline,
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
+                    textColor: this.itemHideMenuTextColor,
                     onClick: this.itemHideMenuClick,
                 },
                 {
@@ -459,6 +471,7 @@ export default {
                     icon: this.itemAddMenuIcon,
                     color: this.itemAddMenuColor,
                     onClick: this.itemAddMenuClick,
+                    hidden: this.itemAddDelMenuHidden,
                 },
             ],
 
@@ -469,17 +482,19 @@ export default {
 
             itemsMenu_modeViewItemsDel: [
                 {
+                    label: "Знаю",
                     outline: this.itemHideMenuOutline,
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
+                    textColor: this.itemHideMenuTextColor,
                     onClick: this.itemHideMenuClick,
                 },
                 {
-                    outline: this.itemAddMenuOutline,
-                    icon: this.takeRemoveMenuIcon,
-                    color: this.takeRemoveMenuColor,
-                    onClick: this.takeRemoveMenuClick,
-                    hidden: !this.canEditItemList(),
+                    outline: true,
+                    icon: this.itemDeleteMenuIcon,
+                    color: this.itemDeleteMenuColor,
+                    onClick: this.itemDeleteMenuClick,
+                    hidden: this.itemAddDelMenuHidden,
                 },
             ],
 
@@ -489,14 +504,17 @@ export default {
                     icon: this.itemDeleteMenuIcon,
                     color: this.itemDeleteMenuColor,
                     onClick: this.itemDeleteMenuClick,
+                    hidden: this.itemAddDelMenuHidden,
                 },
             ],
 
             itemsMenu_modeViewHide: [
                 {
+                    label: "Знаю",
                     outline: true,
                     icon: this.itemHideMenuIcon,
                     color: this.itemHideMenuColor,
+                    textColor: this.itemHideMenuTextColor,
                     onClick: this.itemHideMenuClick,
                 },
             ],
@@ -522,28 +540,39 @@ export default {
         },
 
         title() {
-            if (!this.doEditPlan) {
-                return null
-            } else if (this.viewMode === "editPlan") {
-                return "Редактирование"
-            } else if (this.viewMode === "addByPhoto") {
-                return "Добавление слов"
-            } else if (this.viewMode === "addByText") {
-                return "Добавление слов"
-            } else if (this.viewMode === "viewItemsHideAdd") {
-                return "Скрытые слова"
-            } else if (this.viewMode === "viewItemsHideDel") {
-                return "Показанные слова"
-            } else if (this.viewMode === "viewItemsDel") {
-                return "Удаленные слова"
-            } else if (this.viewMode === "viewItemsAdd") {
-                if (this.plan) {
-                    return "Добавленные слова"
-                } else {
-                    return "Создание уровня"
+            if (this.isModeView()) {
+                if (this.frameMode === "viewItemsHideAdd") {
+                    return "Известные слова"
+                } else if (this.frameMode === "viewItemsHideDel") {
+                    return "Показанные слова"
+                } else if (this.frameMode === "viewItemsDel") {
+                    return "Удаленные слова"
+                } else if (this.frameMode === "viewItemsAdd") {
+                    if (this.plan) {
+                        return "Добавленные слова"
+                    } else {
+                        return "Создание уровня"
+                    }
                 }
+            } else if (!this.doEditPlan) {
+                return null
+            } else if (this.frameMode === "editPlan") {
+                return "Редактирование"
+            } else if (this.frameMode === "addByText") {
+                return "Добавление слов"
+            } else if (this.frameMode === "addByPhoto") {
+                return "Добавление слов"
             }
         },
+
+        getFrameReturn() {
+            if (this.isModeView()) {
+                return this.returnFrameMode
+            } else {
+                return this.frameReturn
+            }
+        },
+
 
         btnSaveTitle() {
             if (this.plan) {
@@ -551,10 +580,6 @@ export default {
             } else {
                 return "Создать уровень"
             }
-        },
-
-        itemsLoadedText() {
-            return "Найдено: " + this.itemsLoaded.length
         },
 
         itemsAddText() {
@@ -566,16 +591,20 @@ export default {
         },
 
         itemsHideAddText() {
-            return "Скрыто: " + this.itemsHideAdd.length
+            return "Известные: " + this.itemsHideAdd.length
         },
 
         itemsHideDelText() {
-            return "Показано: " + this.itemsHideDel.length
+            return "Не известные: " + this.itemsHideDel.length
         },
 
     },
 
     methods: {
+
+        isModeView() {
+            return this.frameMode.startsWith("viewItems")
+        },
 
         wasChanges() {
             return (this.plan && this.plan.planText && this.planText && this.plan.planText !== this.planText) ||
@@ -643,78 +672,38 @@ export default {
         },
 
         checkViewMode() {
-            if (this.itemsAdd.length === 0 && this.viewMode === "viewItemsAdd") {
-                this.setViewMode(this.defaultViewMode)
+            if (this.itemsAdd.length === 0 && this.frameMode === "viewItemsAdd") {
+                this.setFrameMode(this.editMode)
             }
 
             //
-            if (this.itemsDel.length === 0 && this.viewMode === "viewItemsDel") {
-                this.setViewMode(this.defaultViewMode)
+            if (this.itemsDel.length === 0 && this.frameMode === "viewItemsDel") {
+                this.setFrameMode(this.editMode)
             }
 
             //
-            if (this.itemsHideAdd.length === 0 && this.viewMode === "viewItemsHideAdd") {
-                this.setViewMode(this.defaultViewMode)
+            if (this.itemsHideAdd.length === 0 && this.frameMode === "viewItemsHideAdd") {
+                this.setFrameMode(this.editMode)
             }
 
             //
-            if (this.itemsHideDel.length === 0 && this.viewMode === "viewItemsHideDel") {
-                this.setViewMode(this.defaultViewMode)
+            if (this.itemsHideDel.length === 0 && this.frameMode === "viewItemsHideDel") {
+                this.setFrameMode(this.editMode)
             }
         },
 
         itemOnClick(item) {
-            this.itemAddMenuClick(item)
+            this.itemAddMenuClick(item, false)
         },
 
         itemsOnChange(searchDone) {
             this.itemsSearchDone = searchDone
 
-            /*
-            // Для новой порции слов учтем, какие мы только что скрыли и показали
-            for (let item of this.itemsLoaded) {
-                //
-                let posItemsHideAdd = utils.itemPosInItems(item, this.itemsHideAdd)
-                if (posItemsHideAdd !== -1) {
-                    item.isHidden = true
-                }
-                //
-                let posItemsHideDel = utils.itemPosInItems(item, this.itemsHideDel)
-                if (posItemsHideDel !== -1) {
-                    item.isHidden = false
-                }
-            }
-
-            // Для новой порции слов учтем, какие мы только что добавили и удалили
-            for (let item of this.itemsLoaded) {
-                //
-                let posItemsAdd = utils.itemPosInItems(item, this.itemsAdd)
-                if (posItemsAdd !== -1) {
-                    item.isInPlan = true
-                }
-                //
-                let posItemsDel = utils.itemPosInItems(item, this.itemsDel)
-                if (posItemsDel !== -1) {
-                    item.isInPlan = false
-                }
-            }
-            */
-
-            // Раскидаем по спискам
+            // Ранее сформированные списки с разницей очищаем, ведь ищем заново
             this.itemsAdd = []
+            this.itemsDel = []
             this.itemsHideAdd = []
-            for (let item of this.itemsLoaded) {
-                //
-                if (item.isInPlan === true) {
-                    this.itemsAdd.push(item)
-                }
-
-                //
-                if (item.isHidden === true) {
-                    this.itemsHideAdd.push(item)
-                }
-            }
-
+            this.itemsHideDel = []
 
             // Удобнее держать отдельную переменную this.hiddenCount
             this.calcHiddenCountLoaded()
@@ -723,6 +712,10 @@ export default {
         },
 
         filterLoaded(taskItem) {
+            if (!this.hideHiddenMode) {
+                return true
+            }
+
             if (taskItem.isHidden && !this.showHiddenLoaded) {
                 return false
             }
@@ -844,7 +837,6 @@ export default {
 
         /* -------------------------------- */
 
-
         itemHideMenuOutline(taskItem) {
             let posItemsHideAdd = utils.itemPosInItems(taskItem, this.itemsHideAdd)
             let posItemsHideDel = utils.itemPosInItems(taskItem, this.itemsHideDel)
@@ -855,16 +847,32 @@ export default {
             }
         },
 
+        itemHideMenuHidden() {
+            return !this.canEditHidden()
+        },
+
         itemHideMenuIcon(taskItem) {
             if (taskItem.isHidden) {
-                return "visibility-off"
+                return "quasar.chip.selected"
             } else {
-                return "visibility"
+                return null
             }
         },
 
         itemHideMenuColor(taskItem) {
-            return "grey-7"
+            if (taskItem.isHidden) {
+                return "indigo-1"
+            } else {
+                return "white"
+            }
+        },
+
+        itemHideMenuTextColor(taskItem) {
+            if (taskItem.isHidden) {
+                return "indigo-10"
+            } else {
+                return "grey-9"
+            }
         },
 
         itemHideMenuClick(taskItem) {
@@ -872,8 +880,12 @@ export default {
                 this.itemHideDel(taskItem)
             } else {
                 this.itemHideAdd(taskItem)
-            }
 
+                // Если скрыли - то и в плане делать нечего
+                if (this.itemIsInPlan(taskItem) && this.canEditItemList()) {
+                    this.itemDel(taskItem)
+                }
+            }
 
             //
             this.checkViewMode()
@@ -910,42 +922,26 @@ export default {
             return "grey-8"
         },
 
-        itemAddMenuClick(taskItem) {
+        itemAddMenuClick(taskItem, canItemDel = true) {
             if (this.itemIsInPlan(taskItem)) {
-                this.itemDel(taskItem)
+                if (canItemDel) {
+                    this.itemDel(taskItem)
+                }
             } else {
                 this.itemAdd(taskItem)
+
+                // Если добавили в план - то и скрывать незачем
+                if (this.itemIsHidden(taskItem) && this.canEditHidden()) {
+                    this.itemHideDel(taskItem)
+                }
             }
         },
 
         /* -------------------------------- */
 
-        takeRemoveMenuIcon(taskItem) {
-            if (this.itemIsInPlan(taskItem)) {
-                let p = utils.itemPosInItems(taskItem, this.itemsAdd)
-                if (p !== -1) {
-                    return "del"
-                } else {
-                    return "del"
-                }
-            } else {
-                return "add"
-            }
-        },
-
-        takeRemoveMenuColor(taskItem) {
-            return "grey-8"
-        },
-
-        takeRemoveMenuClick(taskItem) {
-            if (this.itemIsInPlan(taskItem)) {
-                this.itemDel(taskItem)
-            } else {
-                this.itemAdd(taskItem)
-            }
-
-            //
-            this.checkViewMode()
+        itemAddDelMenuHidden() {
+            console.info("itemAddDelMenuHidden: " + !this.canEditItemList())
+            return !this.canEditItemList()
         },
 
         /* -------------------------------- */
@@ -1215,31 +1211,38 @@ export default {
         /* -------------------------------- */
 
         clickItemsLoadedText() {
-            this.setViewMode("viewItemsLoaded")
+            this.setFrameMode("viewItemsLoaded")
         },
 
         clickItemsAddText() {
-            this.setViewMode("viewItemsAdd")
+            this.setFrameMode("viewItemsAdd")
         },
 
         clickItemsDelText() {
-            this.setViewMode("viewItemsDel")
+            this.setFrameMode("viewItemsDel")
         },
 
         clickItemsHideAddText() {
-            this.setViewMode("viewItemsHideAdd")
+            this.setFrameMode("viewItemsHideAdd")
         },
 
         clickItemsHideDelText() {
-            this.setViewMode("viewItemsHideDel")
+            this.setFrameMode("viewItemsHideDel")
         },
 
 
-        setViewMode(viewMode) {
-            if (viewMode !== this.viewMode) {
+        returnFrameMode() {
+            if (this.frameModePrior) {
+                this.setFrameMode(this.frameModePrior)
+                this.frameModePrior = null
+            }
+        },
+
+        setFrameMode(frameMode) {
+            if (frameMode !== this.frameMode) {
 
                 // Смена только режим просмотра или еще и режима ввода
-                if (this.isEditModeChanged(this.viewMode, viewMode)) {
+                if (this.isEditModeChanged(this.frameMode, frameMode)) {
                     // Фильтр очищаем, ведь ищем заново
                     this.filterText = ""
 
@@ -1247,28 +1250,28 @@ export default {
                     this.itemsLoaded.length = 0
                     this.itemsOnChange()
 
+                    // Сменился не только режим просмотра, но и режим ввода
+                    this.editMode = frameMode
+
                     // Уведомим кому надо.
                     // Дочерние элементы почистят свои дополнительные данные.
                     // Например, ввод по фото - очистит расположение найденных слов на фото.
                     // Ввод по текту - очистит поисковое слово.
                     ctx.eventBus.emit('itemsCleared')
 
-                    //
-                    //console.info("editMode: " + this.editMode + " -> " + viewMode)
-
-                    // Сменился не только режим просмотра, но и режим ввода
-                    this.editMode = viewMode
-
                     // Уведомим кому надо.
-                    // Например, ввод по фото откроет камеру.
+                    // Например, ввод по фото инициализирует камеру.
                     ctx.eventBus.emit('editModeChanged')
                 }
 
                 //
-                //console.info("viewMode: " + this.viewMode + " -> " + viewMode)
+                this.frameModePrior = this.frameMode
+                this.frameMode = frameMode
 
-                //
-                this.viewMode = viewMode
+
+                // Поможем компоненту TextInputText поставить фокус
+                let elTextInputText = this.$refs.textInputText
+                elTextInputText.onFocus()
             }
         },
 
@@ -1281,7 +1284,7 @@ export default {
         },
 
         btnNextClick() {
-            this.viewMode = "viewItemsAdd"
+            this.frameMode = "viewItemsAdd"
         },
 
         async btnSaveClick() {
@@ -1393,8 +1396,8 @@ export default {
         }
 
         //
-        if (this.defaultViewMode) {
-            this.viewMode = this.defaultViewMode
+        if (this.defaultMode) {
+            this.frameMode = this.defaultMode
         }
 
         //

@@ -63,12 +63,13 @@
             Нет доступа к камере
         </div>
 
+
         <TaskList
             v-if="searchDone"
             :showEdit="true"
             :tasks="itemsSelectedList"
             :itemsMenu="itemsMenu"
-            messageNoItems="Слова на фото не найдены"
+            messageNoItems="Выберите слово на фото"
         />
 
 
@@ -266,15 +267,12 @@ export default {
             let item = this.itemsPositionsIdx[itemId]
             let itemsLst = this.itemsPositionsIdxList[itemId]
 
-            //console.info(itemPosition)
-            //console.info("item", item)
-            //console.info("itemsLst", itemsLst)
-
             //
             if (!itemsLst) {
                 itemsLst = []
             }
 
+            //
             return itemsLst
         },
 

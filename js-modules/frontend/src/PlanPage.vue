@@ -351,7 +351,7 @@ export default {
                 props: {
                     plan: this.plan,
                     planItems: this.tasks,
-                    defaultViewMode: "editPlan",
+                    defaultMode: "editPlan",
                     frameReturn: "/plan",
                     frameReturnProps: {
                         planId: this.planId,
@@ -368,7 +368,7 @@ export default {
                 props: {
                     plan: this.plan,
                     planItems: this.tasks,
-                    defaultViewMode: "addByText",
+                    defaultMode: "addByText",
                     frameReturn: "/plan",
                     frameReturnProps: {
                         planId: this.planId,

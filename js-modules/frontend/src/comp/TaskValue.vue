@@ -200,12 +200,9 @@ export default {
 }
 
 .task-spelling {
-    color: #202020;
 }
 
 .task-translate {
-    color: #09468e;
-    font-style: italic;
 }
 
 .task-text-image img {

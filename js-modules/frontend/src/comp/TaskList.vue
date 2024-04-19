@@ -50,7 +50,8 @@
 
                     <q-item-section>
 
-                        <q-item-label overline class="question"
+                        <q-item-label overline
+                                      :class="'question' + getItemClass(taskItem)"
                                       v-if="isFactFirstAnswer(taskItem, index)">
 
                             <TaskValue v-if="showTaskData"
@@ -84,15 +85,34 @@
                         <div class="text-grey-8 q-gutter-xs">
 
                             <template v-for="menuItem in itemsMenu">
-                                <q-btn v-if="menuItem.hidden !== true"
-                                       dense round
-                                       :flat="!itemMenuOutline(menuItem, taskItem)"
-                                       :outline="itemMenuOutline(menuItem, taskItem)"
-                                       size="1.2em"
-                                       :icon="itemMenuIcon(menuItem, taskItem)"
-                                       :color="itemMenuColor(menuItem, taskItem)"
-                                       @click="itemMenuClick(menuItem, taskItem)"
-                                />
+
+                                <template v-if="menuItem.label">
+                                    <q-btn v-if="menuItem.hidden !== true"
+                                           no-caps dense rounded unelevated
+                                           size="0.9em"
+                                           :label="menuItem.label"
+                                           :_flat="!itemMenuOutline(menuItem, taskItem)"
+                                           :outline="itemMenuOutline(menuItem, taskItem)"
+                                           :icon="itemMenuIcon(menuItem, taskItem)"
+                                           :color="itemMenuColor(menuItem, taskItem)"
+                                           :text-color="itemMenuTextColor(menuItem, taskItem)"
+                                           @click="itemMenuClick(menuItem, taskItem)"
+                                    />
+                                </template>
+
+                                <template v-else>
+
+                                    <q-btn v-if="!itemMenuHidden(menuItem, taskItem)"
+                                           dense round
+                                           size="1.2em"
+                                           :flat="!itemMenuOutline(menuItem, taskItem)"
+                                           :outline="itemMenuOutline(menuItem, taskItem)"
+                                           :icon="itemMenuIcon(menuItem, taskItem)"
+                                           :color="itemMenuColor(menuItem, taskItem)"
+                                           @click="itemMenuClick(menuItem, taskItem)"
+                                    />
+                                </template>
+
                             </template>
 
 
@@ -202,6 +222,22 @@ export default {
 
     methods: {
 
+        getItemClass(item) {
+            if (!item) {
+                return ""
+            }
+
+            let classStr = ""
+            if (item.isHidden) {
+                classStr = classStr + " item-is-hidden"
+
+            } else if (item.isInPlan) {
+                //classStr = classStr + " item-in-plan"
+            }
+
+            return classStr
+        },
+
         onLeft(event, taskItem) {
             event.reset()
             if (this.actionLeftSlide && this.actionLeftSlide.hidden !== true) {
@@ -250,9 +286,34 @@ export default {
                     return menuItem.color
                 }
             } else {
+                return "primary"
+            }
+
+        },
+
+        itemMenuTextColor(menuItem, taskItem) {
+            if (menuItem.textColor) {
+                if (menuItem.textColor instanceof Function) {
+                    return menuItem.textColor(taskItem)
+                } else {
+                    return menuItem.textColor
+                }
+            } else {
                 return "black"
             }
 
+        },
+
+        itemMenuHidden(menuItem, taskItem) {
+            if (menuItem.hidden) {
+                if (menuItem.hidden instanceof Function) {
+                    return menuItem.hidden(taskItem)
+                } else {
+                    return menuItem.hidden
+                }
+            } else {
+                return false
+            }
         },
 
         itemMenuClick(menuItem, taskItem) {
@@ -337,15 +398,27 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
 
 .question {
     font-size: 1.2em;
+    color: #202020;
 }
 
 .answer {
     font-size: 1.0em;
+    color: #09468e;
+    font-style: italic;
 }
+
+.item-is-hidden {
+    color: rgba(20, 20, 150, 0.8);
+}
+
+.item-in-plan {
+    _color: rgba(50, 100, 50, .9);
+}
+
 
 .was-true {
     background-color: #5b9e3a;

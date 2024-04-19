@@ -70,7 +70,7 @@
 
         <q-toggle
             v-if="hiddenCount > 0"
-            :label="'Скрытые (' + hiddenCount + ')'"
+            :label="'Известные (' + hiddenCount + ')'"
             v-model="inputShowHidden"
             @update:modelValue="updateParent('showHidden', $event)"
         />

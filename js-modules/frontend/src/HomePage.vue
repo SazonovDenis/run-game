@@ -5,7 +5,7 @@
         <PlanEditPage
             :plan="plan"
             :doEditPlan="false"
-            defaultViewMode="addByText"
+            defaultMode="addByText"
         />
 
 

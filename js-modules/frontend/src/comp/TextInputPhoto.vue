@@ -7,7 +7,7 @@
 
         <div class="camera-container" :class="getClassCamera">
 
-            <div @click="onPictureClick">
+            <div>
 
                 <div :class="'video-container ' + getClassVideo">
                     <video id="video">Video stream will appear in this box</video>
@@ -17,15 +17,18 @@
 
                 <div :class="'photo-container ' + getClassPhoto">
                     <img
-                        ref="photo"
-                        id="photo"
-                        alt="The screen capture will appear in this box">
+                        ref="photoStill"
+                        id="photoStill"
+                        alt="The screen capture will appear in this box"
+                        :style="getStylePhotoStill()"
+                        @click="onPictureClick"
+                    >
 
                     <div class="photo-word-positions">
                         <div v-for="position in itemPositions"
                              class="photo-word-position"
-                             @click="onItemPositionClick(position)"
                              :style="getItemPositionSyle(position)"
+                             @click="onItemPositionClick(position)"
                         >
 
                         </div>
@@ -52,8 +55,31 @@
                    @click="onNewPicture"
             />
 
+            <div v-if="isCameraCapturing===false && searchDone===true"
+                 class="col zoom-btn"
+            >
+
+                <q-btn
+                    round
+                    color="grey-3"
+                    text-color="grey-10"
+                    icon="add"
+                    size="1em"
+                    @click="onPhotoStillInc()"
+                />
+                <q-btn round
+                       color="grey-3"
+                       text-color="grey-10"
+                       style="margin-top: 0.2em"
+                       icon="quasar.editor.hr"
+                       size="1em"
+                       @click="onPhotoStillDec()"
+                />
+            </div>
+
 
         </div>
+
 
         <div :class="'rgm-state-text photo-state-wait ' + getClassCameraInit">
             Инициализация камеры
@@ -90,6 +116,7 @@ import {daoApi} from "../dao"
 import TaskList from "./TaskList"
 import MenuContainer from "./MenuContainer"
 import ctx from "../gameplayCtx"
+import {TouchZoom} from "../TouchZoom"
 
 export default {
 
@@ -113,6 +140,8 @@ export default {
             imageClientWidth: null,
             imageClientHeight: null,
 
+            stillVisibleWidth: null,
+
             wasCameraInit: false,
             wasCanplay: false,
             wasCameraInitFail: false,
@@ -123,7 +152,7 @@ export default {
 
             video: null,
             canvas: null,
-            photo: null,
+            photoStill: null,
 
             info: null,
 
@@ -186,14 +215,15 @@ export default {
     methods: {
 
         getItemPositionSyle(itemPosition) {
-            let videoWidth = this.width
-            let videoHeight = this.height
+            let imageRealWidth = this.width
+            let imageRealHeight = this.height
             //
             let imageWidth = this.imageClientWidth
             let imageHeight = this.imageClientHeight
 
             //
-            let kWidth = imageWidth / videoWidth
+            //let kWidth = imageWidth / videoWidth
+            let kWidth = this.stillVisibleWidth / imageRealWidth
 
             //
             let itemId = itemPosition.item
@@ -219,13 +249,13 @@ export default {
 
             if (isItem) {
                 if (isInPlan) {
-                    borderColor = "rgba(20, 230, 20, 0.4)"
-                    backgroundColor = "rgba(20, 230, 20, 0.4)"
+                    borderColor = "rgba(20, 230, 20, 0.3)"
+                    backgroundColor = "rgba(20, 230, 20, 0.3)"
                 } else if (isHidden) {
                     borderColor = "rgba(20, 20, 230, 0.2)"
                     backgroundColor = "rgba(20, 20, 230, 0.2)"
                 } else {
-                    borderColor = "rgb(20, 230, 20)"
+                    borderColor = "rgba(20, 230, 20, 0.4)"
                     backgroundColor = "rgba(20, 230, 20, 0.04)"
                 }
             } else {
@@ -247,9 +277,53 @@ export default {
             return res
         },
 
+
+        getStylePhotoStill() {
+            return {width: this.stillVisibleWidth + "px"}
+        },
+
+
+        onPhotoStillZoomStart() {
+            console.info("onPhotoStillZoomStart")
+            this.stillVisibleWidth_ZoomStart = this.stillVisibleWidth
+        },
+
+
+        onPhotoStillZoom(zoomInfo) {
+            console.info("onPhotoStillZoom", zoomInfo)
+
+            this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth_ZoomStart * zoomInfo.zoomRate)
+
+            if (this.stillVisibleWidth > this.width * 3) {
+                this.stillVisibleWidth = this.width
+            }
+            if (this.stillVisibleWidth < this.imageClientWidth) {
+                this.stillVisibleWidth = this.imageClientWidth
+            }
+        },
+
+        onPhotoStillInc() {
+            this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth + this.stillVisibleWidth * 0.25)
+            if (this.stillVisibleWidth > this.width * 3) {
+                this.stillVisibleWidth = this.width
+            }
+        },
+
+        onPhotoStillDec() {
+            this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth - this.stillVisibleWidth * 0.25)
+            if (this.stillVisibleWidth < this.imageClientWidth) {
+                this.stillVisibleWidth = this.imageClientWidth
+            }
+        },
+
+        onPictureClick() {
+            //console.info("onPictureClick")
+            this.itemsSelectedList = []
+        },
+
         onItemPositionClick(itemPosition) {
             let itemsLst = this.findItemsList(itemPosition)
-            console.info("onItemPosition click", itemsLst)
+            //console.info("onItemPosition click", itemsLst)
 
             //
             this.itemsSelectedList = itemsLst
@@ -260,6 +334,8 @@ export default {
                     this.itemOnClick(item1)
                 }
             }
+
+            return false
         },
 
         findItemsList(itemPosition) {
@@ -274,10 +350,6 @@ export default {
 
             //
             return itemsLst
-        },
-
-        onPictureClick() {
-            //console.log("onPictureClick")
         },
 
         onTakePicture() {
@@ -309,7 +381,7 @@ export default {
             try {
                 th.video = document.getElementById('video');
                 th.canvas = document.getElementById('canvas');
-                th.photo = document.getElementById('photo');
+                th.photoStill = document.getElementById('photoStill');
 
                 //
                 navigator.mediaDevices.getUserMedia({
@@ -331,6 +403,9 @@ export default {
                     th.wasCameraInitOk = true
                     th.isCameraCapturing = true
 
+                    //
+                    th.touchZoom.connect(th.photoStill)
+
                 }).catch(function(err) {
                     console.log("An error occurred: " + err);
 
@@ -338,6 +413,7 @@ export default {
                     th.wasCameraInit = true
                     th.wasCameraInitFail = true
                     th.isCameraCapturing = false
+
                 });
 
             } catch(e) {
@@ -376,7 +452,7 @@ export default {
             context.fillRect(0, 0, canvas.width, canvas.height);
 
             var data = canvas.toDataURL('image/png');
-            photo.setAttribute('src', data);
+            photoStill.setAttribute('src', data);
 
             this.searchDone = false
         },
@@ -391,11 +467,14 @@ export default {
             this.imageClientHeight = video.clientHeight
 
             //
+            this.stillVisibleWidth = video.clientWidth
+
+            //
             var canvasContext = canvas.getContext('2d');
             canvasContext.drawImage(video, 0, 0, this.width, this.height);
 
             var dataImage = canvas.toDataURL('image/png');
-            photo.setAttribute('src', dataImage);
+            photoStill.setAttribute('src', dataImage);
 
             ///////////////////////////////
             this.info = "size: " + dataImage.length + ", " + this.width + "x" + this.height
@@ -485,11 +564,21 @@ export default {
     mounted() {
         ctx.eventBus.on('itemsCleared', this.onItemsCleared)
         ctx.eventBus.on('editModeChanged', this.onEditModeChanged)
+
+        //
+        this.touchZoom = new TouchZoom()
+        //
+        ctx.eventBus.on('zoomStart', this.onPhotoStillZoomStart)
+        ctx.eventBus.on('zoomIn', this.onPhotoStillZoom)
+        ctx.eventBus.on('zoomOut', this.onPhotoStillZoom)
     },
 
     unmounted() {
         ctx.eventBus.off('itemsCleared', this.onItemsCleared)
         ctx.eventBus.off('editModeChanged', this.onEditModeChanged)
+
+        //
+        this.touchZoom.disconnect()
     },
 
 
@@ -510,6 +599,9 @@ export default {
 .photo-container {
     display: inline-block;
     position: relative;
+    overflow: scroll;
+    width: 100%;
+    height: 30em;
 }
 
 .photo-btn {
@@ -521,7 +613,7 @@ export default {
     margin-left: -0.5em;
     bottom: 0.2em;
 
-    opacity: 0.7;
+    opacity: 0.6;
 
     border: 2px solid;
     border-radius: 10em;
@@ -534,7 +626,15 @@ export default {
 
     padding: 0 1.5em;
 
-    opacity: 0.8;
+    opacity: 0.7;
+}
+
+.zoom-btn {
+    opacity: 0.6;
+    position: absolute;
+    right: 1em;
+    top: 6.5em;
+    width: 2.5em;
 }
 
 #video {
@@ -543,10 +643,9 @@ export default {
     height: auto;
 }
 
-#photo {
+#photoStill {
     border: 1px solid black;
-
-    width: 100%;
+    _width: 100%;
     height: auto;
 }
 

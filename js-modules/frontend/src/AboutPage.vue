@@ -2,11 +2,6 @@
 
     <MenuContainer title="Об игре">
 
-        <template v-slot:footerContent>
-            <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
-        </template>
-
-
         <div class="col q-gutter-md">
 
             <LogoGame/>

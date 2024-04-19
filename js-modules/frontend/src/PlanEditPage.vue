@@ -99,17 +99,19 @@
             >
 
                 <template v-slot:toolbar>
-                    <q-btn
-                        v-if="itemsLoaded.length > 0"
-                        no-caps
-                        class="q-ma-sm"
-                        icon="quasar.stepper.done"
-                        label="Выбрать все"
-                        @click="selectAll()"
-                    />
+                    <!--
+                                        <q-btn
+                                            v-if="itemsLoaded.length > 0"
+                                            no-caps
+                                            class="q-ma-sm"
+                                            icon="quasar.stepper.done"
+                                            label="Выбрать все"
+                                            @click="selectAll()"
+                                        />
+                    -->
 
                     <q-toggle
-                        v-if="this.hiddenCountLoaded > 0"
+                        v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
                         v-model="showHiddenLoaded"
                         :label="'Скрытые (' + this.hiddenCountLoaded + ')'"/>
 
@@ -188,16 +190,6 @@
             />
 
         </div>
-
-
-        <q-page-sticky
-            position="top-right"
-            :offset="[0, -40]"
-            style="z-index: 10000;"
-        >
-
-
-        </q-page-sticky>
 
 
         <template v-slot:menuBarRight v-if="!isModeView()">
@@ -591,11 +583,11 @@ export default {
         },
 
         itemsHideAddText() {
-            return "Известные: " + this.itemsHideAdd.length
+            return "Известные: +" + this.itemsHideAdd.length
         },
 
         itemsHideDelText() {
-            return "Не известные: " + this.itemsHideDel.length
+            return "Не известные: +" + this.itemsHideDel.length
         },
 
     },
@@ -923,10 +915,19 @@ export default {
         },
 
         itemAddMenuClick(taskItem, canItemDel = true) {
+            // Можно ли удалить добавленный элемент?
+            if (this.itemIsInPlan(taskItem) && !canItemDel) {
+                return
+            }
+
+            // Можно ли показать скрытый элемент?
+            if (this.itemIsHidden(taskItem) && !canItemDel) {
+                return
+            }
+
+            //
             if (this.itemIsInPlan(taskItem)) {
-                if (canItemDel) {
-                    this.itemDel(taskItem)
-                }
+                this.itemDel(taskItem)
             } else {
                 this.itemAdd(taskItem)
 
@@ -940,7 +941,6 @@ export default {
         /* -------------------------------- */
 
         itemAddDelMenuHidden() {
-            console.info("itemAddDelMenuHidden: " + !this.canEditItemList())
             return !this.canEditItemList()
         },
 

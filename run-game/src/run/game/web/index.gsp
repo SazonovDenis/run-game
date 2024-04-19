@@ -16,7 +16,8 @@
   <meta charset="UTF-8">
   <title>${ctx.title}!</title>
   <link rel="icon" href="data:,">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
   <style>
   @keyframes fade-splash {

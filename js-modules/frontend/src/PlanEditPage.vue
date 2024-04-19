@@ -1264,8 +1264,13 @@ export default {
                     ctx.eventBus.emit('editModeChanged')
                 }
 
+
+                // Если сейчас не просмотр - то вернемся потом в просмотр
+                if (!this.isModeView()) {
+                    this.frameModePrior = this.frameMode
+                }
+
                 //
-                this.frameModePrior = this.frameMode
                 this.frameMode = frameMode
 
 

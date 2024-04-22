@@ -1,15 +1,19 @@
 <template>
 
-    <div style="position: relative">
+    <div style="position: relative; justify-content: center;" :class="getClassComponent()">
+
         <div v-if="isDev" style="position: absolute; z-index: 10; padding: 5px">
             info: {{ info }}
         </div>
 
-        <div class="camera-container" :class="getClassCamera">
 
-            <div>
+        <div class="camera-container" :class="getClassCamera"
+             id="camera-container"
+             @click="onCameraContainerClick">
 
-                <div :class="'video-container ' + getClassVideo">
+            <div style="text-align: center;">
+
+                <div :class="'video-container ' + getClassVideo" id="video-container">
                     <video id="video">Video stream will appear in this box</video>
                 </div>
 
@@ -41,7 +45,7 @@
             <q-icon v-if="isCameraCapturing===true"
                     class="photo-btn photo-btn-still"
                     name="circle"
-                    color="white"
+                    color="grey-3"
                     size="3.5em"
                     @click="onTakePicture"
             />
@@ -90,13 +94,16 @@
         </div>
 
 
-        <TaskList
-            v-if="searchDone"
-            :showEdit="true"
-            :tasks="itemsSelectedList"
-            :itemsMenu="itemsMenu"
-            messageNoItems="Выберите слово на фото"
-        />
+        <div class="selected-list-container col" v-if="searchDone">
+
+            <TaskList
+                :showEdit="true"
+                :tasks="itemsSelectedList"
+                :itemsMenu="itemsMenu"
+                messageNoItems="Выберите слово на фото"
+            />
+
+        </div>
 
 
         <div class="row">
@@ -134,8 +141,8 @@ export default {
 
     data() {
         return {
-            width: 1280, // We will scale the photo width to this
-            height: 0,  // This will be computed based on the input stream
+            imageWidth: 1280, // We will scale the photo width to this
+            imageHeight: 0,  // This will be computed based on the input stream
 
             imageClientWidth: null,
             imageClientHeight: null,
@@ -214,9 +221,17 @@ export default {
 
     methods: {
 
+        getClassComponent() {
+            if (window.screen.orientation.type === "portrait-primary") {
+                return "col"
+            } else {
+                return "row"
+            }
+        },
+
         getItemPositionSyle(itemPosition) {
-            let imageRealWidth = this.width
-            let imageRealHeight = this.height
+            let imageRealWidth = this.imageWidth
+            let imageRealHeight = this.imageHeight
             //
             let imageWidth = this.imageClientWidth
             let imageHeight = this.imageClientHeight
@@ -294,8 +309,8 @@ export default {
 
             this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth_ZoomStart * zoomInfo.zoomRate)
 
-            if (this.stillVisibleWidth > this.width * 3) {
-                this.stillVisibleWidth = this.width
+            if (this.stillVisibleWidth > this.imageWidth * 3) {
+                this.stillVisibleWidth = this.imageWidth
             }
             if (this.stillVisibleWidth < this.imageClientWidth) {
                 this.stillVisibleWidth = this.imageClientWidth
@@ -304,8 +319,8 @@ export default {
 
         onPhotoStillInc() {
             this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth + this.stillVisibleWidth * 0.25)
-            if (this.stillVisibleWidth > this.width * 3) {
-                this.stillVisibleWidth = this.width
+            if (this.stillVisibleWidth > this.imageWidth * 3) {
+                this.stillVisibleWidth = this.imageWidth
             }
         },
 
@@ -316,8 +331,10 @@ export default {
             }
         },
 
+        onCameraContainerClick() {
+        },
+
         onPictureClick() {
-            //console.info("onPictureClick")
             this.itemsSelectedList = []
         },
 
@@ -386,7 +403,7 @@ export default {
                 //
                 navigator.mediaDevices.getUserMedia({
                     video: {
-                        width: {ideal: 1280},
+                        width: {ideal: this.imageWidth},
                         facingMode: 'environment'
                     },
                     audio: false
@@ -431,19 +448,19 @@ export default {
         },
 
         onCanplay() {
+            this.imageHeight = video.videoHeight / (video.videoWidth / this.imageWidth);
+
+            //
+            //video.setAttribute('width', this.imageWidth);
+            //video.setAttribute('height', this.imageHeight);
+            canvas.setAttribute('width', this.imageWidth);
+            canvas.setAttribute('height', this.imageHeight);
+
+
             ///////////////////////////////
             console.info("video: " + video.videoWidth + "x" + video.videoHeight)
-            this.info = "video: " + video.videoWidth + "x" + video.videoHeight + ", this: " + this.width + "x" + this.height
+            this.info = "video: " + video.videoWidth + "x" + video.videoHeight + ", this: " + this.imageWidth + "x" + this.imageHeight
             ///////////////////////////////
-
-            //
-            this.height = video.videoHeight / (video.videoWidth / this.width);
-
-            //
-            video.setAttribute('width', this.width);
-            video.setAttribute('height', this.height);
-            canvas.setAttribute('width', this.width);
-            canvas.setAttribute('height', this.height);
         },
 
         clearPhoto() {
@@ -463,6 +480,9 @@ export default {
             }
 
             //
+            this.onCanplay()
+
+            //
             this.imageClientWidth = video.clientWidth
             this.imageClientHeight = video.clientHeight
 
@@ -471,13 +491,13 @@ export default {
 
             //
             var canvasContext = canvas.getContext('2d');
-            canvasContext.drawImage(video, 0, 0, this.width, this.height);
+            canvasContext.drawImage(video, 0, 0, this.imageWidth, this.imageHeight);
 
             var dataImage = canvas.toDataURL('image/png');
             photoStill.setAttribute('src', dataImage);
 
             ///////////////////////////////
-            this.info = "size: " + dataImage.length + ", " + this.width + "x" + this.height
+            this.info = "size: " + dataImage.length + ", " + this.imageWidth + "x" + this.imageHeight
             ///////////////////////////////
 
             //
@@ -588,39 +608,120 @@ export default {
 
 <style scoped>
 
+
+#canvas {
+    display: none;
+}
+
+
+/* --- */
+
+
 .camera-container {
     position: relative;
 }
+
 
 .video-container {
     display: inline-block;
 }
 
+
+/* --- */
+
 .photo-container {
     display: inline-block;
     position: relative;
     overflow: scroll;
-    width: 100%;
-    height: 30em;
 }
+
+@media (orientation: landscape) {
+    .photo-container {
+        max-width: 50vw;
+        height: calc(100vh - 3.125rem);
+    }
+}
+
+@media (orientation: portrait) {
+    .photo-container {
+        width: 100vw;
+        height: calc(70vh - 3.125rem);
+    }
+}
+
+
+/* --- */
+
+
+#video {
+    _border: 1px solid black;
+
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 3.125rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
+}
+
+
+#photoStill {
+    _border: 1px solid black;
+
+    width: 100%;
+    height: auto;
+}
+
+
+/* --- */
+
+
+.selected-list-container {
+    overflow: scroll;
+}
+
+@media (orientation: landscape) {
+    .selected-list-container {
+    }
+}
+
+@media (orientation: portrait) {
+    .selected-list-container {
+        height: calc(30vh - 3.125rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
+    }
+}
+
+
+/* --- */
 
 .photo-btn {
     position: absolute;
 }
 
-.photo-btn-still {
-    left: 50%;
-    margin-left: -0.5em;
-    bottom: 0.2em;
 
+.photo-btn-still {
     opacity: 0.6;
 
     border: 2px solid;
     border-radius: 10em;
 }
 
+@media (orientation: landscape) {
+    .photo-btn-still {
+        top: 50%;
+        margin-top: -0.5em;
+        right: 0.2em;
+    }
+}
+
+@media (orientation: portrait) {
+    .photo-btn-still {
+        left: 50%;
+        margin-left: -0.5em;
+        bottom: 0.2em;
+    }
+}
+
 .photo-btn-clear {
     height: 3em;
+
     right: 0.5em;
     bottom: 0.9em;
 
@@ -632,25 +733,12 @@ export default {
 .zoom-btn {
     opacity: 0.6;
     position: absolute;
+
     right: 1em;
-    top: 6.5em;
+    margin-bottom: -1em;
+    bottom: 50%;
+
     width: 2.5em;
-}
-
-#video {
-    border: 1px solid black;
-    width: 100%;
-    height: auto;
-}
-
-#photoStill {
-    border: 1px solid black;
-    _width: 100%;
-    height: auto;
-}
-
-#canvas {
-    display: none;
 }
 
 .hidden {

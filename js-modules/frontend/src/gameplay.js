@@ -371,6 +371,13 @@ export default {
         return res
     },
 
+    async api_loadCurrentUser() {
+        let res = await daoApi.loadStore("m/Usr/loadCurrentUser", [])
+
+        //
+        return res.records[0]
+    },
+
     async api_login(login, password) {
         let res = await apx.jcBase.ajax.request({
             url: "auth/login",

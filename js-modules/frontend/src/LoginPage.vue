@@ -382,15 +382,12 @@ export default {
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
                 this.saveLocalUser(ui)
-            }
 
-            //
-            if (auth.isAuth()) {
+                //
                 apx.showFrame({
-                    frame: '/', props: {prop1: 1}
+                    frame: '/',
                 })
             }
-
         },
 
         async execRegisterUser(text, login, password) {
@@ -400,19 +397,12 @@ export default {
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
                 this.saveLocalUser(ui)
-            }
 
-            //
-            if (auth.isAuth()) {
+                //
                 apx.showFrame({
-                    frame: '/', props: {prop1: 1}
+                    frame: '/',
                 })
             }
-
-        },
-
-        isEnvDev() {
-            return jcBase.cfg.envDev
         },
 
         doFullLogin() {

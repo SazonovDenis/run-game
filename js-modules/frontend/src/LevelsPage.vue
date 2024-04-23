@@ -386,13 +386,6 @@ export default {
     },
 
     async mounted() {
-        if (!auth.isAuth()) {
-            apx.showFrame({
-                frame: '/login',
-            })
-            return
-        }
-
         await this.loadPlans(this.viewPlanType)
     },
 

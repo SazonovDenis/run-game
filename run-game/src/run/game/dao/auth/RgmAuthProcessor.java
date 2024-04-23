@@ -27,7 +27,7 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         mdb.connect();
 
         try {
-            UsrUpd upd = mdb.create(UsrUpd.class);
+            Usr_upd upd = mdb.create(Usr_upd.class);
             StoreRecord rec = upd.loadByLoginPassword(token.getUsername(), token.getPasswd());
 
             //
@@ -50,7 +50,7 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         attrs.put("text", text);
 
         // План "Мои слова"
-        UsrUpd upd = mdb.create(UsrUpd.class);
+        Usr_upd upd = mdb.create(Usr_upd.class);
         long planDefault = upd.getPlanDefault(idUsr);
         attrs.put("planDefault", planDefault);
 

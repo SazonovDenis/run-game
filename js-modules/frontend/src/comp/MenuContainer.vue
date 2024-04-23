@@ -357,15 +357,9 @@ export default {
         },
 
         onUser: function() {
-            if (auth.isAuth()) {
-                apx.showFrame({
-                    frame: '/user',
-                })
-            } else {
-                apx.showFrame({
-                    frame: '/login',
-                })
-            }
+            apx.showFrame({
+                frame: '/user',
+            })
         },
 
         onLevels: function() {

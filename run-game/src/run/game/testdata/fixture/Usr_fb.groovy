@@ -20,7 +20,7 @@ class Usr_fb extends BaseFixtureBuilder {
         utils.addFromCsv(stUsr, "res:run/game/testdata/csv/Usr.csv")
 
         //
-        UsrUpd upd = mdb.create(UsrUpd.class)
+        Usr_upd upd = mdb.create(Usr_upd.class)
         for (StoreRecord recUsr : stUsr) {
             upd.ins(recUsr.values)
         }

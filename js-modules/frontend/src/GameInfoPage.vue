@@ -196,15 +196,6 @@ export default {
     },
 
     async mounted() {
-        // Есть текущий пользователь?
-        if (!auth.isAuth()) {
-            apx.showFrame({
-                frame: '/login', props: {prop1: 1}
-            })
-            return
-        }
-
-        //
         this.dataLoaded = false
 
         // Загружаем текущую  игру

@@ -6,10 +6,26 @@
                         class="run.game.dao.auth.RgmAuthProcessor"/>
     </bean>
 
+
     <web>
         <action name="auth"
                 class="run.game.dao.auth.AuthAction"/>
     </web>
 
+
+    <dao>
+
+        <holder name="api">
+
+            <item name="m/Usr">
+
+                <item name="i" method="*"
+                      class="run.game.dao.auth.Usr_upd"/>
+
+            </item>
+
+        </holder>
+
+    </dao>
 
 </root>

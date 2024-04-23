@@ -325,7 +325,7 @@ group by
 
     void validatePlanDel(long idPlan) {
         long idUsr = getCurrentUserId()
-        UsrUpd upd = mdb.create(UsrUpd)
+        Usr_upd upd = mdb.create(Usr_upd)
         long planDefault = upd.getPlanDefault(idUsr)
         //
         if (idPlan == planDefault) {

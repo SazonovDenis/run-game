@@ -2,7 +2,7 @@
 
     <MenuContainer title="Профиль игрока">
 
-        <q-layout>
+        <q-layout v-if="dataLoaded">
             <q-page-container>
 
                 <q-card-section class="q-gutter-y-md">
@@ -38,6 +38,7 @@
 
             </q-page-container>
         </q-layout>
+
     </MenuContainer>
 
 </template>
@@ -60,6 +61,7 @@ export default {
     data() {
         return {
             userInfo: {},
+            dataLoaded: false,
         }
     },
 
@@ -97,21 +99,20 @@ export default {
     },
 
     async mounted() {
-        // Есть текущий пользователь?
-        if (!auth.isAuth()) {
-            apx.showFrame({
-                frame: '/login', props: {prop1: 1}
-            })
-        }
+        this.dataLoaded = false
+
+        // Текущий пользователь
+        let userInfo = await gameplay.api_loadCurrentUser()
+        //
+        this.userInfo.id = userInfo.id
+        this.userInfo.login = userInfo.login
+        this.userInfo.text = userInfo.text
+        this.userInfo.guest = userInfo.guest
+        this.userInfo.color = userInfo.color
+        this.userInfo.planDefault = userInfo.planDefault
 
         //
-        let authUserInfo = auth.getUserInfo()
-        this.userInfo.id = authUserInfo.id
-        this.userInfo.login = authUserInfo.login
-        this.userInfo.text = authUserInfo.text
-        this.userInfo.guest = authUserInfo.guest
-        this.userInfo.color = authUserInfo.color
-        this.userInfo.planDefault = authUserInfo.planDefault
+        this.dataLoaded = true
     },
 
 }

@@ -139,14 +139,6 @@ export default {
     computed: {},
 
     async mounted() {
-        // Есть текущий пользователь?
-        if (!auth.isAuth()) {
-            apx.showFrame({
-                frame: '/login', props: {prop1: 1}
-            })
-            return
-        }
-
         // Есть текущая игра?
         if (this.globalState.game) {
             if (!this.globalState.game.done) {

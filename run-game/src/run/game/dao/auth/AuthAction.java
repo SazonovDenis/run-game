@@ -58,21 +58,6 @@ public class AuthAction extends BaseAction {
     }
 
     /**
-     *
-     */
-    public void getUserInfo() throws Exception {
-        AuthService authSvc = getApp().bean(AuthService.class);
-        ActionRequestUtils requestUtils = getReq();
-
-        // Читаем пользователя из сессии
-        AuthUser authUser = authSvc.getCurrentUser();
-
-        // Читаем и возвращаем данные пользователя
-        String s = UtJson.toJson(authUser.getAttrs());
-        requestUtils.render(s);
-    }
-
-    /**
      * logout
      */
     public void logout() throws Exception {
@@ -114,7 +99,7 @@ public class AuthAction extends BaseAction {
         Mdb mdb = modelService.getModel().createMdb();
         mdb.connect();
         try {
-            UsrUpd upd = mdb.create(UsrUpd.class);
+            Usr_upd upd = mdb.create(Usr_upd.class);
             Map params = new HashMap(requestUtils.getParams());
             rec = upd.ins(params);
         } finally {
@@ -132,7 +117,7 @@ public class AuthAction extends BaseAction {
         Mdb mdb = modelService.getModel().createMdb();
         mdb.connect();
         try {
-            UsrUpd upd = mdb.create(UsrUpd.class);
+            Usr_upd upd = mdb.create(Usr_upd.class);
             Map params = new HashMap(requestUtils.getParams());
             rec = upd.upd(params);
         } finally {

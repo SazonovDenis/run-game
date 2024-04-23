@@ -7,7 +7,16 @@ export default {
      * @returns {*}
      */
     getUserInfo: function() {
-        return apx.cfg.userInfo
+        let userInfo = apx.cfg.userInfo
+
+        // Чтобы правильно вызывалось api, иначе получается не та ошибка,
+        // которая на самом деле (пользователь не зарегистрирован),
+        // а ошибка передачи параметров в api
+        if (!userInfo.planDefault) {
+            userInfo.planDefault = 0
+        }
+
+        return userInfo
     },
 
     /**

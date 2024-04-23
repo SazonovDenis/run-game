@@ -1392,15 +1392,6 @@ export default {
     },
 
     async mounted() {
-        // Есть текущий пользователь?
-        if (!auth.isAuth()) {
-            apx.showFrame({
-                frame: '/login'
-            })
-            return
-        }
-
-        //
         if (this.defaultMode) {
             this.frameMode = this.defaultMode
         }

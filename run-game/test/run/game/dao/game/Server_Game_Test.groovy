@@ -279,7 +279,7 @@ class Server_Game_Test extends RgmBase_Test {
     @Test
     void testGameProcess_PlanDefault() {
         long idUsr = getCurrentUserId()
-        UsrUpd upd = mdb.create(UsrUpd)
+        Usr_upd upd = mdb.create(Usr_upd)
         long idPlan = upd.getPlanDefault(idUsr)
 
         //

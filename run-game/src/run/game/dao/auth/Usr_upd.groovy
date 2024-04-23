@@ -8,7 +8,7 @@ import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 
-public class UsrUpd extends RgmMdbUtils {
+public class Usr_upd extends RgmMdbUtils {
 
 
     Rnd rnd = new RndImpl()
@@ -18,6 +18,12 @@ public class UsrUpd extends RgmMdbUtils {
     public static final String msg_is_required_login = "Указание логина обязательно"
 
     @DaoMethod
+    public StoreRecord loadCurrentUser() {
+        long idUsr = getCurrentUserId()
+        return loadRec(idUsr)
+    }
+
+   @DaoMethod
     public StoreRecord ins(Map params) {
         // --- Проверки
 

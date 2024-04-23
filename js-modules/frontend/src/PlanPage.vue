@@ -318,10 +318,6 @@ export default {
             }
         },
 
-        isAuth() {
-            return auth.isAuth()
-        },
-
         canDeletePlan() {
             let userInfo = auth.getUserInfo()
             let planDefaultId = userInfo.planDefault
@@ -410,14 +406,6 @@ export default {
 
 
     async mounted() {
-        if (!auth.isAuth()) {
-            apx.showFrame({
-                frame: '/login',
-            })
-            return
-        }
-
-        //
         this.dataLoaded = false
 
         //

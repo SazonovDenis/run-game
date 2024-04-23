@@ -154,7 +154,7 @@
   </div>
 
   <div class="jc-splash-footer">
-    &copy; ТОО &laquo;Jadatex&raquo;, 2012-2023
+    &copy; ТОО &laquo;Jadatex&raquo;, 2012-2024
   </div>
 
 </div>

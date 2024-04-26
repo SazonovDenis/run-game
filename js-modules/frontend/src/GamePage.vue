@@ -48,29 +48,25 @@ export default {
         isAuth() {
             return auth.isAuth()
         },
-
-        //
-        onLoadedGameTask(gameTask) {
-            if (ctx.globalState.game.done) {
-                apx.showFrame({
-                    frame: '/gameInfo', props: {prop1: 1}
-                })
-            }
-        },
     },
 
     created() {
     },
 
     async mounted() {
-        ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
+        // Если игры нет - нечего тут делать
+        if (!ctx?.globalState?.game || ctx.globalState.game.done) {
+            apx.showFrame({
+                frame: '/gameInfo',
+            })
+            return
+        }
 
         // Грузим текущее задание (если оно не загружено)
         await ctx.gameplay.loadCurrentOrNextTask()
     },
 
     unmounted() {
-        ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
     },
 
 }

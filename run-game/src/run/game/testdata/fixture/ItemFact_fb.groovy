@@ -28,6 +28,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
     Set<String> notFoundThing = new HashSet<>()
 
     def dirs = [
+            "manual",
             "kz.kaz-tili.kz",
             "kz.sozdik.soyle.kz",
             "1000-all",
@@ -39,8 +40,13 @@ class ItemFact_fb extends BaseFixtureBuilder {
             "200-puzzle-english",
             "5000-studynow",
             "8000-wordsteps",
-            "manual",
             "level",
+    ]
+
+    def dirsOnlyNew = [
+            "200-puzzle-english": true,     // всего двести, а шум в количестве переводов
+            "5000-studynow"     : true,     // разные значения - через запятую, фиг разберешься
+            "8000-wordsteps"    : true,     // разные значения - через запятую (очень часто!)
     ]
 
     def dirsDefaultWordFrequency = [
@@ -155,6 +161,14 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
                         // Первый раз встретили слово?
                         StoreRecord recItem = itemsMap.get(word_1)
+
+                        // Для плохих источников не пополняем переводы, берем только новые слова
+                        boolean doAddTranslations = true
+                        if (dirsOnlyNew.getOrDefault(dir, false) == true && recItem != null) {
+                            //throw new XError("badDir, dir: " + dir + ", word: " + word_1 + ", wordLang: " + word_2_arr)
+                            doAddTranslations = false
+                        }
+
                         if (recItem == null) {
                             // Добавляем Item
                             recItem = stItem.add()
@@ -232,21 +246,23 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         }
 
                         // Добавляем Fact:word-translate
-                        for (String translate : word_2_arr) {
-                            if (!UtCnv.isEmpty(translate)) {
-                                key = idItem + "_word-translate_" + translate
-                                if (!tagValueSet.contains(key)) {
-                                    tagValueSet.add(key)
-                                    // Добавляем Fact
-                                    genIdFact = genIdFact + 1
-                                    StoreRecord recFact_1 = stFact.add()
-                                    recFact_1.setValue("id", genIdFact)
-                                    recFact_1.setValue("item", idItem)
-                                    recFact_1.setValue("dataType", getDataType("word-translate"))
-                                    recFact_1.setValue("value", translate)
-                                    // Добавляем FactTag
-                                    String direction = wordLang_1 + "-" + wordLang_2
-                                    addFactTag(genIdFact, "word-translate-direction", direction, stFactTag)
+                        if (doAddTranslations) {
+                            for (String translate : word_2_arr) {
+                                if (!UtCnv.isEmpty(translate)) {
+                                    key = idItem + "_word-translate_" + translate
+                                    if (!tagValueSet.contains(key)) {
+                                        tagValueSet.add(key)
+                                        // Добавляем Fact
+                                        genIdFact = genIdFact + 1
+                                        StoreRecord recFact_1 = stFact.add()
+                                        recFact_1.setValue("id", genIdFact)
+                                        recFact_1.setValue("item", idItem)
+                                        recFact_1.setValue("dataType", getDataType("word-translate"))
+                                        recFact_1.setValue("value", translate)
+                                        // Добавляем FactTag
+                                        String direction = wordLang_1 + "-" + wordLang_2
+                                        addFactTag(genIdFact, "word-translate-direction", direction, stFactTag)
+                                    }
                                 }
                             }
                         }

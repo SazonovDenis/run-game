@@ -251,8 +251,7 @@ export default {
     },
 
     created() {
-        let globalState = ctx.getGlobalState()
-        gameplay.init(globalState)
+        gameplay.init()
 
         //
         this.mainTab = this.tabMenuName

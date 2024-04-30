@@ -300,7 +300,7 @@ export default {
     },
 
     created() {
-        gameplay.init(this.globalState)
+        gameplay.init()
 
         //
         this.localUserList = this.getLocalUserList()

@@ -9,7 +9,7 @@ temp
 out
 
 /node_modules
-/.idea*
+.idea*
 /dataSources
 
 _jc

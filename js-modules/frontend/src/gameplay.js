@@ -1,5 +1,6 @@
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
+import animation from "./animation"
 import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
@@ -7,7 +8,7 @@ import auth from "./auth"
 
 export default {
 
-    init(globalState) {
+    init() {
         if (ctx.gameplay) {
             return
         }
@@ -31,6 +32,8 @@ export default {
         //
         ctx.eventBus.on("*", this.onEvent)
 
+        // Менеджер анимации
+        animation.init()
 
         //
         daoApi.onAfterInvokeError = this.onAfterInvokeError
@@ -526,6 +529,9 @@ export default {
             wasTrue: eventDrag.taskOption.isTrue,
             wasFalse: !eventDrag.taskOption.isTrue
         })
+
+        // Запустим анимацию
+        ctx.animation.start("ball", stateDrag)
 
         //
         let elBall = document.getElementById("ball")

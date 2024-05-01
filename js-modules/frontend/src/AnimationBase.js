@@ -4,17 +4,18 @@ class AnimationBase {
 
     interval = 100
 
-    data = {}
+    data = null
+    cfg = {}
 
     get active() {
         return this._active;
     }
 
-    onStart() {
+    onStart(data, cfg) {
 
     }
 
-    onStep() {
+    onStep(frames) {
 
     }
 
@@ -22,17 +23,18 @@ class AnimationBase {
 
     }
 
-    start(data) {
+    start(data, cfg) {
         this.data = data
+        this.cfg = cfg
         this._active = true
         //
-        this.onStart(data)
+        this.onStart(data, cfg)
         //
-        console.info("animation start", this.data)
+        console.info("animation start, data:", data, "cfg:", cfg)
     }
 
-    step(timer) {
-        this.onStep(timer)
+    step(frames) {
+        this.onStep(frames)
     }
 
     stop() {

@@ -33,22 +33,6 @@
 
             <div class="row" style="margin-top: 1.5em;">
 
-<!--
-                <div class="q-pa-sm">
-                    <jc-btn kind="primary" label="doStart"
-                            style="min-width: 12em;"
-                            @click="doStart()">
-                    </jc-btn>
-                </div>
-
-                <div class="q-pa-sm">
-                    <jc-btn kind="secondary" label="doStop"
-                            style="min-width: 12em;"
-                            @click="doStop()">
-                    </jc-btn>
-                </div>
--->
-
                 <div class="q-pa-sm">
                     <jc-btn label="x11"
                             style="min-width: 5em;"
@@ -91,33 +75,41 @@ import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
 import Ball1 from "./comp/Ball1"
 
+import ctx from "./gameplayCtx"
 import gameplay from "./gameplay"
 import animation from "./animation"
 import AnimationBase from "./AnimationBase"
-import ctx from "run-game-frontend/src/gameplayCtx"
+
 
 class Animation1 extends AnimationBase {
 
     interval = 100
 
     onStart(data) {
-        data.p = 100
+        data.p = 10
     }
 
-    onStep(timer) {
+    onStep(frames) {
         let data = this.data
 
-        data.p = data.p + 5
-        if (data.p === 300) {
+        data.p = Math.round(data.p + 5 * frames)
+        
+        if (data.p >= 300) {
             this.stop()
         }
+    }
+
+    onStop() {
+        let data = this.data
+
+        data.p = 10
     }
 
 }
 
 class Animation2 extends AnimationBase {
 
-    interval = 10
+    interval = 5
 
     onStart(data) {
         data.x = 100
@@ -128,13 +120,13 @@ class Animation2 extends AnimationBase {
         data.visible = true
     }
 
-    onStep(timer) {
+    onStep(frames) {
         let data = this.data
 
-        data.x = data.x + data.sx;
-        data.y = data.y + data.sy;
+        data.x = data.x + data.sx * frames;
+        data.y = data.y + data.sy * frames;
 
-        if (data.x >= 300) {
+        if (data.x >= 500) {
             data.sx = -1
         }
         if (data.x <= 0) {
@@ -227,9 +219,8 @@ export default {
     computed: {},
 
     async mounted() {
-        ctx.animation.addAnimation("animation1", new Animation1())
-        ctx.animation.addAnimation("animation2", new Animation2())
-        ctx.animation.globalAnimationStart()
+        ctx.animation.addAnimation(new Animation1(), "animation1")
+        ctx.animation.addAnimation(new Animation2(), "animation2")
     },
 
     unmounted() {

@@ -1,16 +1,20 @@
 class AnimationManager {
 
-    animationID = null
+    globalAnimationInterval = 10
+    globalAnimationTimeLast = {}
+
+    globalAnimationID = null
     globalAnimationFrame = 0
 
-    animationsTimeLast = {}
     animations = {}
+    animationsTimeLast = {}
 
-    addAnimation(animationName, animation) {
+
+    addAnimation(animation, animationName) {
         this.animations[animationName] = animation
     }
 
-    animationStart(animationName, data) {
+    animationStart(animationName, data, cfg) {
         let animation = this.animations[animationName]
 
         //
@@ -23,7 +27,10 @@ class AnimationManager {
 
         //
         console.info("animation start: ", animationName)
-        animation.start(data)
+        // Чтобы кадры начались сначала
+        this.setAnimationTimeLastDiff(animationName, null)
+        //
+        animation.start(data, cfg)
 
         //
         return true
@@ -48,7 +55,7 @@ class AnimationManager {
         return true
     }
 
-    canAnimationStep(animationName) {
+    canAnimationStep(animationName, timeNow) {
         let animation = this.animations[animationName]
 
         if (!animation) {
@@ -59,52 +66,86 @@ class AnimationManager {
         }
 
         //
-        let animationTimeNow = window.performance.now();
+        let animationsTimeDiff = this.getAnimationTimeLastDiff(animationName, timeNow)
+
+        // Не запускалась - пора запускать первый раз
+        if (!animationsTimeDiff) {
+            return true
+        }
+
+        // Пора рисовать кадр?
+        if (animationsTimeDiff >= animation.interval) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    setAnimationTimeLastDiff(animationName, timeNow) {
+        this.animationsTimeLast[animationName] = timeNow
+    }
+
+    getAnimationTimeLastDiff(animationName, timeNow) {
         let animationsTimeLast = this.animationsTimeLast[animationName]
-        let animationsTimeDiff = animationTimeNow - animationsTimeLast
 
         //
         if (!animationsTimeLast) {
-            this.animationsTimeLast[animationName] = animationTimeNow
-            return true
+            return null
         }
 
         //
-        if (animationsTimeDiff >= animation.interval) {
-            this.animationsTimeLast[animationName] = animationTimeNow
-            return true
-        }
-
-        //
-        return false;
+        let animationsTimeDiff = timeNow - animationsTimeLast
+        return animationsTimeDiff
     }
 
-
     globalAnimationStart() {
-        this.animationID = window.requestAnimationFrame(this.onGlobalAnimationFrame.bind(this))
+        let globalAnimationTimeNow = window.performance.now();
+        this.globalAnimationTimeLast = globalAnimationTimeNow
+        this.globalAnimationFrame = 0
+
+        //
+        this.requestAnimationFrame()
     }
 
     globalAnimationStop() {
-        window.cancelAnimationFrame(this.animationID)
-        this.animationID = null
+        window.cancelAnimationFrame(this.globalAnimationID)
+        //
+        this.globalAnimationID = null
+    }
+
+    requestAnimationFrame() {
+        this.globalAnimationID = window.requestAnimationFrame(this.onGlobalAnimationFrame.bind(this))
     }
 
     onGlobalAnimationFrame() {
-        for (let animationName in this.animations) {
-            if (this.canAnimationStep(animationName)) {
-                let animation = this.animations[animationName]
-                //console.info("animation", animationName, "data", animation.data)
+        let timeNow = window.performance.now();
+        let globalAnimationDiff = timeNow - this.globalAnimationTimeLast
+        if (globalAnimationDiff >= this.globalAnimationInterval) {
+            this.globalAnimationTimeLast = timeNow
+            this.globalAnimationFrame = this.globalAnimationFrame + 1
 
-                //
-                animation.step()
+            //
+            for (let animationName in this.animations) {
+                if (this.canAnimationStep(animationName, timeNow)) {
+                    let animation = this.animations[animationName]
+
+                    // Посчитаем количество кадров, которые должна пройти анимация
+                    let frames = 1
+                    let animationsTimeDiff = this.getAnimationTimeLastDiff(animationName, timeNow)
+                    if (animationsTimeDiff) {
+                        frames = animationsTimeDiff / animation.interval
+                    }
+
+                    //
+                    //console.info("animation: " + animationName + ", frames: " + frames)
+                    this.setAnimationTimeLastDiff(animationName, timeNow)
+                    animation.step(frames)
+                }
             }
         }
 
         //
-        this.globalAnimationFrame = this.globalAnimationFrame + 1
-
-        //
-        this.globalAnimationStart()
+        this.requestAnimationFrame()
     }
 
 

@@ -6,12 +6,9 @@ export default {
      * Не меняющиеся настройки приложения
      */
     settings: {
-        animationInterval: 10,
         ballWidth: 32,
         ballHeihth: 32,
         goalSize: 16,
-        minDl: 200,
-        maxDl: 1000,
         valueGoalMax: 10,
         goalHitSizeDefault: 5,
         goalHitSizeHint: 2,

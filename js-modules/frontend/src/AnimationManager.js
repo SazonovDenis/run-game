@@ -1,3 +1,6 @@
+/**
+ * Менеджер анимации.
+ */
 class AnimationManager {
 
     globalAnimationInterval = 10
@@ -126,20 +129,25 @@ class AnimationManager {
 
             //
             for (let animationName in this.animations) {
-                if (this.canAnimationStep(animationName, timeNow)) {
-                    let animation = this.animations[animationName]
+                try {
+                    if (this.canAnimationStep(animationName, timeNow)) {
+                        let animation = this.animations[animationName]
 
-                    // Посчитаем количество кадров, которые должна пройти анимация
-                    let frames = 1
-                    let animationsTimeDiff = this.getAnimationTimeLastDiff(animationName, timeNow)
-                    if (animationsTimeDiff) {
-                        frames = animationsTimeDiff / animation.interval
+                        // Посчитаем количество кадров, которые должна пройти анимация
+                        let frames = 1
+                        let animationsTimeDiff = this.getAnimationTimeLastDiff(animationName, timeNow)
+                        if (animationsTimeDiff) {
+                            frames = animationsTimeDiff / animation.interval
+                        }
+
+                        //
+                        //console.info("animation: " + animationName + ", frames: " + frames)
+                        this.setAnimationTimeLastDiff(animationName, timeNow)
+                        animation.step(frames)
                     }
-
-                    //
-                    //console.info("animation: " + animationName + ", frames: " + frames)
-                    this.setAnimationTimeLastDiff(animationName, timeNow)
-                    animation.step(frames)
+                } catch(e) {
+                    console.error("animation: " + animationName)
+                    console.error(e)
                 }
             }
         }

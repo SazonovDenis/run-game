@@ -30,6 +30,8 @@ export default {
         ctx.eventBus.on("change:goal.value", this.onChange_goalValue)
         ctx.eventBus.on("showHint", this.onShowHint)
         //
+        ctx.eventBus.on("animation-stop", this.onAnimationStop)
+        //
         ctx.eventBus.on("*", this.onEvent)
 
         // Менеджер анимации
@@ -46,6 +48,8 @@ export default {
         ctx.eventBus.off("dragend", this.on_dragend)
         ctx.eventBus.off("change:goal.value", this.onChange_goalValue)
         ctx.eventBus.off("showHint", this.onShowHint)
+        //
+        ctx.eventBus.off("animation-stop", this.onAnimationStop)
         //
         ctx.eventBus.off("*", this.onEvent)
         //
@@ -487,7 +491,7 @@ export default {
         stateDrag.y = eventDrag.y
 
         //
-        ctx.gameplay.stopMoveAnimation()
+        ctx.animation.animationStop("ball")
 
         //
         stateBall.value = 1
@@ -530,52 +534,11 @@ export default {
             wasFalse: !eventDrag.taskOption.isTrue
         })
 
-        // Запустим анимацию
-        ctx.animation.start("ball", stateDrag)
-
-        //
-        let elBall = document.getElementById("ball")
-        let goal = document.getElementById("goal")
-
-        //
-        stateDrag.x = eventDrag.x
-        stateDrag.y = eventDrag.y
-        stateDrag.dtEnd = new Date()
-        stateDrag.duration = Math.abs(stateDrag.dtEnd - stateDrag.dtStart)
-
-        // Скорость броска, пкс/сек
-        let dx = 1000 * (stateDrag.x - stateDrag.sx) / stateDrag.duration
-        let dy = 1000 * (stateDrag.y - stateDrag.sy) / stateDrag.duration
-
-
-        // Просто клик - пусть летит вверх
-        if (dx === 0 && dy === 0) {
-            dy = -1
-        }
-        // Чтобы  летело не слишком...
-        let dl = Math.sqrt(dx * dx + dy * dy)
-        // ... не слишком медленно...
-        let x = ctx.settings
-        if (dl < ctx.settings.minDl) {
-            dx = dx * ctx.settings.minDl / dl
-            dy = dy * ctx.settings.minDl / dl
-        }
-        // ... и не слишком быстро
-        if (dl > ctx.settings.maxDl) {
-            dx = dx * ctx.settings.maxDl / dl
-            dy = dy * ctx.settings.maxDl / dl
-        }
-
-        // Учтем количество кадров в секунду
-        let framePerSec = 1000 / ctx.settings.animationInterval
-        stateDrag.dx = dx / framePerSec
-        stateDrag.dy = dy / framePerSec
 
         // Выбрали ответ - отреагируем
         if (ctx.gameplay.isOptionIsTrueAnswer(eventDrag.taskOption)) {
             // Выбрали правильный ответ
             ctx.globalState.dataState.ball.ballIsTrue = true
-            //stateMode.modeShowOptions = null
             stateMode.modeShowOptions = "hint-true"
         } else {
             // Выбрали не правильный ответ
@@ -585,14 +548,10 @@ export default {
             if (stateGoal.valueGoal > ctx.settings.valueGoalMax) {
                 stateGoal.valueGoal = ctx.settings.valueGoalMax
             }
-            // Шарик никуда не летит
-            stateDrag.dx = 0
-            stateDrag.dy = 0
             // Покажем подсказки
             stateMode.modeShowOptions = "hint-true"
             stateMode.goalHitSize = ctx.settings.goalHitSizeError
         }
-        stateBall.value = 1
 
         // Показать текст подсказки после первого выбора
         ctx.globalState.dataState.showTaskHint = true
@@ -603,8 +562,27 @@ export default {
         //
         ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)
 
+
+        // Запустим анимацию "ball"
+        let dtEnd = new Date()
+        let duration = Math.abs(dtEnd - stateDrag.dtStart)
         //
-        ctx.gameplay.startMoveAnimation(elBall)
+        let answerIsTrue = ctx.gameplay.isOptionIsTrueAnswer(eventDrag.taskOption)
+        //
+        let elGoal = document.getElementById("goal")
+        let rectGoal = utilsCore.getElRect(elGoal)
+        //
+        let cfg = {
+            ballIsTrue: answerIsTrue,
+            x: eventDrag.x,
+            y: eventDrag.y,
+            sx: stateDrag.sx,
+            sy: stateDrag.sy,
+            duration: duration,
+            rectGoal: rectGoal,
+        }
+        //
+        ctx.animation.animationStart("ball", stateBall, cfg)
     },
 
     isOptionIsTrueAnswer(taskOption) {
@@ -630,124 +608,6 @@ export default {
 
         //
         return taskOptionsRes
-    },
-
-    startMoveAnimation() {
-        let stateDrag = ctx.globalState.dataState.drag
-
-        //
-        stateDrag.interval = setInterval(ctx.gameplay.animationStep, ctx.settings.animationInterval)
-    },
-
-    stopMoveAnimation() {
-        let stateDrag = ctx.globalState.dataState.drag
-
-        //
-        clearInterval(stateDrag.interval)
-        stateDrag.interval = null
-    },
-
-    /**
-     * Глобальный менеджер анимации.
-     * Меняет данные в ctx.globalState.dataState так, чтобы рисовалась нужная анимация.
-     * Отрисовка идет в компонентах на основе этого состояния.
-     */
-    animationStep() {
-        let elBall = document.getElementById("ball")
-        let elGoal = document.getElementById("goal")
-
-        //
-        let stateDrag = ctx.globalState.dataState.drag
-        let stateGoal = ctx.globalState.dataState.goal
-        let stateBall = ctx.globalState.dataState.ball
-        let stateMode = ctx.globalState.dataState.mode
-
-        // Шаг
-        stateDrag.x = stateDrag.x + stateDrag.dx
-        stateDrag.y = stateDrag.y + stateDrag.dy
-
-        // Пересечения определяем как пересечение отрезка, проведенного
-        // от предыдущей точки движения до текущей с прямоугольником цели.
-        // Так мы не дадим "проскочить" снаряду сквозь цель
-        // при слишком большой скорости движения.
-        let rectTrace = {
-            x1: stateDrag.x,
-            x2: stateDrag.x - stateDrag.dx,
-            y1: stateDrag.y,
-            y2: stateDrag.y - stateDrag.dy,
-        }
-        let rectGoal = utilsCore.getElRect(elGoal)
-        //
-        if (utilsCore.intersectRect(rectTrace, rectGoal)) {
-            if (ctx.globalState.dataState.ball.ballIsTrue) {
-                stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
-            }
-
-            //
-            ctx.gameplay.stopMoveAnimation()
-
-            //
-            stateBall.value = 0
-
-            //
-            ctx.eventBus.emit("change:goal.value", stateGoal.value)
-
-            // Перемешаем ответы, если цель не поражена
-            if (!ctx.gameplay.goalDone()) {
-                ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
-
-                // Снова выбираем
-                stateMode.modeShowOptions = null
-            }
-
-            //
-            return
-        }
-
-        // Выход шарика за границы экрана
-        if (stateDrag.x + ctx.settings.ballWidth > innerWidth || stateDrag.x < 0 || stateDrag.y + ctx.settings.ballHeihth > innerHeight || stateDrag.y < 0) {
-            //
-            ctx.gameplay.stopMoveAnimation()
-
-            //
-            stateBall.value = 0
-
-            // Перемешаем ответы
-            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
-
-            // Снова выбираем
-            stateMode.modeShowOptions = null
-
-            //
-            return
-        }
-
-        // Рост или уменьшение по ходу движения
-        let framePerSec = 1000 / ctx.settings.animationInterval
-        if (!ctx.globalState.dataState.ball.ballIsTrue) {
-            stateBall.value = stateBall.value - 1.5 / framePerSec
-        } else {
-            stateBall.value = stateBall.value + 1.1 / framePerSec
-        }
-
-        // Выход размера шарика за ограничение размера
-        if (stateBall.value > 5 || stateBall.value < 0) {
-            //
-            ctx.gameplay.stopMoveAnimation()
-
-            // Прекращаем полет шарика
-            stateBall.value = 0
-
-            // Перемешаем ответы
-            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
-
-            // Снова выбираем
-            stateMode.modeShowOptions = null
-        }
-
-        // Продолжение движения
-        stateBall.x = stateDrag.x
-        stateBall.y = stateDrag.y
     },
 
 
@@ -781,6 +641,39 @@ export default {
     onEvent(ev, obj) {
         //console.log("gameplay.event", ev, obj)
         //console.log("state", ctx.state)
+    },
+
+    onAnimationStop(data) {
+        console.log("animation-stop", data)
+
+        if (data.animation === "ball") {
+
+            if (data.result.goal) {
+                let stateBall = ctx.globalState.dataState.ball
+                let stateGoal = ctx.globalState.dataState.goal
+                let stateMode = ctx.globalState.dataState.mode
+
+                //
+                stateBall.value = 0
+
+                // Счетчик попаданий
+                if (ctx.globalState.dataState.ball.ballIsTrue) {
+                    stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
+                }
+
+                //
+                ctx.eventBus.emit("change:goal.value", stateGoal.value)
+            } else {
+                let stateMode = ctx.globalState.dataState.mode
+
+                // Перемешаем ответы
+                ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+                // Снова выбираем
+                stateMode.modeShowOptions = null
+            }
+
+        }
     },
 
 

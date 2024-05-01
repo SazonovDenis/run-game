@@ -1,5 +1,7 @@
 import ctx from "./gameplayCtx"
-import AnimationManager from "run-game-frontend/src/AnimationManager"
+import AnimationManager from "./AnimationManager"
+
+import AnimationBall from "./animations/AnimationBall"
 
 export default {
 
@@ -8,8 +10,14 @@ export default {
             return
         }
 
-        // Инициализация контекста
+        // Глобальный менеджер анимации
         ctx.animation = new AnimationManager()
+
+        // Подключаем все анимации (пока вручную)
+        ctx.animation.addAnimation(new AnimationBall(), "ball")
+
+        // Стартуем
+        ctx.animation.globalAnimationStart()
     },
 
 

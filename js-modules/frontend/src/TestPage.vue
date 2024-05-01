@@ -24,9 +24,15 @@
                 {{ animations.animation1.p }}
             </div>
 
+
             <q-separator/>
 
-            <Ball1 :data="animations.animation2"/>
+            <ImagesFrameTest :data="animations.animation3"/>
+
+            <q-separator/>
+
+
+            <BallTest :data="animations.animation2"/>
 
             <q-separator/>
 
@@ -73,7 +79,8 @@
 
 import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
-import Ball1 from "./comp/Ball1"
+import BallTest from "./comp/BallTest"
+import ImagesFrameTest from "./comp/ImagesFrameTest"
 
 import ctx from "./gameplayCtx"
 import gameplay from "./gameplay"
@@ -93,7 +100,7 @@ class Animation1 extends AnimationBase {
         let data = this.data
 
         data.p = Math.round(data.p + 5 * frames)
-        
+
         if (data.p >= 300) {
             this.stop()
         }
@@ -103,6 +110,32 @@ class Animation1 extends AnimationBase {
         let data = this.data
 
         data.p = 10
+    }
+
+}
+
+class Animation3 extends AnimationBase {
+
+    interval = 100
+
+    onStart(data) {
+        data.p = 0
+    }
+
+    onStep(frames) {
+        let data = this.data
+
+        data.p = data.p + 1 * Math.round(frames)
+
+        if (data.p >= 10) {
+            this.stop()
+        }
+    }
+
+    onStop() {
+        let data = this.data
+
+        data.p = 0
     }
 
 }
@@ -160,7 +193,8 @@ class Animation2 extends AnimationBase {
 export default {
 
     components: {
-        Ball1,
+        BallTest,
+        ImagesFrameTest,
         MenuContainer, LogoGame, gameplay, animation
     },
 
@@ -177,6 +211,7 @@ export default {
                     p: 0
                 },
                 animation2: {},
+                animation3: {},
             },
         }
     },
@@ -194,7 +229,8 @@ export default {
         },
 
         x11x() {
-            ctx.animation.animationStop("animation1")
+            ctx.animation.animationStart("animation3", this.animations.animation3)
+            //ctx.animation.animationStop("animation1")
         },
 
         x22() {
@@ -213,6 +249,7 @@ export default {
     async mounted() {
         ctx.animation.addAnimation(new Animation1(), "animation1")
         ctx.animation.addAnimation(new Animation2(), "animation2")
+        ctx.animation.addAnimation(new Animation3(), "animation3")
     },
 
     unmounted() {

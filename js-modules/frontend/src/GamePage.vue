@@ -48,6 +48,14 @@ export default {
         isAuth() {
             return auth.isAuth()
         },
+
+        onLoadedGameTask(gameTask) {
+            if (ctx.globalState.game.done) {
+                apx.showFrame({
+                    frame: '/gameInfo', props: {prop1: 1}
+                })
+            }
+        },
     },
 
     created() {
@@ -62,11 +70,16 @@ export default {
             return
         }
 
+        // Когда UserTaskPanel загрузит пустое задание, в котором
+        // состояние игры будет "игра окончена" - надо уходить со страницы "Игра"
+        ctx.eventBus.on("loadedGameTask", this.onLoadedGameTask)
+
         // Грузим текущее задание (если оно не загружено)
         await ctx.gameplay.loadCurrentOrNextTask()
     },
 
     unmounted() {
+        ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
     },
 
 }

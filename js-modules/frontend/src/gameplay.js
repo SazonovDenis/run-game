@@ -656,18 +656,32 @@ export default {
                 let cfg = {
                     x: stateBall.x,
                     y: stateBall.y,
-                    onStop: function() {
+                    afterStop: function() {
                         ctx.eventBus.emit("change:goal.value", stateGoal.value)
+
+                        // Перемешаем ответы
+                        ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+                        // Снова выбираем сами, без подсказки
+                        stateMode.modeShowOptions = null
                     }
                 }
                 ctx.animation.animationRestart("SpriteAnimation", ctx.globalState.sprite.blow, cfg)
+
+            } else {
+                let cfg = {
+                    duration: 3000,
+                    afterStop: function() {
+                        // Перемешаем ответы
+                        ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+                        // Снова выбираем сами, без подсказки
+                        stateMode.modeShowOptions = null
+                    }
+                }
+                ctx.animation.animationRestart("TimerAnimation", null, cfg)
             }
 
-            // Перемешаем ответы
-            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
-
-            // Снова выбираем сами, без подсказки
-            stateMode.modeShowOptions = null
         }
     },
 

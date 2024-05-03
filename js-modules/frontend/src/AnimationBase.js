@@ -73,8 +73,8 @@ class AnimationBase {
         //
         this.onStop()
         //
-        if (this.cfg.onStop) {
-            this.cfg.onStop()
+        if (this.cfg.afterStop) {
+            this.cfg.afterStop()
         }
         //
         console.info("animation stop: " + this.name + ", data: ", this.data)

@@ -1,14 +1,27 @@
-class AnimationBase {
+import ctx from "./gameplayCtx"
 
-    _active = false
+class AnimationBase {
 
     interval = 100
 
-    data = null
-    cfg = {}
+    _active = false
+    _data = null
+    _cfg = {}
+
+    get name() {
+        return this.constructor.name;
+    }
 
     get active() {
         return this._active;
+    }
+
+    get data() {
+        return this._data;
+    }
+
+    get cfg() {
+        return this._cfg;
     }
 
     onStart(data, cfg) {
@@ -23,14 +36,25 @@ class AnimationBase {
 
     }
 
+    /**
+     * Начать анимацию
+     * @param data переменные, которые должна анимировать анимация
+     * @param cfg Параметрыы анимации.
+     *            Системные: onStop - вызвать после остановки
+     */
     start(data, cfg) {
-        this.data = data
-        this.cfg = cfg
+        this._data = data
+        //
+        if (!cfg) {
+            cfg = {}
+        }
+        this._cfg = cfg
+        //
         this._active = true
         //
         this.onStart(data, cfg)
         //
-        console.info("animation start, data:", data, "cfg:", cfg)
+        console.info("animation start: " + this.name + ", data: " + data + ", cfg: " + cfg)
     }
 
     step(frames) {
@@ -42,7 +66,15 @@ class AnimationBase {
         //
         this.onStop()
         //
-        console.info("animation stop", this.data)
+        if (this.cfg.onStop) {
+            this.cfg.onStop()
+        }
+        //
+        console.info("animation stop: " + this.name + ", data: " + this.data)
+        //
+        ctx.eventBus.emit("animation-stop", {
+            animation: this.name, data: this.data
+        })
     }
 
 }

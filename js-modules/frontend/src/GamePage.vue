@@ -49,7 +49,7 @@ export default {
             return auth.isAuth()
         },
 
-        onLoadedGameTask(gameTask) {
+        onLoadedGameTask() {
             if (ctx.globalState.game.done) {
                 apx.showFrame({
                     frame: '/gameInfo', props: {prop1: 1}
@@ -80,6 +80,8 @@ export default {
 
     unmounted() {
         ctx.eventBus.off("loadedGameTask", this.onLoadedGameTask)
+
+        ctx.gameplay.globalClear_Game()
     },
 
 }

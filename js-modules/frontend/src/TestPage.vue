@@ -24,10 +24,15 @@
                 {{ animations.animation1.p }}
             </div>
 
-
+<!--
             <q-separator/>
 
             <ImagesFrameTest :data="animations.animation3"/>
+-->
+
+            <q-separator/>
+
+            <Sprite name="blow" width="5em" :animation="sprite.blow"/>
 
             <q-separator/>
 
@@ -81,6 +86,7 @@ import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
 import BallTest from "./comp/BallTest"
 import ImagesFrameTest from "./comp/ImagesFrameTest"
+import Sprite from "./comp/Sprite"
 
 import ctx from "./gameplayCtx"
 import gameplay from "./gameplay"
@@ -193,7 +199,7 @@ class Animation2 extends AnimationBase {
 export default {
 
     components: {
-        BallTest,
+        BallTest, Sprite,
         ImagesFrameTest,
         MenuContainer, LogoGame, gameplay, animation
     },
@@ -213,6 +219,7 @@ export default {
                 animation2: {},
                 animation3: {},
             },
+            sprite: ctx.getGlobalState().sprite,
         }
     },
 
@@ -229,7 +236,8 @@ export default {
         },
 
         x11x() {
-            ctx.animation.animationStart("animation3", this.animations.animation3)
+            ctx.animation.animationStart("SpriteAnimation", this.sprite.blow)
+            //ctx.animation.animationStart("animation3", this.animations.animation3)
             //ctx.animation.animationStop("animation1")
         },
 

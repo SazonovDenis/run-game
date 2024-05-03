@@ -4,6 +4,7 @@
             <Task :task="gameTask.task" :state="dataState"/>
         </div>
 
+        <Sprite name="blow" width="3em" height="3em" :animation="sprite.blow"/>
 
         <Goal v-if="gameTask" class="goal" id="goal" :goal="dataState.goal"/>
 
@@ -58,6 +59,8 @@ import Ball from "./Ball"
 import Goal from "./Goal"
 import Task from "./Task"
 import TaskOptions from "./TaskOptions"
+import Sprite from "./Sprite"
+import ctx from "../gameplayCtx"
 import gameplay from "../../src/gameplay"
 import dbConst from "../dao/dbConst"
 import {jcBase} from "../vendor"
@@ -66,18 +69,24 @@ import {jcBase} from "../vendor"
  * Компонент "игровое поле", показываются задание и ответы.
  */
 export default {
-    components: {gameplay, Ball, Goal, Task, TaskOptions},
+    components: {Sprite, gameplay, Ball, Goal, Task, TaskOptions},
 
     props: {
         gameTask: {},
         dataState: {},
     },
 
+    data() {
+        return {
+            sprite: ctx.getGlobalState().sprite
+        }
+    },
+
     methods: {
+
         nextTask() {
             gameplay.loadNextTask()
         },
-
 
     },
 
@@ -96,7 +105,14 @@ export default {
             )
         },
 
-    }
+    },
+
+    async mounted() {
+    },
+
+    unmounted() {
+    },
+
 }
 </script>
 

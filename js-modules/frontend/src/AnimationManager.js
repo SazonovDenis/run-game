@@ -28,15 +28,19 @@ class AnimationManager {
             return false
         }
 
-        //
-        console.info("animation start: ", animationName)
         // Чтобы кадры начались сначала
         this.setAnimationTimeLastDiff(animationName, null)
+
         //
         animation.start(data, cfg)
 
         //
         return true
+    }
+
+    animationRestart(animationName, data, cfg) {
+        this.animationStop(animationName)
+        this.animationStart(animationName, data, cfg)
     }
 
     animationStop(animationName) {
@@ -51,7 +55,6 @@ class AnimationManager {
         }
 
         //
-        console.info("animation stop: " + animationName)
         animation.stop()
 
         //

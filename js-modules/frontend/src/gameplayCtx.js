@@ -82,6 +82,12 @@ export default {
                     taskSoundLoaded: false,
                 },
 
+                sprite: {
+                    blow: {
+                        stillCount: 9,
+                    }
+                }
+
             })
 
             return this.globalState

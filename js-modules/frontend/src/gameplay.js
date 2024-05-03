@@ -201,7 +201,7 @@ export default {
         ctx.gameplay.globalUse_Game(resGameTask)
 
         // Уведомим об изменении задания
-        ctx.eventBus.emit("loadedGameTask", resGameTask.game)
+        ctx.eventBus.emit("loadedGameTask", resGameTask)
 
         // Разные умолчания
         ctx.globalState.dataState.mode.modeShowOptions = null
@@ -491,7 +491,7 @@ export default {
         stateDrag.y = eventDrag.y
 
         //
-        ctx.animation.animationStop("ball")
+        ctx.animation.animationStop("BallAnimation")
 
         //
         stateBall.value = 1
@@ -563,7 +563,7 @@ export default {
         ctx.eventBus.emit("taskOptionSelected", eventDrag.taskOption)
 
 
-        // Запустим анимацию "ball"
+        // Запустим анимацию "BallAnimation"
         let dtEnd = new Date()
         let duration = Math.abs(dtEnd - stateDrag.dtStart)
         //
@@ -582,7 +582,7 @@ export default {
             rectGoal: rectGoal,
         }
         //
-        ctx.animation.animationStart("ball", stateBall, cfg)
+        ctx.animation.animationRestart("BallAnimation", stateBall, cfg)
     },
 
     isOptionIsTrueAnswer(taskOption) {
@@ -643,17 +643,17 @@ export default {
         //console.log("state", ctx.state)
     },
 
-    onAnimationStop(data) {
-        console.log("animation-stop", data)
+    onAnimationStop(animationInfo) {
+        let stateBall = ctx.globalState.dataState.ball
+        let stateGoal = ctx.globalState.dataState.goal
+        let stateMode = ctx.globalState.dataState.mode
+        let animationName = animationInfo.animation
+        let animationData = animationInfo.data
 
-        if (data.animation === "ball") {
+        if (animationName === "BallAnimation") {
 
-            if (data.result.goal) {
-                let stateBall = ctx.globalState.dataState.ball
-                let stateGoal = ctx.globalState.dataState.goal
-                let stateMode = ctx.globalState.dataState.mode
-
-                //
+            // Попали в цель?
+            if (animationData.result.goal) {
                 stateBall.value = 0
 
                 // Счетчик попаданий
@@ -661,18 +661,20 @@ export default {
                     stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
                 }
 
-                //
-                ctx.eventBus.emit("change:goal.value", stateGoal.value)
-            } else {
-                let stateMode = ctx.globalState.dataState.mode
-
-                // Перемешаем ответы
-                ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
-
-                // Снова выбираем
-                stateMode.modeShowOptions = null
+                // Покажем взрыв
+                let cfg = {
+                    onStop: function() {
+                        ctx.eventBus.emit("change:goal.value", stateGoal.value)
+                    }
+                }
+                ctx.animation.animationRestart("SpriteAnimation", ctx.globalState.sprite.blow, cfg)
             }
 
+            // Перемешаем ответы
+            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+
+            // Снова выбираем сами, без подсказки
+            stateMode.modeShowOptions = null
         }
     },
 

@@ -2,7 +2,7 @@ import AnimationBase from "../AnimationBase"
 import ctx from "../gameplayCtx"
 import utilsCore from "../utils2D"
 
-class AnimationBall extends AnimationBase {
+class BallAnimation extends AnimationBase {
 
     interval = 10
 
@@ -11,7 +11,6 @@ class AnimationBall extends AnimationBase {
 
     dx = 0
     dy = 0
-    result = {}
 
     onStart(data, cfg) {
         // Скорость броска, пкс/сек
@@ -45,9 +44,6 @@ class AnimationBall extends AnimationBase {
         this.dy = dy
 
         //
-        this.result = {}
-
-        //
         data.value = 1
         data.x = cfg.x
         data.y = cfg.y
@@ -76,7 +72,7 @@ class AnimationBall extends AnimationBase {
             y2: data.y - this.dy,
         }
         if (utilsCore.intersectRect(rectTrace, cfg.rectGoal)) {
-            this.result = {
+            data.result = {
                 goal: true,
                 x: data.x,
                 y: data.y,
@@ -89,7 +85,7 @@ class AnimationBall extends AnimationBase {
         // ---
         // Выход шарика за границы экрана?
         if (data.x + ctx.settings.ballWidth > innerWidth || data.x < 0 || data.y + ctx.settings.ballHeihth > innerHeight || data.y < 0) {
-            this.result = {
+            data.result = {
                 goal: false,
                 x: data.x,
                 y: data.y,
@@ -117,7 +113,7 @@ class AnimationBall extends AnimationBase {
             data.value = 0
 
             //
-            this.result = {
+            data.result = {
                 goal: false,
                 x: data.x,
                 y: data.y,
@@ -125,17 +121,14 @@ class AnimationBall extends AnimationBase {
 
             this.stop()
         }
-
-        //
-        //console.info("data.value: " + data.value)
     }
 
     onStop() {
-        console.info("animation-stop: ball")
+        let data = this.data
 
-        ctx.eventBus.emit("animation-stop", {animation: "ball", result: this.result})
+        data.value = 0
     }
 
 }
 
-export default AnimationBall
+export default BallAnimation

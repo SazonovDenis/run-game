@@ -1,7 +1,11 @@
 <template>
     <div class="options" id="options">
-        <div v-for="taskOption in taskOptions">
-            <TaskOption :taskOption="taskOption" :state="state"/>
+        <div v-for="(taskOption, index) in taskOptions">
+            <TaskOption
+                v-if="animationData.taskOptionVisible[index]"
+                :taskOption="taskOption"
+                :state="state"
+            />
         </div>
 
     </div>
@@ -10,6 +14,7 @@
 <script>
 
 import TaskOption from "./TaskOption"
+import ctx from "../gameplayCtx"
 
 export default {
     components: {TaskOption},
@@ -17,6 +22,31 @@ export default {
     props: {
         taskOptions: null,
         state: null,
+    },
+
+    data() {
+        return {
+            animationData: {
+                showTaskOptions: false,
+                taskOptionVisible: [],
+            }
+        }
+    },
+
+    watch: {
+
+        taskOptions: {
+            handler(val, oldVal) {
+                let cfg = {
+                    taskOptionsLength: this.taskOptions.length
+                }
+                ctx.animation.animationRestart("TaskOptionsVisibleAnimation",
+                    this.animationData, cfg
+                )
+            },
+            immediate: true,
+        }
+
     },
 
     methods: {

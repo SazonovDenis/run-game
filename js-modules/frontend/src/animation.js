@@ -1,7 +1,9 @@
 import ctx from "./gameplayCtx"
 import AnimationManager from "./AnimationManager"
 
-import AnimationBall from "./animations/AnimationBall"
+import BallAnimation from "./animations/BallAnimation"
+import TaskOptionsVisibleAnimation from "./animations/TaskOptionsVisibleAnimation"
+import SpriteAnimation from "./animations/SpriteAnimation"
 
 export default {
 
@@ -14,7 +16,9 @@ export default {
         ctx.animation = new AnimationManager()
 
         // Подключаем все анимации (пока вручную)
-        ctx.animation.addAnimation(new AnimationBall(), "ball")
+        ctx.animation.addAnimation(new BallAnimation(), "BallAnimation")
+        ctx.animation.addAnimation(new TaskOptionsVisibleAnimation(), "TaskOptionsVisibleAnimation")
+        ctx.animation.addAnimation(new SpriteAnimation(), "SpriteAnimation")
 
         // Стартуем
         ctx.animation.globalAnimationStart()

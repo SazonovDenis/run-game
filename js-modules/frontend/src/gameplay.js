@@ -481,9 +481,9 @@ export default {
         let taskOption = eventDrag.taskOption
 
         let stateDrag = ctx.globalState.dataState.drag
-        let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
 
+        //
         stateDrag.dtStart = new Date()
         stateDrag.sx = eventDrag.x
         stateDrag.sy = eventDrag.y
@@ -493,32 +493,27 @@ export default {
         //
         ctx.animation.animationStop("BallAnimation")
 
-        //
+        // Выбрали правильный ответ? Покрасим мяч
+        let answerIsTrue = ctx.gameplay.isOptionIsTrueAnswer(eventDrag.taskOption)
+        stateBall.ballIsTrue = answerIsTrue
+        // Начинаем таскать мяч размером 1 там, где палец/мышка
         stateBall.value = 1
         stateBall.text = taskOption.text
-
-        //
         stateBall.x = stateDrag.x
         stateBall.y = stateDrag.y
     },
 
     on_drag(eventDrag) {
-
-        //
         let stateDrag = ctx.globalState.dataState.drag
-        let stateGoal = ctx.globalState.dataState.goal
         let stateBall = ctx.globalState.dataState.ball
-
-        //
-        let elBall = document.getElementById("ball")
 
         //
         stateDrag.x = eventDrag.x
         stateDrag.y = eventDrag.y
 
-        //
-        stateBall.x = stateDrag.x
-        stateBall.y = stateDrag.y
+        // Продолжаем таскать мяч размером 1 там, где палец/мышка
+        stateBall.x = eventDrag.x
+        stateBall.y = eventDrag.y
     },
 
     on_dragend(eventDrag) {
@@ -538,11 +533,9 @@ export default {
         // Выбрали ответ - отреагируем
         if (ctx.gameplay.isOptionIsTrueAnswer(eventDrag.taskOption)) {
             // Выбрали правильный ответ
-            ctx.globalState.dataState.ball.ballIsTrue = true
             stateMode.modeShowOptions = "hint-true"
         } else {
             // Выбрали не правильный ответ
-            ctx.globalState.dataState.ball.ballIsTrue = false
             stateBall.text = ""
             stateGoal.valueGoal = stateGoal.valueGoal + 1
             if (stateGoal.valueGoal > ctx.settings.valueGoalMax) {
@@ -654,8 +647,6 @@ export default {
 
             // Попали в цель?
             if (animationData.result.goal) {
-                stateBall.value = 0
-
                 // Счетчик попаданий
                 if (ctx.globalState.dataState.ball.ballIsTrue) {
                     stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
@@ -663,6 +654,8 @@ export default {
 
                 // Покажем взрыв
                 let cfg = {
+                    x: stateBall.x,
+                    y: stateBall.y,
                     onStop: function() {
                         ctx.eventBus.emit("change:goal.value", stateGoal.value)
                     }

@@ -3,6 +3,7 @@ import AnimationBase from "../AnimationBase"
 class SpriteAnimation extends AnimationBase {
 
     interval = 100
+    name = "SpriteAnimation"
 
     onStart(data, cfg) {
         // Важная деталь: количество кадров stillCount записано в data.stillCount,
@@ -21,6 +22,7 @@ class SpriteAnimation extends AnimationBase {
 
         if (data.still > cfg.stillCount) {
             this.stop()
+            return
         }
     }
 

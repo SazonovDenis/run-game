@@ -2,15 +2,22 @@ import ctx from "./gameplayCtx"
 
 class AnimationBase {
 
+    /**
+     * Как часто нужно вызывать шаг анимации
+     * @type {number} миллисекунд
+     */
     interval = 100
+
+    /**
+     * Если не указана в потомке - будет присвоена при регистрации (иначе ошибка)
+     * @type {string}
+     */
+    name = null
+
 
     _active = false
     _data = null
     _cfg = {}
-
-    get name() {
-        return this.constructor.name;
-    }
 
     get active() {
         return this._active;
@@ -54,7 +61,7 @@ class AnimationBase {
         //
         this.onStart(data, cfg)
         //
-        console.info("animation start: " + this.name + ", data: " + data + ", cfg: " + cfg)
+        console.info("animation start: " + this.name + ", data: ", data + ", cfg: ", cfg)
     }
 
     step(frames) {
@@ -70,7 +77,7 @@ class AnimationBase {
             this.cfg.onStop()
         }
         //
-        console.info("animation stop: " + this.name + ", data: " + this.data)
+        console.info("animation stop: " + this.name + ", data: ", this.data)
         //
         ctx.eventBus.emit("animation-stop", {
             animation: this.name, data: this.data

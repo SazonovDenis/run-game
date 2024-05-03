@@ -5,6 +5,7 @@ import utilsCore from "../utils2D"
 class BallAnimation extends AnimationBase {
 
     interval = 10
+    name = "BallAnimation"
 
     minDl = 5
     maxDl = 50
@@ -79,6 +80,7 @@ class BallAnimation extends AnimationBase {
             }
 
             this.stop()
+            return
         }
 
 
@@ -92,6 +94,7 @@ class BallAnimation extends AnimationBase {
             }
 
             this.stop()
+            return
         }
 
 
@@ -104,11 +107,11 @@ class BallAnimation extends AnimationBase {
         }
 
         // Ограничение размера шарика
-        if (data.value > 5) {
-            data.value = 5
+        if (data.value > 4) {
+            data.value = 4
         }
 
-        // Шарик кончился - прекращаем полет шарика
+        // Шарик "сдулся" - прекращаем полет шарика
         if (data.value <= 0) {
             data.value = 0
 
@@ -120,6 +123,7 @@ class BallAnimation extends AnimationBase {
             }
 
             this.stop()
+            return
         }
     }
 

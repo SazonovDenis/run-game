@@ -14,7 +14,17 @@ class AnimationManager {
 
 
     addAnimation(animation, animationName) {
-        this.animations[animationName] = animation
+        if (animationName) {
+            animation.name = animationName
+        }
+
+        //
+        if (!animation.name) {
+            throw new Error("animation.name is null")
+        }
+
+        //
+        this.animations[animation.name] = animation
     }
 
     animationStart(animationName, data, cfg) {

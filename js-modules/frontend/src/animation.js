@@ -16,9 +16,9 @@ export default {
         ctx.animation = new AnimationManager()
 
         // Подключаем все анимации (пока вручную)
-        ctx.animation.addAnimation(new BallAnimation(), "BallAnimation")
-        ctx.animation.addAnimation(new TaskOptionsVisibleAnimation(), "TaskOptionsVisibleAnimation")
-        ctx.animation.addAnimation(new SpriteAnimation(), "SpriteAnimation")
+        ctx.animation.addAnimation(new BallAnimation())
+        ctx.animation.addAnimation(new TaskOptionsVisibleAnimation())
+        ctx.animation.addAnimation(new SpriteAnimation())
 
         // Стартуем
         ctx.animation.globalAnimationStart()

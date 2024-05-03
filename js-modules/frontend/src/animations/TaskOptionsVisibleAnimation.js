@@ -3,6 +3,7 @@ import AnimationBase from "../AnimationBase"
 class TaskOptionsVisibleAnimation extends AnimationBase {
 
     interval = 200
+    name = "TaskOptionsVisibleAnimation"
 
     MAX_ShowTaskOptions = 1500
     MAX_TaskOptionVisible = 300

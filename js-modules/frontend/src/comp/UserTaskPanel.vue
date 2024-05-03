@@ -4,7 +4,11 @@
             <Task :task="gameTask.task" :state="dataState"/>
         </div>
 
-        <Sprite name="blow" width="3em" height="3em" :animation="sprite.blow"/>
+        <div style="position: relative">
+            <Sprite name="blow" width="5rem" height="5rem"
+                    :style="{position: 'absolute', top: '-2.5rem', left: blowPosLeft()}"
+                    :animation="animation"/>
+        </div>
 
         <Goal v-if="gameTask" class="goal" id="goal" :goal="dataState.goal"/>
 
@@ -78,11 +82,15 @@ export default {
 
     data() {
         return {
-            sprite: ctx.getGlobalState().sprite
+            animation: ctx.getGlobalState().sprite.blow,
         }
     },
 
     methods: {
+
+        blowPosLeft() {
+            return "calc(" + Math.round(this.dataState.ball.x) + "px - 2.5rem)"
+        },
 
         nextTask() {
             gameplay.loadNextTask()

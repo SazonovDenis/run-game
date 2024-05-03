@@ -51,7 +51,7 @@ export default {
 
     methods: {
         getClassName(taskOption) {
-            if (this.state.mode.modeShowOptions == "hint-true") {
+            if (this.state.mode.modeShowOptions === "hint-true") {
                 if (taskOption.isTrue) {
                     return "fact-true"
                 } else {

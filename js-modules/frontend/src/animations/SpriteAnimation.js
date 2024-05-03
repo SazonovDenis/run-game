@@ -7,7 +7,9 @@ class SpriteAnimation extends AnimationBase {
 
     onStart(data, cfg) {
         // Важная деталь: количество кадров stillCount записано в data.stillCount,
-        // а не передается в cfg, потому что количество кадров храним в globalState.sprite
+        // а не передается в cfg, потому что количество кадров храним в globalState.sprite.
+        // Отдельно доставать при вызове и передавать в cfg - лишняя работа, т.к. предполагаем,
+        // что потом сделаем общий репозитарий спрайтов с метаинформацией о каждом
         cfg.stillCount = data.stillCount
 
         // Начнем

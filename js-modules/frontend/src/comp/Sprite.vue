@@ -1,8 +1,9 @@
 <template>
 
-    <div class="rgm-sprite" :style="{width: width, height: height}">
+    <div class="rgm-sprite" :style="{width: width, height: height}" ref="spriteImage">
         <img
-            :style="{width: width, height: height}"
+            class="rgm-sprite-img"
+            :style="{height: height, left: imgLeft}"
             v-bind:src="backgroundImage"
         >
     </div>
@@ -23,17 +24,40 @@ export default {
     },
 
     data() {
-        return {}
+        return {
+            // todo это положено брать из метаинформации о спрайте
+            imgOriginalWidth: 740,
+            imgOriginalHeight: 800,
+        }
     },
 
+    methods: {},
+
     computed: {
-        backgroundImage() {
-            let idx = this.animation.still
-            if (!idx) {
-                idx = 0
+
+        imgLeft() {
+            let stillIdx = this.animation.still
+            if (!stillIdx) {
+                stillIdx = 0
             }
-            return apx.url.ref("run/game/web/sprite/" + this.name + "/k" + idx + ".png")
+
+            // Учтем сжатие спрайта и сдвинем кадр не на оригинальную ширину imgOriginalWidth,
+            // а на пропорционально меньший размер
+            let actualWidthK = 1
+            let spriteImage = this.$refs.spriteImage
+            if (spriteImage) {
+                actualWidthK = spriteImage.clientHeight / this.imgOriginalHeight
+            }
+            let imgActualWidth = actualWidthK * this.imgOriginalWidth
+
+            //
+            return "-" + (imgActualWidth * stillIdx) + "px"
         },
+
+        backgroundImage() {
+            return apx.url.ref("run/game/web/sprite/" + this.name + "/1.png")
+        },
+
     }
 
 }
@@ -45,7 +69,12 @@ export default {
 
 .rgm-sprite {
     position: relative;
+    overflow: hidden;
     _border: 1px solid red;
+}
+
+.rgm-sprite-img {
+    position: relative;
 }
 
 </style>

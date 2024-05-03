@@ -18,7 +18,7 @@ class WordDistance_fb extends BaseFixtureBuilder {
 
         // Заполним из наших csv
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)
-        utils.addFromCsv(stWordDistance, dirBase + "word_distance.csv")
+        utils.addFromCsv(stWordDistance, dirBase + "WordDistance.csv")
     }
 
 }

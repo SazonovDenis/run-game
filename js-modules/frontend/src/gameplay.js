@@ -657,16 +657,23 @@ export default {
                     afterStop: function() {
                         ctx.eventBus.emit("change:goal.value", stateGoal.value)
 
-                        // Перемешаем ответы
-                        ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
+                        // Если события "change:goal.value" осталось загруженное
+                        // задание ctx.globalState.gameTask - то можно перемешать.
+                        // Оно остается старое, если не загружена новое, а это бывает
+                        // при тренировочных стрельбах после ошибки.
+                        if (ctx.globalState.gameTask) {
+                            // Перемешаем ответы
+                            ctx.globalState.gameTask.taskOptions = ctx.gameplay.shuffleTaskOptions(ctx.globalState.gameTask.taskOptions)
 
-                        // Снова выбираем сами, без подсказки
-                        stateMode.modeShowOptions = null
+                            // Снова выбираем сами, без подсказки
+                            stateMode.modeShowOptions = null
+                        }
                     }
                 }
                 ctx.animation.animationRestart("SpriteAnimation", ctx.globalState.sprite.blow, cfg)
 
             } else {
+                // Покажем паузу с правильными ответами
                 let cfg = {
                     duration: 3000,
                     afterStop: function() {

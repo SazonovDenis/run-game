@@ -646,11 +646,9 @@ export default {
         if (animationName === "BallAnimation") {
 
             // Попали в цель?
-            if (animationData.result.goal) {
+            if (animationData.result.goal && ctx.globalState.dataState.ball.ballIsTrue) {
                 // Счетчик попаданий
-                if (ctx.globalState.dataState.ball.ballIsTrue) {
-                    stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
-                }
+                stateGoal.valueDone = stateGoal.valueDone + stateMode.goalHitSize
 
                 // Покажем взрыв
                 let cfg = {

@@ -238,7 +238,7 @@ export default {
     user-select: none;
     max-width: 20em;
     margin: 5px;
-    padding: 1em 2em;
+    padding: 1em 1em;
     border-radius: 0.5rem;
     min-width: 10em;
 

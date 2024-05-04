@@ -1,54 +1,63 @@
 <template>
     <div class="user-task">
+
         <div v-if="gameTask">
             <Task :task="gameTask.task" :state="dataState"/>
         </div>
 
-        <div style="position: relative">
-            <Sprite name="blow" width="5rem" height="5rem"
-                    :style="{position: 'absolute', top: '-2.5rem', left: blowPosLeft()}"
-                    :animation="animation"/>
+        <div class="sprite-blow-container">
+            <Sprite class="sprite-blow"
+                    :style="getSpriteBlowStyle()"
+                    name="blow"
+                    width="5rem"
+                    height="5rem"
+                    :animation="animation"
+            />
         </div>
 
         <Goal v-if="gameTask" class="goal" id="goal" :goal="dataState.goal"/>
 
-
-        <div class="game-field">&nbsp;</div>
-
-
-        <div v-if="gameTask" class="task-options">
-            <TaskOptions :taskOptions="gameTask.taskOptions" :state="dataState"/>
-        </div>
+        <Ball id="ball" class="ball" :drag="dataState.drag" :ball="dataState.ball"/>
 
 
-        <Ball class="ball" id="ball" :drag="dataState.drag" :ball="dataState.ball"/>
+        <div class="game-field">
+            <!--
+            <div class="">&nbsp;</div>
+            -->
 
 
-        <div v-if="!wasLoadedAllSounds">
+            <div v-if="gameTask" class="task-options">
+                <TaskOptions :taskOptions="gameTask.taskOptions" :state="dataState"/>
+            </div>
 
-            <br>
-            <q-separator/>
-            <br>
 
-            <jc-btn
-                kind="primary"
-                label="Пропустить"
-                v-on:click="nextTask"
-            />
+            <div v-if="!wasLoadedAllSounds">
 
-        </div>
+                <br>
+                <q-separator/>
+                <br>
 
-        <div v-if="isEnvDev">
+                <jc-btn
+                    kind="primary"
+                    label="Пропустить"
+                    v-on:click="nextTask"
+                />
 
-            <br>
-            <q-separator/>
-            <br>
+            </div>
 
-            <jc-btn
-                kind="srcondary"
-                label="Пропустить test"
-                v-on:click="nextTask"
-            />
+            <div v-if="isEnvDev">
+
+                <br>
+                <q-separator/>
+                <br>
+
+                <jc-btn
+                    kind="srcondary"
+                    label="Пропустить test"
+                    v-on:click="nextTask"
+                />
+
+            </div>
 
         </div>
 
@@ -88,8 +97,9 @@ export default {
 
     methods: {
 
-        blowPosLeft() {
-            return "calc(" + Math.round(this.dataState.ball.x) + "px - 2.5rem)"
+        getSpriteBlowStyle() {
+            let left = "calc(" + Math.round(this.dataState.ball.x) + "px - 2.5rem)"
+            return {top: "-2.5rem", left: left}
         },
 
         nextTask() {
@@ -128,20 +138,32 @@ export default {
 <style>
 
 .user-task {
-    _position: relative;
     display: block;
 }
 
 .game-field {
-    _border: 1px dotted red;
-    height: 20vh;
+    position: absolute;
+    bottom: 3.2rem;
+    left: 0;
+    right: 0;
+    min-height: 30%;
+    _border: 2px solid blue;
 }
 
 .task-options {
-    _position: absolute;
     bottom: 0;
     width: 100%;
 }
+
+
+.sprite-blow-container {
+    position: absolute;
+}
+
+.sprite-blow {
+    position: absolute;
+}
+
 
 .goal {
     _position: relative;

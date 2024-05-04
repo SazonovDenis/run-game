@@ -178,19 +178,6 @@
         </q-page-container>
 
 
-        <q-page-sticky
-            v-if="!isFullScreen()"
-            position="bottom-left"
-            :offset="[5, 5]">
-            <q-btn color="grey-7"
-                   style="opacity: 0.4"
-                   icon="fullscreen-open"
-                   size="1.3em"
-                   @click="onFullscreen()"
-            />
-        </q-page-sticky>
-
-
         <q-footer reveal :style="{display: getFooterDisplay}">
 
             <!-- slot footer -->
@@ -217,6 +204,19 @@
             </slot>
 
         </q-footer>
+
+
+        <div v-if="!isFullScreen()"
+             style="position: fixed; left: 0; bottom: 0; z-index: 10000;">
+
+            <q-btn unelevated color="grey-7"
+                   style="opacity: 0.7; width: 3rem; height: 3rem"
+                   icon="fullscreen-open"
+                   size="1.3em"
+                   @click="onFullscreen()"
+            />
+
+        </div>
 
 
     </q-layout>

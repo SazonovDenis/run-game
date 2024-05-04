@@ -1,6 +1,9 @@
 <template>
 
-    <MenuContainer title="Играем!" :showFooter="true">
+    <MenuContainer
+        title="Играем!"
+        frameReturn="/gameInfo"
+        :showFooter="true">
 
         <template v-slot:footerContent>
             <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>

@@ -29,7 +29,7 @@
 
 import {daoApi} from "../dao"
 import MenuContainer from "./MenuContainer"
-import ctx from "run-game-frontend/src/gameplayCtx"
+import ctx from "../gameplayCtx"
 
 export default {
 

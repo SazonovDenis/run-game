@@ -15,7 +15,7 @@
                 :ratingMax="localState.statistic.ratingMax"
             />
 
-            <q-separator/>
+            <q-separator v-if="localState.game"/>
 
             <GameInfo
                 :game="localState.game"
@@ -88,12 +88,14 @@
 
             <template v-else>
 
+<!--
                 <div>
                     <jc-btn kind="primary" label="Выбрать другой уровень"
                             style="min-width: 12em;"
                             @click="onSelectLevel()">
                     </jc-btn>
                 </div>
+-->
 
             </template>
 
@@ -208,7 +210,7 @@ export default {
         }
 
         if (!this.localState.game) {
-            return
+            //return
         }
 
         /*

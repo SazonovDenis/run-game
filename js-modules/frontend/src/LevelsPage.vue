@@ -151,11 +151,13 @@
         <q-page-sticky v-if="showEdit && viewPlanType !== 'common'"
                        position="bottom-right"
                        :offset="[20, 10]">
-            <q-fab style="height: 4.1em; width: 4.1em;"
+            <q-fab :style="{height: '4em', width: isDesktop ? '14em':'4em'}"
                    color="purple"
                    icon="add"
                    vertical-actions-align="right"
-                   direction="up">
+                   direction="up"
+                   :label="isDesktop ? 'Добавить уровень' : ''"
+            >
                 <q-fab-action style="height: 4em; min-width: 18em;"
                               color="secondary"
                               label="Создать свой уровень"
@@ -230,6 +232,12 @@ export default {
             this.plans.sort(this.compareFunction)
         }
 
+    },
+
+    computed: {
+        isDesktop() {
+            return Jc.cfg.is.desktop
+        },
     },
 
     methods: {

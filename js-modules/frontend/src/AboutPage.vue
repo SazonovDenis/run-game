@@ -139,23 +139,6 @@ export default {
     computed: {},
 
     async mounted() {
-        // Есть текущая игра?
-        if (this.globalState.game) {
-            if (!this.globalState.game.done) {
-                // Переходим на текущую игру
-                this.gameInfo()
-            }
-        } else {
-            // Загружаем текущую  игру
-            // todo: при перезагрузке страницы вызывается отсюда, а потом в gameInfoPage - два раза получается, что избыточно
-            await gameplay.loadActiveGame()
-
-            // Есть текущая игра?
-            if (this.globalState.game) {
-                // Переходим на текущую игру
-                this.gameInfo()
-            }
-        }
     },
 
     unmounted() {

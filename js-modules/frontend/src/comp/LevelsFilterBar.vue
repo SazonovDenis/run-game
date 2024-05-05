@@ -6,7 +6,7 @@
             v-model="inputFilterText"
             @update:modelValue="updateParent('filterText', $event)"
 
-            class="q-mr-sm"
+            class="q-mx-sm"
             style="max-width: 12em; flex-grow: 10;"
             dense outlined clearable
             placeholder="Поиск уровня"

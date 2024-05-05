@@ -74,7 +74,7 @@ export default {
             this.filterText = ""
         },
 
-        onFocus(){
+        doFocus(){
             // Только через setTimeout удается добиться попадания фокуса на input
             setTimeout(this.doFocusFilterText, 500);
         },
@@ -92,7 +92,7 @@ export default {
         ctx.eventBus.on('itemsCleared', this.onItemsCleared)
 
         //
-        this.onFocus()
+        this.doFocus()
     },
 
     unmounted() {

@@ -21,7 +21,7 @@
         />
 
 
-        <q-scroll-area class="q-scroll-area" style="height: calc(100% - 11em);">
+        <q-scroll-area class="q-scroll-area" style="height: calc(100% - 11rem);">
 
 
             <q-list>
@@ -150,8 +150,8 @@
 
         <q-page-sticky v-if="showEdit && viewPlanType !== 'common'"
                        position="bottom-right"
-                       :offset="[20, 10]">
-            <q-fab :style="{height: '4em', width: isDesktop ? '14em':'4em'}"
+                       :offset="[10, 10]">
+            <q-fab :style="{fontSize: '1.3em', height: '4rem', width: isDesktop ? '14rem':'4rem'}"
                    color="purple"
                    icon="add"
                    vertical-actions-align="right"

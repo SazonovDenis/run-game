@@ -19,6 +19,7 @@ export function run() {
         {path: '/levels', frame: import('./LevelsPage')},
         {path: '/gameInfo', frame: import('./GameInfoPage')},
         {path: '/user', frame: import('./UserInfoPage')},
+        {path: '/link', frame: import('./LinkPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
         {path: '/planList', frame: import('./PlanList')},

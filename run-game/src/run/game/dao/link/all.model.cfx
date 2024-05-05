@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="Link.list" parent="Link">
+        <field name="login" parent="Usr/login"/>
+        <field name="text" parent="Usr/text"/>
+    </domain>
+
+
+</root>

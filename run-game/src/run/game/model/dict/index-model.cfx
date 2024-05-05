@@ -12,5 +12,6 @@
 
     <!-- словари -->
     <dict name="DataType" parent="dict.base"/>
+    <dict name="LinkType" parent="dict.base"/>
 
 </root>

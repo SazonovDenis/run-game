@@ -6,15 +6,35 @@
 
         <q-header elevated style="z-index: 3000">
 
-
-            <q-toolbar class="bg-primary text-white"
+            <q-toolbar class="el-with-absolute bg-primary text-white"
                        style="padding-left: 0; padding-right: 0;">
 
                 <q-btn
+                    style="z-index: 1000;"
                     v-if="!title"
-                    _dense flat round icon="menu"
+                    flat round icon="menu"
                     @click="toggleRightDrawer"
-                />
+                >
+                    <!--
+                                        <q-badge style="z-index: 1000"
+                                                 color="red" floating>
+                                        </q-badge>
+                    -->
+
+                </q-btn>
+
+                <div
+                    v-if="!title && hasMenuAlert"
+                    class="el-absolute"
+                    style="left: 1.4rem; top: 0.6rem; z-index: 10000"
+                    @click="toggleRightDrawer"
+                >
+                    <q-icon
+                        name="circle"
+                        color="red"
+                        size="1rem"
+                    />
+                </div>
 
                 <div v-if="title" class="row">
 
@@ -95,7 +115,31 @@
 
 
                             <div class="q-mt-md q-item__label q-item__label--header"
-                                 @click="onUser()">Данные игрока
+                                @click="onUser()">Данные игрока
+                            </div>
+
+
+                            <div
+                                class="q-mt-md q-item__label q-item__label--header"
+                                @click="onLink()"
+                            >
+                                <span class="el-with-absolute">
+                                    Друзья
+
+                                <div
+                                    class="el-absolute"
+                                    v-if="menuAlert?.link"
+                                    style="right: -0.9rem; top: -0.6rem;"
+                                >
+                                    <q-icon
+                                        name="circle"
+                                        color="red"
+                                        size="1rem"
+                                    />
+                                </div>
+
+                                </span>
+
                             </div>
 
 
@@ -248,6 +292,7 @@ export default {
         showFooter: false,
         footerMode: "",
         menu: [],
+        menuAlert: {}
     },
 
     created() {
@@ -274,6 +319,10 @@ export default {
 
 
     computed: {
+        hasMenuAlert() {
+            return this.menuAlert?.link || this.menuAlert?.game
+        },
+
         getFooterDisplay() {
             if (this.showFooter) {
                 return "block"
@@ -361,6 +410,12 @@ export default {
             })
         },
 
+        onLink: function() {
+            apx.showFrame({
+                frame: '/link',
+            })
+        },
+
         onLevels: function() {
             apx.showFrame({
                 frame: '/planList',
@@ -388,6 +443,14 @@ export default {
 <style lang="less" scoped>
 
 .menuBarDropdown {
+}
+
+.el-with-absolute {
+    position: relative;
+}
+
+.el-absolute {
+    position: absolute;
 }
 
 </style>

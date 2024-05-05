@@ -88,6 +88,25 @@
     </diagram>
 
 
+    <diagram name="usr" title="Связи пользователей">
+        <domain name="Link"/>
+        <domain name="LinkType" showfields="false"/>
+        <domain name="Usr" showfields="false"/>
+    </diagram>
+
+
+    <diagram name="molap" title="Кубы и аналитика">
+        <domain name="Cube_Dates"/>
+        <domain name="Cube_UsrFact"/>
+        <domain name="Cube_UsrGame"/>
+        <domain name="Cube_UsrPlan"/>
+        <domain name="Molap_audit"/>
+        <domain name="Molap_log"/>
+        <domain name="Molap_statistic"/>
+        <domain name="Molap_status"/>
+    </diagram>
+
+
     <diagram name="word" title="Информация по словам">
         <domain name="WordDistance"/>
         <domain name="WordSynonym"/>

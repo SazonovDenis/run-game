@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <dao>
+        <holder name="api">
+
+            <item name="m/Link">
+
+                <item name="i" method="*"
+                      class="run.game.dao.link.Link_list"/>
+                <item name="i" method="*"
+                      class="run.game.dao.link.Link_upd"/>
+
+            </item>
+
+        </holder>
+    </dao>
+
+</root>

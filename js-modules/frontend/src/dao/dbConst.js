@@ -8,4 +8,10 @@ export default {
     DataType_CODE_word_translate: "word-translate",
     DataType_CODE_word_sound: "word-sound",
 
+    LinkType_friend: 1001,
+    LinkType_parent: 1002,
+    LinkType_child: 1003,
+    LinkType_teacher: 1004,
+    LinkType_student: 1005,
+
 }

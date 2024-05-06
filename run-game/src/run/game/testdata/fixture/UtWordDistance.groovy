@@ -6,6 +6,7 @@ import jandcode.core.store.*
 import org.apache.commons.lang3.*
 import org.slf4j.*
 import run.game.dao.*
+import run.game.testdata.*
 import run.game.util.*
 
 /**
@@ -75,6 +76,9 @@ class UtWordDistance extends BaseMdbUtils {
 
         //
         fillStore(stWordDistance, stWordDistanceErrors)
+
+        //
+        TestdataUtils.numerateId(stWordDistance)
 
         //
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)

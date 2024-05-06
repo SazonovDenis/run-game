@@ -1,0 +1,5 @@
+id,text,code
+1001,Ожидает,waiting
+1002,Принят,accepted
+1003,Отвергнут,refused
+1004,Отменен,cancelled

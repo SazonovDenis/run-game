@@ -6,14 +6,17 @@
             title="Связи пользователя">
         <!--@
         -->
-        <field name="usr" parent="Usr/ref" />
-        <field name="link" parent="Usr/ref"/>
+        <field name="usrFrom" parent="Usr/ref" title="Чья связь (от кого)"/>
+        <field name="usrTo" parent="Usr/ref" title="К кому связь"/>
         <field name="linkType" parent="LinkType/ref"/>
 
-        <field name="isCommited" parent="boolean" title="Связь подтверждена"/>
+        <field name="dbeg" parent="datetime" title="Дата начала связи"/>
+        <field name="dend" parent="datetime" title="Дата окончания"/>
+
+        <field name="confirmState" parent="ConfirmState/ref"/>
 
         <!-- Обеспечим уникальность -->
-        <dbindex name="main" fields="usr,link" unique="true"/>
+        <dbindex name="main" fields="usrFrom,usrTo,dbeg" unique="true"/>
     </domain>
 
 

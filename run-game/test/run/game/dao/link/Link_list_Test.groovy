@@ -76,6 +76,7 @@ class Link_list_Test extends RgmBase_Test {
         //
         println()
         println("Links")
+        mdb.resolveDicts(stUsrLink)
         mdb.outTable(stUsrLink)
 
 
@@ -89,6 +90,7 @@ class Link_list_Test extends RgmBase_Test {
         //
         println()
         println("Links")
+        mdb.resolveDicts(stUsrLink)
         mdb.outTable(stUsrLink)
     }
 

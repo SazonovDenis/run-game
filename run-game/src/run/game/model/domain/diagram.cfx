@@ -89,9 +89,11 @@
 
 
     <diagram name="usr" title="Связи пользователей">
+        <domain name="Usr" showfields="false"/>
+
         <domain name="Link"/>
         <domain name="LinkType" showfields="false"/>
-        <domain name="Usr" showfields="false"/>
+        <domain name="ConfirmState" showfields="false"/>
     </diagram>
 
 

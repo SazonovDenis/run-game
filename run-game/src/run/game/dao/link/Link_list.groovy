@@ -1,5 +1,6 @@
 package run.game.dao.link
 
+import jandcode.commons.datetime.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
@@ -13,7 +14,9 @@ class Link_list extends RgmMdbUtils {
 
         //
         long idUsr = getCurrentUserId()
-        mdb.loadQuery(st, sqlFind(), [usr: idUsr, text: "%" + userName.toLowerCase() + "%"])
+        XDateTime dt = XDateTime.now()
+        String text = "%" + userName.toLowerCase() + "%"
+        mdb.loadQuery(st, sqlFind(), [usr: idUsr, dt: dt, text: text])
 
         //
         return st
@@ -25,7 +28,8 @@ class Link_list extends RgmMdbUtils {
 
         //
         long idUsr = getCurrentUserId()
-        mdb.loadQuery(st, sql(), [usr: idUsr])
+        XDateTime dt = XDateTime.now()
+        mdb.loadQuery(st, sqlList(), [usr: idUsr, dt: dt])
 
         //
         return st
@@ -38,10 +42,19 @@ select
     Usr.id, 
     Usr.login, 
     Usr.text, 
+    Link.usrFrom, 
+    Link.usrTo, 
+    Link.dbeg, 
+    Link.dend, 
     Link.linkType, 
-    Link.isCommited
+    Link.confirmState
 from
-    Usr left join Link on (Link.link = Usr.id and Link.usr = :usr)
+    Usr left join Link on (
+        Link.usrTo = Usr.id and 
+        Link.usrFrom = :usr and 
+        Link.dbeg <= :dt and 
+        Link.dend > :dt
+    )
 where
     lower(Usr.login) like :text or
     lower(Usr.text) like :text
@@ -53,16 +66,25 @@ limit 25
 """
     }
 
-    String sql() {
+    String sqlList() {
         return """
 select 
     Usr.id, 
     Usr.login, 
     Usr.text, 
+    Link.usrFrom, 
+    Link.usrTo, 
+    Link.dbeg, 
+    Link.dend, 
     Link.linkType, 
-    Link.isCommited
+    Link.confirmState
 from
-    Link join Usr on (Link.link = Usr.id and Link.usr = :usr)
+    Link join Usr on (
+        Link.usrTo = Usr.id and 
+        Link.usrFrom = :usr and 
+        Link.dbeg <= :dt and 
+        Link.dend > :dt
+    )
 order by
     Link.linkType, 
     Usr.text, 

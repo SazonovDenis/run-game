@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="ConfirmState" parent="tab.dict" tag.db="true"
+            title="Статус подтерждения запроса">
+        <!--@
+        -->
+    </domain>
+
+
+</root>

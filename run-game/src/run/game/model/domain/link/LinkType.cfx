@@ -3,7 +3,7 @@
 
 
     <domain name="LinkType" parent="tab.dict" tag.db="true"
-            title="Тип связи пользователя">
+            title="Тип связи между пользователями">
         <!--@
         -->
     </domain>

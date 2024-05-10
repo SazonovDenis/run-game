@@ -12,8 +12,10 @@
                     />
 
                     <div class="row q-mt-lg q-mb-lg11d q-gutter-x-sm">
-                        <span class="rgm-link-soft"
-                              @click="logout">Выйти из программы</span>
+                        <jc-btn label="Выйти из программы"
+                                style="min-width: 10em;"
+                                @click="logout">
+                        </jc-btn>
 
                         <q-space/>
 

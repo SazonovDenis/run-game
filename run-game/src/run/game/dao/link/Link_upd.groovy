@@ -140,60 +140,27 @@ class Link_upd extends RgmMdbUtils {
     }
 
     /**
-     * Удалить пользователя из друзей
+     * Разорвать связь с пользователем
      * @param mapLink
      */
     @DaoMethod
-    void usrDelete(long usrTo) {
-        StoreRecord recLink = loadIncomingLink(mapLink)
+    void usrBreakLink(long usrTo) {
+        long usrFrom = getCurrentUserId()
 
+        // Связь от пользователя
+        StoreRecord recLinkFrom = loadActiveLink(usrFrom, usrTo)
 
-        // Обновим входящий запрос
-        recLink.setValue("confirmState", RgmDbConst.ConfirmState_accepted)
-        mdb.updateRec("Link", recLink)
+        // Связь к пользователю
+        StoreRecord recLinkTo = loadActiveLink(usrTo, usrFrom)
 
-
-        // Отреагируем на принятие запроса
-        StoreRecord recLinkNew = createLinkOutcoming_BackToIncoming(recLink)
-
+        // Закроем связи
+        XDateTime dt = XDateTime.now()
         //
-        long linkType = recLink.getLong("linkType")
-        switch (linkType) {
-            case RgmDbConst.LinkType_friend: {
-                // Добавим отправителя в друзья
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_friend)
-                break
-            }
-            case RgmDbConst.LinkType_parent: {
-                // Добавим отправителя в родителей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_child)
-                break
-            }
-            case RgmDbConst.LinkType_child: {
-                // Добавим отправителя в детей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_parent)
-                break
-            }
-            case RgmDbConst.LinkType_student: {
-                // Добавим отправителя в родителей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_teacher)
-                break
-            }
-            case RgmDbConst.LinkType_teacher: {
-                // Добавим отправителя в родителей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_student)
-                break
-            }
-            default: {
-                throw new XError("Запрос неправильного типа")
-            }
-
-        }
-
+        recLinkTo.setValue("dend", dt)
+        mdb.updateRec("Link", recLinkTo)
         //
-        mdb.validate(recLinkNew, "record")
-        mdb.validateErrors.checkErrors()
-        mdb.insertRec("Link", recLinkNew)
+        recLinkFrom.setValue("dend", dt)
+        mdb.updateRec("Link", recLinkFrom)
     }
 
     /**
@@ -202,6 +169,10 @@ class Link_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void usrBlock(long usrTo) {
+        // Разорвем связь с пользователем
+        usrBreakLink(usrTo)
+
+        // Заблокируем
         StoreRecord recLinkNew = createLinkOutcoming()
 
         //
@@ -213,6 +184,7 @@ class Link_upd extends RgmMdbUtils {
         mdb.validate(recLinkNew, "record")
         mdb.validateErrors.checkErrors()
         mdb.insertRec("Link", recLinkNew)
+
     }
 
     /**
@@ -221,7 +193,7 @@ class Link_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void usrUnblock(long usrTo) {
-        StoreRecord recLink = loadLinkBlocked(usrTo)
+        StoreRecord recLink = loadActiveLinkBlocked(usrTo)
 
         XDateTime dt = XDateTime.now()
         recLink.setValue("dend", dt)
@@ -305,17 +277,33 @@ class Link_upd extends RgmMdbUtils {
     }
 
     /**
-     * Загружаем запись о блокировке пользователя
+     * Загружаем действующую запись о блокировке пользователя
      */
-    StoreRecord loadLinkBlocked(long usrTo) {
+    StoreRecord loadActiveLinkBlocked(long usrTo) {
         StoreRecord recLink = mdb.createStoreRecord("Link")
 
         //
-        long usr = getCurrentUserId()
+        long usrFrom = getCurrentUserId()
         XDateTime dt = XDateTime.now()
 
         // Загрузим запись о блокировке
-        mdb.loadQueryRecord(recLink, sqlLinkBlocked(), [usrFrom: usr, usrTo: usrTo, dt: dt])
+        mdb.loadQueryRecord(recLink, sqlActiveLinkBlocked(), [usrFrom: usrFrom, usrTo: usrTo, dt: dt])
+
+        //
+        return recLink
+    }
+
+    /**
+     * Загружаем действующую запись о связи с пользователем
+     */
+    StoreRecord loadActiveLink(long usrFrom, long usrTo) {
+        StoreRecord recLink = mdb.createStoreRecord("Link")
+
+        //
+        XDateTime dt = XDateTime.now()
+
+        //
+        mdb.loadQueryRecord(recLink, sqlActiveLink(), [usrFrom: usrFrom, usrTo: usrTo, dt: dt])
 
         //
         return recLink
@@ -344,13 +332,16 @@ select
 from
     Link 
 where 
-    confirmState = $RgmDbConst.ConfirmState_waiting and
+    (
+        confirmState = $RgmDbConst.ConfirmState_waiting or
+        confirmState = $RgmDbConst.ConfirmState_refused
+    ) and
     usrFrom = :usrFrom and
     usrTo = :usrTo
 """
     }
 
-    String sqlLinkBlocked() {
+    String sqlActiveLinkBlocked() {
         """
 select
     * 
@@ -358,6 +349,22 @@ from
     Link 
 where 
     linkType = $RgmDbConst.LinkType_blocked and
+    usrFrom = :usrFrom and
+    usrTo = :usrTo and
+    dbeg <= :dt and
+    dend > :dt 
+"""
+    }
+
+    String sqlActiveLink() {
+        """
+select
+    * 
+from
+    Link 
+where 
+    linkType <> $RgmDbConst.LinkType_blocked and
+    confirmState = $RgmDbConst.ConfirmState_accepted and
     usrFrom = :usrFrom and
     usrTo = :usrTo and
     dbeg <= :dt and

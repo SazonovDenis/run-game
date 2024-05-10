@@ -54,6 +54,7 @@ from
         LinkFrom.usrFrom = Usr.id and 
         LinkFrom.usrTo = :usr and 
         LinkFrom.confirmState <> $RgmDbConst.ConfirmState_cancelled and
+        LinkFrom.confirmState <> $RgmDbConst.ConfirmState_refused and
         LinkFrom.dbeg <= :dt and 
         LinkFrom.dend > :dt
     )
@@ -61,6 +62,7 @@ from
         LinkTo.usrTo = Usr.id and 
         LinkTo.usrFrom = :usr and 
         LinkTo.confirmState <> $RgmDbConst.ConfirmState_cancelled and
+        LinkTo.confirmState <> $RgmDbConst.ConfirmState_refused and
         LinkTo.dbeg <= :dt and 
         LinkTo.dend > :dt
     )

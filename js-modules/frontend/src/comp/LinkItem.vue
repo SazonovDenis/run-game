@@ -29,13 +29,17 @@
                 {{ usr.text }}
             </q-item-label>
 
-            <q-item-label caption v-if="usr.confirmState === 1001">
+            <q-item-label caption v-if="usr.confirmState !== 1002">
                 <template v-if="usr.usrFrom !== userId">
                     Просит добавления в {{ dictLinkType[usr.linkType] }}
                 </template>
 
-                <template v-if="usr.usrFrom === userId">
-                    Вы отправили на добавление в {{ dictLinkType[usr.linkType] }}
+                <template v-if="usr.usrFrom === userId && usr.confirmState === 1001">
+                    Вы ждете добавления в {{ dictLinkType[usr.linkType] }}
+                </template>
+
+                <template v-if="usr.usrFrom === userId && usr.confirmState === 1003">
+                    Отказал в добавлении в {{ dictLinkType[usr.linkType] }}
                 </template>
             </q-item-label>
         </q-item-section>
@@ -69,7 +73,8 @@
                     />
                 </template>
 
-                <template v-if="usr.usrFrom === userId && usr.confirmState === 1001">
+                <template
+                    v-if="usr.usrFrom === userId && (usr.confirmState === 1001 || usr.confirmState === 1003)">
 
                     <q-btn
                         label="Отменить"
@@ -153,7 +158,7 @@
                     <q-list>
                         <q-item
                             clickable v-close-popup
-                            @click="usrDelete(usr)"
+                            @click="usrBreakLink(usr)"
                         >
                             <q-item-section>
                                 <q-item-label>Удалить</q-item-label>
@@ -273,8 +278,8 @@ export default {
             await daoApi.invoke('m/Link/accept', [link])
         },
 
-        async usrDelete(usr) {
-            await daoApi.invoke('m/Link/usrDelete', [usr.id])
+        async usrBreakLink(usr) {
+            await daoApi.invoke('m/Link/usrBreakLink', [usr.id])
         },
 
         async usrBlock(usr) {

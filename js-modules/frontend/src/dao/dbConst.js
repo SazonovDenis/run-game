@@ -13,5 +13,6 @@ export default {
     LinkType_child: 1003,
     LinkType_teacher: 1004,
     LinkType_student: 1005,
+    LinkType_blocked: 2000,
 
 }

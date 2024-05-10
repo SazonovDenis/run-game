@@ -8,4 +8,13 @@
     </domain>
 
 
+    <domain name="Link.upd" parent="Link">
+        <field name="usrFrom" req="true"/>
+        <field name="usrTo" req="true"/>
+        <field name="linkType" req="true"/>
+        <field name="dbeg" req="true"/>
+        <field name="confirmState" req="true"/>
+    </domain>
+
+
 </root>

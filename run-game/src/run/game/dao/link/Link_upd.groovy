@@ -44,9 +44,12 @@ class Link_upd extends RgmMdbUtils {
 
         // Отправляем запрос
         StoreRecord recLinkNew = createLinkOutcoming()
+        recLinkNew.setValue("usrTo", usrTo)
         recLinkNew.setValue("linkType", linkType)
 
         //
+        mdb.validate(recLinkNew, "record")
+        mdb.validateErrors.checkErrors()
         mdb.insertRec("Link", recLinkNew)
 
         //
@@ -105,6 +108,8 @@ class Link_upd extends RgmMdbUtils {
         }
 
         //
+        mdb.validate(recLinkNew, "record")
+        mdb.validateErrors.checkErrors()
         mdb.insertRec("Link", recLinkNew)
     }
 
@@ -135,6 +140,63 @@ class Link_upd extends RgmMdbUtils {
     }
 
     /**
+     * Удалить пользователя из друзей
+     * @param mapLink
+     */
+    @DaoMethod
+    void usrDelete(long usrTo) {
+        StoreRecord recLink = loadIncomingLink(mapLink)
+
+
+        // Обновим входящий запрос
+        recLink.setValue("confirmState", RgmDbConst.ConfirmState_accepted)
+        mdb.updateRec("Link", recLink)
+
+
+        // Отреагируем на принятие запроса
+        StoreRecord recLinkNew = createLinkOutcoming_BackToIncoming(recLink)
+
+        //
+        long linkType = recLink.getLong("linkType")
+        switch (linkType) {
+            case RgmDbConst.LinkType_friend: {
+                // Добавим отправителя в друзья
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_friend)
+                break
+            }
+            case RgmDbConst.LinkType_parent: {
+                // Добавим отправителя в родителей
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_child)
+                break
+            }
+            case RgmDbConst.LinkType_child: {
+                // Добавим отправителя в детей
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_parent)
+                break
+            }
+            case RgmDbConst.LinkType_student: {
+                // Добавим отправителя в родителей
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_teacher)
+                break
+            }
+            case RgmDbConst.LinkType_teacher: {
+                // Добавим отправителя в родителей
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_student)
+                break
+            }
+            default: {
+                throw new XError("Запрос неправильного типа")
+            }
+
+        }
+
+        //
+        mdb.validate(recLinkNew, "record")
+        mdb.validateErrors.checkErrors()
+        mdb.insertRec("Link", recLinkNew)
+    }
+
+    /**
      * Заблокировать пользователя
      * @param usrTo
      */
@@ -148,6 +210,8 @@ class Link_upd extends RgmMdbUtils {
         recLinkNew.setValue("confirmState", RgmDbConst.ConfirmState_accepted)
 
         //
+        mdb.validate(recLinkNew, "record")
+        mdb.validateErrors.checkErrors()
         mdb.insertRec("Link", recLinkNew)
     }
 
@@ -175,7 +239,7 @@ class Link_upd extends RgmMdbUtils {
         long usr = getCurrentUserId()
         XDateTime dt = XDateTime.now()
 
-        StoreRecord recLinkBack = mdb.createStoreRecord("Link")
+        StoreRecord recLinkBack = mdb.createStoreRecord("Link.upd")
         recLinkBack.setValue("usrFrom", usr)
         recLinkBack.setValue("dbeg", dt)
         recLinkBack.setValue("dend", UtDateTime.EMPTY_DATETIME_END)
@@ -212,10 +276,10 @@ class Link_upd extends RgmMdbUtils {
 
         //
         long usr = getCurrentUserId()
-        long usrTo = recLink.getLong("usrTo")
+        long usrFrom = recLink.getLong("usrFrom")
 
         // Загрузим входящий запрос
-        mdb.loadQueryRecord(recLink, sqlWaitingLink(), [usrFrom: usrTo, usrTo: usr])
+        mdb.loadQueryRecord(recLink, sqlWaitingLink(), [usrFrom: usrFrom, usrTo: usr])
 
         //
         return recLink

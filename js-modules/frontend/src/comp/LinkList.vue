@@ -1,69 +1,44 @@
 <template>
 
-    <q-list>
+    <q-list v-if="usrs.length > 0">
 
-        <template v-for="usrsLikType in usrsByLinkType">
+        <template v-for="(usrsLikType, indexByLinkType) in usrsByLinkType">
 
 
-            <q-item class="item-first">
+            <q-item>
 
-                <q-item-section>
+                <q-item-section class="q-mt-md">
                     {{ dictLinkType[usrsLikType[0].linkType] }}
                 </q-item-section>
 
 
             </q-item>
 
+            <q-separator/>
+
             <template v-for="usr in usrsLikType">
 
+                <LinkItem :usr="usr"/>
 
-                <q-item class="_item-first"
-                        clickable v-ripple
-                >
+            </template>
 
-                    <q-item-section top avatar>
+        </template>
 
-                        <q-avatar
-                            icon="star"
-                            color="grey-2"
-                            text-color="yellow-8">
+        <template v-if="usrsTo.length>0">
 
-                            <div class="plan-count-text">
-                                {{ usr.linkType }}
-                            </div>
+            <q-item>
 
-                        </q-avatar>
+                <q-item-section class="q-mt-md">
+                    Запросы на добавление
+                </q-item-section>
 
+            </q-item>
 
-                    </q-item-section>
+            <q-separator/>
 
-                    <q-item-section>
-                        {{ usr.text }}
-                    </q-item-section>
+            <template v-for="usr in usrsTo">
 
-
-                    <q-item-section top side>
-
-                        <div class="text-grey-8 q-gutter-xs">
-
-                            <q-btn
-                                dense round flat
-                                size="1.2em"
-                                icon="del"
-                                color="grey-8"
-                                @click="requestIns(usr)"
-                            />
-
-                            <q-btn flat dense round
-                                   icon="more-h"
-                                   size="1.0em"
-                            />
-
-                        </div>
-
-                    </q-item-section>
-
-                </q-item>
+                <LinkItem :usr="usr"/>
 
             </template>
 
@@ -71,18 +46,24 @@
 
     </q-list>
 
+    <div v-else
+         class="rgm-state-text">
+        {{ messageNoItems }}
+    </div>
+
 </template>
 
 <script>
 
-import MenuContainer from "../comp/MenuContainer"
 import {daoApi} from "../dao"
 import dbConst from "../dao/dbConst"
+import LinkItem from "./LinkItem"
+import auth from "../auth"
 
 export default {
 
     components: {
-        MenuContainer,
+        LinkItem
     },
 
     props: {
@@ -90,10 +71,16 @@ export default {
             type: Array,
             default: [],
         },
+        messageNoItems: {
+            type: String,
+            default: "Список пуст"
+        },
     },
 
     data() {
         return {
+            usrsFrom: [],
+            usrsTo: [],
             usrsByLinkType: {},
 
             dictLinkType: {
@@ -102,6 +89,7 @@ export default {
                 [dbConst.LinkType_child]: "Ваши дети",
                 [dbConst.LinkType_teacher]: "Ваши учителя",
                 [dbConst.LinkType_student]: "Ваши ученики",
+                [dbConst.LinkType_blocked]: "Заблокированные",
             },
         }
     },
@@ -109,8 +97,19 @@ export default {
     watch: {
         usrs: {
             handler(val, oldVal) {
-                let usrsByLinkType = this.splitBy(this.usrs, "linkType")
-                this.usrsByLinkType = this.splitBy(this.usrs, "linkType")
+                this.usrsFrom = []
+                this.usrsTo = []
+
+                let userInfo = auth.getUserInfo()
+                for (let usr of this.usrs) {
+                    if (usr.usrFrom === userInfo.id) {
+                        this.usrsFrom.push(usr)
+                    } else {
+                        this.usrsTo.push(usr)
+                    }
+                }
+
+                this.usrsByLinkType = this.splitBy(this.usrsFrom, "linkType")
             },
             immediate: true,
         }
@@ -125,8 +124,9 @@ export default {
 
     methods: {
 
-        async requestIns(link) {
-            await daoApi.invoke('m/Link/requestIns', [link])
+        async requestIns(usr) {
+            let link = {linkType}
+            await daoApi.invoke('m/Link/request', [link])
         },
 
         splitBy(recs, fieldName) {

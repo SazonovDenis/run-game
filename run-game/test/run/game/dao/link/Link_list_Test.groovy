@@ -23,16 +23,20 @@ class Link_list_Test extends RgmBase_Test {
         // ---
         String text = "uSER10"
         Store stUsr = list.usrFind(text)
+        mdb.resolveDicts(stUsr)
         //
         println()
+        println("find: " + text)
         mdb.outTable(stUsr)
 
 
         // ---
         text = "пАп"
         stUsr = list.usrFind(text)
+        mdb.resolveDicts(stUsr)
         //
         println()
+        println("find: " + text)
         mdb.outTable(stUsr)
 
 
@@ -47,18 +51,21 @@ class Link_list_Test extends RgmBase_Test {
         // ---
         text = "uSER10"
         stUsr = list.usrFind(text)
+        mdb.resolveDicts(stUsr)
         //
         println()
+        println("find: "+text)
         mdb.outTable(stUsr)
 
 
         // ---
         text = "пАп"
         stUsr = list.usrFind(text)
+        mdb.resolveDicts(stUsr)
         //
         println()
+        println("find: "+text)
         mdb.outTable(stUsr)
-
     }
 
 
@@ -69,6 +76,10 @@ class Link_list_Test extends RgmBase_Test {
 
 
         // ---
+        // ---
+        // ---
+        setCurrentUser(new DefaultUserPasswdAuthToken("user1012", null))
+        println()
         println("CurrentUser: " + authSvc.getCurrentUser().attrs)
 
         //
@@ -81,7 +92,9 @@ class Link_list_Test extends RgmBase_Test {
 
 
         // ---
-        setCurrentUser(new DefaultUserPasswdAuthToken("user1010", null))
+        // ---
+        // ---
+        setCurrentUser(new DefaultUserPasswdAuthToken("user1016", null))
         println()
         println("CurrentUser: " + authSvc.getCurrentUser().attrs)
 

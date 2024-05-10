@@ -37,37 +37,69 @@ class Link_list extends RgmMdbUtils {
 
 
     String sqlFind() {
-        return """
+        return """ 
 select 
     Usr.id, 
     Usr.login, 
     Usr.text, 
-    Link.usrFrom, 
-    Link.usrTo, 
-    Link.dbeg, 
-    Link.dend, 
-    Link.linkType, 
-    Link.confirmState
+    COALESCE(LinkFrom.usrFrom, LinkTo.usrFrom) usrFrom, 
+    COALESCE(LinkFrom.usrTo, LinkTo.usrTo) usrTo, 
+    COALESCE(LinkFrom.dbeg, LinkTo.dbeg) dbeg, 
+    COALESCE(LinkFrom.dend, LinkTo.dend) dend, 
+    COALESCE(LinkFrom.linkType, LinkTo.linkType) linkType, 
+    COALESCE(LinkFrom.confirmState, LinkTo.confirmState) confirmState
 from
-    Usr left join Link on (
-        Link.usrTo = Usr.id and 
-        Link.usrFrom = :usr and 
-        Link.dbeg <= :dt and 
-        Link.dend > :dt
+    Usr
+    left join Link LinkFrom on (
+        LinkFrom.usrFrom = Usr.id and 
+        LinkFrom.usrTo = :usr and 
+        LinkFrom.confirmState <> $RgmDbConst.ConfirmState_cancelled and
+        LinkFrom.dbeg <= :dt and 
+        LinkFrom.dend > :dt
+    )
+    left join Link LinkTo on (
+        LinkTo.usrTo = Usr.id and 
+        LinkTo.usrFrom = :usr and 
+        LinkTo.confirmState <> $RgmDbConst.ConfirmState_cancelled and
+        LinkTo.dbeg <= :dt and 
+        LinkTo.dend > :dt
     )
 where
-    lower(Usr.login) like :text or
-    lower(Usr.text) like :text
+    Usr.id <> :usr and 
+    lower(login) like :text or
+    lower(text) like :text
 order by
-    Link.linkType, 
-    Usr.text, 
-    Usr.login 
+    linkType, 
+    confirmState desc, 
+    text, 
+    login 
+
 limit 25    
 """
     }
 
+
     String sqlList() {
+        return """ 
+with list as (
+${sqlListBase()}
+)
+
+select 
+    * 
+from
+    list
+order by
+    linkType, 
+    confirmState desc, 
+    text, 
+    login 
+"""
+    }
+
+    String sqlListBase() {
         return """
+-- Исходящие ссылки
 select 
     Usr.id, 
     Usr.login, 
@@ -82,13 +114,33 @@ from
     Link join Usr on (
         Link.usrTo = Usr.id and 
         Link.usrFrom = :usr and 
+        Link.confirmState <> $RgmDbConst.ConfirmState_cancelled and
         Link.dbeg <= :dt and 
         Link.dend > :dt
     )
-order by
-    Link.linkType, 
+
+union
+
+
+-- Входящие ссылки
+select 
+    Usr.id, 
+    Usr.login, 
     Usr.text, 
-    Usr.login 
+    Link.usrFrom, 
+    Link.usrTo, 
+    Link.dbeg, 
+    Link.dend, 
+    Link.linkType, 
+    Link.confirmState
+from
+    Link join Usr on (
+        Link.usrFrom = Usr.id and 
+        Link.usrTo = :usr and 
+        Link.confirmState = $RgmDbConst.ConfirmState_waiting and
+        Link.dbeg <= :dt and 
+        Link.dend > :dt
+    )
 """
     }
 

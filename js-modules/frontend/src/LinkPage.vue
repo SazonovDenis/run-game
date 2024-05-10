@@ -1,8 +1,8 @@
 <template>
 
     <MenuContainer
-        :title="getTitle()"
-        :frameReturn="getFrameReturn()"
+        :title="title"
+        :frameReturn="frameReturn"
     >
 
         <template v-if="frameMode === 'find'">
@@ -23,23 +23,41 @@
 
             </q-input>
 
-            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 11rem);">
+            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
-                <LinkList :usrs="usrsLoaded"/>
+                <LinkList v-if="usrsFindLoaded"
+                          :usrs="usrsFind"
+                          messageNoItems="Пользователей не найдено"
+                />
+
+            </q-scroll-area>
+
+        </template>
+
+        <template v-if="frameMode === 'list-blocked'">
+
+            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
+
+                <LinkList v-if="dataLoaded"
+                          :usrs="[]"
+                />
 
             </q-scroll-area>
 
         </template>
 
 
-        <template v-if="frameMode === 'list'">
+        <template v-if="frameMode === 'list' && dataLoaded">
 
-            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 11rem);">
+            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
-                <LinkList :usrs="usrs"/>
+                <LinkList v-if="dataLoaded" :usrs="usrs"/>
+
+                <div class="q-ml-md q-mt-lg q-mb-xs rgm-link-soft"
+                     @click="setFrameMode_list_blocked">Заблокированные пользователи
+                </div>
 
             </q-scroll-area>
-
 
             <q-page-sticky position="bottom-right"
                            :offset="[10, 10]">
@@ -52,6 +70,15 @@
                 </q-btn>
 
             </q-page-sticky>
+
+<!--
+            <q-page-sticky position="bottom-left"
+                           :offset="[0, 25]">
+
+
+
+            </q-page-sticky>
+-->
 
         </template>
 
@@ -77,7 +104,10 @@ export default {
     data() {
         return {
             usrs: [],
-            usrsLoaded: [],
+            usrsFind: [],
+
+            dataLoaded: false,
+            usrsFindLoaded: false,
 
             filterText: "",
             frameMode: "list",
@@ -87,34 +117,34 @@ export default {
     watch: {
 
         async filterText(valueNow, valuePrior) {
-            this.usrsLoaded = []
+            //
+            this.usrsFindLoaded = false
+            this.usrsFind = []
 
             //
             if (valueNow && valueNow.length >= 2) {
                 let resApi = await daoApi.loadStore("m/Link/usrFind", [valueNow], {waitShow: false})
-                this.usrsLoaded = resApi.records
+                this.usrsFind = resApi.records
+
+                this.usrsFindLoaded = true
             }
         },
 
     },
 
     computed: {
-        isDesktop() {
-            return Jc.cfg.is.desktop
-        },
-    },
 
-    methods: {
-
-        getTitle() {
+        title() {
             if (this.frameMode === "list") {
                 return "Друзья и связи"
-            } else {
+            } else if (this.frameMode === "find") {
                 return "Добавление друзей"
+            } else if (this.frameMode === "list-blocked") {
+                return "Заблокированные"
             }
         },
 
-        getFrameReturn() {
+        frameReturn() {
             if (this.frameMode === "list") {
                 return null
             } else {
@@ -122,12 +152,25 @@ export default {
             }
         },
 
-        async setFrameMode_list() {
+    },
+
+    methods: {
+
+        setFrameMode_list() {
             this.frameMode = "list"
         },
 
+        setFrameMode_list_blocked() {
+            this.frameMode = "list-blocked"
+        },
+
         setFrameMode_find() {
-            this.frameMode = 'find'
+            this.frameMode = "find"
+
+            //
+            this.filterText = ""
+            this.usrsFindLoaded = false
+            this.usrsFind = []
 
             //
             this.doFocus()
@@ -153,8 +196,12 @@ export default {
     },
 
     async mounted() {
+        this.dataLoaded = false
+
         let resApi = await daoApi.loadStore('m/Link/getLinks', [])
         this.usrs = resApi.records
+
+        this.dataLoaded = true
     },
 
 }

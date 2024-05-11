@@ -166,11 +166,7 @@ export default {
 
     },
 
-    computed: {
-        isDesktop() {
-            return Jc.cfg.is.desktop
-        },
-    },
+    computed: {},
 
     methods: {
 

@@ -15,4 +15,9 @@ export default {
     LinkType_student: 1005,
     LinkType_blocked: 2000,
 
+    ConfirmState_waiting: 1001,    // Ожидает
+    ConfirmState_accepted: 1002,   // Принят
+    ConfirmState_refused: 1003,    // Отвергнут
+    ConfirmState_cancelled: 1004,  // Отменен
+
 }

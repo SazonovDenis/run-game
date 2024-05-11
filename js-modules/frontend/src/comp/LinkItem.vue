@@ -8,40 +8,48 @@
         <q-item-section top avatar>
 
             <q-avatar
-                v-if="usr.usrFrom"
+                v-if="usr.linkType === 2000"
+                icon="cancel"
+                color="grey-2"
+                text-color="grey-5">
+            </q-avatar>
+
+            <q-avatar
+                v-else-if="usr.confirmState === 1002"
                 icon="star"
                 color="grey-2"
                 text-color="yellow-8">
             </q-avatar>
 
             <q-avatar
-                v-else="usr.usrFrom"
-                _icon="star"
+                v-else
                 color="grey-2"
                 text-color="yellow-8">
             </q-avatar>
 
-
         </q-item-section>
 
+
         <q-item-section>
+
             <q-item-label>
                 {{ usr.text }}
             </q-item-label>
 
-            <q-item-label caption v-if="usr.confirmState !== 1002">
+            <q-item-label caption v-if="usr.confirmState && usr.confirmState !== 1002">
                 <template v-if="usr.usrFrom !== userId">
-                    Просит добавления в {{ dictLinkType[usr.linkType] }}
+                    Просит добавления в {{ dictLinkTypeTo[usr.linkType] }}
                 </template>
 
                 <template v-if="usr.usrFrom === userId && usr.confirmState === 1001">
-                    Вы ждете добавления в {{ dictLinkType[usr.linkType] }}
+                    Вы ждете добавления в {{ dictLinkTypeFrom[usr.linkType] }}
                 </template>
 
                 <template v-if="usr.usrFrom === userId && usr.confirmState === 1003">
-                    Отказал в добавлении в {{ dictLinkType[usr.linkType] }}
+                    Отказал в добавлении в {{ dictLinkTypeFrom[usr.linkType] }}
                 </template>
             </q-item-label>
+
         </q-item-section>
 
 
@@ -122,6 +130,8 @@
                                     </q-item-section>
                                 </q-item>
 
+                                <q-separator/>
+
                                 <q-item
                                     clickable v-close-popup
                                     @click="request_parent(usr)"
@@ -134,10 +144,33 @@
 
                                 <q-item
                                     clickable v-close-popup
+                                    @click="request_child(usr)"
+                                >
+                                    <q-item-section>
+                                        <q-item-label>Как ребенка
+                                        </q-item-label>
+                                    </q-item-section>
+                                </q-item>
+
+
+                                <q-separator/>
+
+                                <q-item
+                                    clickable v-close-popup
                                     @click="request_student(usr, dbConst)"
                                 >
                                     <q-item-section>
                                         <q-item-label>Как ученика
+                                        </q-item-label>
+                                    </q-item-section>
+                                </q-item>
+
+                                <q-item
+                                    clickable v-close-popup
+                                    @click="request_teacher(usr, dbConst)"
+                                >
+                                    <q-item-section>
+                                        <q-item-label>Как учителя
                                         </q-item-label>
                                     </q-item-section>
                                 </q-item>
@@ -215,13 +248,20 @@ export default {
 
     data() {
         return {
-            dictLinkType: {
+            dictLinkTypeFrom: {
                 [dbConst.LinkType_friend]: "Ваши друзья",
                 [dbConst.LinkType_parent]: "Ваши родители",
                 [dbConst.LinkType_child]: "Ваши дети",
                 [dbConst.LinkType_teacher]: "Ваши учителя",
                 [dbConst.LinkType_student]: "Ваши ученики",
                 [dbConst.LinkType_blocked]: "Заблокированные",
+            },
+            dictLinkTypeTo: {
+                [dbConst.LinkType_friend]: "Ваши друзья",
+                [dbConst.LinkType_parent]: "Ваши дети",
+                [dbConst.LinkType_child]: "Ваши родители",
+                [dbConst.LinkType_teacher]: "Ваши ученики",
+                [dbConst.LinkType_student]: "Ваши учителя",
             },
         }
     },
@@ -245,8 +285,16 @@ export default {
             this.request(usr, dbConst.LinkType_parent)
         },
 
+        async request_child(usr) {
+            this.request(usr, dbConst.LinkType_child)
+        },
+
         async request_student(usr) {
             this.request(usr, dbConst.LinkType_student)
+        },
+
+        async request_teacher(usr) {
+            this.request(usr, dbConst.LinkType_teacher)
         },
 
         async request(usr, linkType) {

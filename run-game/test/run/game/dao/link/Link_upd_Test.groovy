@@ -46,7 +46,7 @@ class Link_upd_Test extends RgmBase_Test {
         // Запросим добавление в "друзья"
         println()
         println("Запросим добавление в 'друзья': " + getCurrentUserId() + " -> " + usr1)
-        Map link = [usrTo: usr1, linkType: RgmDbConst.LinkType_friend]
+        Map link = [usrTo: usr1, linkType: RgmDbConst.LinkType_myFriend]
         upd.request(link)
 
 
@@ -60,7 +60,7 @@ class Link_upd_Test extends RgmBase_Test {
         // Запросим добавление в "друзья"
         println()
         println("Запросим добавление в 'друзья': " + getCurrentUserId() + " -> " + usrMe)
-        link = [usrTo: usrMe, linkType: RgmDbConst.LinkType_friend]
+        link = [usrTo: usrMe, linkType: RgmDbConst.LinkType_myFriend]
         upd.request(link)
 
         
@@ -91,7 +91,7 @@ class Link_upd_Test extends RgmBase_Test {
         // Запросим добавление в "друзья"
         println()
         println("Запросим добавление в 'друзья': " + getCurrentUserId() + " -> " + usr1)
-        Map link = [usrTo: usr1, linkType: RgmDbConst.LinkType_friend]
+        Map link = [usrTo: usr1, linkType: RgmDbConst.LinkType_myFriend]
         upd.request(link)
 
 
@@ -134,8 +134,8 @@ class Link_upd_Test extends RgmBase_Test {
         println("CurrentUser: " + authSvc.getCurrentUser().attrs)
         //
         println()
-        println("Запросим добавление в 'друзья': " + getCurrentUserId() + "-> " + usr2)
-        Map link = [usrTo: usr2, linkType: RgmDbConst.LinkType_friend]
+        println("Запросим добавление в 'друзья': " + getCurrentUserId() + " -> " + usr2)
+        Map link = [usrTo: usr2, linkType: RgmDbConst.LinkType_myFriend]
         upd.request(link)
 
 
@@ -152,6 +152,55 @@ class Link_upd_Test extends RgmBase_Test {
         //
         println()
         println("Принять запрос добавление в 'друзья'")
+        link = [usrFrom: usr1]
+        upd.accept(link)
+
+
+        // ---
+        // Печатаем
+        printLinks([usr1_str, usr2_str])
+    }
+
+    @Test
+    void test_teacher_student() {
+        //
+        Link_upd upd = mdb.create(Link_upd)
+
+
+        // ---
+        // Печатаем
+        printLinks([usr1_str, usr2_str])
+
+        // ---
+        println()
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+
+
+        // ---
+        // Запросим добавление в "ученики"
+        setCurrentUser(new DefaultUserPasswdAuthToken(usr1_str, null))
+        println()
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+        //
+        println()
+        println("Запросим добавление в 'ученики': " + getCurrentUserId() + " -> " + usr2)
+        Map link = [usrTo: usr2, linkType: RgmDbConst.LinkType_myStudent]
+        upd.request(link)
+
+
+        // ---
+        // Печатаем
+        printLinks([usr1_str, usr2_str])
+
+
+        // ---
+        // Примем запрос
+        setCurrentUser(new DefaultUserPasswdAuthToken(usr2_str, null))
+        println()
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+        //
+        println()
+        println("Принять запрос добавление в 'ученики'")
         link = [usrFrom: usr1]
         upd.accept(link)
 

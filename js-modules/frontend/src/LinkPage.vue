@@ -25,9 +25,11 @@
 
             <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
-                <LinkList v-if="usrsFindLoaded"
-                          :usrs="usrsFind"
-                          messageNoItems="Пользователей не найдено"
+                <LinkList
+                    v-if="usrsFindLoaded"
+                    :usrs="usrsFind"
+                    :splitLinkType="false"
+                    :messageNoItems="'Пользователь \'' + filterText + '\' не найден'"
                 />
 
             </q-scroll-area>
@@ -38,8 +40,12 @@
 
             <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
-                <LinkList v-if="dataLoaded"
-                          :usrs="[]"
+                <LinkList
+                    v-if="dataLoaded"
+                    :usrs="usrs"
+                    :splitLinkType="false"
+                    :linkTypes="[2000]"
+                    messageNoItems="У вас нет заблокированных пользователей"
                 />
 
             </q-scroll-area>
@@ -49,15 +55,23 @@
 
         <template v-if="frameMode === 'list' && dataLoaded">
 
+
             <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
-                <LinkList v-if="dataLoaded" :usrs="usrs"/>
+                <LinkList
+                    v-if="dataLoaded"
+                    :usrs="usrs"
+                    :splitLinkType="true"
+                    :linkTypes="[1001,1002,1003,1004,1005]"
+                    messageNoItems="У вас пока нет связей"
+                />
 
                 <div class="q-ml-md q-mt-lg q-mb-xs rgm-link-soft"
                      @click="setFrameMode_list_blocked">Заблокированные пользователи
                 </div>
 
             </q-scroll-area>
+
 
             <q-page-sticky position="bottom-right"
                            :offset="[10, 10]">
@@ -71,14 +85,6 @@
 
             </q-page-sticky>
 
-<!--
-            <q-page-sticky position="bottom-left"
-                           :offset="[0, 25]">
-
-
-
-            </q-page-sticky>
--->
 
         </template>
 

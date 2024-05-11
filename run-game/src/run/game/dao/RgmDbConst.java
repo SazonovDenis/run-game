@@ -27,12 +27,12 @@ public class RgmDbConst {
     public static long TagType_word_sound_info = 1008;          // Свойства звукового файла
     public static long TagType_plan_access = 3000;              // Уровень доступа к плану
 
-    public static long LinkType_friend = 1001;   // Друг
-    public static long LinkType_parent = 1002;   // Родитель
-    public static long LinkType_child = 1003;    // Ребенок
-    public static long LinkType_teacher = 1004;  // Учитель
-    public static long LinkType_student = 1005;  // Ученик
-    public static long LinkType_blocked = 2000;  // Заблокирован
+    public static long LinkType_myFriend = 1001;   // Друг
+    public static long LinkType_myParent = 1002;   // Родитель
+    public static long LinkType_myChild = 1003;    // Ребенок
+    public static long LinkType_myTeacher = 1004;  // Учитель
+    public static long LinkType_myStudent = 1005;  // Ученик
+    public static long LinkType_blockedByMe = 2000;  // Заблокирован
 
     public static long ConfirmState_waiting = 1001;   // Ожидает
     public static long ConfirmState_accepted = 1002;  // Принят

@@ -42,6 +42,7 @@ select
     Usr.id, 
     Usr.login, 
     Usr.text, 
+    -- приоритетом идут данные от LinkFrom  
     COALESCE(LinkFrom.usrFrom, LinkTo.usrFrom) usrFrom, 
     COALESCE(LinkFrom.usrTo, LinkTo.usrTo) usrTo, 
     COALESCE(LinkFrom.dbeg, LinkTo.dbeg) dbeg, 
@@ -51,25 +52,27 @@ select
 from
     Usr
     left join Link LinkFrom on (
-        LinkFrom.usrFrom = Usr.id and 
-        LinkFrom.usrTo = :usr and 
+        LinkFrom.usrFrom = :usr and 
+        LinkFrom.usrTo = Usr.id and  
         LinkFrom.confirmState <> $RgmDbConst.ConfirmState_cancelled and
         LinkFrom.confirmState <> $RgmDbConst.ConfirmState_refused and
         LinkFrom.dbeg <= :dt and 
         LinkFrom.dend > :dt
     )
     left join Link LinkTo on (
-        LinkTo.usrTo = Usr.id and 
-        LinkTo.usrFrom = :usr and 
+        LinkTo.usrFrom = Usr.id and 
+        LinkTo.usrTo = :usr and 
         LinkTo.confirmState <> $RgmDbConst.ConfirmState_cancelled and
         LinkTo.confirmState <> $RgmDbConst.ConfirmState_refused and
         LinkTo.dbeg <= :dt and 
         LinkTo.dend > :dt
     )
 where
-    Usr.id <> :usr and 
-    lower(login) like :text or
-    lower(text) like :text
+    Usr.id <> :usr and
+    ( 
+        lower(login) like :text or
+        lower(text) like :text
+    )
 order by
     linkType, 
     confirmState desc, 

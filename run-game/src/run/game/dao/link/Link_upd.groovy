@@ -76,29 +76,29 @@ class Link_upd extends RgmMdbUtils {
         //
         long linkType = recLink.getLong("linkType")
         switch (linkType) {
-            case RgmDbConst.LinkType_friend: {
+            case RgmDbConst.LinkType_myFriend: {
                 // Добавим отправителя в друзья
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_friend)
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_myFriend)
                 break
             }
-            case RgmDbConst.LinkType_parent: {
+            case RgmDbConst.LinkType_myParent: {
                 // Добавим отправителя в родителей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_child)
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_myChild)
                 break
             }
-            case RgmDbConst.LinkType_child: {
+            case RgmDbConst.LinkType_myChild: {
                 // Добавим отправителя в детей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_parent)
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_myParent)
                 break
             }
-            case RgmDbConst.LinkType_student: {
+            case RgmDbConst.LinkType_myStudent: {
                 // Добавим отправителя в родителей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_teacher)
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_myTeacher)
                 break
             }
-            case RgmDbConst.LinkType_teacher: {
+            case RgmDbConst.LinkType_myTeacher: {
                 // Добавим отправителя в родителей
-                recLinkNew.setValue("linkType", RgmDbConst.LinkType_student)
+                recLinkNew.setValue("linkType", RgmDbConst.LinkType_myStudent)
                 break
             }
             default: {
@@ -177,7 +177,7 @@ class Link_upd extends RgmMdbUtils {
 
         //
         recLinkNew.setValue("usrTo", usrTo)
-        recLinkNew.setValue("linkType", RgmDbConst.LinkType_blocked)
+        recLinkNew.setValue("linkType", RgmDbConst.LinkType_blockedByMe)
         recLinkNew.setValue("confirmState", RgmDbConst.ConfirmState_accepted)
 
         //
@@ -317,7 +317,7 @@ select
 from
     Link 
 where 
-    linkType = $RgmDbConst.LinkType_blocked and
+    linkType = $RgmDbConst.LinkType_blockedByMe and
     usrFrom = :usrTo and
     usrTo = :usrFrom and
     dbeg <= :dt and
@@ -348,7 +348,7 @@ select
 from
     Link 
 where 
-    linkType = $RgmDbConst.LinkType_blocked and
+    linkType = $RgmDbConst.LinkType_blockedByMe and
     usrFrom = :usrFrom and
     usrTo = :usrTo and
     dbeg <= :dt and
@@ -363,7 +363,7 @@ select
 from
     Link 
 where 
-    linkType <> $RgmDbConst.LinkType_blocked and
+    linkType <> $RgmDbConst.LinkType_blockedByMe and
     confirmState = $RgmDbConst.ConfirmState_accepted and
     usrFrom = :usrFrom and
     usrTo = :usrTo and

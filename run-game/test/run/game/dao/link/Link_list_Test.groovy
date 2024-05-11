@@ -54,7 +54,7 @@ class Link_list_Test extends RgmBase_Test {
         mdb.resolveDicts(stUsr)
         //
         println()
-        println("find: "+text)
+        println("find: " + text)
         mdb.outTable(stUsr)
 
 
@@ -64,7 +64,42 @@ class Link_list_Test extends RgmBase_Test {
         mdb.resolveDicts(stUsr)
         //
         println()
-        println("find: "+text)
+        println("find: " + text)
+        mdb.outTable(stUsr)
+    }
+
+    @Test
+    void usrFind_user() {
+        //
+        Link_list list = mdb.create(Link_list)
+
+        // ---
+        setCurrentUser(new DefaultUserPasswdAuthToken("user1017", null))
+        println()
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+
+        // 
+        String text = "uSER"
+        Store stUsr = list.usrFind(text)
+        mdb.resolveDicts(stUsr)
+        //
+        println()
+        println("find: " + text)
+        mdb.outTable(stUsr)
+
+
+        // ---
+        setCurrentUser(new DefaultUserPasswdAuthToken("user1018", null))
+        println()
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs)
+
+        //
+        text = "uSER"
+        stUsr = list.usrFind(text)
+        mdb.resolveDicts(stUsr)
+        //
+        println()
+        println("find: " + text)
         mdb.outTable(stUsr)
     }
 

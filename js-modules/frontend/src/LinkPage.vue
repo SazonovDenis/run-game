@@ -97,6 +97,7 @@
 import MenuContainer from "./comp/MenuContainer"
 import {daoApi} from "./dao"
 import LinkList from "./comp/LinkList"
+import ctx from "./gameplayCtx"
 
 export default {
 
@@ -123,17 +124,7 @@ export default {
     watch: {
 
         async filterText(valueNow, valuePrior) {
-            //
-            this.usrsFindLoaded = false
-            this.usrsFind = []
-
-            //
-            if (valueNow && valueNow.length >= 2) {
-                let resApi = await daoApi.loadStore("m/Link/usrFind", [valueNow], {waitShow: false})
-                this.usrsFind = resApi.records
-
-                this.usrsFindLoaded = true
-            }
+            this.doFind(valueNow)
         },
 
     },
@@ -161,6 +152,40 @@ export default {
     },
 
     methods: {
+
+        async doFind(valueNow) {
+            this.usrsFindLoaded = false
+            this.usrsFind = []
+
+            //
+            if (valueNow && valueNow.length >= 2) {
+                //
+                let resApi = await daoApi.loadStore("m/Link/usrFind", [valueNow], {waitShow: false})
+                this.usrsFind = resApi.records
+
+                //
+                this.usrsFindLoaded = true
+            }
+        },
+
+        async doLoad() {
+            this.dataLoaded = false
+            this.usrs = []
+
+            //
+            let resApi = await daoApi.loadStore('m/Link/getLinks', [])
+            this.usrs = resApi.records
+
+            //
+            this.dataLoaded = true
+        },
+
+        async onChangeLink(usr) {
+            if (this.frameMode === "find") {
+                this.doFind(this.filterText)
+            }
+            this.doLoad()
+        },
 
         setFrameMode_list() {
             this.frameMode = "list"
@@ -194,20 +219,16 @@ export default {
             }
         },
 
-        async requestIns(link) {
-            await daoApi.invoke('m/Link/requestIns', [link])
-        },
-
-
     },
 
     async mounted() {
-        this.dataLoaded = false
+        this.doLoad()
 
-        let resApi = await daoApi.loadStore('m/Link/getLinks', [])
-        this.usrs = resApi.records
+        ctx.eventBus.on("change:link", this.onChangeLink)
+    },
 
-        this.dataLoaded = true
+    async unmounted() {
+        ctx.eventBus.off("change:link", this.onChangeLink)
     },
 
 }

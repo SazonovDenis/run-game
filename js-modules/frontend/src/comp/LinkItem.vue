@@ -98,22 +98,11 @@
                 </template>
 
                 <template v-if="!usr.usrFrom">
-                    <!--
-                                        <q-btn
-                                            label="Добавить"
-                                            no-caps dense rounded unelevated
-                                            size="0.9em"
-                                            icon="quasar.chip.selected"
-                                            color="green"
-                                            @click="requestIns(usr)"
-
-                                        />
-                    -->
 
                     <q-btn
                         fab-mini no-caps unelevated
                         dropdown-icon=""
-                        color="grey-6"
+                        color="primary"
                         _icon="quasar.chip.selected"
                         label="Добавить..."
                     >
@@ -123,6 +112,7 @@
                             <q-list>
                                 <q-item
                                     clickable v-close-popup
+                                    class="q-ma-md"
                                     @click="request_friend(usr)"
                                 >
                                     <q-item-section>
@@ -130,10 +120,11 @@
                                     </q-item-section>
                                 </q-item>
 
-                                <q-separator/>
+                                <q-separator class="q-ma-md"/>
 
                                 <q-item
                                     clickable v-close-popup
+                                    class="q-ma-md"
                                     @click="request_parent(usr)"
                                 >
                                     <q-item-section>
@@ -144,6 +135,7 @@
 
                                 <q-item
                                     clickable v-close-popup
+                                    class="q-ma-md"
                                     @click="request_child(usr)"
                                 >
                                     <q-item-section>
@@ -153,11 +145,12 @@
                                 </q-item>
 
 
-                                <q-separator/>
+                                <q-separator class="q-ma-md"/>
 
                                 <q-item
                                     clickable v-close-popup
-                                    @click="request_student(usr, dbConst)"
+                                    class="q-ma-md"
+                                    @click="request_student(usr)"
                                 >
                                     <q-item-section>
                                         <q-item-label>Как ученика
@@ -167,7 +160,8 @@
 
                                 <q-item
                                     clickable v-close-popup
-                                    @click="request_teacher(usr, dbConst)"
+                                    class="q-ma-md"
+                                    @click="request_teacher(usr)"
                                 >
                                     <q-item-section>
                                         <q-item-label>Как учителя
@@ -191,6 +185,7 @@
                     <q-list>
                         <q-item
                             clickable v-close-popup
+                            class="q-ma-md"
                             @click="usrBreakLink(usr)"
                         >
                             <q-item-section>
@@ -200,6 +195,7 @@
 
                         <q-item
                             clickable v-close-popup
+                            class="q-ma-md"
                             @click="usrBlock(usr)"
                         >
                             <q-item-section>
@@ -210,6 +206,7 @@
 
                         <q-item
                             clickable v-close-popup
+                            class="q-ma-md"
                             @click="usrUnblock(usr)"
                         >
                             <q-item-section>
@@ -234,6 +231,7 @@
 import {daoApi} from "../dao"
 import dbConst from "../dao/dbConst"
 import auth from "../auth"
+import ctx from "run-game-frontend/src/gameplayCtx"
 
 export default {
 
@@ -248,6 +246,7 @@ export default {
 
     data() {
         return {
+            // Названия для ссылок ОТ пользователя
             dictLinkTypeFrom: {
                 [dbConst.LinkType_friend]: "Ваши друзья",
                 [dbConst.LinkType_parent]: "Ваши родители",
@@ -256,6 +255,7 @@ export default {
                 [dbConst.LinkType_student]: "Ваши ученики",
                 [dbConst.LinkType_blocked]: "Заблокированные",
             },
+            // Названия для ссылок К пользователю
             dictLinkTypeTo: {
                 [dbConst.LinkType_friend]: "Ваши друзья",
                 [dbConst.LinkType_parent]: "Ваши дети",
@@ -303,6 +303,13 @@ export default {
                 linkType: linkType,
             }
             await daoApi.invoke('m/Link/request', [link])
+
+            //
+            usr.linkType = linkType
+            usr.confirmState = dbConst.ConfirmState_waiting
+            usr.usrFrom = this.userId
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
         async cancel(usr) {
@@ -310,6 +317,9 @@ export default {
                 usrTo: usr.id,
             }
             await daoApi.invoke('m/Link/cancel', [link])
+
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
         async refuse(usr) {
@@ -317,6 +327,9 @@ export default {
                 usrFrom: usr.id,
             }
             await daoApi.invoke('m/Link/refuse', [link])
+
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
         async accept(usr) {
@@ -324,18 +337,30 @@ export default {
                 usrFrom: usr.id,
             }
             await daoApi.invoke('m/Link/accept', [link])
+
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
         async usrBreakLink(usr) {
             await daoApi.invoke('m/Link/usrBreakLink', [usr.id])
+
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
         async usrBlock(usr) {
             await daoApi.invoke('m/Link/usrBlock', [usr.id])
+
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
         async usrUnblock(usr) {
             await daoApi.invoke('m/Link/usrUnblock', [usr.id])
+
+            //
+            ctx.eventBus.emit("change:link", usr)
         },
 
 

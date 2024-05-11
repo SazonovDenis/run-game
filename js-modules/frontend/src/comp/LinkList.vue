@@ -106,7 +106,6 @@
 
 <script>
 
-import {daoApi} from "../dao"
 import dbConst from "../dao/dbConst"
 import LinkItem from "./LinkItem"
 import auth from "../auth"
@@ -160,52 +159,7 @@ export default {
     watch: {
         usrs: {
             handler(val, oldVal) {
-                this.usrsFrom = []
-                this.usrsTo = []
-                this.usrsOther = []
-                this.usrsLength = 0
-
-                if (this.splitLinkType) {
-
-                    let userInfo = auth.getUserInfo()
-
-                    for (let usr of this.usrs) {
-                        // Ести указаны конкретные linkTypes - фильтруем по ним
-                        if (this.linkTypes && !this.linkTypes.includes(usr.linkType)) {
-                            continue
-                        }
-
-                        if (usr.confirmState === dbConst.ConfirmState_accepted) {
-                            this.usrsOther.push(usr)
-                        } else {
-                            if (usr.usrFrom === userInfo.id) {
-                                this.usrsFrom.push(usr)
-                            } else if (usr.usrTo === userInfo.id) {
-                                this.usrsTo.push(usr)
-                            }
-                        }
-
-                        this.usrsLength = this.usrsLength + 1
-                    }
-
-                    //
-                    this.usrsByLinkType = this.splitBy(this.usrsOther, "linkType")
-
-                } else {
-
-                    for (let usr of this.usrs) {
-                        // Ести указаны конкретные linkTypes - фильтруем по ним
-                        if (this.linkTypes && !this.linkTypes.includes(usr.linkType)) {
-                            continue
-                        }
-
-                        this.usrsOther.push(usr)
-
-                        this.usrsLength = this.usrsLength + 1
-                    }
-
-                }
-
+                this.prepareUserData()
             },
             immediate: true,
         }
@@ -220,9 +174,52 @@ export default {
 
     methods: {
 
-        async requestIns(usr) {
-            let link = {linkType}
-            await daoApi.invoke('m/Link/request', [link])
+        prepareUserData() {
+            this.usrsFrom = []
+            this.usrsTo = []
+            this.usrsOther = []
+            this.usrsLength = 0
+
+            if (this.splitLinkType) {
+
+                let userInfo = auth.getUserInfo()
+
+                for (let usr of this.usrs) {
+                    // Ести указаны конкретные linkTypes - фильтруем по ним
+                    if (this.linkTypes && !this.linkTypes.includes(usr.linkType)) {
+                        continue
+                    }
+
+                    if (usr.confirmState === dbConst.ConfirmState_accepted) {
+                        this.usrsOther.push(usr)
+                    } else {
+                        if (usr.usrFrom === userInfo.id) {
+                            this.usrsFrom.push(usr)
+                        } else if (usr.usrTo === userInfo.id) {
+                            this.usrsTo.push(usr)
+                        }
+                    }
+
+                    this.usrsLength = this.usrsLength + 1
+                }
+
+                //
+                this.usrsByLinkType = this.splitBy(this.usrsOther, "linkType")
+
+            } else {
+
+                for (let usr of this.usrs) {
+                    // Ести указаны конкретные linkTypes - фильтруем по ним
+                    if (this.linkTypes && !this.linkTypes.includes(usr.linkType)) {
+                        continue
+                    }
+
+                    this.usrsOther.push(usr)
+
+                    this.usrsLength = this.usrsLength + 1
+                }
+
+            }
         },
 
         splitBy(recs, fieldName) {

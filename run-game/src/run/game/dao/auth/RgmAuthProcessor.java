@@ -5,6 +5,8 @@ import jandcode.core.auth.*;
 import jandcode.core.dbm.*;
 import jandcode.core.dbm.mdb.*;
 import jandcode.core.store.*;
+import run.game.dao.link.*;
+import run.game.util.*;
 
 import java.util.*;
 
@@ -49,10 +51,19 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
         attrs.put("login", login);
         attrs.put("text", text);
 
+        // ---
+        // Дополнительная информация о пользователе
+
         // План "Мои слова"
         Usr_upd upd = mdb.create(Usr_upd.class);
         long planDefault = upd.getPlanDefault(idUsr);
         attrs.put("planDefault", planDefault);
+
+        // Неотвеченные запросы в друзья
+        Link_list link_list = mdb.create(Link_list.class);
+        Store stLinksToWaiting = link_list.loadLinksToWaiting(idUsr);
+        attrs.put("linksToWait", DataUtils.storeToList(stLinksToWaiting));
+
 
         //
         return new DefaultAuthUser(attrs);

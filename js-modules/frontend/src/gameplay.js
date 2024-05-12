@@ -447,6 +447,7 @@ export default {
         userInfo.guest = data.guest
         userInfo.color = data.color
         userInfo.planDefault = data.planDefault
+        userInfo.linksToWait = data.linksToWait
     },
 
     /**
@@ -462,6 +463,7 @@ export default {
         userInfo.guest = null
         userInfo.color = null
         userInfo.planDefault = null
+        userInfo.linksToWait = []
     },
 
 

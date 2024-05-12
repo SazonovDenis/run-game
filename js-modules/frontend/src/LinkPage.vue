@@ -98,6 +98,7 @@ import MenuContainer from "./comp/MenuContainer"
 import {daoApi} from "./dao"
 import LinkList from "./comp/LinkList"
 import ctx from "./gameplayCtx"
+import auth from "run-game-frontend/src/auth"
 
 export default {
 
@@ -124,6 +125,10 @@ export default {
     watch: {
 
         async filterText(valueNow, valuePrior) {
+            this.usrsFindLoaded = false
+            this.usrsFind = []
+
+            //
             this.doFind(valueNow)
         },
 
@@ -154,10 +159,6 @@ export default {
     methods: {
 
         async doFind(valueNow) {
-            this.usrsFindLoaded = false
-            this.usrsFind = []
-
-            //
             if (valueNow && valueNow.length >= 2) {
                 //
                 let resApi = await daoApi.loadStore("m/Link/usrFind", [valueNow], {waitShow: false})
@@ -169,15 +170,8 @@ export default {
         },
 
         async doLoad() {
-            this.dataLoaded = false
-            this.usrs = []
-
-            //
             let resApi = await daoApi.loadStore('m/Link/getLinks', [])
             this.usrs = resApi.records
-
-            //
-            this.dataLoaded = true
         },
 
         async onChangeLink(usr) {
@@ -185,6 +179,13 @@ export default {
                 this.doFind(this.filterText)
             }
             this.doLoad()
+
+            // Еще остались неотвеченные входящие запросы?
+            // Это нужно для показа уведомлений в главном меню.
+            let resApi = await daoApi.loadStore('m/Link/getLinksToWaiting', [])
+            //
+            let userInfo = auth.getUserInfo()
+            userInfo.linksToWait = resApi.records
         },
 
         setFrameMode_list() {
@@ -222,8 +223,17 @@ export default {
     },
 
     async mounted() {
+        this.dataLoaded = false
+        this.usrs = []
+
+        //
         this.doLoad()
 
+        //
+        this.dataLoaded = true
+
+
+        //
         ctx.eventBus.on("change:link", this.onChangeLink)
     },
 

@@ -115,7 +115,7 @@
 
 
                             <div class="q-mt-md q-item__label q-item__label--header"
-                                @click="onUser()">Данные игрока
+                                 @click="onUser()">Данные игрока
                             </div>
 
 
@@ -291,8 +291,6 @@ export default {
         title: null,
         showFooter: false,
         footerMode: "",
-        menu: [],
-        menuAlert: {}
     },
 
     created() {
@@ -319,8 +317,20 @@ export default {
 
 
     computed: {
+        menuAlert() {
+            let userInfo = auth.getUserInfo()
+            if (userInfo.linksToWait && userInfo.linksToWait.length > 0) {
+                return {link: true}
+            }
+
+            return {}
+        },
+
         hasMenuAlert() {
-            return this.menuAlert?.link || this.menuAlert?.game
+            let userInfo = auth.getUserInfo()
+            if (userInfo.linksToWait && userInfo.linksToWait.length > 0) {
+                return true
+            }
         },
 
         getFooterDisplay() {

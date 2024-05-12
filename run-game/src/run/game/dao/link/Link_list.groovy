@@ -35,6 +35,28 @@ class Link_list extends RgmMdbUtils {
         return st
     }
 
+    @DaoMethod
+    Store getLinksToWaiting() {
+        long idUsr = getCurrentUserId()
+
+        //
+        Store st = this.loadLinksToWaiting(idUsr)
+
+        //
+        return st
+    }
+
+    Store loadLinksToWaiting(long idUsr) {
+        Store st = mdb.createStore("Link.list")
+
+        //
+        XDateTime dt = XDateTime.now()
+        mdb.loadQuery(st, sqlLinksTo_Waiting(), [usr: idUsr, dt: dt])
+
+        //
+        return st
+    }
+
 
     String sqlFind() {
         return """ 
@@ -42,7 +64,7 @@ select
     Usr.id, 
     Usr.login, 
     Usr.text, 
-    -- приоритетом идут данные от LinkFrom  
+    -- приоритетом идут данные от LinkFrom (исходящие запросы пользователя)  
     COALESCE(LinkFrom.usrFrom, LinkTo.usrFrom) usrFrom, 
     COALESCE(LinkFrom.usrTo, LinkTo.usrTo) usrTo, 
     COALESCE(LinkFrom.dbeg, LinkTo.dbeg) dbeg, 
@@ -74,8 +96,6 @@ where
         lower(text) like :text
     )
 order by
-    linkType, 
-    confirmState desc, 
     text, 
     login 
 
@@ -127,6 +147,30 @@ from
 union
 
 
+-- Входящие ссылки
+select 
+    Usr.id, 
+    Usr.login, 
+    Usr.text, 
+    Link.usrFrom, 
+    Link.usrTo, 
+    Link.dbeg, 
+    Link.dend, 
+    Link.linkType, 
+    Link.confirmState
+from
+    Link join Usr on (
+        Link.usrFrom = Usr.id and 
+        Link.usrTo = :usr and 
+        Link.confirmState = $RgmDbConst.ConfirmState_waiting and
+        Link.dbeg <= :dt and 
+        Link.dend > :dt
+    )
+"""
+    }
+
+    String sqlLinksTo_Waiting() {
+        return """
 -- Входящие ссылки
 select 
     Usr.id, 

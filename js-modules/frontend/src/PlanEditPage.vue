@@ -1275,7 +1275,7 @@ export default {
 
                 // Поможем компоненту TextInputText поставить фокус
                 let elTextInputText = this.$refs.textInputText
-                elTextInputText.onFocus()
+                elTextInputText.doFocus()
             }
         },
 

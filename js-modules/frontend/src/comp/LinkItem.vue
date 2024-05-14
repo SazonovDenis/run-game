@@ -384,21 +384,7 @@ export default {
 
 </script>
 
+
 <style>
-
-.item-first {
-    border-top: 1px solid silver;
-}
-
-.plan-count-text {
-    padding: 5px 4px 15px 4px;
-    margin-top: 2px;
-    width: 6em;
-    text-align: center;
-    font-size: .6em;
-    color: #202020;
-    background-color: #dbecfb;
-    border-radius: 10px;
-}
 
 </style>

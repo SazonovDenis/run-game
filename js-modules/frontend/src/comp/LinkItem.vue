@@ -8,14 +8,14 @@
         <q-item-section top avatar>
 
             <q-avatar
-                v-if="usr.linkType === 2000"
+                v-if="usr.linkType === LinkType_blocked"
                 icon="cancel"
                 color="grey-2"
                 text-color="grey-5">
             </q-avatar>
 
             <q-avatar
-                v-else-if="usr.confirmState === 1002"
+                v-else-if="usr.confirmState === ConfirmState_accepted"
                 icon="star"
                 color="grey-2"
                 text-color="yellow-8">
@@ -36,16 +36,21 @@
                 {{ usr.text }}
             </q-item-label>
 
-            <q-item-label caption v-if="usr.confirmState && usr.confirmState !== 1002">
+            <q-item-label
+                caption
+                v-if="usr.confirmState && usr.confirmState !== ConfirmState_accepted">
+
                 <template v-if="usr.usrFrom !== userId">
                     Просит добавления в {{ dictLinkTypeTo[usr.linkType] }}
                 </template>
 
-                <template v-if="usr.usrFrom === userId && usr.confirmState === 1001">
+                <template
+                    v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_waiting">
                     Вы ждете добавления в {{ dictLinkTypeFrom[usr.linkType] }}
                 </template>
 
-                <template v-if="usr.usrFrom === userId && usr.confirmState === 1003">
+                <template
+                    v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_refused">
                     Отказал в добавлении в {{ dictLinkTypeFrom[usr.linkType] }}
                 </template>
             </q-item-label>
@@ -57,7 +62,8 @@
 
             <div class="text-grey-8 q-gutter-xs">
 
-                <template v-if="usr.usrFrom !== userId && usr.confirmState === 1001">
+                <template
+                    v-if="usr.usrFrom !== userId && usr.confirmState === ConfirmState_waiting">
 
                     <q-btn
                         label="Отказать"
@@ -82,7 +88,7 @@
                 </template>
 
                 <template
-                    v-if="usr.usrFrom === userId && (usr.confirmState === 1001 || usr.confirmState === 1003)">
+                    v-if="usr.usrFrom === userId && (usr.confirmState === ConfirmState_waiting || usr.confirmState === ConfirmState_refused)">
 
                     <q-btn
                         label="Отменить"
@@ -236,6 +242,11 @@ import ctx from "run-game-frontend/src/gameplayCtx"
 export default {
 
     components: {},
+
+    // mixins
+    setup(props) {
+        return dbConst
+    },
 
     props: {
         usr: {

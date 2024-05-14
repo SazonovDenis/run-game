@@ -74,7 +74,7 @@
             </TextInputText>
 
             <TaskList
-                v-if="itemsSearchDone"
+                v-if="itemsShouldLoad"
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
@@ -118,18 +118,6 @@
                 </template>
 
             </TextInputPhoto>
-
-            <!--
-                        <TaskList
-                            v-if="itemsSearchDone"
-                            :showEdit="true"
-                            :tasks="itemsLoaded"
-                            :itemsMenu="itemsMenu_modeAddFact"
-                            :filter="filterLoaded"
-                            :actionLeftSlide="actionHide"
-                            messageNoItems="Слова на фото не найдены"
-                        />
-            -->
 
         </div>
 
@@ -429,7 +417,7 @@ export default {
 
             itemsExternal: [],
             itemsLoaded: [],
-            itemsSearchDone: false,
+            itemsShouldLoad: false,
 
             itemsAdd: [],
             itemsDel: [],
@@ -687,8 +675,8 @@ export default {
             this.itemAddMenuClick(item, false)
         },
 
-        itemsOnChange(searchDone) {
-            this.itemsSearchDone = searchDone
+        itemsOnChange(itemsShouldLoad) {
+            this.itemsShouldLoad = itemsShouldLoad
 
             // Ранее сформированные списки с разницей очищаем, ведь ищем заново
             this.itemsAdd = []

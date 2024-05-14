@@ -1,6 +1,7 @@
 package run.game.dao.backstage
 
 import jandcode.commons.*
+import jandcode.commons.error.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
@@ -22,6 +23,12 @@ class Item_list extends BaseMdbUtils {
      */
     @DaoMethod
     Store find(String text) {
+        text = text.toLowerCase().trim()
+
+        if (text.length() == 0) {
+            throw new XError("Строка для поиска не указана")
+        }
+
         // Текст с разделителями?
         Collection<String> lst = filterAndSplitWord(text)
 
@@ -75,7 +82,7 @@ class Item_list extends BaseMdbUtils {
 
 
         // ---
-        // word_spelling
+        // word_spelling - по фрагменту
         int count = 0
         stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
 

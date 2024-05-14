@@ -2,22 +2,16 @@
 
     <div class="row q-ma-sm">
 
-        <q-input
-            dense outlined clearable
-            debounce="300"
+        <RgmInputText
             :type="getTypeInput()"
             :class="getClassInput()"
-            ref="filterText"
-            v-model="filterText"
+            :loading="filterTextLoading"
             placeholder="Поиск в словаре"
-        >
 
-            <template v-slot:append v-if="!filterText">
-                <q-icon name="search"/>
-            </template>
+            v-model="filterText"
 
-        </q-input>
-
+            ref="filterText"
+        />
 
         <slot name="toolbar"></slot>
 
@@ -30,11 +24,12 @@
 import {daoApi} from "../dao"
 import MenuContainer from "./MenuContainer"
 import ctx from "../gameplayCtx"
+import RgmInputText from "./RgmInputText"
 
 export default {
 
     components: {
-        MenuContainer,
+        MenuContainer, RgmInputText,
     },
 
     props: {
@@ -47,8 +42,16 @@ export default {
     data() {
         return {
             filterText: "",
-            searchDone: false,
+            filterTextLoading: false,
         }
+    },
+
+    computed: {
+
+        filterTextShouldLoad() {
+            return this.filterText && this.filterText.length >= 2
+        }
+
     },
 
     methods: {
@@ -74,16 +77,16 @@ export default {
             this.filterText = ""
         },
 
-        doFocus(){
-            // Только через setTimeout удается добиться попадания фокуса на input
-            setTimeout(this.doFocusFilterText, 500);
+        doFocus() {
+            // Только через setTimeout удается добиться попадания фокуса на input,
+            // т.к. появлению нашего компонента в DOM мешают async-вызовы у родителя,
+            // из-за чего после нашего mounted родительский компонент еще не прорисован.
+            // Если async-загрузка родителя будет очень долгой, то и 500мс не хватит!
+            setTimeout(this.setFocusFilterText, 500);
         },
 
-        doFocusFilterText() {
-            let elFilterText = this.$refs.filterText
-            if (elFilterText) {
-                elFilterText.focus()
-            }
+        setFocusFilterText() {
+            this.$refs.filterText?.focus()
         },
 
     },
@@ -101,15 +104,34 @@ export default {
 
     watch: {
 
-        async filterText(valueNow, valuePrior) {
-            this.searchDone = false
-
+        async filterText(filterTextNow, filterTextPrior) {
+            // Новый поиск
             let items = []
-            if (valueNow && valueNow.length >= 2) {
-                let resApi = await daoApi.loadStore("m/Game/findItems", [valueNow, this.planId], {waitShow: false})
+
+            //
+            if (this.filterTextShouldLoad) {
+                let resApi = await daoApi.loadStore("m/Game/findItems", [filterTextNow, this.planId], {
+                    waitShow: false,
+                    onRequestState: (requestState) => {
+                        if (requestState === "start") {
+                            this.filterTextLoading = true
+                        } else {
+                            this.filterTextLoading = false
+                        }
+                    }
+                })
+
+                // Нашли
                 items = resApi.records
-                //
-                this.searchDone = true
+
+                // Внешние условия поменялись - отбросим результаты.
+                // Это важно, если пользователь печатает чаще, чем приходит ответ от сервера,
+                // (параметр debounce меньше, чем время ответа сервера).
+                // Тогда сюда приходят УСТАРЕВШИЕ результаты, которые надо отбросить в надежде на то,
+                // что ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
+                if (filterTextNow !== this.filterText) {
+                    return
+                }
             }
 
             // Заполним родительский список
@@ -120,7 +142,7 @@ export default {
 
             // Уведомим родителя
             if (this.itemsOnChange) {
-                this.itemsOnChange(this.searchDone)
+                this.itemsOnChange(this.filterTextShouldLoad)
             }
         },
 

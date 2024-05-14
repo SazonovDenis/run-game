@@ -81,9 +81,17 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
                 params: methodParams,
             }
 
-            // уведомляем
+            // ---
+            // Уведомляем
+
+            // Уведомим о событии того, кто указан в cfgInvoke
+            // (это ситуативный подписчик)
+            th.notifyRequestState("start", cfgInvoke)
+
+            // Вызовем того, кто указан как обработчик в th.onBeforeInvoke
             th.onBeforeInvoke(data)
 
+            //
             ajax.request({
                 url: th.url,
                 params: params,
@@ -91,7 +99,14 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
                 waitShow: cfgInvoke.waitShow,
             }).then((resp) => {
                 try {
-                    // уведомляем
+                    // ---
+                    // Уведомляем
+
+                    // Уведомим о событии того, кто указан в cfgInvoke
+                    // (это ситуативный подписчик)
+                    th.notifyRequestState("ok", cfgInvoke, resp.data)
+
+                    // Вызовем того, кто указан как обработчик в th.onAfterInvoke
                     th.onAfterInvoke(resp.data)
                 } finally {
                     if (Jc.cfg.envDev) {
@@ -111,11 +126,23 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
 
                 // ------
                 // Добавлено для проекта Rgm
+
+                // ---
+                // Уведомляем
+
+                // Уведомим о событии того, кто указан в cfgInvoke
+                // (это ситуативный подписчик)
+                th.notifyRequestState("error", cfgInvoke, jsonResp)
+
+                // Вызовем того, кто указан как обработчик в th.onAfterInvokeError
+                // (это постоянный обработчик)
                 if (th.onAfterInvokeError && th.onAfterInvokeError(jsonResp)) {
                     // Ошибку обработал тот, кто захотел, дальнейшая обработка не нужна.
                     console.error(jsonResp)
                     return
                 }
+
+                // Добавлено для проекта Rgm
                 // ------
 
                 if (Jc.cfg.envDev) {
@@ -147,6 +174,19 @@ export class MyJsonRpcClient extends apx.ApxJsonRpcClient {
         promise.jsonRpcId = id
 
         return promise
+    }
+
+
+    notifyRequestState(requestState, cfgInvoke, jsonResp) {
+        if (cfgInvoke.onRequestState) {
+            try {
+                // Уведомляем
+                cfgInvoke.onRequestState(requestState, jsonResp)
+            } catch(e) {
+                console.error("cfgInvoke.onAfterInvoke")
+                console.error(e)
+            }
+        }
     }
 
 

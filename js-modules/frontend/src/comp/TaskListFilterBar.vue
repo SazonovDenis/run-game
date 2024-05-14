@@ -12,21 +12,14 @@
                 </div>
         -->
 
-        <q-input
+        <RgmInputText
             v-model="inputFilterText"
             @update:modelValue="updateParent('filterText', $event)"
 
-            class="q-mr-sm"
+            class="q-mx-sm"
             style="max-width: 8em"
-            dense outlined clearable
             placeholder="Поиск"
-        >
-
-            <template v-slot:append v-if="!inputFilterText">
-                <q-icon name="search"/>
-            </template>
-
-        </q-input>
+        />
 
 
         <q-btn-dropdown
@@ -81,9 +74,16 @@
 
 <script>
 
+import RgmInputText from "./RgmInputText"
+
 export default {
 
     name: "TaskListFilterBar",
+
+    components: {
+        RgmInputText
+    },
+
 
     props: {
         filterText: String,

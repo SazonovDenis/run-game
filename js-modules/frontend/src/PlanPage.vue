@@ -40,22 +40,12 @@
                  v-if="visibleCount > 0"
             >
 
-                <div class="q-mr-sm">
-
-                    <q-input
-                        style="max-width: 10em"
-                        dense outlined clearable
-                        v-model="filterText"
-                        placeholder="Поиск"
-                    >
-
-                        <template v-slot:append v-if="!filterText">
-                            <q-icon name="search"/>
-                        </template>
-
-                    </q-input>
-
-                </div>
+                <RgmInputText
+                    class="q-mx-sm"
+                    style="max-width: 10em"
+                    v-model="filterText"
+                    placeholder="Поиск"
+                />
 
                 <q-btn-dropdown
                     @click="sortFieldMenu=true"
@@ -154,16 +144,18 @@
 
 <script>
 
-import {apx} from "./vendor"
-import gameplay from "./gameplay"
-import ctx from "./gameplayCtx"
-import auth from "./auth"
 import MenuContainer from "./comp/MenuContainer"
 import PlanInfo from "./comp/PlanInfo"
+import RgmInputText from "./comp/RgmInputText"
 import TaskList from "./comp/TaskList"
-import {daoApi} from "run-game-frontend/src/dao"
+import gameplay from "./gameplay"
+import {apx} from "./vendor"
+import ctx from "./gameplayCtx"
+import auth from "./auth"
+import {daoApi} from "./dao"
 
 export default {
+    
     name: "PlanPage",
 
     props: {
@@ -174,7 +166,7 @@ export default {
     },
 
     components: {
-        MenuContainer, PlanInfo, TaskList
+        MenuContainer, RgmInputText, PlanInfo, TaskList
     },
 
     data() {

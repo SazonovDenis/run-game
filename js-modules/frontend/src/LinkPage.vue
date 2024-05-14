@@ -7,29 +7,24 @@
 
         <template v-if="frameMode === 'find'">
 
-            <q-input
+            <RgmInputText
+                class="q-ma-sm"
+
+                :loading="filterTextLoading"
+
                 v-model="filterText"
                 ref="filterText"
 
-                class="q-ma-sm"
-
-                dense outlined clearable
                 placeholder="Поиск друзей"
-            >
-
-                <template v-slot:append v-if="!filterText">
-                    <q-icon name="search"/>
-                </template>
-
-            </q-input>
+            />
 
             <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
                 <LinkList
-                    v-if="usrsFindLoaded"
+                    v-if="filterTextShouldLoad"
                     :usrs="usrsFind"
                     :splitLinkType="false"
-                    :messageNoItems="'Пользователь \'' + filterText + '\' не найден'"
+                    :messageNoItems="filterTextLoading ? '' : 'Пользователь не найден'"
                 />
 
             </q-scroll-area>
@@ -95,16 +90,18 @@
 <script>
 
 import MenuContainer from "./comp/MenuContainer"
-import {daoApi} from "./dao"
 import LinkList from "./comp/LinkList"
+import RgmInputText from "./comp/RgmInputText"
+import {daoApi} from "./dao"
 import ctx from "./gameplayCtx"
-import auth from "run-game-frontend/src/auth"
+import auth from "./auth"
 
 export default {
 
     components: {
-        LinkList,
         MenuContainer,
+        RgmInputText,
+        LinkList,
     },
 
     props: {},
@@ -115,20 +112,18 @@ export default {
             usrsFind: [],
 
             dataLoaded: false,
-            usrsFindLoaded: false,
+
+            frameMode: "list",
 
             filterText: "",
-            frameMode: "list",
+            filterTextLoading: false,
         }
     },
 
     watch: {
 
         async filterText(valueNow, valuePrior) {
-            this.usrsFindLoaded = false
-            this.usrsFind = []
-
-            //
+            // Новый поиск
             this.doFind(valueNow)
         },
 
@@ -154,19 +149,47 @@ export default {
             }
         },
 
+        filterTextShouldLoad() {
+            return this.filterText && this.filterText.length >= 2
+        }
+
     },
 
     methods: {
 
-        async doFind(valueNow) {
-            if (valueNow && valueNow.length >= 2) {
-                //
-                let resApi = await daoApi.loadStore("m/Link/usrFind", [valueNow], {waitShow: false})
-                this.usrsFind = resApi.records
+        async doFind(filterText) {
+            // Ищем
+            let usrsFind = []
 
-                //
-                this.usrsFindLoaded = true
+            //
+            if (this.filterTextShouldLoad) {
+                let resApi = await daoApi.loadStore("m/Link/usrFind", [filterText], {
+                    waitShow: false,
+                    onRequestState: (requestState) => {
+                        if (requestState === "start") {
+                            this.filterTextLoading = true
+                        } else {
+                            this.filterTextLoading = false
+                        }
+                    }
+                })
+
+                // Нашли
+                usrsFind = resApi.records
+
+                // Внешние условия поменялись - отбросим результаты.
+                // Это важно, если пользователь печатает чаще, чем приходит ответ от сервера,
+                // (параметр debounce меньше, чем время ответа сервера).
+                // Тогда сюда приходят УСТАРЕВШИЕ результаты, которые надо отбросить в надежде на то,
+                // что ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
+                if (filterText !== this.filterText) {
+                    return
+                }
             }
+
+
+            // Запишем в data
+            this.usrsFind = usrsFind
         },
 
         async doLoad() {
@@ -196,28 +219,17 @@ export default {
             this.frameMode = "list-blocked"
         },
 
-        setFrameMode_find() {
+        async setFrameMode_find() {
             this.frameMode = "find"
 
             //
             this.filterText = ""
-            this.usrsFindLoaded = false
             this.usrsFind = []
 
-            //
-            this.doFocus()
-        },
-
-        doFocus() {
-            // Только через setTimeout удается добиться попадания фокуса на input
-            setTimeout(this.doFocusFilterText, 500);
-        },
-
-        doFocusFilterText() {
-            let elFilterText = this.$refs.filterText
-            if (elFilterText) {
-                elFilterText.focus()
-            }
+            // Только после $nextTick filterText появится в DOM
+            // и тогда удастся добиться попадания фокуса на input
+            await this.$nextTick()
+            this.$refs.filterText.focus()
         },
 
     },
@@ -227,7 +239,7 @@ export default {
         this.usrs = []
 
         //
-        this.doLoad()
+        await this.doLoad()
 
         //
         this.dataLoaded = true

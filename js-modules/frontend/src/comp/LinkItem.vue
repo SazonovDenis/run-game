@@ -190,6 +190,7 @@
                 >
                     <q-list>
                         <q-item
+                            v-if="usr.linkType && usr.linkType !== LinkType_blocked && usr.confirmState === ConfirmState_accepted"
                             clickable v-close-popup
                             class="q-ma-md"
                             @click="usrBreakLink(usr)"
@@ -200,17 +201,19 @@
                         </q-item>
 
                         <q-item
+                            v-if="usr.linkType !== LinkType_blocked"
                             clickable v-close-popup
                             class="q-ma-md"
                             @click="usrBlock(usr)"
                         >
                             <q-item-section>
-                                <q-item-label>Удалить и заблокировать
+                                <q-item-label>Заблокировать
                                 </q-item-label>
                             </q-item-section>
                         </q-item>
 
                         <q-item
+                            v-if="usr.linkType === LinkType_blocked"
                             clickable v-close-popup
                             class="q-ma-md"
                             @click="usrUnblock(usr)"

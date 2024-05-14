@@ -337,3 +337,23 @@ itemsOnLoading: {type: Function},
   подтверждения, после чего противоречащий запрос удалаяется
 - два пользователя запросили друг друга о совместимом (друг - друг) - срабатывает само
 - невозможно заблокировать пользователя, который не в друзьях
+
+### Написать, зачем immediate: true,
+
+LinkList
+
+```
+watch.usrs.handler {
+   ...
+},
+immediate: true,
+```
+
+TaskOptions
+
+```
+watch.taskOptions.handler {
+   ...
+},
+immediate: true,
+```

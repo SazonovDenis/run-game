@@ -59,6 +59,7 @@
                 :planId="planId"
                 :items="itemsLoaded"
                 :itemsOnChange="itemsOnChange"
+                :itemsOnLoading="itemsOnLoading"
                 :isToolbarUsed="this.hiddenCountLoaded > 0"
                 ref="textInputText"
             >
@@ -80,7 +81,7 @@
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filterLoaded"
                 :actionLeftSlide="actionHide"
-                messageNoItems="Слова не найдены"
+                :messageNoItems="itemsIsLoading ? '' : 'Слова не найдены'"
             >
 
             </TaskList>
@@ -417,7 +418,10 @@ export default {
 
             itemsExternal: [],
             itemsLoaded: [],
+
+            // Странный способ получить данные из дочернего компонента
             itemsShouldLoad: false,
+            itemsIsLoading: false,
 
             itemsAdd: [],
             itemsDel: [],
@@ -673,6 +677,10 @@ export default {
 
         itemOnClick(item) {
             this.itemAddMenuClick(item, false)
+        },
+
+        itemsOnLoading(itemsIsLoading) {
+            this.itemsIsLoading = itemsIsLoading
         },
 
         itemsOnChange(itemsShouldLoad) {

@@ -36,6 +36,7 @@ export default {
         planId: null,
         items: {type: Array, default: []},
         itemsOnChange: {type: Function},
+        itemsOnLoading: {type: Function},
         isToolbarUsed: {type: Boolean},
     },
 
@@ -117,6 +118,11 @@ export default {
                             this.filterTextLoading = true
                         } else {
                             this.filterTextLoading = false
+                        }
+
+                        // Уведомим родителя
+                        if (this.itemsOnLoading) {
+                            this.itemsOnLoading(this.filterTextLoading)
                         }
                     }
                 })

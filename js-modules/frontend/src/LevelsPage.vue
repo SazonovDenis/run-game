@@ -403,19 +403,6 @@ export default {
 
 <style>
 
-/*
-.game-plan-item {
-    margin: 0.5em 1em;
-    padding: 0.5em 1em 0.8em 1em;
-
-    border: 1px solid #e0e0e0;
-    border-radius: 0.5rem;
-
-    font-size: 120%;
-    color: #2d2d2d;
-}
-*/
-
 .item-first {
     border-top: 1px solid silver;
 }

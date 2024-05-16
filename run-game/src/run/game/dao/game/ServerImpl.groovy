@@ -321,9 +321,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
-
-    // Стоит ли при поиске "вык" ("навык") выдавать все варианты перевода Item,
-    // или всё-таки только только варианты, которые явно содержат "вык"
     @DaoMethod
     Store findItems(String text, long idPlan) {
         // Ищем Item по text
@@ -331,7 +328,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Store stItem = itemsList.find(text)
 
         // Превратим список Item в список пар фактов
-        //Set itemIds = stItem.getUniqueValues("id")
         Store stFact = loadFactList(stItem, idPlan)
 
         // Дополним факты в плане "богатыми" данными для вопроса и ответа

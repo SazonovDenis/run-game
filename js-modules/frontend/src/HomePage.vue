@@ -20,6 +20,11 @@ import {daoApi} from "./dao"
 import MenuContainer from "./comp/MenuContainer"
 import PlanEditPage from "./PlanEditPage"
 
+/**
+ * Главная страница.
+ * Представляет собой редактор плана, включенный в режиме добавления слов.
+ * План - план по умолчанию текущего пользователя.
+ */
 export default {
 
     name: "HomePage",
@@ -36,10 +41,10 @@ export default {
     },
 
     async mounted() {
-        let userInfo = auth.getUserInfo()
+        let userInfo = auth.getContextUserInfo()
         let planDefaultId = userInfo.planDefault
 
-        //
+        // Загрузим план по умолчанию текущего пользователя
         let resApi = await daoApi.loadStore(
             'm/Plan/getPlan', [planDefaultId]
         )

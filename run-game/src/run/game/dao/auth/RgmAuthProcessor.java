@@ -5,8 +5,6 @@ import jandcode.core.auth.*;
 import jandcode.core.dbm.*;
 import jandcode.core.dbm.mdb.*;
 import jandcode.core.store.*;
-import run.game.dao.link.*;
-import run.game.util.*;
 
 import java.util.*;
 
@@ -38,32 +36,23 @@ public class RgmAuthProcessor extends BaseComp implements AuthProcessor {
             }
 
             //
-            return createAuthUser(mdb, rec.getLong("id"), rec.getString("login"), rec.getString("text"));
+            return createAuthUser(mdb, rec.getLong("id"));
 
         } finally {
             mdb.disconnect();
         }
     }
 
-    protected AuthUser createAuthUser(Mdb mdb, long idUsr, String login, String text) throws Exception {
+    protected AuthUser createAuthUser(Mdb mdb, long idUsr) throws Exception {
         Map<String, Object> attrs = new LinkedHashMap<>();
-        attrs.put("id", idUsr);
-        attrs.put("login", login);
-        attrs.put("text", text);
 
         // ---
-        // Дополнительная информация о пользователе
-
-        // План "Мои слова"
+        // Информация о пользователе
         Usr_upd upd = mdb.create(Usr_upd.class);
-        long planDefault = upd.getPlanDefault(idUsr);
-        attrs.put("planDefault", planDefault);
+        Map<String, Object> userInfo = upd.loadInfo(idUsr);
 
-        // Неотвеченные запросы в друзья
-        Link_list link_list = mdb.create(Link_list.class);
-        Store stLinksToWaiting = link_list.loadLinksToWaiting(idUsr);
-        attrs.put("linksToWait", DataUtils.storeToList(stLinksToWaiting));
-
+        //
+        attrs.putAll(userInfo);
 
         //
         return new DefaultAuthUser(attrs);

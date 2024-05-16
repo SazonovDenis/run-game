@@ -3,6 +3,7 @@
 
     <q-item class=""
             clickable v-ripple
+            @click="onUsrClick(usr)"
     >
 
         <q-item-section top avatar>
@@ -238,9 +239,11 @@
 <script>
 
 import {daoApi} from "../dao"
-import dbConst from "../dao/dbConst"
+import {apx} from "../vendor"
 import auth from "../auth"
-import ctx from "run-game-frontend/src/gameplayCtx"
+import ctx from "../gameplayCtx"
+import gameplay from "../gameplay"
+import dbConst from "../dao/dbConst"
 
 export default {
 
@@ -290,6 +293,21 @@ export default {
     },
 
     methods: {
+
+        async onUsrClick(usr) {
+            if (usr.linkType === dbConst.LinkType_child || usr.linkType === dbConst.LinkType_student) {
+                await gameplay.api_loginContextUser(usr.id)
+
+                //
+                let userInfo = auth.getUserInfo()
+                ctx.eventBus.emit("contextUserChanged", userInfo.contextUser)
+
+                //
+                apx.showFrame({
+                    frame: '/'
+                })
+            }
+        },
 
         async request_friend(usr) {
             this.request(usr, dbConst.LinkType_friend)

@@ -7,6 +7,8 @@ import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.backstage.*
+import run.game.dao.link.*
+import run.game.util.*
 
 public class Usr_upd extends RgmMdbUtils {
 
@@ -18,12 +20,26 @@ public class Usr_upd extends RgmMdbUtils {
     public static final String msg_is_required_login = "Указание логина обязательно"
 
     @DaoMethod
-    public StoreRecord loadCurrentUser() {
-        long idUsr = getCurrentUserId()
-        return loadRec(idUsr)
+    public Map<String, Object> getCurrentUserInfo() {
+        long idUsr = getCurrentUsrId()
+        return loadInfo(idUsr)
     }
 
-   @DaoMethod
+    @DaoMethod
+    public Map<String, Object> getDependentUserInfo(idUsr) {
+        // Проверим, что пользователь idCurrentUsr имеет право запрашивать данные для idUsr
+        long idCurrentUsr = getCurrentUsrId()
+        Link_list link_list = getMdb().create(Link_list.class);
+        StoreRecord recUsrDependent = link_list.loadLinkDependent(idCurrentUsr, idUsr)
+        if (recUsrDependent == null) {
+            throw new Exception("Вы не имеете доступа к данным этого пользователя");
+        }
+
+        //
+        return loadInfo(idUsr)
+    }
+
+    @DaoMethod
     public StoreRecord ins(Map params) {
         // --- Проверки
 
@@ -64,7 +80,7 @@ public class Usr_upd extends RgmMdbUtils {
 
 
         // --- Запись
-        long id = mdb.insertRec("Usr", params)
+        long idUsr = mdb.insertRec("Usr", params)
 
 
         // --- Создадим окружение пользователя
@@ -75,16 +91,15 @@ public class Usr_upd extends RgmMdbUtils {
                 [text: "Мои слова", isPublic: false],
                 [],
                 [[tag: RgmDbConst.Tag_plan_access_default]],
-                [usr: id, isOwner: true]
+                [usr: idUsr, isOwner: true]
         )
 
 
         // ---
-        return loadRec(id)
+        return loadRec(idUsr)
     }
 
-
-    long getPlanDefault(long idUsr) {
+    long loadPlanDefault(long idUsr) {
         String sql =
                 """
 select
@@ -101,11 +116,10 @@ from
         return planDefault
     }
 
-
     @DaoMethod
     public StoreRecord upd(Map params) {
         // --- Проверки
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         // Нет такого пользователя?
         String login = params.get("login")
@@ -149,15 +163,42 @@ from
         return loadRec(idUsr)
     }
 
-    StoreRecord loadRec(long id) {
+    StoreRecord loadRec(long idUsr) {
         StoreRecord rec = mdb.loadQueryRecord(
                 "select id, login, text from Usr where id = :id",
-                ["id": id],
+                ["id": idUsr],
                 false
         )
 
         //
         return rec
+    }
+
+    public Map<String, Object> loadInfo(long idUsr) {
+        Map<String, Object> userInfo = new HashMap<>()
+
+        //
+        StoreRecord rec = loadRec(idUsr)
+        userInfo.putAll(rec.getValues())
+
+        // ---
+        // Дополнительная информация
+        Link_list link_list = getMdb().create(Link_list.class);
+
+        // План по умолчанию
+        long planDefault = loadPlanDefault(idUsr)
+        userInfo.put("planDefault", planDefault)
+
+        // Неотвеченные запросы в друзья
+        Store stLinksToWaiting = link_list.loadLinksToWaiting(idUsr)
+        userInfo.put("linksToWait", DataUtils.storeToList(stLinksToWaiting))
+
+        // Зависимые пользователи
+        Store stLinksDependent = link_list.loadLinksDependent(idUsr)
+        userInfo.put("linksDependent", DataUtils.storeToList(stLinksDependent))
+
+        //
+        return userInfo
     }
 
     StoreRecord loadByLoginPassword(String login, String password) {

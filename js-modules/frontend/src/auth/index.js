@@ -29,6 +29,27 @@ export default {
         } else {
             return true
         }
-    }
+    },
+
+    /**
+     * Информация о пользователе
+     * @returns {*}
+     */
+    getContextUserInfo: function() {
+        let userInfo = apx.cfg.userInfo
+
+        if (userInfo.contextUser) {
+            userInfo = userInfo.contextUser
+        }
+
+        // Чтобы правильно вызывалось api, иначе получается не та ошибка,
+        // которая на самом деле (пользователь не зарегистрирован),
+        // а ошибка передачи параметров в api
+        if (!userInfo.planDefault) {
+            userInfo.planDefault = 0
+        }
+
+        return userInfo
+    },
 
 }

@@ -23,8 +23,8 @@ class Plan_upd extends RgmMdbUtils {
         // План - не публичный
         plan.put("isPublic", false)
 
-        // Владелец плана - текущий пользователь
-        long idUsr = getCurrentUserId()
+        // Владелец плана - текущий или контекстный пользователь
+        long idUsr = getContextOrCurrentUsrId()
         Map usrPlan = [usr: idUsr, isOwner: true]
 
         // Добавляем план в БД
@@ -80,7 +80,7 @@ class Plan_upd extends RgmMdbUtils {
         checkPlanTasks(idPlan)
 
         // Пересчитаем кубы
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
         cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
@@ -101,7 +101,7 @@ class Plan_upd extends RgmMdbUtils {
         }
 
         // Пересчитаем кубы
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
         cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
@@ -120,7 +120,7 @@ class Plan_upd extends RgmMdbUtils {
         validatePlanDel(idPlan)
 
         // Метки доступа
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         mdb.execQuery("delete from UsrPlan where plan = :plan and usr = :usr", [plan: idPlan, usr: idUsr])
         // Другие ссылки
         //mdb.execQuery("delete from PlanFact where plan = :plan", [plan: plan])
@@ -135,7 +135,7 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void addUsrPlan(long idPlan) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         //
@@ -161,7 +161,7 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void delUsrPlan(long idPlan) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         //
@@ -182,7 +182,7 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void hideUsrPlan(long idPlan) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         //
@@ -203,7 +203,7 @@ class Plan_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void unhideUsrPlan(long idPlan) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isOwner"))) {
@@ -324,9 +324,9 @@ group by
     }
 
     void validatePlanDel(long idPlan) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         Usr_upd upd = mdb.create(Usr_upd)
-        long planDefault = upd.getPlanDefault(idUsr)
+        long planDefault = upd.loadPlanDefault(idUsr)
         //
         if (idPlan == planDefault) {
             throw new XError("Невозможно удалить план по умолчанию")

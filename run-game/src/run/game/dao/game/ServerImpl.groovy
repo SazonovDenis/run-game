@@ -24,7 +24,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox getGame(long idGame) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         //
         return loadAndPrepareGame(idGame, idUsr)
@@ -32,7 +32,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox getLastGame() {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         StoreRecord recGame = mdb.loadQueryRecord(sqlLastGame(), [usr: idUsr], false)
 
         //
@@ -49,7 +49,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox getActiveGame() {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         //
         StoreRecord recGame = loadActiveGameRec()
@@ -67,7 +67,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     @DaoMethod
     public void closeActiveGame() {
         // Закроем игру
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         //
         StoreRecord recGame = loadActiveGameRec()
@@ -90,7 +90,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
     protected StoreRecord loadActiveGameRec() {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
 
         //
@@ -122,7 +122,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // ---
         // Добавим участника игры
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         mdb.insertRec("GameUsr", [usr: idUsr, game: idGame])
 
 
@@ -224,7 +224,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     public void postTaskAnswer(long idGameTask, Map taskResult) {
         // Загрузим выданное задание. Если задание чужое, то запись
         // загрузится пустой и будет ошибка, что нормально.
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         StoreRecord recGameTask = mdb.loadQueryRecord(sqlGameTask(), [id: idGameTask, usr: idUsr])
 
 
@@ -272,7 +272,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         DataBox res = new DataBox()
 
         //
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
 
         //
         Plan_list list = mdb.create(Plan_list)
@@ -645,7 +645,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Поиск Item: формируем пары фактов spelling -> translate, т.е. все варианты перевода (для списка itemIds).
         // Список с информацией пользователя, наличие/отсутствие в указанном плане, статистикой.
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         mdb.loadQuery(stPlanFact, sqlPlanFactStatistic_Items(itemIds), [usr: idUsr, plan: idPlan])
 
         // Поиск Fact
@@ -927,7 +927,7 @@ where
         DataBox res = new DataBox()
 
         //
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
 
         // --- Формируем задание
@@ -1188,7 +1188,7 @@ where
 
 
     protected StoreRecord choiceGameTask(long idGame) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         // Извлечем не выданные задания
         Store stGameTask = mdb.loadQuery(sqlChoiceTask(), [
@@ -1210,7 +1210,7 @@ where
 
 
     protected StoreRecord getGameLastTask(long idGame) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         // Извлечем выданное, но не отвеченное задание
         Store stGameTask = mdb.loadQuery(sqlGetTask(), [

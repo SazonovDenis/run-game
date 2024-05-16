@@ -19,7 +19,7 @@ class Link_upd extends RgmMdbUtils {
         StoreRecord recLink = mdb.createStoreRecord("Link", mapLink)
 
         //
-        long usr = getCurrentUserId()
+        long usr = getCurrentUsrId()
         long usrTo = recLink.getLong("usrTo")
         long linkType = recLink.getLong("linkType")
         XDateTime dt = XDateTime.now()
@@ -145,7 +145,7 @@ class Link_upd extends RgmMdbUtils {
      */
     @DaoMethod
     void usrBreakLink(long usrTo) {
-        long usrFrom = getCurrentUserId()
+        long usrFrom = getCurrentUsrId()
 
         // Связь от пользователя
         StoreRecord recLinkFrom = loadActiveLink(usrFrom, usrTo)
@@ -208,7 +208,7 @@ class Link_upd extends RgmMdbUtils {
      * @return исходящий запрос
      */
     StoreRecord createLinkOutcoming() {
-        long usr = getCurrentUserId()
+        long usr = getCurrentUsrId()
         XDateTime dt = XDateTime.now()
 
         StoreRecord recLinkBack = mdb.createStoreRecord("Link.upd")
@@ -247,7 +247,7 @@ class Link_upd extends RgmMdbUtils {
         StoreRecord recLink = mdb.createStoreRecord("Link", mapLink)
 
         //
-        long usr = getCurrentUserId()
+        long usr = getCurrentUsrId()
         long usrFrom = recLink.getLong("usrFrom")
 
         // Загрузим входящий запрос
@@ -266,7 +266,7 @@ class Link_upd extends RgmMdbUtils {
         StoreRecord recLink = mdb.createStoreRecord("Link", mapLink)
 
         //
-        long usr = getCurrentUserId()
+        long usr = getCurrentUsrId()
         long usrTo = recLink.getLong("usrTo")
 
         // Загрузим входящий запрос
@@ -283,7 +283,7 @@ class Link_upd extends RgmMdbUtils {
         StoreRecord recLink = mdb.createStoreRecord("Link")
 
         //
-        long usrFrom = getCurrentUserId()
+        long usrFrom = getCurrentUsrId()
         XDateTime dt = XDateTime.now()
 
         // Загрузим запись о блокировке

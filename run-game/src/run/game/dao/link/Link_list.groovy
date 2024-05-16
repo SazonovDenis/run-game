@@ -13,7 +13,7 @@ class Link_list extends RgmMdbUtils {
         Store st = mdb.createStore("Link.list")
 
         //
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         XDateTime dt = XDateTime.now()
         String text = "%" + userName.toLowerCase() + "%"
         mdb.loadQuery(st, sqlFind(), [usr: idUsr, dt: dt, text: text])
@@ -27,7 +27,7 @@ class Link_list extends RgmMdbUtils {
         Store st = mdb.createStore("Link.list")
 
         //
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         XDateTime dt = XDateTime.now()
         mdb.loadQuery(st, sqlList(), [usr: idUsr, dt: dt])
 
@@ -37,7 +37,7 @@ class Link_list extends RgmMdbUtils {
 
     @DaoMethod
     Store getLinksToWaiting() {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         //
         Store st = this.loadLinksToWaiting(idUsr)
@@ -55,6 +55,25 @@ class Link_list extends RgmMdbUtils {
 
         //
         return st
+    }
+
+    Store loadLinksDependent(long idUsr) {
+        Store st = mdb.createStore("Link.list")
+
+        //
+        XDateTime dt = XDateTime.now()
+        mdb.loadQuery(st, sqlLinksFrom_Dependent(), [usr: idUsr, dt: dt])
+
+        //
+        return st
+    }
+
+    StoreRecord loadLinkDependent(long idUsr, long idUsrTo) {
+        XDateTime dt = XDateTime.now()
+        StoreRecord rec = mdb.loadQueryRecord(sqlLinkFrom_Dependent(), [usr: idUsr, usrTo: idUsrTo, dt: dt], false)
+
+        //
+        return rec
     }
 
 
@@ -183,13 +202,53 @@ select
     Link.linkType, 
     Link.confirmState
 from
-    Link join Usr on (
-        Link.usrFrom = Usr.id and 
-        Link.usrTo = :usr and 
-        Link.confirmState = $RgmDbConst.ConfirmState_waiting and
-        Link.dbeg <= :dt and 
-        Link.dend > :dt
-    )
+    Link join Usr on (Link.usrFrom = Usr.id)
+where
+    Link.usrTo = :usr and 
+    Link.confirmState = $RgmDbConst.ConfirmState_waiting and
+    Link.dbeg <= :dt and 
+    Link.dend > :dt
+"""
+    }
+
+    String sqlLinksFrom_Base() {
+        return """
+-- Исходящие ссылки
+select 
+    Usr.id, 
+    Usr.login, 
+    Usr.text, 
+    Link.usrFrom, 
+    Link.usrTo, 
+    Link.dbeg, 
+    Link.dend, 
+    Link.linkType, 
+    Link.confirmState
+from
+    Link join Usr on (Link.usrFrom = Usr.id)
+where
+    Link.usrFrom = :usr and
+    Link.confirmState = $RgmDbConst.ConfirmState_accepted and
+    Link.dbeg <= :dt and 
+    Link.dend > :dt
+"""
+    }
+
+    String sqlLinksFrom_Dependent() {
+        return """          
+${sqlLinksFrom_Base()}
+    and
+    Link.linkType in ($RgmDbConst.LinkType_myChild, $RgmDbConst.LinkType_myStudent)
+"""
+    }
+
+
+    String sqlLinkFrom_Dependent() {
+        return """          
+${sqlLinksFrom_Base()}
+    and
+    Link.usrTo = :usrTo and 
+    Link.linkType in ($RgmDbConst.LinkType_myChild, $RgmDbConst.LinkType_myStudent)
 """
     }
 

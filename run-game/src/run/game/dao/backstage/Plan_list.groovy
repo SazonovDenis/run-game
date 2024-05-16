@@ -1,6 +1,6 @@
 package run.game.dao.backstage
 
-import jandcode.commons.error.XError
+import jandcode.commons.error.*
 import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
@@ -52,7 +52,7 @@ class Plan_list extends RgmMdbUtils {
         Store res = mdb.createStore("Plan.list.statistic")
 
         //
-        long idUsr = getCurrentUserId()
+        long idUsr = getContextOrCurrentUsrId()
         params.put("usr", idUsr)
 
         //

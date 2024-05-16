@@ -95,7 +95,7 @@ export default {
         this.dataLoaded = false
 
         // Текущий пользователь
-        let userInfo = await gameplay.api_loadCurrentUser()
+        let userInfo = await gameplay.api_getCurrentUser()
         //
         this.userInfo.id = userInfo.id
         this.userInfo.login = userInfo.login

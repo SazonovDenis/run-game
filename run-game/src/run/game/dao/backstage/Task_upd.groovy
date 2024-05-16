@@ -73,14 +73,14 @@ class Task_upd extends RgmMdbUtils {
         }
 
         // Пересчитаем кубы
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
         RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
         cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
 
     @DaoMethod
     void saveUsrFact(long factQuestion, long factAnswer, Map dataUsrFact) {
-        long idUsr = getCurrentUserId()
+        long idUsr = getCurrentUsrId()
 
         if (isEmptyUsrFact(dataUsrFact)) {
             mdb.deleteRec("UsrFact", [usr: idUsr, factQuestion: factQuestion, factAnswer: factAnswer])

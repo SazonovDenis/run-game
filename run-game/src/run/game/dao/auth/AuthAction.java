@@ -16,6 +16,8 @@ import java.util.*;
  */
 public class AuthAction extends BaseAction {
 
+    public static final String SESSION_KEY_CONTEXT_USER = AuthConsts.class.getName() + ".CONTEXTUSER";
+
     /**
      *
      */
@@ -27,6 +29,18 @@ public class AuthAction extends BaseAction {
         String password = requestUtils.getParams().getString("password");
         //
         loginInternal(login, password);
+    }
+
+    /**
+     *
+     */
+    public void loginContextUser() throws Exception {
+        ActionRequestUtils requestUtils = getReq();
+
+        // Проверим пользователя
+        long usr = requestUtils.getParams().getLong("usr");
+        //
+        loginContextUserInternal(usr);
     }
 
     public void register() throws Exception {
@@ -61,7 +75,6 @@ public class AuthAction extends BaseAction {
      * logout
      */
     public void logout() throws Exception {
-        AuthService authSvc = getApp().bean(AuthService.class);
         ActionRequestUtils requestUtils = getReq();
 
         // Убираем пользователя из сессии
@@ -69,6 +82,17 @@ public class AuthAction extends BaseAction {
 
         // Возвращаем в HTTP заголовках сигнал об окончании сессии
         requestUtils.getHttpRequest().getSession().invalidate();
+
+        // Возвращаем пустые данные
+        String s = UtJson.toJson(new HashMap());
+        requestUtils.render(s);
+    }
+
+    public void logoutContextUser() throws Exception {
+        // Убираем контекстного пользователя из сессии текущего пользователя
+        ActionRequestUtils requestUtils = getReq();
+        AuthUser authUser = (AuthUser) requestUtils.getSession().get(AuthConsts.SESSION_KEY_USER);
+        authUser.getAttrs().put(AuthAction.SESSION_KEY_CONTEXT_USER, null);
 
         // Возвращаем пустые данные
         String s = UtJson.toJson(new HashMap());
@@ -88,6 +112,31 @@ public class AuthAction extends BaseAction {
 
         // Читаем и возвращаем данные пользователя
         String s = UtJson.toJson(authUser.getAttrs());
+        requestUtils.render(s);
+    }
+
+    private void loginContextUserInternal(long idUsr) throws Exception {
+        // Информация о контекстном пользователе
+        AuthUser contextUser;
+        //
+        ModelService modelService = getApp().bean(ModelService.class);
+        Mdb mdb = modelService.getModel().createMdb();
+        mdb.connect();
+        try {
+            Usr_upd upd = mdb.create(Usr_upd.class);
+            Map<String, Object> mapUserInfo = upd.getDependentUserInfo(idUsr);
+            contextUser = new DefaultAuthUser(mapUserInfo);
+        } finally {
+            mdb.disconnect();
+        }
+
+        // Записываем контекстного пользователя в сессию текущего пользователя
+        ActionRequestUtils requestUtils = getReq();
+        AuthUser authUser = (AuthUser) requestUtils.getSession().get(AuthConsts.SESSION_KEY_USER);
+        authUser.getAttrs().put(AuthAction.SESSION_KEY_CONTEXT_USER, contextUser);
+
+        // Возвращаем данные пользователя
+        String s = UtJson.toJson(contextUser.getAttrs());
         requestUtils.render(s);
     }
 

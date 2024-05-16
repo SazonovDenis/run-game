@@ -254,7 +254,7 @@ export default {
 
     async api_getPlansVisible() {
         let resApi = await daoApi.loadStore(
-            "m/Plan/getPlansVisible", {}
+            "m/Plan/getPlansVisible", []
         )
 
         return resApi.records
@@ -262,7 +262,7 @@ export default {
 
     async api_getPlansPublic() {
         let resApi = await daoApi.loadStore(
-            "m/Plan/getPlansPublic", {}
+            "m/Plan/getPlansPublic", []
         )
 
         return resApi.records
@@ -378,15 +378,15 @@ export default {
         return res
     },
 
-    async api_loadCurrentUser() {
-        let res = await daoApi.loadStore("m/Usr/loadCurrentUser", [])
+    async api_getCurrentUser() {
+        let res = await daoApi.invoke("m/Usr/getCurrentUserInfo", [])
 
         //
-        return res.records[0]
+        return res
     },
 
     async api_login(login, password) {
-        let res = await apx.jcBase.ajax.request({
+        let res = await apx.ajax.request({
             url: "auth/login",
             params: {login: login, password: password},
         })
@@ -395,8 +395,18 @@ export default {
         this.setAuthUserInfo(res.data)
     },
 
+    async api_loginContextUser(usrId) {
+        let res = await apx.ajax.request({
+            url: "auth/loginContextUser",
+            params: {usr: usrId},
+        })
+
+        //
+        this.setContextUserInfo(res.data)
+    },
+
     async api_updUsr(userInfo) {
-        let res = await apx.jcBase.ajax.request({
+        let res = await ajax.request({
             url: "auth/updUsr",
             params: {
                 text: userInfo.text, login: userInfo.login, password: userInfo.password
@@ -408,7 +418,7 @@ export default {
     },
 
     async api_register(text, login, password) {
-        let res = await apx.jcBase.ajax.request({
+        let res = await apx.ajax.request({
             url: "auth/register",
             params: {text: text, login: login, password: password},
         })
@@ -418,7 +428,7 @@ export default {
     },
 
     async api_logout() {
-        let res = await apx.jcBase.ajax.request({
+        let res = await apx.ajax.request({
             url: "auth/logout",
         })
 
@@ -428,6 +438,16 @@ export default {
         // Задание и раунд в глобальном контексте
         ctx.gameplay.globalClear_Game()
     },
+
+    async api_logoutContextUser(login, password) {
+        let res = await apx.ajax.request({
+            url: "auth/logoutContextUser",
+        })
+
+        //
+        this.clearContextUserInfo()
+    },
+
 
     /**
      * Записывает данные пользователя data (например, пришедшие от ajax-запроса авторизации auth/login)
@@ -448,6 +468,23 @@ export default {
         userInfo.color = data.color
         userInfo.planDefault = data.planDefault
         userInfo.linksToWait = data.linksToWait
+        userInfo.linksDependent = data.linksDependent
+
+        //
+        this.clearContextUserInfo()
+    },
+
+    setContextUserInfo(data) {
+        let contextUser = {}
+        contextUser.id = data.id
+        contextUser.login = data.login
+        contextUser.text = data.text
+        contextUser.guest = data.guest
+        contextUser.color = data.color
+        contextUser.planDefault = data.planDefault
+        //
+        let userInfo = auth.getUserInfo()
+        userInfo.contextUser = contextUser
     },
 
     /**
@@ -464,8 +501,16 @@ export default {
         userInfo.color = null
         userInfo.planDefault = null
         userInfo.linksToWait = []
+        userInfo.linksDependent = []
+
+        //
+        this.clearContextUserInfo()
     },
 
+    clearContextUserInfo() {
+        let userInfo = auth.getUserInfo()
+        userInfo.contextUser = null
+    },
 
     // Сбрасываем состояние результата (цели)
     resetGoal(text) {

@@ -213,7 +213,7 @@ class Server_Game_Test extends RgmBase_Test {
 
         //
         println()
-        println("CurrentUserId: " + upd.getCurrentUserId())
+        println("CurrentUserId: " + upd.getCurrentUsrId())
 
         // Есть текущая игра?
         getAndPrintActiveGame()
@@ -280,7 +280,7 @@ class Server_Game_Test extends RgmBase_Test {
     void testGameProcess_PlanDefault() {
         long idUsr = getCurrentUserId()
         Usr_upd upd = mdb.create(Usr_upd)
-        long idPlan = upd.getPlanDefault(idUsr)
+        long idPlan = upd.loadPlanDefault(idUsr)
 
         //
         checkOrAddPlanFact(idPlan)

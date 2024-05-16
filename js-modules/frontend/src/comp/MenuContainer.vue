@@ -91,6 +91,24 @@
             </q-toolbar>
 
 
+            <template v-if="contextUser">
+
+                <div class="q-pa-sm" style="background-color: #d61818">
+
+                    <span class="q-mr-md">
+                    Текущий пользователь: {{ contextUser.text }}
+                    </span>
+
+                    <q-btn unelevated no-caps color="green-7"
+                           label="Вернуться"
+                           @click="clearContextUser()"
+                    />
+
+                </div>
+
+            </template>
+
+
         </q-header>
 
 
@@ -124,7 +142,7 @@
                                 @click="onLink()"
                             >
                                 <span class="el-with-absolute">
-                                    Друзья
+                                    Друзья и связи
 
                                 <div
                                     class="el-absolute"
@@ -311,6 +329,7 @@ export default {
             rightDrawerOpen: false,
 
             userInfo: auth.getUserInfo(),
+            contextUser: auth.getUserInfo().contextUser,
             globalState: ctx.getGlobalState(),
         }
     },
@@ -373,6 +392,25 @@ export default {
 
 
     methods: {
+
+        async clearContextUser() {
+            //
+            await gameplay.api_logoutContextUser()
+
+            //
+            let userInfo = auth.getUserInfo()
+            ctx.eventBus.emit("contextUserChanged", userInfo.contextUser)
+
+            //
+            apx.showFrame({
+                frame: "/"
+            })
+        },
+
+        onContextUserChanged() {
+            this.contextUser = this.userInfo.contextUser
+        },
+
         isFullScreen() {
             return document.fullscreenElement != null
         },
@@ -443,6 +481,15 @@ export default {
                 frame: '/gameInfo',
             })
         },
+    },
+
+
+    mounted() {
+        ctx.eventBus.on("contextUserChanged", this.onContextUserChanged)
+    },
+
+    unmounted() {
+        ctx.eventBus.off("contextUserChanged", this.onContextUserChanged)
     },
 
 

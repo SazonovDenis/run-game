@@ -4,6 +4,8 @@
     <q-layout view="hHh lpR fFf" style="user-select: none;">
 
 
+        <!-- Заголовок с меню -->
+
         <q-header elevated style="z-index: 3000">
 
             <q-toolbar class="el-with-absolute bg-primary text-white"
@@ -111,6 +113,51 @@
 
         </q-header>
 
+
+        <!-- Содержимое -->
+
+        <q-page-container>
+
+            <!-- slot default -->
+            <slot>
+                <LogoGame/>
+            </slot>
+            <!-- -->
+
+        </q-page-container>
+
+
+        <!-- Подвал -->
+
+        <q-footer reveal :style="{display: getFooterDisplay}">
+
+            <!-- slot footer -->
+            <slot name="footer">
+
+                <q-toolbar :class="getFooterClass">
+                    <q-toolbar-title>
+
+                        <!--
+                                                <q-avatar
+                                                    style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
+                                                    <img v-bind:src="iconBottomLeft">
+                                                </q-avatar>
+                        -->
+
+                    </q-toolbar-title>
+
+                    <!-- slot footerContent -->
+                    <slot name="footerContent"></slot>
+                    <!-- -->
+
+                </q-toolbar>
+
+            </slot>
+
+        </q-footer>
+
+
+        <!-- Боковое всплывающее меню -->
 
         <q-drawer v-model="rightDrawerOpen" side="left" overlay behavior="mobile"
                   elevated>
@@ -229,44 +276,7 @@
         </q-drawer>
 
 
-        <q-page-container>
-
-            <!-- slot default -->
-            <slot>
-                <LogoGame/>
-            </slot>
-            <!-- -->
-
-        </q-page-container>
-
-
-        <q-footer reveal :style="{display: getFooterDisplay}">
-
-            <!-- slot footer -->
-            <slot name="footer">
-
-                <q-toolbar :class="getFooterClass">
-                    <q-toolbar-title>
-
-                        <!--
-                                                <q-avatar
-                                                    style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
-                                                    <img v-bind:src="iconBottomLeft">
-                                                </q-avatar>
-                        -->
-
-                    </q-toolbar-title>
-
-                    <!-- slot footerContent -->
-                    <slot name="footerContent"></slot>
-                    <!-- -->
-
-                </q-toolbar>
-
-            </slot>
-
-        </q-footer>
-
+        <!-- Кнопка FullScreen -->
 
         <div v-if="!isFullScreen()"
              style="position: fixed; left: 0; bottom: 0; z-index: 10000;">

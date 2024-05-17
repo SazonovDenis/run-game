@@ -4,7 +4,7 @@
             clickable v-ripple
     >
         <q-item-section>
-            {{ item.text }}
+            {{ item.planText }}
         </q-item-section>
 
         <q-item-section
@@ -16,19 +16,19 @@
                 <q-badge
                     _class="col"
                     color="green-5"
-                    :label="item.rating.rating + ' / ' + item.rating.words"/>
+                    :label="item.ratingTask + ' / ' + item.count"/>
                 <q-badge
                     class="col"
                     style="min-width: 3em; text-align: right"
                     color="white"
                     text-color="green-5"
-                    :label="'+' + item.rating.ratingInc"/>
+                    :label="'+' + item.ratingInc"/>
                 <q-badge
                     class="col"
                     style="min-width: 100%; align: right"
                     color="white"
                     text-color="red-5"
-                    :label="'-' + item.rating.ratingDec"/>
+                    :label="'-' + item.ratingDec"/>
 
             </div>
 

@@ -5,24 +5,14 @@
         _title="Статистика"
     >
 
-        <div>
+        <div style="font-size: 1.5em">
             <span>Повторено слов:</span>&nbsp;<span>{{ rating.words }}</span>
         </div>
 
-        <div>
+        <div style="font-size: 1.5em">
             <span>Рейтинг:&nbsp;</span><span>{{ rating.rating }}</span>&nbsp;
             <span>+{{ rating.ratingInc }}</span>&nbsp;<span>-{{ rating.ratingDec }}</span>
         </div>
-
-
-        <!--
-        <RgmButtonToggleGroup
-            :options="periodOptions"
-            :value="value_RgmButtonToggleGroup"
-        />
-
-        <q-separator class="q-ma-md"/>
-        -->
 
 
         <div>
@@ -34,56 +24,71 @@
                 _unelevated
 
                 class="rgm-toggle"
-                toggle-color="primary"
+                toggle-color="blue-7"
                 color="white"
                 text-color="primary"
 
                 :options="periodOptions"
+                @update:model-value="load()"
             />
 
         </div>
 
-        <q-list>
 
-            <template v-for="item in items">
+        <div
 
-                <template v-if="params.group==='plan'">
-                    <StatisticPlanItem
-                        :item="item"
-                    />
+            style="height: calc(100vh - 15rem); overflow: scroll;">
+
+            <q-list>
+
+                <template v-for="item in items">
+
+                    <template v-if="params.group==='plan'">
+                        <StatisticPlanItem
+                            :item="item"
+                        />
+                    </template>
+
+                    <template v-if="params.group==='game'">
+                        <StatisticGameItem
+                            :item="item"
+                        />
+                    </template>
+
+                    <template v-if="params.group==='word'">
+                        <TaskValue
+                            :task="item"
+                        />
+                    </template>
+
+
                 </template>
 
-                <template v-if="params.group==='game'">
-                    <StatisticGameItem
-                        :item="item"
-                    />
-                </template>
-
-                <template v-if="params.group==='word'">
-                    <TaskValue
-                        :task="item"
-                    />
-                </template>
+            </q-list>
 
 
-            </template>
-
-        </q-list>
+        </div>
 
 
-        <q-btn-toggle
-            v-model="params.group"
-            no-caps
-            _rounded
-            _unelevated
+        <div style="position: absolute">
 
-            class="rgm-toggle"
-            toggle-color="primary"
-            color="white"
-            text-color="primary"
+            <q-btn-toggle
+                v-model="params.group"
+                no-caps
+                _rounded
+                _unelevated
 
-            :options="groupOptions"
-        />
+                class="rgm-toggle"
+                toggle-color="blue-7"
+                color="white"
+                text-color="primary"
+
+                :options="groupOptions"
+                @update:model-value="load()"
+            />
+
+        </div>
+
 
     </MenuContainer>
 
@@ -92,10 +97,9 @@
 
 <script>
 
-import auth from "./auth"
-import gameplay from "./gameplay"
+import {daoApi} from "run-game-frontend/src/dao"
+import {apx} from './vendor'
 import MenuContainer from "./comp/MenuContainer"
-import RgmButtonToggleGroup from "./comp/RgmButtonToggleGroup"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
 import StatisticGameItem from "./comp/StatisticGameItem"
 import TaskValue from "./comp/TaskValue"
@@ -105,14 +109,12 @@ export default {
     name: "StatisticPage",
 
     components: {
-        MenuContainer, RgmButtonToggleGroup,
+        MenuContainer,
         StatisticPlanItem, StatisticGameItem, TaskValue,
     },
 
     data() {
         return {
-            value_RgmButtonToggleGroup: {},
-
             items: {},
 
             rating: {
@@ -142,12 +144,14 @@ export default {
     },
 
     async mounted() {
-        let userInfo = auth.getContextUserInfo()
-        let planDefaultId = userInfo.planDefault
+        /*
+                let userInfo = auth.getContextUserInfo()
+                let planDefaultId = userInfo.planDefault
+        */
 
-        this.itemsX = await gameplay.api_getPlansVisible()
+        await this.load()
 
-        this.items = [
+        this.items_ = [
             {
                 text: "vahre eljrhj",
                 valueSpelling: "dfdklfj kdf",
@@ -170,6 +174,49 @@ export default {
                 rating: {words: 15, rating: 4.8, ratingInc: 0, ratingDec: 12.9,},
             },
         ]
+
+    },
+
+    methods: {
+
+        async load(x) {
+            //
+            let dend = apx.date.today()
+            let dbeg
+            //
+            if (this.params.period === "day") {
+                dbeg = apx.date.add(dend, {days: -1})
+            } else if (this.params.period === "week") {
+                dbeg = apx.date.add(dend, {days: -7})
+            } else if (this.params.period === "month") {
+                dbeg = apx.date.add(dend, {days: -30})
+            }
+
+            //
+            if (this.params.group === "plan") {
+                let resApi = await daoApi.loadStore(
+                    "m/Statistic/byPlan", [dbeg, dend]
+                )
+
+                this.items = resApi.records
+
+            } else if (this.params.group === "game") {
+                let resApi = await daoApi.loadStore(
+                    "m/Statistic/byGame", [dbeg, dend]
+                )
+
+                this.items = resApi.records
+
+            } else if (this.params.group === "word") {
+                let resApi = await daoApi.loadStore(
+                    "m/Statistic/byWord", [dbeg, dend]
+                )
+
+                this.items = resApi.records
+
+            }
+
+        },
 
     }
 

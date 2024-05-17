@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <domain name="Statistic.base">
+        <field name="count" parent="Cube_UsrPlan/count"/>
+        <field name="countFull" parent="Cube_UsrPlan/countFull"/>
+
+        <!-- Рейтинга -->
+        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
+
+        <!-- Изменение рейтинга (по сравнению с предыдущим периодом) -->
+        <field name="ratingTaskDiff" parent="Cube_UsrPlan/ratingTask"
+               title="Изменение рейтинга за ответы"/>
+        <field name="ratingQuicknessDiff" parent="Cube_UsrPlan/ratingQuickness"
+               title="Изменение рейтинга за скорость"/>
+    </domain>
+
+
+    <domain name="Statistic.plan" parent="Plan">
+        <include name="Statistic.base"/>
+
+        <field name="planText" parent="Plan/text"/>
+
+    </domain>
+
+
+    <domain name="Statistic.game" parent="Game">
+        <include name="Statistic.base"/>
+
+        <field name="planText" parent="Plan/text"/>
+
+    </domain>
+
+
+    <domain name="Statistic.word" parent="GameTask">
+        <include name="Statistic.base"/>
+
+        <!-- Тело задания (вопрос и ответ) -->
+        <field name="taskQuestion" parent="object"
+               title="Данные вопроса в задании (TaskQuestion.*, структура - Task.fields)"/>
+        <field name="taskAnswer" parent="object"
+               title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
+
+    </domain>
+
+
+</root>

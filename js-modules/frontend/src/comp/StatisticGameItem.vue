@@ -4,7 +4,7 @@
             clickable v-ripple
     >
         <q-item-section>
-            Игра: {{ item.text }}
+            Игра: {{ item.planText }}, начало: {{ item.dbeg }}
         </q-item-section>
 
         <q-item-section
@@ -16,7 +16,7 @@
                 <q-badge
                     _class="col"
                     color="green-5"
-                    :label="item.rating.rating + ' / ' + item.rating.words"/>
+                    :label="item.ratingTask + ' / ' + item.count"/>
 
             </div>
 

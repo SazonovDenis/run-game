@@ -7,9 +7,10 @@
         <!--@
         Задание, выданные пользователю в рамках раунда (игры).
         -->
-        <field name="game" parent="Game/ref"/>
-        <field name="usr" parent="Usr/ref"/>
         <field name="task" parent="Task/ref"/>
+        <field name="usr" parent="Usr/ref" title="Кому было выдано задание"/>
+        <field name="game" parent="Game/ref"
+               title="В рамках какой игры было выдано задание"/>
 
         <field name="dtTask" parent="datetime" title="Дата/время выдачи задания"/>
         <field name="dtAnswer" parent="datetime" title="Дата/время реакции пользователя"/>

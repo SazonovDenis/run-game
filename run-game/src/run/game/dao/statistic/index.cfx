@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+    <dao>
+        <holder name="api">
+
+            <item name="m/Statistic">
+
+                <item name="i" method="*"
+                      class="run.game.dao.statistic.Statistic_list"/>
+
+            </item>
+
+        </holder>
+    </dao>
+
+</root>

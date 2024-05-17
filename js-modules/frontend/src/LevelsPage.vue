@@ -28,109 +28,14 @@
 
                 <template v-for="plan in plans">
 
-                    <q-item v-if="isItemShown(plan)"
-                            class="item-first"
-                            clickable v-ripple
-                    >
-
-                        <q-item-section top avatar>
-                            <q-avatar
-                                v-if="plan.isDefault"
-
-                                icon="star"
-                                color="grey-2"
-                                text-color="yellow-8">
-
-                                <div class="plan-count-text">
-                                    {{ plan.count }}
-                                </div>
-
-                            </q-avatar>
-
-                            <q-avatar
-                                v-else-if="plan.isPublic"
-
-                                icon="folder-open"
-                                color="grey-2"
-                                text-color="grey-8">
-
-                                <div class="plan-count-text">
-                                    {{ plan.count }}
-                                </div>
-
-                            </q-avatar>
-
-                            <q-avatar
-                                v-else
-
-                                icon="user"
-                                color="grey-2"
-                                text-color="grey-6">
-
-                                <div class="plan-count-text">
-                                    {{ plan.count }}
-                                </div>
-
-                            </q-avatar>
-
-                        </q-item-section>
-
-                        <q-item-section @click="onPlanClick(plan.plan)">
-                            {{ plan.planText }}
-                        </q-item-section>
-
-
-                        <q-item-section top side>
-
-                            <div class="text-grey-8 q-gutter-xs">
-
-                                <q-btn
-                                    v-if="plan.isPublic && plan.isAllowed && viewPlanType==='pesonal'"
-                                    dense round flat
-                                    size="1.2em"
-                                    icon="del"
-                                    color="grey-8"
-                                    @click="delUsrPlan(plan)"
-                                />
-
-                                <q-btn
-                                    v-if="plan.isPublic && !plan.isAllowed && viewPlanType==='common'"
-                                    dense round flat
-                                    size="1.2em"
-                                    icon="add"
-                                    color="green-9"
-                                    @click="addUsrPlan(plan)"
-                                />
-
-
-                                <!--
-                                                                <q-btn flat dense round
-                                                                       icon="more-h"
-                                                                       size="1.0em"
-                                                                />
-                                -->
-
-                            </div>
-
-                        </q-item-section>
-
-
-                        <q-item-section
-                            top side
-                            style="width: 2em; align-content: end;">
-
-                            <div>
-
-                                <q-badge
-                                    v-if="plan.ratingTask > 0"
-                                    color="green-5"
-                                    :label="plan.ratingTask"/>
-
-                            </div>
-
-                        </q-item-section>
-
-                    </q-item>
+                    <LevelItem
+                        v-if="isItemShown(plan)"
+                        :plan="plan"
+                        :viewPlanType="viewPlanType"
+                        @planClick="onPlanClick"
+                        @delUsrPlan="delUsrPlan"
+                        @addUsrPlan="addUsrPlan"
+                    />
 
                 </template>
 
@@ -151,12 +56,13 @@
         <q-page-sticky v-if="showEdit && viewPlanType !== 'common'"
                        position="bottom-right"
                        :offset="[10, 10]">
-            <q-fab :style="{fontSize: '1.3em', height: '4rem', width: isDesktop ? '14rem':'4rem'}"
-                   color="purple"
-                   icon="add"
-                   vertical-actions-align="right"
-                   direction="up"
-                   :label="isDesktop ? 'Добавить уровень' : ''"
+            <q-fab
+                :style="{fontSize: '1.3em', height: '4rem', width: isDesktop ? '14rem':'4rem'}"
+                color="purple"
+                icon="add"
+                vertical-actions-align="right"
+                direction="up"
+                :label="isDesktop ? 'Добавить уровень' : ''"
             >
                 <q-fab-action style="height: 4em; min-width: 18em;"
                               color="secondary"
@@ -188,12 +94,13 @@ import auth from "./auth"
 import LevelsFilterBar from "./comp/LevelsFilterBar"
 import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
-import {daoApi} from "run-game-frontend/src/dao"
+import {daoApi} from "./dao"
+import LevelItem from "./comp/LevelItem"
 
 export default {
 
     components: {
-        MenuContainer, LevelsFilterBar, TasksStatistic
+        MenuContainer, LevelItem, LevelsFilterBar, TasksStatistic
     },
 
     props: {
@@ -400,22 +307,3 @@ export default {
 }
 
 </script>
-
-<style>
-
-.item-first {
-    border-top: 1px solid silver;
-}
-
-.plan-count-text {
-    padding: 5px 4px 15px 4px;
-    margin-top: 2px;
-    width: 6em;
-    text-align: center;
-    font-size: .6em;
-    color: #202020;
-    background-color: #dbecfb;
-    border-radius: 10px;
-}
-
-</style>

@@ -394,6 +394,13 @@ export default {
     methods: {
 
         async clearContextUser() {
+            let currentFrame = this.getCurrentFrame()
+            let currentFramePath = currentFrame.routeInfo.path
+            let returnFrame = this.getReturnFrame(currentFramePath)
+            if (!returnFrame) {
+                returnFrame = "/"
+            }
+
             //
             await gameplay.api_logoutContextUser()
 
@@ -403,8 +410,29 @@ export default {
 
             //
             apx.showFrame({
-                frame: "/"
+                frame: returnFrame
             })
+        },
+
+        getCurrentFrame() {
+            let frames = apx.app.frameManager._showers.main._frames
+            if (frames.length > 0) {
+                return frames[frames.length - 1]
+            }
+            return null
+        },
+
+        getReturnFrame(currentPath) {
+            let returnPaths = {
+                "/game": "/game",
+                "/levels": "/levels",
+                "/gameInfo": "/gameInfo",
+                "/link": "/link",
+                "/plan": "/levels",
+                "/planEdit": "/levels",
+            }
+
+            return returnPaths[currentPath]
         },
 
         onContextUserChanged() {

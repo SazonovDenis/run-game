@@ -23,7 +23,6 @@ export function run() {
         {path: '/link', frame: import('./LinkPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
-        {path: '/planList', frame: import('./PlanList')},
     ]
 
     apx.app.onBeforeRun(async () => {

@@ -37,6 +37,11 @@ class RgmBase_Test extends Apx_Test {
         authSvc.setCurrentUser(user)
     }
 
+    void setCurrentUserId(long idUsr) {
+        StoreRecord rec = mdb.loadQueryRecord("select * from Usr where id = " + idUsr)
+        setCurrentUser(rec.getString("login"), rec.getString("password"))
+    }
+
     long getCurrentUserId() {
         AuthUser user = authSvc.getCurrentUser()
         long id = UtCnv.toLong(user.getAttrs().getLong("id"))

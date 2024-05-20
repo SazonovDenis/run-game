@@ -56,9 +56,11 @@
                     </template>
 
                     <template v-if="params.group==='word'">
-                        <TaskValue
-                            :task="item"
+
+                        <TaskItem
+                            :taskItem="item"
                         />
+
                     </template>
 
 
@@ -84,7 +86,7 @@
                 text-color="primary"
 
                 :options="groupOptions"
-                @update:model-value="load()"
+                @update:model-value="onParams_group"
             />
 
         </div>
@@ -102,7 +104,7 @@ import {apx} from './vendor'
 import MenuContainer from "./comp/MenuContainer"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
 import StatisticGameItem from "./comp/StatisticGameItem"
-import TaskValue from "./comp/TaskValue"
+import TaskItem from "./comp/TaskItem"
 
 export default {
 
@@ -110,7 +112,7 @@ export default {
 
     components: {
         MenuContainer,
-        StatisticPlanItem, StatisticGameItem, TaskValue,
+        StatisticPlanItem, StatisticGameItem, TaskItem,
     },
 
     data() {
@@ -144,40 +146,20 @@ export default {
     },
 
     async mounted() {
-        /*
-                let userInfo = auth.getContextUserInfo()
-                let planDefaultId = userInfo.planDefault
-        */
-
         await this.load()
-
-        this.items_ = [
-            {
-                text: "vahre eljrhj",
-                valueSpelling: "dfdklfj kdf",
-                valueTranslate: "Павло влао",
-                valueSound: "1000-puzzle-english/mp3/freedictionary_UK/take.mp3",
-                rating: {words: 12, rating: 2.7, ratingInc: 1.1, ratingDec: 4.4,},
-            },
-            {
-                text: "jdkfj dkfj",
-                valueSpelling: "dfdklfj kdf",
-                valueTranslate: "ллав",
-                valueSound: "1000-puzzle-english/mp3/freedictionary_UK/read.mp3",
-                rating: {words: 15, rating: 4.8, ratingInc: 0, ratingDec: 12.9,},
-            },
-            {
-                text: "jdkfj dkfj",
-                valueSpelling: "me",
-                valueTranslate: "Я",
-                valueSound: "1000-puzzle-english/mp3/freedictionary_UK/me.mp3",
-                rating: {words: 15, rating: 4.8, ratingInc: 0, ratingDec: 12.9,},
-            },
-        ]
-
     },
 
     methods: {
+
+        async onParams_group() {
+            // Обязательно очистить, иначе рендеринг будет до момента окончания this.load()
+            // рендерить старый список (для предыдкщего режима группировки),
+            // где поля совсем другие.
+            this.items = []
+
+            //
+            await this.load()
+        },
 
         async load(x) {
             //
@@ -213,7 +195,6 @@ export default {
                 )
 
                 this.items = resApi.records
-
             }
 
         },

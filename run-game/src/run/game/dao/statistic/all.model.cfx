@@ -17,29 +17,41 @@
     </domain>
 
 
-    <domain name="Statistic.plan" parent="Plan">
+    <domain name="Statistic.plan">
+
         <include name="Statistic.base"/>
 
+        <field name="plan" parent="Plan/id"/>
         <field name="planText" parent="Plan/text"/>
 
     </domain>
 
 
-    <domain name="Statistic.game" parent="Game">
+    <domain name="Statistic.game">
+
         <include name="Statistic.base"/>
 
+        <field name="game" parent="Game/id"/>
+        <field name="dbeg" parent="Game/dbeg"/>
+        <field name="dend" parent="Game/dend"/>
+        <field name="game" parent="Game/plan"/>
         <field name="planText" parent="Plan/text"/>
 
     </domain>
 
 
-    <domain name="Statistic.word" parent="GameTask">
+    <domain name="Statistic.word">
+
         <include name="Statistic.base"/>
+
+        <field name="item" parent="Item/ref"/>
+        <field name="factQuestion" parent="Task/factQuestion"/>
+        <field name="factAnswer" parent="Task/factAnswer"/>
 
         <!-- Тело задания (вопрос и ответ) -->
-        <field name="taskQuestion" parent="object"
+        <field name="question" parent="object"
                title="Данные вопроса в задании (TaskQuestion.*, структура - Task.fields)"/>
-        <field name="taskAnswer" parent="object"
+        <field name="answer" parent="object"
                title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
 
     </domain>

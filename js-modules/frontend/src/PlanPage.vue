@@ -329,7 +329,7 @@ export default {
             await gameplay.closeActiveGame()
 
             apx.showFrame({
-                frame: '/levels',
+                frame: '/plans',
             })
         },
 
@@ -373,7 +373,7 @@ export default {
 
             //
             apx.showFrame({
-                frame: '/levels',
+                frame: '/plans',
             })
         },
 

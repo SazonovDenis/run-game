@@ -72,7 +72,7 @@
                     >
 
                         <q-tab name="PlanEditPage" label="Слова" @click="onMainPage()"/>
-                        <q-tab name="LevelsPage" label="Уровни" @click="onMyLevels()"/>
+                        <q-tab name="PlansPage" label="Уровни" @click="onPlans()"/>
                         <q-tab name="GameInfoPage" label="Игры" @click="onGameInfo()"/>
 
 
@@ -175,7 +175,7 @@
                             </div>
 
                             <div class="q-item__label q-item__label--header"
-                                 @click="onMyLevels()">Уровни
+                                 @click="onPlans()">Уровни
                             </div>
 
 
@@ -435,11 +435,11 @@ export default {
         getReturnFrame(currentPath) {
             let returnPaths = {
                 "/game": "/game",
-                "/levels": "/levels",
                 "/gameInfo": "/gameInfo",
                 "/link": "/link",
-                "/plan": "/levels",
-                "/planEdit": "/levels",
+                "/plans": "/plans",
+                "/plan": "/plans",
+                "/planEdit": "/plans",
             }
 
             return returnPaths[currentPath]
@@ -502,15 +502,9 @@ export default {
             })
         },
 
-        onLevels: function() {
+        onPlans: function() {
             apx.showFrame({
-                frame: '/planList',
-            })
-        },
-
-        onMyLevels: function() {
-            apx.showFrame({
-                frame: '/levels',
+                frame: '/plans',
             })
         },
 

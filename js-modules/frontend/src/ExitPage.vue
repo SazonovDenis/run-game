@@ -44,7 +44,7 @@
                 <div class="q-pa-sm">
                     <jc-btn kind="primary" label="Выбрать уровень"
                             style="min-width: 12em;"
-                            @click="levels()">
+                            @click="plans()">
                     </jc-btn>
                 </div>
             </div>
@@ -84,15 +84,10 @@ export default {
             window.location.replace("#/");
         },
 
-        levels() {
-            window.location.replace("#/levels");
+        plans() {
+            window.location.replace("#/plans");
             window.history.pushState({}, "", "#/exit");
 
-            /*
-                        apx.showFrame({
-                            frame: '/levels'
-                        })
-            */
         },
 
         gameInfo() {

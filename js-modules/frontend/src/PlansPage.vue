@@ -1,7 +1,7 @@
 <template>
 
     <MenuContainer
-        tabMenuName="LevelsPage"
+        tabMenuName="PlansPage"
         :title="title">
 
         <q-tabs
@@ -15,7 +15,7 @@
         </q-tabs>
 
 
-        <LevelsFilterBar
+        <PlansFilterBar
             v-model:filterText="filterText"
             v-model:sortField="sortField"
         />
@@ -91,7 +91,7 @@
 import {apx} from './vendor'
 import gameplay from "./gameplay"
 import auth from "./auth"
-import LevelsFilterBar from "./comp/LevelsFilterBar"
+import PlansFilterBar from "./comp/PlansFilterBar"
 import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
 import {daoApi} from "./dao"
@@ -100,7 +100,7 @@ import LevelItem from "./comp/LevelItem"
 export default {
 
     components: {
-        MenuContainer, LevelItem, LevelsFilterBar, TasksStatistic
+        MenuContainer, LevelItem, PlansFilterBar, TasksStatistic
     },
 
     props: {
@@ -170,7 +170,7 @@ export default {
                 frame: '/plan',
                 props: {
                     planId: planId,
-                    frameReturn: "/levels",
+                    frameReturn: "/plans",
                     frameReturnProps: {},
                 },
 
@@ -181,7 +181,7 @@ export default {
             apx.showFrame({
                 frame: '/planEdit', props: {
                     immediateSaveMode: false,
-                    frameReturn: "/levels",
+                    frameReturn: "/plans",
                     frameReturnProps: {},
                 }
             })

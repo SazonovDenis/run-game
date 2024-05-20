@@ -51,7 +51,7 @@
                 <div class="q-pa-sm">
                     <jc-btn kind="primary" label="Выбрать уровень"
                             style="min-width: 12em;"
-                            @click="levels()">
+                            @click="plans()">
                     </jc-btn>
                 </div>
             </div>
@@ -122,9 +122,9 @@ export default {
 
     methods: {
 
-        levels() {
+        plans() {
             apx.showFrame({
-                frame: '/levels'
+                frame: '/plans'
             })
         },
 

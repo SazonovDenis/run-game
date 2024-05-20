@@ -166,7 +166,7 @@ export default {
             await gameplay.closeActiveGame()
 
             apx.showFrame({
-                frame: '/levels', props: {
+                frame: '/plans', props: {
                     title: "Выбор уровня",
                     onLevelClick: this.gameStart,
                     showEdit: false,

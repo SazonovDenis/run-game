@@ -97,15 +97,19 @@
     </diagram>
 
 
-    <diagram name="molap" title="Кубы и аналитика">
-        <domain name="Cube_Dates"/>
-        <domain name="Cube_UsrFact"/>
-        <domain name="Cube_UsrGame"/>
-        <domain name="Cube_UsrPlan"/>
+    <diagram name="molap" title="Кубы">
         <domain name="Molap_audit"/>
         <domain name="Molap_log"/>
         <domain name="Molap_statistic"/>
         <domain name="Molap_status"/>
+    </diagram>
+
+
+    <diagram name="cube" title="Кубы - аналитика">
+        <domain name="Cube_Dates"/>
+        <domain name="Cube_UsrFact"/>
+        <domain name="Cube_UsrGame"/>
+        <domain name="Cube_UsrPlan"/>
     </diagram>
 
 

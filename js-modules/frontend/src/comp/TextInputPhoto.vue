@@ -45,7 +45,7 @@
             <q-icon v-if="isCameraCapturing===true"
                     class="photo-btn photo-btn-still"
                     name="circle"
-                    color="grey-3"
+                    color="grey-2"
                     size="3.5em"
                     @click="onTakePicture"
             />
@@ -697,7 +697,7 @@ export default {
 
 
 .photo-btn-still {
-    opacity: 0.6;
+    opacity: 0.7;
 
     border: 2px solid;
     border-radius: 10em;

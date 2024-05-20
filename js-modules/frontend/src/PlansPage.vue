@@ -28,11 +28,11 @@
 
                 <template v-for="plan in plans">
 
-                    <LevelItem
+                    <PlanItem
                         v-if="isItemShown(plan)"
                         :plan="plan"
                         :viewPlanType="viewPlanType"
-                        @planClick="onPlanClick"
+                        @planClick="planClick"
                         @delUsrPlan="delUsrPlan"
                         @addUsrPlan="addUsrPlan"
                     />
@@ -69,7 +69,7 @@
                               label="Создать свой уровень"
                               square
                               icon="edit"
-                              @click="onCreateLevel"
+                              @click="onCreatePlan"
                 />
                 <q-fab-action style="height: 4em; min-width: 18em;"
                               color="amber-10"
@@ -77,7 +77,7 @@
                               label="Подключить из библиотеки"
                               square
                               icon="add"
-                              @click="onAddLevel"
+                              @click="onAddPlan"
                 />
             </q-fab>
         </q-page-sticky>
@@ -95,12 +95,12 @@ import PlansFilterBar from "./comp/PlansFilterBar"
 import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
 import {daoApi} from "./dao"
-import LevelItem from "./comp/LevelItem"
+import PlanItem from "./comp/PlanItem"
 
 export default {
 
     components: {
-        MenuContainer, LevelItem, PlansFilterBar, TasksStatistic
+        MenuContainer, PlanItem, PlansFilterBar, TasksStatistic
     },
 
     props: {
@@ -108,7 +108,7 @@ export default {
             type: String,
             default: null
         },
-        onLevelClick: {
+        onPlanClick: {
             type: Function,
             default: null
         },
@@ -157,15 +157,15 @@ export default {
             }
         },
 
-        onPlanClick(planId) {
-            if (this.onLevelClick) {
-                this.onLevelClick(planId)
+        planClick(planId) {
+            if (this.onPlanClick) {
+                this.onPlanClick(planId)
             } else {
-                this.onPlanClickDefault(planId)
+                this.planClickDefault(planId)
             }
         },
 
-        onPlanClickDefault(planId) {
+        planClickDefault(planId) {
             apx.showFrame({
                 frame: '/plan',
                 props: {
@@ -177,7 +177,7 @@ export default {
             })
         },
 
-        onCreateLevel() {
+        onCreatePlan() {
             apx.showFrame({
                 frame: '/planEdit', props: {
                     immediateSaveMode: false,
@@ -187,7 +187,7 @@ export default {
             })
         },
 
-        onAddLevel() {
+        onAddPlan() {
             this.viewPlanType = "common"
         },
 

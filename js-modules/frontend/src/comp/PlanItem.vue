@@ -110,7 +110,7 @@
 
 export default {
 
-    name: "LevelItem",
+    name: "PlanItem",
 
     components: {},
 

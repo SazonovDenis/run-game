@@ -63,7 +63,7 @@
                          v-if="localState.game.plan && !localState.game.done">
                         <jc-btn kind="secondary" label="Играть другой уровень"
                                 style="min-width: 12em;"
-                                @click="onSelectLevel()">
+                                @click="onSelectPlan()">
                         </jc-btn>
                     </div>
 
@@ -71,14 +71,14 @@
                          v-if="localState.game.plan && localState.game.done">
                         <jc-btn kind="primary" label="Играть другой уровень"
                                 style="min-width: 12em;"
-                                @click="onSelectLevel()">
+                                @click="onSelectPlan()">
                         </jc-btn>
                     </div>
 
                     <div class="q-ma-sm" v-if="!localState.game.plan">
                         <jc-btn kind="primary" label="Выбрать уровень"
                                 style="min-width: 12em;"
-                                @click="onSelectLevel()">
+                                @click="onSelectPlan()">
                         </jc-btn>
                     </div>
 
@@ -92,7 +92,7 @@
                 <div>
                     <jc-btn kind="primary" label="Выбрать другой уровень"
                             style="min-width: 12em;"
-                            @click="onSelectLevel()">
+                            @click="onSelectPlan()">
                     </jc-btn>
                 </div>
 -->
@@ -162,13 +162,13 @@ export default {
             })
         },
 
-        async onSelectLevel() {
+        async onSelectPlan() {
             await gameplay.closeActiveGame()
 
             apx.showFrame({
                 frame: '/plans', props: {
                     title: "Выбор уровня",
-                    onLevelClick: this.gameStart,
+                    onPlanClick: this.gameStart,
                     showEdit: false,
                 }
             })

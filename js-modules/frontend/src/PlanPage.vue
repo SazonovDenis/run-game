@@ -28,7 +28,7 @@
                         kind="secondary"
                         label="Выбрать другой уровень"
                         style="min-width: 12em;"
-                        @click="onSelectLevel()">
+                        @click="onSelectPlan()">
                 </jc-btn>
             </div>
 
@@ -325,7 +325,7 @@ export default {
             })
         },
 
-        async onSelectLevel() {
+        async onSelectPlan() {
             await gameplay.closeActiveGame()
 
             apx.showFrame({

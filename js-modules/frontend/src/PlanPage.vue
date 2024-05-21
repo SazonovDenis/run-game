@@ -321,7 +321,7 @@ export default {
             await gameplay.gameStart(this.planId)
 
             apx.showFrame({
-                frame: '/game', props: {}
+                frame: '/game'
             })
         },
 

@@ -6,12 +6,14 @@
     >
 
         <div style="font-size: 1.5em">
-            <span>Повторено слов:</span>&nbsp;<span>{{ rating.words }}</span>
+            <span>Повторено слов:</span>&nbsp;<span>{{ rating.wordCount }}</span>
         </div>
 
         <div style="font-size: 1.5em">
-            <span>Рейтинг:&nbsp;</span><span>{{ rating.rating }}</span>&nbsp;
-            <span>+{{ rating.ratingInc }}</span>&nbsp;<span>-{{ rating.ratingDec }}</span>
+            <span>Рейтинг:&nbsp;</span><span>{{ rating.ratingTask }}</span>&nbsp;
+            <span>+{{ rating.ratingTaskInc }}</span>&nbsp;<span>-{{
+                rating.ratingTaskDec
+            }}</span>
         </div>
 
 
@@ -29,7 +31,7 @@
                 text-color="primary"
 
                 :options="periodOptions"
-                @update:model-value="load()"
+                @update:model-value="onParams_period"
             />
 
         </div>
@@ -46,12 +48,14 @@
                     <template v-if="params.group==='plan'">
                         <StatisticPlanItem
                             :item="item"
+                            @click="onPlanClick(item)"
                         />
                     </template>
 
                     <template v-if="params.group==='game'">
                         <StatisticGameItem
                             :item="item"
+                            @click="onGameClick(item)"
                         />
                     </template>
 
@@ -59,6 +63,7 @@
 
                         <TaskItem
                             :taskItem="item"
+                            :showAnswerResult="true"
                         />
 
                     </template>
@@ -115,16 +120,16 @@ export default {
         StatisticPlanItem, StatisticGameItem, TaskItem,
     },
 
+    props: {
+        period: String,
+        group: String,
+    },
+
     data() {
         return {
-            items: {},
+            items: [],
 
-            rating: {
-                words: 37,
-                rating: 24.8,
-                ratingInc: 2.1,
-                ratingDec: 5.3,
-            },
+            rating: {},
 
             params: {
                 period: "day",
@@ -136,6 +141,7 @@ export default {
                 {label: 'Сегодня', value: 'day'},
                 {label: 'Неделя', value: 'week'},
                 {label: 'Месяц', value: 'month'},
+                {label: 'Три месяца', value: 'month3'},
             ],
             groupOptions: [
                 {label: 'Планы', value: 'plan'},
@@ -146,56 +152,103 @@ export default {
     },
 
     async mounted() {
+        if (this.period) {
+            this.params.period = this.period
+        }
+        if (this.group) {
+            this.params.group = this.group
+        }
+
         await this.load()
     },
 
     methods: {
 
+        async onParams_period() {
+            await this.load()
+        },
+
         async onParams_group() {
-            // Обязательно очистить, иначе рендеринг будет до момента окончания this.load()
-            // рендерить старый список (для предыдкщего режима группировки),
-            // где поля совсем другие.
+            // Обязательно очистить this.items, иначе до момента окончания this.load()
+            // рендеринг будет для нового  режима группировки использовать старый список
+            // (для предыдущего режима группировки), где поля совсем другие.
             this.items = []
 
             //
             await this.load()
         },
 
+        onGameClick(item) {
+            apx.showFrame({
+                frame: '/gameInfo',
+                props: {
+                    gameId: item.game,
+                    frameReturn: "/statistic",
+                    frameReturnProps: {
+                        period: this.params.period,
+                        group: this.params.group,
+                    }
+                }
+            })
+        },
+
+        onPlanClick(item) {
+            apx.showFrame({
+                frame: '/plan',
+                props: {
+                    planId: item.plan,
+                    frameReturn: "/statistic",
+                    frameReturnProps: {
+                        period: this.params.period,
+                        group: this.params.group,
+                    }
+                }
+            })
+        },
+
         async load(x) {
             //
-            let dend = apx.date.today()
+            let today = apx.date.today()
+            let dend = today
             let dbeg
             //
             if (this.params.period === "day") {
                 dbeg = apx.date.add(dend, {days: -1})
+                /*
+                            } else if (this.params.period === "day-1") {
+                                dbeg = apx.date.add(today, {days: -1})
+                                dend = apx.date.add(today, {days: -2})
+                */
             } else if (this.params.period === "week") {
                 dbeg = apx.date.add(dend, {days: -7})
             } else if (this.params.period === "month") {
                 dbeg = apx.date.add(dend, {days: -30})
+            } else if (this.params.period === "month3") {
+                dbeg = apx.date.add(dend, {days: -30 * 3})
             }
 
             //
+            let resApi
+
             if (this.params.group === "plan") {
-                let resApi = await daoApi.loadStore(
+                resApi = await daoApi.loadStore(
                     "m/Statistic/byPlan", [dbeg, dend]
                 )
 
-                this.items = resApi.records
-
             } else if (this.params.group === "game") {
-                let resApi = await daoApi.loadStore(
+                resApi = await daoApi.loadStore(
                     "m/Statistic/byGame", [dbeg, dend]
                 )
 
-                this.items = resApi.records
-
             } else if (this.params.group === "word") {
-                let resApi = await daoApi.loadStore(
+                resApi = await daoApi.loadStore(
                     "m/Statistic/byWord", [dbeg, dend]
                 )
 
-                this.items = resApi.records
             }
+
+            this.items = resApi.items.records
+            this.rating = resApi.rating.records[0]
 
         },
 

@@ -1,8 +1,7 @@
 package run.game.dao.statistic
 
-
 import jandcode.commons.datetime.*
-import jandcode.core.store.*
+import jandcode.core.dbm.std.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 
@@ -20,22 +19,25 @@ class Statistic_list_Test extends RgmBase_Test {
         setCurrentUserId(usr)
 
         //
-        Store stPlan = list.byPlan(dbeg, dend)
-        Store stGame = list.byGame(dbeg, dend)
-        Store stWord = list.byWord(dbeg, dend)
+        DataBox boxPlan = list.byPlan(dbeg, dend)
+        DataBox boxGame = list.byGame(dbeg, dend)
+        DataBox boxWord = list.byWord(dbeg, dend)
 
         //
         println()
         println("byPlan")
-        mdb.outTable(stPlan)
+        mdb.outTable(boxPlan.get("items"))
+        mdb.outTable(boxPlan.get("rating"))
         //
         println()
         println("byGame")
-        mdb.outTable(stGame)
+        mdb.outTable(boxGame.get("items"))
+        mdb.outTable(boxGame.get("rating"))
         //
         println()
         println("byWord")
-        mdb.outTable(stWord)
+        mdb.outTable(boxWord.get("items"))
+        mdb.outTable(boxWord.get("rating"))
     }
 
 
@@ -48,12 +50,32 @@ class Statistic_list_Test extends RgmBase_Test {
         setCurrentUserId(usr)
 
         //
-        Store stPlan = list.byPlan(dbeg, dend)
+        DataBox boxPlan = list.byPlan(dbeg, dend)
 
         //
         println()
         println("byPlan")
-        mdb.outTable(stPlan)
+        mdb.outTable(boxPlan.get("items"))
+        mdb.outTable(boxPlan.get("rating"))
+    }
+
+
+    @Test
+    void loadByGame() {
+        //utils.logOn()
+
+        Statistic_list list = mdb.create(Statistic_list)
+
+        setCurrentUserId(usr)
+
+        //
+        DataBox boxPlan = list.byGame(dbeg, dend)
+
+        //
+        println()
+        println("byGame")
+        mdb.outTable(boxPlan.get("items"))
+        mdb.outTable(boxPlan.get("rating"))
     }
 
 
@@ -66,12 +88,13 @@ class Statistic_list_Test extends RgmBase_Test {
         setCurrentUserId(usr)
 
         //
-        Store stWord = list.byWord(dbeg, dend)
+        DataBox boxWord = list.byWord(dbeg, dend)
 
         //
         println()
         println("byWord")
-        mdb.outTable(stWord)
+        mdb.outTable(boxWord.get("items"))
+        mdb.outTable(boxWord.get("rating"))
     }
 
 

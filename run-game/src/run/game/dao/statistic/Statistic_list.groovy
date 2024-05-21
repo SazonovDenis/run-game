@@ -4,9 +4,10 @@ import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
 import jandcode.core.dao.*
+import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
-import run.game.dao.game.ServerImpl
+import run.game.dao.game.*
 
 class Statistic_list extends RgmMdbUtils {
 
@@ -14,80 +15,84 @@ class Statistic_list extends RgmMdbUtils {
      *
      */
     @DaoMethod
-    Store byPlan(XDate dbeg, XDate dend) {
-        Store st = mdb.createStore("Statistic.plan")
-
-        //
-        long idUsr = getContextOrCurrentUsrId()
-        Map params = [usr: idUsr, dbeg: dbeg, dend: dend]
-
-        //
-        mdb.loadQuery(st, sqlPlan(), params)
-
-        //
-        Map<String, Map> statistic = loadStatistic(params, "plan")
-
-        //
-        distributeStatistic(statistic, st, "plan")
-
-
-        //
-        return st
+    DataBox byPlan(XDate dbeg, XDate dend) {
+        return byInternal(dbeg, dend, "plan")
     }
 
     @DaoMethod
-    Store byGame(XDate dbeg, XDate dend) {
-        Store st = mdb.createStore("Statistic.game")
-
-        //
-        long idUsr = getContextOrCurrentUsrId()
-        Map params = [usr: idUsr, dbeg: dbeg, dend: dend]
-
-        //
-        mdb.loadQuery(st, sqlGame(), params)
-
-        //
-        Map<String, Map> statistic = loadStatistic(params, "game")
-
-        //
-        distributeStatistic(statistic, st, "game")
-
-
-        //
-        return st
+    DataBox byGame(XDate dbeg, XDate dend) {
+        return byInternal(dbeg, dend, "game")
     }
 
     @DaoMethod
-    Store byWord(XDate dbeg, XDate dend) {
-        Store st = mdb.createStore("Statistic.word")
-
-        //
-        long idUsr = getContextOrCurrentUsrId()
-        Map params = [usr: idUsr, dbeg: dbeg, dend: dend]
-
-        //
-        mdb.loadQuery(st, sqlWord(), params)
-
-        //
-        Map<String, Map> statistic = loadStatistic(params, "word")
-
-        //
-        distributeStatistic(statistic, st, "word")
-
+    DataBox byWord(XDate dbeg, XDate dend) {
+        DataBox res = byInternal(dbeg, dend, "word")
 
         // Дополним факты в плане "богатыми" данными для вопроса и ответа
+        Store st = res.get("items")
         ServerImpl serverImpl = mdb.create(ServerImpl)
         serverImpl.fillFactBody(st)
 
         //
-        return st
+        return res
     }
 
+    DataBox byInternal(XDate dbeg, XDate dend, String groupByKey) {
+        // Загружаем ---
+        long idUsr = getContextOrCurrentUsrId()
+        Map params = [usr: idUsr, dbeg: dbeg, dend: dend]
 
-    Map<String, Map> loadStatistic(Map params, String groupByKey) {
-        // Загружаем
-        Store stStatistic = mdb.loadQuery(sqlBaseStatistic(), params)
+        // Загружаем список
+        Store st = mdb.createStore("Statistic." + groupByKey)
+        mdb.loadQuery(st, getSql(groupByKey), params)
 
+        // Загружаем статистику
+        Store stStatistic = mdb.loadQuery(sqlStatistic(), params)
+
+
+        // ---
+        // Статистику по словам агрегируем по groupByKey
+        Map<String, Map> statistic = groupStatisticBy(stStatistic, groupByKey)
+
+        // Распределяем агрегированную статистику в список
+        distributeStatistic(statistic, st, groupByKey)
+
+
+        // ---
+        // Статистику по словам агрегируем по словам
+        Map<String, Map> statisticByWord = groupStatisticBy(stStatistic, "word")
+
+        // Суммируем агрегированную статистику
+        StoreRecord rating = summStatisticByWord(statisticByWord)
+
+
+        // ---
+        DataBox res = new DataBox()
+        res.put("items", st)
+        res.put("rating", rating)
+
+        //
+        return res
+    }
+
+    String getSql(String groupByKey){
+        switch (groupByKey) {
+            case "game": {
+                return sqlGame()
+            }
+            case "plan": {
+                return sqlPlan()
+            }
+            case "word": {
+                return sqlWord()
+            }
+            default: {
+                throw new XError("Bad groupByKey: " + groupByKey)
+            }
+        }
+    }
+
+    Map<String, Map> groupStatisticBy(Store stStatistic, String groupByKey) {
 /*
         /////////////////
         println()
@@ -97,7 +102,21 @@ class Statistic_list extends RgmMdbUtils {
 */
 
         // Копим статистику из BLOB по записям stStatistic
-        Map<String, Map> mapTasksStatistic = new HashMap<>()
+        Map<String, Map> resStatistic = new HashMap<>()
+        Set<String> setWords = new HashSet<>()
+
+/*
+        /////////////////
+        println()
+        println("stStatistic")
+        for (StoreRecord rec : stStatistic) {
+            mdb.outTable(rec)
+            List<Map> listTaskStatistic = UtJson.fromJson(new String(rec.getValue("taskStatistic"), "utf-8"))
+            println(listTaskStatistic)
+            println()
+        }
+        /////////////////
+*/
 
         //
         for (StoreRecord rec : stStatistic) {
@@ -105,82 +124,223 @@ class Statistic_list extends RgmMdbUtils {
             // Извлекаем статистику по фактам из BLOB
             List<Map> listTaskStatistic = UtJson.fromJson(new String(rec.getValue("taskStatistic"), "utf-8"))
 
-            // Разносим статистику: каждую пару фактов копим с группировкой по определенным значениям ключа
+            // Разносим статистику:
+            // каждую пару фактов копим с группировкой по groupByKey
             for (Map taskStatistic : listTaskStatistic) {
                 double ratingTaskRec = UtCnv.toDouble(taskStatistic.get("ratingTask"))
                 double ratingQuicknessRec = UtCnv.toDouble(taskStatistic.get("ratingQuickness"))
                 double ratingTaskDiffRec = UtCnv.toDouble(taskStatistic.get("ratingTaskDiff"))
                 double ratingQuicknessDiffRec = UtCnv.toDouble(taskStatistic.get("ratingQuicknessDiff"))
 
-                // Значение ключа
+                // Значение ключа группы
                 Map keyValues = rec.getValues()
                 keyValues.putAll(taskStatistic)
                 String key = createKey(keyValues, groupByKey)
 
-                // Уже был такой ключ?
-                Map taskStatisticAcc = mapTasksStatistic.get(key)
-                if (taskStatisticAcc == null) {
-                    // Новый элемент накопления статистики
-                    taskStatisticAcc = new HashMap()
-                    taskStatisticAcc.put("cnt", 0)
-                    taskStatisticAcc.put("ratingTask", ratingTaskRec)
-                    taskStatisticAcc.put("ratingQuickness", ratingQuicknessRec)
-                    mapTasksStatistic.put(key, taskStatisticAcc)
+                // Уже был такой ключ группы?
+                Map statisticGroup = resStatistic.get(key)
+                if (statisticGroup == null) {
+                    // Новая группа
+                    statisticGroup = new HashMap()
+                    resStatistic.put(key, statisticGroup)
                 }
 
-                // Копим статистику для ключа
-                long cntAcc = UtCnv.toLong(taskStatisticAcc.get("cnt"))
-                double ratingTaskDiffAcc = UtCnv.toDouble(taskStatisticAcc.get("ratingTaskDiff"))
-                double ratingQuicknessDiffAcc = UtCnv.toDouble(taskStatisticAcc.get("ratingQuicknessDiff"))
-                taskStatisticAcc.put("cnt", cntAcc + 1)
-                taskStatisticAcc.put("ratingTaskDiff", ratingTaskDiffAcc + ratingTaskDiffRec)
-                taskStatisticAcc.put("ratingQuicknessDiff", ratingQuicknessDiffAcc + ratingQuicknessDiffRec)
+                // Значение ключа по словам
+                String keyByWord = createKey(keyValues, "word")
+
+                // Уже был такой ключ по словам внутри группы?
+                Map statisticWord = statisticGroup.get(keyByWord)
+                if (statisticWord == null) {
+                    // Новый элемент внутри группы
+                    statisticWord = new HashMap()
+                    statisticGroup.put(keyByWord, statisticWord)
+                }
+
+                // Копим статистику для ключа по словам (внутри группы)
+                // Разницу - суммируем за период
+                double ratingTaskDiffAcc = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
+                double ratingQuicknessDiffAcc = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
+                statisticWord.put("ratingTaskDiff", ratingTaskDiffAcc + ratingTaskDiffRec)
+                statisticWord.put("ratingQuicknessDiff", ratingQuicknessDiffAcc + ratingQuicknessDiffRec)
+                // Итог - берем последний (не суммируем)
+                statisticWord.put("ratingTask", ratingTaskRec)
+                statisticWord.put("ratingQuickness", ratingQuicknessRec)
+
+
+                // Отдельно - количество слов.
+                // Уже было такое слово?
+                if (!setWords.contains(keyByWord)) {
+                    setWords.add(keyByWord)
+                }
+
             }
+
         }
 
 
+        // Отдельно - количество слов
+        //resStatistic.put("wordCount", setWords.size())
+
+
         //
-        return mapTasksStatistic
+        return resStatistic
     }
 
 
-    void distributeStatistic(Map<String, Map> mapTasksStatistic, Store st, String groupByKey) {
+    void distributeStatistic(Map<String, Map> statistic, Store st, String groupByKey) {
 /*
         ////////////////
         println()
         mdb.outTable(st)
         println()
-        for (String key : mapTasksStatistic.keySet()) {
-            Map taskStatisticAcc = mapTasksStatistic.get(key)
-            println(key + ": " + taskStatisticAcc)
+        for (String keyGroup : statistic.keySet()) {
+            Object statisticGroup = statistic.get(keyGroup)
+            if (statisticGroup instanceof Map) {
+                println(keyGroup)
+                for (String key : statisticGroup.keySet()) {
+                    Object item = statisticGroup.get(key)
+                    println("  " + key + ": " + item)
+                }
+            }
         }
         ////////////////
 */
 
         for (StoreRecord rec : st) {
-            // Значение ключа
+            // Значение ключа группы
             Map keyValues = rec.getValues()
             String key = createKey(keyValues, groupByKey)
 
-            // Берем статистику для ключа
-            Map taskStatistic = mapTasksStatistic.get(key)
+            // Берем статистику для ключа группы
+            Map groupStatistic = statistic.get(key)
 
 /*
             ///////////////////
-            if (taskStatistic == null) {
+            if (groupStatistic == null) {
                 println("key: " + key)
                 println()
             }
             ///////////////////
 */
 
+            // Суммируем по всем словам внутри группы
+            Map sumStatistic = summStatisticMap(groupStatistic)
+
+            // Сумму в запись
+            rec.setValues(sumStatistic)
+
+/*
             // Статистика для ключа
-            rec.setValue("ratingTask", taskStatistic.get("ratingTask"))
-            rec.setValue("ratingQuickness", taskStatistic.get("ratingQuickness"))
-            rec.setValue("ratingTaskDiff", taskStatistic.get("ratingTaskDiff"))
-            rec.setValue("ratingQuicknessDiff", taskStatistic.get("ratingQuicknessDiff"))
+            rec.setValue("ratingTask", groupStatistic.get("ratingTask"))
+            rec.setValue("ratingQuickness", groupStatistic.get("ratingQuickness"))
+            rec.setValue("ratingTaskDiff", groupStatistic.get("ratingTaskDiff"))
+            rec.setValue("ratingQuicknessDiff", groupStatistic.get("ratingQuicknessDiff"))
+*/
         }
     }
+
+    Map<String, Double> summStatisticMap(Map<String, Map> statistic) {
+        Map res = new HashMap()
+
+        for (String key : statistic.keySet()) {
+            Map item = statistic.get(key)
+
+            res.put("ratingTask", UtCnv.toDouble(item.get("ratingTask")) + UtCnv.toDouble(res.get("ratingTask")))
+            res.put("ratingQuickness", UtCnv.toDouble(item.get("ratingQuickness")) + UtCnv.toDouble(res.get("ratingQuickness")))
+            res.put("ratingTaskDiff", UtCnv.toDouble(item.get("ratingTaskDiff")) + UtCnv.toDouble(res.get("ratingTaskDiff")))
+            res.put("ratingQuicknessDiff", UtCnv.toDouble(item.get("ratingQuicknessDiff")) + UtCnv.toDouble(res.get("ratingQuicknessDiff")))
+        }
+
+        return res
+    }
+
+    StoreRecord summStatisticByWord(Map<String, Map> statistic) {
+/*
+        ////////////////
+        println()
+        for (String keyGroup : statistic.keySet()) {
+            Object statisticGroup = statistic.get(keyGroup)
+            if (statisticGroup instanceof Map) {
+                println(keyGroup)
+                for (String key : statisticGroup.keySet()) {
+                    Object item = statisticGroup.get(key)
+                    println("  " + key + ": " + item)
+                }
+            }
+        }
+        ////////////////
+*/
+
+
+        StoreRecord rating = mdb.createStoreRecord("Statistic.diff")
+
+        for (String key : statistic.keySet()) {
+            Map statisticWord = statistic.get(key).get(key)
+
+            //
+            int wordCount = UtCnv.toInt(statisticWord.get("wordCount"))
+            rating.setValue("wordCount", wordCount + 1)
+
+            //
+            double ratingTask = UtCnv.toDouble(statisticWord.get("ratingTask"))
+            double ratingQuickness = UtCnv.toDouble(statisticWord.get("ratingQuickness"))
+            double ratingTaskDiff = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
+            double ratingQuicknessDiff = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
+
+            //
+            rating.setValue("ratingTask", ratingTask + rating.getDouble("ratingTask"))
+            rating.setValue("ratingQuickness", ratingQuickness + rating.getDouble("ratingQuickness"))
+            rating.setValue("ratingTaskDiff", ratingTaskDiff + rating.getDouble("ratingTaskDiff"))
+            rating.setValue("ratingQuicknessDiff", ratingQuicknessDiff + rating.getDouble("ratingQuicknessDiff"))
+
+            //
+            double ratingTaskInc = UtCnv.toDouble(statisticWord.get("ratingTaskInc"))
+            double ratingTaskDec = UtCnv.toDouble(statisticWord.get("ratingTaskDec"))
+            double ratingQuicknessInc = UtCnv.toDouble(statisticWord.get("ratingQuicknessInc"))
+            double ratingQuicknessDec = UtCnv.toDouble(statisticWord.get("ratingQuicknessDec"))
+            //
+            if (ratingTaskDiff > 0) {
+                rating.setValue("ratingTaskInc", ratingTaskInc + ratingTaskDiff)
+            } else {
+                rating.setValue("ratingTaskDec", ratingTaskDec - ratingTaskDiff)
+            }
+            //
+            if (ratingQuicknessDiff > 0) {
+                rating.setValue("ratingQuicknessInc", ratingQuicknessInc + ratingQuicknessDiff)
+            } else {
+                rating.setValue("ratingQuicknessDec", ratingQuicknessDec - ratingQuicknessDiff)
+            }
+        }
+
+        return rating
+    }
+
+/*
+    StoreRecord summStatistic(Store st) {
+        StoreRecord rating = mdb.createStoreRecord("Statistic.diff")
+
+        for (StoreRecord rec : st) {
+            rating.setValue("ratingTask", rating.getDouble("ratingTask") + rec.getDouble("ratingTask"))
+            rating.setValue("ratingQuickness", rating.getDouble("ratingQuickness") + rec.getDouble("ratingQuickness"))
+            //
+            rating.setValue("ratingTaskDiff", rating.getDouble("ratingTaskDiff") + rec.getDouble("ratingTaskDiff"))
+            if (rec.getDouble("ratingTaskDiff") > 0) {
+                rating.setValue("ratingTaskInc", rating.getDouble("ratingTaskInc") + rec.getDouble("ratingTaskDiff"))
+            } else {
+                rating.setValue("ratingTaskDec", rating.getDouble("ratingTaskDec") - rec.getDouble("ratingTaskDiff"))
+            }
+            //
+            rating.setValue("ratingQuicknessDiff", rating.getDouble("ratingQuicknessDiff") + rec.getDouble("ratingQuicknessDiff"))
+            if (rec.getDouble("ratingQuicknessDiff") > 0) {
+                rating.setValue("ratingQuicknessInc", rating.getDouble("ratingQuicknessInc") + rec.getDouble("ratingQuicknessDiff"))
+            } else {
+                rating.setValue("ratingQuicknessDec", rating.getDouble("ratingQuicknessDec") - rec.getDouble("ratingQuicknessDiff"))
+            }
+        }
+
+        return rating
+    }
+*/
 
 
     String createKey(Map keyValues, String groupByKey) {
@@ -239,7 +399,7 @@ where
 """
     }
 
-    String sqlBaseStatistic() {
+    String sqlStatistic() {
         return """
 select 
     Game.id game,

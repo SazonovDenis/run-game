@@ -2,7 +2,10 @@
 
     <MenuContainer
         tabMenuName="GameInfoPage"
-        :title="title">
+        :title="title"
+        :frameReturn="frameReturn"
+        :frameReturnProps="frameReturnProps"
+    >
 
         <div v-if="dataLoaded"
              class="col justify-center _q-mt-lg _q-mb-lg11 _q-gutter-md">
@@ -86,19 +89,6 @@
 
             </template>
 
-            <template v-else>
-
-<!--
-                <div>
-                    <jc-btn kind="primary" label="Выбрать другой уровень"
-                            style="min-width: 12em;"
-                            @click="onSelectPlan()">
-                    </jc-btn>
-                </div>
--->
-
-            </template>
-
 
             <TaskList
                 v-if="localState.game && localState.game.done"
@@ -117,7 +107,6 @@
 <script>
 
 import {apx} from "./vendor"
-import auth from "./auth"
 import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
 import GameInfo from "./comp/GameInfo"
@@ -125,8 +114,16 @@ import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
 
 export default {
+
     name: "GameInfoPage",
+
     components: {MenuContainer, GameInfo, PlanInfo, TaskList},
+
+    props: {
+        gameId: null,
+        frameReturn: String,
+        frameReturnProps: Object,
+    },
 
     data() {
         return {
@@ -137,10 +134,12 @@ export default {
 
     computed: {
         title: function() {
-            if (!this.localState.game || !this.localState.game.id) {
-                return ""
+            if (this.gameId) {
+                return "Результат игры"
+            } else if (!this.localState.game || !this.localState.game.id) {
+                return null
             } else if (this.localState.game.done) {
-                return null //"Последняя игра"
+                return null
             } else {
                 return "Текушая игра"
             }
@@ -200,17 +199,23 @@ export default {
     async mounted() {
         this.dataLoaded = false
 
-        // Загружаем текущую  игру
-        this.localState = await gameplay.loadActiveGame()
+        if (this.gameId) {
+            // Загружаем игру по id
+            this.localState = await gameplay.api_getGame(this.gameId)
 
-        // Есть текущая игра?
-        if (!this.localState.game) {
-            // Загружаем последнюю игру
-            this.localState = await gameplay.loadLastGame()
-        }
+        } else {
+            // Загружаем текущую  игру
+            this.localState = await gameplay.api_getActiveGame()
 
-        if (!this.localState.game) {
-            //return
+            // Есть текущая игра?
+            if (!this.localState.game) {
+                // Загружаем последнюю игру
+                this.localState = await gameplay.api_getLastGame()
+            }
+
+            if (!this.localState.game) {
+                //return
+            }
         }
 
         /*

@@ -248,6 +248,11 @@ export default {
         return ctx.gameplay.parseResApiGame(resApi)
     },
 
+    async api_getGame(game) {
+        let resApi = await daoApi.loadStore('m/Game/getGame', [game])
+        return ctx.gameplay.parseResApiGame(resApi)
+    },
+
     async api_closeActiveGame() {
         await daoApi.invoke('m/Game/closeActiveGame', [])
     },

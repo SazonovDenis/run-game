@@ -9,26 +9,28 @@
 
         <q-item-section
             top side
-            style="width: 2em; align-content: end;">
+            style="width: 7em; align-content: end;">
 
-            <div class="row">
+            <div class="col">
 
                 <q-badge
-                    _class="col"
-                    color="green-5"
-                    :label="item.ratingTask + ' / ' + item.count"/>
-                <q-badge
+                    v-if="item.ratingTaskDiff > 0"
                     class="col"
-                    style="min-width: 3em; text-align: right"
+                    _style="min-width: 3em; text-align: right"
                     color="white"
                     text-color="green-5"
-                    :label="'+' + item.ratingInc"/>
+                    :label="'+' + item.ratingTaskDiff"/>
                 <q-badge
+                    v-if="item.ratingTaskDiff < 0"
                     class="col"
-                    style="min-width: 100%; align: right"
+                    _style="min-width: 100%; align: right"
                     color="white"
                     text-color="red-5"
-                    :label="'-' + item.ratingDec"/>
+                    :label="'-' + item.ratingTaskDiff"/>
+                <q-badge
+                    class="col"
+                    color="green-5"
+                    :label="item.ratingTask"/>
 
             </div>
 

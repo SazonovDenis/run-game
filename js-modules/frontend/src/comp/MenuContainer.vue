@@ -11,11 +11,10 @@
             <q-toolbar class="el-with-absolute bg-primary text-white"
                        style="padding-left: 0; padding-right: 0;">
 
-                <q-btn
-                    style="z-index: 1000;"
-                    v-if="!title"
-                    flat round icon="menu"
-                    @click="toggleRightDrawer"
+                <q-btn v-if="!title"
+                       style="z-index: 1000;"
+                       flat round icon="menu"
+                       @click="toggleRightDrawer"
                 >
                     <!--
                                         <q-badge style="z-index: 1000"
@@ -25,11 +24,10 @@
 
                 </q-btn>
 
-                <div
-                    v-if="!title && hasMenuAlert"
-                    class="el-absolute"
-                    style="left: 1.4rem; top: 0.6rem; z-index: 10000"
-                    @click="toggleRightDrawer"
+                <div v-if="!title && hasMenuAlert"
+                     class="el-absolute"
+                     style="left: 1.4rem; top: 0.6rem; z-index: 10000"
+                     @click="toggleRightDrawer"
                 >
                     <q-icon
                         name="circle"
@@ -38,7 +36,8 @@
                     />
                 </div>
 
-                <div v-if="title" class="row">
+                <div v-if="title"
+                     class="row">
 
                     <div
                         style="width: 3em; height: 2em; text-align: center;"
@@ -313,10 +312,19 @@ export default {
     },
 
     props: {
+        // Если параметр title не передан,
+        // то показываем главное меню в табах и левое меню под бутербродом.
+        // Если указан, то меню не показано, а окно в режиме модального,
+        // тогда см. параметры frameReturn и frameReturnProps.
+        title: null,
+
         tabMenuName: null,
+
+        // Если переданы, то слева будет стрелка с возвратом,
+        // если нет - то будет иконка с переходом на главную
         frameReturn: null,
         frameReturnProps: null,
-        title: null,
+
         showFooter: false,
         footerMode: "",
     },

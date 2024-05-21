@@ -2,10 +2,7 @@
 <root>
 
     <domain name="Statistic.base">
-        <field name="count" parent="Cube_UsrPlan/count"/>
-        <field name="countFull" parent="Cube_UsrPlan/countFull"/>
-
-        <!-- Рейтинга -->
+        <!-- Рейтинг -->
         <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
         <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
 
@@ -54,6 +51,18 @@
         <field name="answer" parent="object"
                title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
 
+    </domain>
+
+
+    <domain name="Statistic.diff" parent="Statistic.base">
+        <!-- Рост и падение рейтинга -->
+        <field name="ratingTaskInc" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingTaskDec" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuicknessInc" parent="Cube_UsrPlan/ratingQuickness"/>
+        <field name="ratingQuicknessDec" parent="Cube_UsrPlan/ratingQuickness"/>
+
+        <!--  -->
+        <field name="wordCount" parent="int"/>
     </domain>
 
 

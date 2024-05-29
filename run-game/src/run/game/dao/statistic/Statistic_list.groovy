@@ -38,20 +38,24 @@ class Statistic_list extends RgmMdbUtils {
     }
 
     DataBox byInternal(XDate dbeg, XDate dend, String groupByKey) {
-        // Загружаем ---
+        // ---
+        // Загружаем
+
+        // Параметры
         long idUsr = getContextOrCurrentUsrId()
         XDateTime paramDbeg = dbeg.toDateTime()
-        XDateTime paramDend = dend.toDateTime().addDays(1).addMSec(-1)
+        XDateTime paramDend = dend.toDateTime().addDays(1).addMSec(-1000)
         Map params = [usr: idUsr, dbeg: paramDbeg, dend: paramDend]
 
-        // Загружаем список
+        // Загружаем
         Store st = mdb.createStore("Statistic." + groupByKey)
         mdb.loadQuery(st, getSql(groupByKey), params)
 
-        // Загружаем статистику по фактам за каждую игру,
-        // которая расчитывается кубом Cube_UsrGameStatistic.
-        // ВАЖНО! Ключевая зависимость! Рассчитываем, что куб Cube_UsrGameStatistic
-        // на каждую игру содержит статистику по КАЖДОМУ выданному факту на момент ОКОНЧАНИЯ игры.
+        // Загружаем статистику по фактам для всех игр, сыгранных за указанный период.
+        // ВАЖНО! Ключевая зависимость:
+        // Статистика расчитывается кубом Cube_UsrGameStatistic. Рассчитываем,
+        // что куб на каждую игру содержит статистику по КАЖДОМУ выданному факту
+        // на момент ОКОНЧАНИЯ игры.
         Store stStatistic = mdb.loadQuery(sqlStatistic(), params)
 
 
@@ -108,7 +112,6 @@ class Statistic_list extends RgmMdbUtils {
 
         // Копим статистику из BLOB по записям stStatistic
         Map<String, Map> resStatistic = new HashMap<>()
-        Set<String> setWords = new HashSet<>()
 
 /*
         /////////////////
@@ -170,21 +173,9 @@ class Statistic_list extends RgmMdbUtils {
                 // Итог - берем последний (не суммируем)
                 statisticWord.put("ratingTask", ratingTaskRec)
                 statisticWord.put("ratingQuickness", ratingQuicknessRec)
-
-
-                // Отдельно - количество слов.
-                // Уже было такое слово?
-                if (!setWords.contains(keyByWord)) {
-                    setWords.add(keyByWord)
-                }
-
             }
 
         }
-
-
-        // Отдельно - количество слов
-        //resStatistic.put("wordCount", setWords.size())
 
 
         //
@@ -212,7 +203,7 @@ class Statistic_list extends RgmMdbUtils {
 */
 
         for (StoreRecord rec : st) {
-            // Значение ключа группы
+            // Значение ключа для группы groupByKey
             Map keyValues = rec.getValues()
             String key = createKey(keyValues, groupByKey)
 
@@ -263,12 +254,12 @@ class Statistic_list extends RgmMdbUtils {
         return res
     }
 
-    StoreRecord summStatisticByWord(Map<String, Map> statistic) {
+    StoreRecord summStatisticByWord(Map<String, Map> statisticByWord) {
 /*
         ////////////////
         println()
-        for (String keyGroup : statistic.keySet()) {
-            Object statisticGroup = statistic.get(keyGroup)
+        for (String keyGroup : statisticByWord.keySet()) {
+            Object statisticGroup = statisticByWord.get(keyGroup)
             if (statisticGroup instanceof Map) {
                 println(keyGroup)
                 for (String key : statisticGroup.keySet()) {
@@ -281,49 +272,63 @@ class Statistic_list extends RgmMdbUtils {
 */
 
 
-        StoreRecord rating = mdb.createStoreRecord("Statistic.diff")
+        // Сумма
+        double ratingTask = 0
+        double ratingQuickness = 0
+        double ratingTaskDiff = 0
+        double ratingQuicknessDiff = 0
 
-        for (String key : statistic.keySet()) {
-            Map statisticWord = statistic.get(key).get(key)
+        // Прибавка и потери рейтинга - по отдельности
+        double ratingTaskInc = 0
+        double ratingTaskDec = 0
+        double ratingQuicknessInc = 0
+        double ratingQuicknessDec = 0
 
-            //
-            //int wordCount = UtCnv.toInt(statisticWord.get("wordCount"))
-            //rating.setValue("wordCount", wordCount + 1)
-
-            //
-            double ratingTask = UtCnv.toDouble(statisticWord.get("ratingTask"))
-            double ratingQuickness = UtCnv.toDouble(statisticWord.get("ratingQuickness"))
-            double ratingTaskDiff = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
-            double ratingQuicknessDiff = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
-
-            //
-            rating.setValue("ratingTask", ratingTask + rating.getDouble("ratingTask"))
-            rating.setValue("ratingQuickness", ratingQuickness + rating.getDouble("ratingQuickness"))
-            rating.setValue("ratingTaskDiff", ratingTaskDiff + rating.getDouble("ratingTaskDiff"))
-            rating.setValue("ratingQuicknessDiff", ratingQuicknessDiff + rating.getDouble("ratingQuicknessDiff"))
+        // Копим
+        for (String key : statisticByWord.keySet()) {
+            Map statisticWord = statisticByWord.get(key).get(key)
 
             //
-            double ratingTaskInc = UtCnv.toDouble(statisticWord.get("ratingTaskInc"))
-            double ratingTaskDec = UtCnv.toDouble(statisticWord.get("ratingTaskDec"))
-            double ratingQuicknessInc = UtCnv.toDouble(statisticWord.get("ratingQuicknessInc"))
-            double ratingQuicknessDec = UtCnv.toDouble(statisticWord.get("ratingQuicknessDec"))
-            //
-            if (ratingTaskDiff > 0) {
-                rating.setValue("ratingTaskInc", ratingTaskInc + ratingTaskDiff)
+            double ratingTaskRec = UtCnv.toDouble(statisticWord.get("ratingTask"))
+            double ratingQuicknessRec = UtCnv.toDouble(statisticWord.get("ratingQuickness"))
+            double ratingTaskDiffRec = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
+            double ratingQuicknessDiffRec = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
+
+            // Сумма
+            ratingTask = ratingTask + ratingTaskRec
+            ratingQuickness = ratingQuickness + ratingQuicknessRec
+            ratingTaskDiff = ratingTaskDiff + ratingTaskDiffRec
+            ratingQuicknessDiff = ratingQuicknessDiff + ratingQuicknessDiffRec
+
+            // Прибавка и потери рейтинга
+            if (ratingTaskDiffRec > 0) {
+                ratingTaskInc = ratingTaskInc + ratingTaskDiffRec
             } else {
-                rating.setValue("ratingTaskDec", ratingTaskDec - ratingTaskDiff)
+                ratingTaskDec = ratingTaskDec - ratingTaskDiffRec
             }
             //
-            if (ratingQuicknessDiff > 0) {
-                rating.setValue("ratingQuicknessInc", ratingQuicknessInc + ratingQuicknessDiff)
+            if (ratingQuicknessDiffRec > 0) {
+                ratingQuicknessInc = ratingQuicknessInc + ratingQuicknessDiffRec
             } else {
-                rating.setValue("ratingQuicknessDec", ratingQuicknessDec - ratingQuicknessDiff)
+                ratingQuicknessDec = ratingQuicknessDec - ratingQuicknessDiffRec
             }
         }
 
 
         //
-        rating.setValue("wordCount", statistic.keySet().size())
+        StoreRecord rating = mdb.createStoreRecord("Statistic.diff")
+        //
+        rating.setValue("ratingTask", ratingTask)
+        rating.setValue("ratingQuickness", ratingQuickness)
+        rating.setValue("ratingTaskDiff", ratingTaskDiff)
+        rating.setValue("ratingQuicknessDiff", ratingQuicknessDiff)
+        //
+        rating.setValue("ratingTaskInc", ratingTaskInc)
+        rating.setValue("ratingTaskDec", ratingTaskDec)
+        rating.setValue("ratingQuicknessInc", ratingQuicknessInc)
+        rating.setValue("ratingQuicknessDec", ratingQuicknessDec)
+        //
+        rating.setValue("wordCount", statisticByWord.keySet().size())
 
 
         //

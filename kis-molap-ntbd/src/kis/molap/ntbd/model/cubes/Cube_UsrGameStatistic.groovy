@@ -92,7 +92,7 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
 
             // Период анализа ответов ДО игры game - от некоторого количества дней назад до НАЧАЛА игры
             params.put("dbeg", gameDbeg.addDays(-Cube_UsrFactStatistic.RAITING_ANALYZE_DAYS_DIFF))
-            params.put("dend", gameDbeg)
+            params.put("dend", gameDbeg.addMSec(-1000))
             Store stGameTaskPrior = mdb.loadQuery(sqlGameTasks(), params)
 
             // Собираем рейтинг фактов в игре
@@ -123,14 +123,19 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
             // Сравниваем рейтинг ДО и ПОСЛЕ игры
             for (String key : taskStatistic.keySet()) {
                 Map resMap = taskStatistic.get(key)
+                double ratingTask = UtCnv.toDouble(resMap.get("ratingTask"))
+                double ratingQuickness = UtCnv.toDouble(resMap.get("ratingQuickness"))
+                //
                 Map resMapPrior = taskStatisticPrior.get(key)
                 if (resMapPrior != null) {
-                    double ratingTask = UtCnv.toDouble(resMap.get("ratingTask"))
                     double ratingTaskPrior = UtCnv.toDouble(resMapPrior.get("ratingTask"))
-                    double ratingQuickness = UtCnv.toDouble(resMap.get("ratingQuickness"))
                     double ratingQuicknessPrior = UtCnv.toDouble(resMapPrior.get("ratingQuickness"))
                     resMap.put("ratingTaskDiff", CubeUtils.discardExtraDigits(ratingTask - ratingTaskPrior))
                     resMap.put("ratingQuicknessDiff", CubeUtils.discardExtraDigits(ratingQuickness - ratingQuicknessPrior))
+                } else {
+                    // Нет предыдущей записи - значит весь рост - текущий
+                    resMap.put("ratingTaskDiff", CubeUtils.discardExtraDigits(ratingTask))
+                    resMap.put("ratingQuicknessDiff", CubeUtils.discardExtraDigits(ratingQuickness))
                 }
             }
 

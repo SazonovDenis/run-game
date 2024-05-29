@@ -11,15 +11,12 @@
             <span class="">
                 За игру заработано:
             </span>
-            <span class="game-info__rating-inc">
-                {{ statistic.ratingTaskInc }}
-                {{ ratingText(statistic.ratingTaskInc) }}
+            <span class="game-info__rating-inc"
+                  v-html="ratingText(statistic.ratingTaskInc)">
             </span>
             <span class="">, потеряно:&nbsp;</span>
-            <span class="game-info__rating-dec">
-                    {{
-                    -statistic.ratingTaskDec
-                }}&nbsp;{{ ratingText(-statistic.ratingTaskDec) }}
+            <span class="game-info__rating-dec"
+                  v-html="ratingText(statistic.ratingTaskDec)">
             </span>
         </div>
 
@@ -66,7 +63,7 @@ export default {
 
     methods: {
         ratingText(rating) {
-            return utils.ratingText(rating)
+            return rating + "&nbsp;" + utils.ratingText(rating)
         }
     }
 

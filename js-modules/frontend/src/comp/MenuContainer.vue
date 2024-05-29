@@ -8,19 +8,13 @@
 
         <q-header elevated style="z-index: 3000">
 
-            <q-toolbar class="el-with-absolute bg-primary text-white"
-                       style="padding-left: 0; padding-right: 0;">
+            <q-toolbar class="el-with-absolute menu-bar bg-primary text-white">
 
                 <q-btn v-if="!title"
-                       style="z-index: 1000;"
+                       class="menu-button"
                        flat round icon="menu"
                        @click="toggleRightDrawer"
                 >
-                    <!--
-                                        <q-badge style="z-index: 1000"
-                                                 color="red" floating>
-                                        </q-badge>
-                    -->
 
                 </q-btn>
 
@@ -134,16 +128,6 @@
             <slot name="footer">
 
                 <q-toolbar :class="getFooterClass">
-                    <q-toolbar-title>
-
-                        <!--
-                                                <q-avatar
-                                                    style="width: 0.8em; height: 0.8em; margin-right: 0.2em">
-                                                    <img v-bind:src="iconBottomLeft">
-                                                </q-avatar>
-                        -->
-
-                    </q-toolbar-title>
 
                     <!-- slot footerContent -->
                     <slot name="footerContent"></slot>
@@ -212,6 +196,13 @@
 
                             <div class="q-mt-md q-item__label q-item__label--header"
                                  @click="onAbout()">Об игре
+                            </div>
+
+                            <q-separator/>
+
+
+                            <div class="q-mt-md q-item__label q-item__label--header"
+                                 @click="onStatistic()">Статистика
                             </div>
 
                         </div>
@@ -391,9 +382,11 @@ export default {
                 return apx.url.ref("run/game/web/img/logo-mono-white.svg")
             }
         },
+/*
         iconBottomLeft() {
             return apx.url.ref("run/game/web/img/logo-mono-white.svg")
         },
+*/
         avatar() {
             return apx.url.ref("run/game/web/img/boy-avatar.png")
         },
@@ -499,6 +492,12 @@ export default {
             })
         },
 
+        onStatistic: function() {
+            apx.showFrame({
+                frame: '/statistic',
+            })
+        },
+
         onUser: function() {
             apx.showFrame({
                 frame: '/user',
@@ -539,6 +538,19 @@ export default {
 
 
 <style lang="less" scoped>
+
+.menu-bar {
+    padding-left: 0;
+    padding-right: 0;
+    height: 2rem;
+}
+
+.menu-button {
+    z-index: 1000;
+    font-size: 1.3rem;
+    margin-left: -0.3rem;
+    margin-right: -0.6rem;
+}
 
 .menuBarDropdown {
 }

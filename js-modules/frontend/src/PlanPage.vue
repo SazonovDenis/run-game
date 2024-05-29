@@ -89,6 +89,8 @@
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
                 :filter="filter"
+                :showLastItemPadding="true"
+                :showRating="true"
             />
             <div v-else
                  class="rgm-state-text">
@@ -155,7 +157,7 @@ import auth from "./auth"
 import {daoApi} from "./dao"
 
 export default {
-    
+
     name: "PlanPage",
 
     props: {

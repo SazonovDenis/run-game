@@ -92,9 +92,11 @@
 
             <TaskList
                 v-if="localState.game && localState.game.done"
+                :tasks="localState.tasks"
                 :showTaskData="true"
                 :showAnswerResult="true"
-                :tasks="localState.tasks"/>
+                :showRating="true"
+            />
 
 
         </div>

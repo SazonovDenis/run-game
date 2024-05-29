@@ -92,27 +92,45 @@
         </q-item-section>
 
 
-        <q-item-section top side>
+        <q-item-section
+            top side
+            style="width: 7em; align-content: end;">
 
-            <div v-if="showAnswerResult" style="min-width: 2em">
+            <div _class="col">
 
-                <q-badge
-                    v-if="taskItem.ratingTaskDiff > 0"
-                    color="green-5"
-                    :label="'+'+taskItem.ratingTaskDiff"/>
+                <template v-if="showRatingDiff">
 
-                <q-badge
-                    v-if="taskItem.ratingTaskDiff < 0"
-                    color="red-5"
-                    :label="taskItem.ratingTaskDiff"/>
-            </div>
+                    <q-badge
+                        v-if="taskItem.ratingTaskDiff > 0"
+                        style="font-weight: bold;"
+                        color="white"
+                        _class="col"
+                        text-color="green-9"
+                        text-weight="bold"
+                        :label="'+' + taskItem.ratingTaskDiff"/>
+                    <q-badge
+                        v-if="taskItem.ratingTaskDiff < 0"
+                        style="font-weight: bold;"
+                        _class="col"
+                        color="white"
+                        text-color="red-7"
+                        text-weight="bold"
+                        :label="taskItem.ratingTaskDiff"/>
 
-            <div v-else style="min-width: 2em">
+                </template>
 
-                <q-badge
-                    :text-color="getRatingTextColor(taskItem.ratingTask)"
-                    :color="getRatingColor(taskItem.ratingTask)"
-                    :label="taskItem.ratingTask"/>
+
+                <template v-if="showRating">
+
+                    <q-badge
+                        style="font-weight: bold;"
+                        _class="col"
+                        :text-color="getRatingTextColor(taskItem.ratingTask)"
+                        :color="getRatingColor(taskItem.ratingTask)"
+                        :label="taskItem.ratingTask"/>
+
+                </template>
+
             </div>
 
         </q-item-section>
@@ -150,11 +168,13 @@ export default {
          * (данные из Task.factQuestion->Fact.* и Task.factQuestion->Fact.*),
          * что полезно при просмотре списка фактов в плане.
          */
-        showTaskData: false,
+        showTaskData: {type: Boolean},
 
-        showAnswerResult: false,
+        showAnswerResult: {type: Boolean},
+        showRating: {type: Boolean},
+        showRatingDiff: {type: Boolean, default: true},
 
-        showEdit: false,
+        showEdit: {type: Boolean},
 
         // todo определиться как показывать несколько вариантов ответов
         index: 0,

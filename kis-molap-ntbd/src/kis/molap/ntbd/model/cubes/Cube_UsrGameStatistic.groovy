@@ -12,8 +12,10 @@ import kis.molap.model.value.*
 import kis.molap.ntbd.model.*
 
 /**
- * Зависимости от GameUsr нет, а только от GameTask, т.к. предполагаем, что
- *  - поля в GameUsr никогда не редактируются
+ * Зависимости от GameUsr нет, а только от добавления GameTask, т.к. предполагаем, что
+ *  - поля в GameUsr и GameTask никогда не редактируются
+ *  - записи в GameTask и GameUsr только добавляются
+ *  - записи в GameTask добавляются по ходу игры
  * Таким образом, для отслеживания изменений в статистике игры для пользователя
  * достаточно отследить только добавления в GameTask.
  */
@@ -224,7 +226,7 @@ from
 
     String sqlGameFacts() {
         return """
--- Список заданий в игре
+-- Список заданий для пользователя в игре
 select
     Task.factQuestion,
     Task.factAnswer
@@ -254,7 +256,7 @@ ${sqlGameFacts()}
 )
 
 
--- Список заданий из разных игр, для фактов из игры
+-- Для фактов из заданной игры получим список заданий из разных других игр за указанный период 
 select
     GameTask.*,
     Task.factQuestion,
@@ -267,13 +269,11 @@ from
         Task.factAnswer = Tab_GameTasks.factAnswer
     )
     join GameTask on (
-        GameTask.task = Task.id
+        GameTask.task = Task.id and
+        GameTask.usr = :usr and
+        GameTask.dtTask >= :dbeg and 
+        GameTask.dtTask <= :dend
     )
-     
-where
-    GameTask.usr = :usr and
-    GameTask.dtTask >= :dbeg and 
-    GameTask.dtTask < :dend
      
 order by
     Task.factQuestion,

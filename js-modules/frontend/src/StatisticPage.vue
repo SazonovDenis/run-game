@@ -19,27 +19,24 @@
 
         <div>
 
-            <q-btn-toggle
-                v-model="params.period"
+            <q-tabs
+                v-model="params.group"
                 no-caps
-                _rounded
-                _unelevated
+                inline-label
+                class="bg-grey-1 q-mt-sm"
 
-                class="rgm-toggle"
-                toggle-color="blue-7"
-                color="white"
-                text-color="primary"
+                @update:model-value="onParams_group"
+            >
+                <q-tab name="plan" label="Планы"/>
+                <q-tab name="game" label="Игры"/>
+                <q-tab name="word" label="Слова"/>
 
-                :options="periodOptions"
-                @update:model-value="onParams_period"
-            />
+            </q-tabs>
 
         </div>
 
 
-        <div
-
-            style="height: calc(100vh - 15rem); overflow: scroll;">
+        <div class="items-container">
 
             <q-list>
 
@@ -63,7 +60,8 @@
 
                         <TaskItem
                             :taskItem="item"
-                            :showAnswerResult="true"
+                            :showAnswerResult="false"
+                            :showRating="true"
                         />
 
                     </template>
@@ -77,12 +75,12 @@
         </div>
 
 
-        <div style="position: absolute">
+        <div class="q-ma-sm bottom-buttons">
 
             <q-btn-toggle
-                v-model="params.group"
+                v-model="params.period"
                 no-caps
-                _rounded
+                rounded
                 _unelevated
 
                 class="rgm-toggle"
@@ -90,8 +88,8 @@
                 color="white"
                 text-color="primary"
 
-                :options="groupOptions"
-                @update:model-value="onParams_group"
+                :options="periodOptions"
+                @update:model-value="onParams_period"
             />
 
         </div>
@@ -262,6 +260,17 @@ export default {
 
 .rgm-toggle {
     _border: 1px solid #4072a8;
+}
+
+.items-container {
+    height: calc(100vh - 14rem);
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.bottom-buttons {
+    position: fixed;
+    bottom: 0.2rem;
 }
 
 </style>

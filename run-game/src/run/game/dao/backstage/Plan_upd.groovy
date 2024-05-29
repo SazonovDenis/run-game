@@ -30,10 +30,6 @@ class Plan_upd extends RgmMdbUtils {
         // Добавляем план в БД
         long idPlan = insInternal(plan, planFact, planTag, usrPlan)
 
-        // Пересчитаем кубы
-        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
-        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
-
         //
         return idPlan
     }
@@ -80,9 +76,8 @@ class Plan_upd extends RgmMdbUtils {
         checkPlanTasks(idPlan)
 
         // Пересчитаем кубы
-        long idUsr = getCurrentUsrId()
         RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
-        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
+        cubeUtils.cubesRecalcPlan(idPlan)
     }
 
 
@@ -101,9 +96,8 @@ class Plan_upd extends RgmMdbUtils {
         }
 
         // Пересчитаем кубы
-        long idUsr = getCurrentUsrId()
         RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
-        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
+        cubeUtils.cubesRecalcPlan(idPlan)
     }
 
 
@@ -149,10 +143,6 @@ class Plan_upd extends RgmMdbUtils {
         } else {
             mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isAllowed: true])
         }
-
-        // Пересчитаем кубы
-        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
-        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
     }
 
 

@@ -10,7 +10,7 @@ import run.game.dao.*
 import run.game.dao.game.*
 
 class Statistic_list extends RgmMdbUtils {
-
+    //^c цифры скачут
     /**
      *
      */
@@ -40,18 +40,23 @@ class Statistic_list extends RgmMdbUtils {
     DataBox byInternal(XDate dbeg, XDate dend, String groupByKey) {
         // Загружаем ---
         long idUsr = getContextOrCurrentUsrId()
-        Map params = [usr: idUsr, dbeg: dbeg, dend: dend]
+        XDateTime paramDbeg = dbeg.toDateTime()
+        XDateTime paramDend = dend.toDateTime().addDays(1).addMSec(-1)
+        Map params = [usr: idUsr, dbeg: paramDbeg, dend: paramDend]
 
         // Загружаем список
         Store st = mdb.createStore("Statistic." + groupByKey)
         mdb.loadQuery(st, getSql(groupByKey), params)
 
-        // Загружаем статистику
+        // Загружаем статистику по фактам за каждую игру,
+        // которая расчитывается кубом Cube_UsrGameStatistic.
+        // ВАЖНО! Ключевая зависимость! Рассчитываем, что куб Cube_UsrGameStatistic
+        // на каждую игру содержит статистику по КАЖДОМУ выданному факту на момент ОКОНЧАНИЯ игры.
         Store stStatistic = mdb.loadQuery(sqlStatistic(), params)
 
 
         // ---
-        // Статистику по словам агрегируем по groupByKey
+        // Статистику по фактам агрегируем по groupByKey
         Map<String, Map> statistic = groupStatisticBy(stStatistic, groupByKey)
 
         // Распределяем агрегированную статистику в список
@@ -75,7 +80,7 @@ class Statistic_list extends RgmMdbUtils {
         return res
     }
 
-    String getSql(String groupByKey){
+    String getSql(String groupByKey) {
         switch (groupByKey) {
             case "game": {
                 return sqlGame()
@@ -110,10 +115,10 @@ class Statistic_list extends RgmMdbUtils {
         println()
         println("stStatistic")
         for (StoreRecord rec : stStatistic) {
-            mdb.outTable(rec)
+            //println()
+            //mdb.outTable(rec)
             List<Map> listTaskStatistic = UtJson.fromJson(new String(rec.getValue("taskStatistic"), "utf-8"))
             println(listTaskStatistic)
-            println()
         }
         /////////////////
 */
@@ -214,6 +219,10 @@ class Statistic_list extends RgmMdbUtils {
             // Берем статистику для ключа группы
             Map groupStatistic = statistic.get(key)
 
+            if (groupStatistic == null) {
+                continue
+            }
+
 /*
             ///////////////////
             if (groupStatistic == null) {
@@ -278,8 +287,8 @@ class Statistic_list extends RgmMdbUtils {
             Map statisticWord = statistic.get(key).get(key)
 
             //
-            int wordCount = UtCnv.toInt(statisticWord.get("wordCount"))
-            rating.setValue("wordCount", wordCount + 1)
+            //int wordCount = UtCnv.toInt(statisticWord.get("wordCount"))
+            //rating.setValue("wordCount", wordCount + 1)
 
             //
             double ratingTask = UtCnv.toDouble(statisticWord.get("ratingTask"))
@@ -312,6 +321,12 @@ class Statistic_list extends RgmMdbUtils {
             }
         }
 
+
+        //
+        rating.setValue("wordCount", statistic.keySet().size())
+
+
+        //
         return rating
     }
 
@@ -375,6 +390,7 @@ class Statistic_list extends RgmMdbUtils {
 
     String sqlBase() {
         return """
+-- Все задания, выданные пользователю за указанный период
 select 
     Game.id game,
     Game.plan,
@@ -393,7 +409,7 @@ from
 
 where
     Game.dbeg >= :dbeg and
-    Game.dbeg < :dend and 
+    Game.dbeg <= :dend and 
     GameUsr.usr = :usr and
     GameTask.dtTask is not null 
 """
@@ -416,7 +432,7 @@ from
 
 where
     Game.dbeg >= :dbeg and
-    Game.dbeg < :dend and 
+    Game.dbeg <= :dend and 
     GameUsr.usr = :usr 
     
 order by    

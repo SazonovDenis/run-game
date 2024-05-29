@@ -11,25 +11,27 @@
             top side
             style="width: 7em; align-content: end;">
 
-            <div class="col">
+            <div _class="col">
 
                 <q-badge
                     v-if="item.ratingTaskDiff > 0"
-                    class="col"
-                    _style="min-width: 3em; text-align: right"
+                    style="font-weight: bold;"
+                    _class="col"
                     color="white"
-                    text-color="green-5"
+                    text-color="green-9"
                     :label="'+' + item.ratingTaskDiff"/>
                 <q-badge
                     v-if="item.ratingTaskDiff < 0"
-                    class="col"
-                    _style="min-width: 100%; align: right"
+                    style="font-weight: bold;"
+                    _class="col"
                     color="white"
                     text-color="red-5"
-                    :label="'-' + item.ratingTaskDiff"/>
+                    :label="item.ratingTaskDiff"/>
+
                 <q-badge
-                    class="col"
-                    color="green-5"
+                    style="font-weight: bold;"
+                    _class="col"
+                    color="green-7"
                     :label="item.ratingTask"/>
 
             </div>

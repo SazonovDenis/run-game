@@ -20,19 +20,21 @@
 
                 <q-badge
                     v-if="item.ratingTaskDiff > 0"
-                    class="col"
-                    _style="min-width: 3em; text-align: right"
+                    style="font-weight: bold;"
+                    _class="col"
                     color="white"
                     text-color="green-5"
                     :label="'+' + item.ratingTaskDiff"/>
                 <q-badge
                     v-if="item.ratingTaskDiff < 0"
-                    class="col"
-                    _style="min-width: 100%; align: right"
+                    style="font-weight: bold;"
+                    _class="col"
                     color="white"
                     text-color="red-5"
                     :label="item.ratingTaskDiff"/>
+
                 <q-badge
+                    style="font-weight: bold;"
                     class="col"
                     color="green-5"
                     :label="item.ratingTask"/>
@@ -61,7 +63,7 @@ export default {
 
 <style scoped>
 
-.game-info{
+.game-info {
     font-size: 0.9em;
     color: gray;
 }

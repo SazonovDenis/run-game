@@ -42,6 +42,7 @@
                           :taskItem="taskItem"
                           :showTaskData="showTaskData"
                           :showAnswerResult="showAnswerResult"
+                          :showRating="showRating"
                           :showEdit="showEdit"
                           :itemsMenu="itemsMenu"
                 />
@@ -91,6 +92,7 @@ export default {
 
         showTaskData: false,
         showAnswerResult: false,
+        showRating: false,
         showEdit: false,
 
         showLastItemPadding: false,

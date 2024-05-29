@@ -8,15 +8,14 @@ import run.game.dao.*
 class Statistic_list_Test extends RgmBase_Test {
 
     XDate dbeg = XDate.create("2024-05-20")
-    //XDate dbeg = XDate.create("2024-01-20")
-    XDate dend = XDate.create("2025-01-01")
+    XDate dend = XDate.create("2024-12-31")
     long usr = 1017
 
     @Test
     void loadByXXX() {
         Statistic_list list = mdb.create(Statistic_list)
 
-        setCurrentUserId(usr)
+        //setCurrentUserId(usr)
 
         //
         DataBox boxPlan = list.byPlan(dbeg, dend)
@@ -47,7 +46,7 @@ class Statistic_list_Test extends RgmBase_Test {
 
         Statistic_list list = mdb.create(Statistic_list)
 
-        setCurrentUserId(usr)
+        //setCurrentUserId(usr)
 
         //
         DataBox boxPlan = list.byPlan(dbeg, dend)
@@ -66,7 +65,7 @@ class Statistic_list_Test extends RgmBase_Test {
 
         Statistic_list list = mdb.create(Statistic_list)
 
-        setCurrentUserId(usr)
+        //setCurrentUserId(usr)
 
         //
         DataBox boxPlan = list.byGame(dbeg, dend)
@@ -85,7 +84,7 @@ class Statistic_list_Test extends RgmBase_Test {
 
         Statistic_list list = mdb.create(Statistic_list)
 
-        setCurrentUserId(usr)
+        //setCurrentUserId(usr)
 
         //
         DataBox boxWord = list.byWord(dbeg, dend)

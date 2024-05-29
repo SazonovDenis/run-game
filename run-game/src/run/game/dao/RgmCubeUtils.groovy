@@ -24,19 +24,26 @@ class RgmCubeUtils extends BaseMdbUtils {
         cubeRecalc("Cube_UsrPlanStatistic", coordsUsrPlan)
     }
 
-    public void cubesRecalcPlan(long idUsr, long idPlan) {
+    public void cubesRecalcUsrPlan(long idUsr, long idPlan) {
         // Что считаем
-        Store stPlanFact = mdb.loadQuery(sqlPlanFact(), [usr: idUsr, plan: idPlan])
-        CoordList coordsUsrFact = createCoords(stPlanFact, ["usr", "factQuestion", "factAnswer"])
         CoordList coordsUsrPlan = createCoord([usr: idUsr, plan: idPlan])
 
         //
-        cubeRecalc("Cube_UsrFactStatistic", coordsUsrFact)
         cubeRecalc("Cube_UsrPlanStatistic", coordsUsrPlan)
     }
 
 
-    public void cubeRecalc(String cubeName, CoordList coords) {
+    public void cubesRecalcPlan(long idPlan) {
+        // Что считаем: какие пользователи уже играли в игры по этому плану?
+        Store stUsrPlan = mdb.loadQuery(sqlUsrPlan(), [plan: idPlan])
+        CoordList coordsUsrPlan = createCoords(stUsrPlan, ["usr", "plan"])
+
+        //
+        cubeRecalc("Cube_UsrPlanStatistic", coordsUsrPlan)
+    }
+
+
+    void cubeRecalc(String cubeName, CoordList coords) {
         // Создаем куб
         CubeService cubeService = getModel().bean(CubeService)
         Cube cube = cubeService.createCube(cubeName, mdb)
@@ -63,6 +70,22 @@ from
     PlanFact
 where
     plan = :plan
+"""
+    }
+
+    String sqlUsrPlan(){
+        return """
+select
+    Game.plan,
+    GameUsr.usr
+from
+    Game 
+    join GameUsr on (Game.id = GameUsr.game)
+where
+    Game.plan = :plan
+group by
+    Game.plan,
+    GameUsr.usr
 """
     }
 

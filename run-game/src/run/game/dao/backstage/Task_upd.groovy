@@ -75,7 +75,7 @@ class Task_upd extends RgmMdbUtils {
         // Пересчитаем кубы
         long idUsr = getCurrentUsrId()
         RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
-        cubeUtils.cubesRecalcPlan(idUsr, idPlan)
+        cubeUtils.cubesRecalcUsrPlan(idUsr, idPlan)
     }
 
     @DaoMethod

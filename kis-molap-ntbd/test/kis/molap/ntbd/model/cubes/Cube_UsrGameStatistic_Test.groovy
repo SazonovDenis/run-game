@@ -17,7 +17,7 @@ class Cube_UsrGameStatistic_Test extends CubeBase_Test {
     CoordList getCoords_for_byOneCoord() {
         CoordList res = new CoordListImpl()
         Coord coord = new CoordImpl()
-        coord.put("usr", 1017)
+        coord.put("usr", 1000)
         coord.put("game", 1001)
         res.add(coord)
         return res

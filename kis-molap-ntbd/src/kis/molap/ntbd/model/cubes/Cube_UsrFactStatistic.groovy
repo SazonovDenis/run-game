@@ -179,7 +179,7 @@ where
     Task.factQuestion = :factQuestion and
     Task.factAnswer = :factAnswer and
     GameTask.dtTask >= :dbeg and
-    GameTask.dtTask < :dend
+    GameTask.dtTask <= :dend
 
 order by
     Task.factQuestion,

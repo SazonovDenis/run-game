@@ -1,3 +1,38 @@
+### Установка nginx
+
+Установка:
+
+```
+sudo apt update
+sudo apt install nginx
+```
+
+Проверить работу службы:
+
+```
+systemctl status nginx
+```
+
+Остановить, запустить остановленную, перезапустить службу:
+
+```
+systemctl stop nginx
+systemctl start nginx
+systemctl restart nginx
+```
+
+Перезагружаться без отключения соединений (после внесения изменения в конфигурацию):
+
+```
+systemctl reload nginx
+```
+
+### Настройка
+
+Обычно конфигурация лежит в `/etc/nginx/nginx.conf`
+
+Краткая памятка по конфигурации: `https://nginx.org/ru/docs/beginners_guide.html`
+
 ### Настройка SSL под nginx
 
 1.

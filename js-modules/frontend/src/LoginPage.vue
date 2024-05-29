@@ -371,7 +371,7 @@ export default {
         },
 
         async execLoginAsUser(login, password) {
-            if (!jcBase.cfg.envDev) {
+            if (!jcBase.cfg.envDev && Jc.cfg.is.mobile) {
                 utils.openFullscreen()
             }
 

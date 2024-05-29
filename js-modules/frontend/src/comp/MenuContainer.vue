@@ -277,7 +277,7 @@
 
         <!-- Кнопка FullScreen -->
 
-        <div v-if="!isFullScreen()"
+        <div v-if="needFullScreen()"
              style="position: fixed; left: 0; bottom: 0; z-index: 10000;">
 
             <q-btn unelevated color="grey-7"
@@ -457,9 +457,10 @@ export default {
             this.contextUser = this.userInfo.contextUser
         },
 
-        isFullScreen() {
-            return document.fullscreenElement != null
+        needFullScreen() {
+            return document.fullscreenElement == null && Jc.cfg.is.mobile
         },
+
         onFullscreen() {
             utils.openFullscreen()
         },

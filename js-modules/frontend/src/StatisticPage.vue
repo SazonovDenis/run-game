@@ -27,7 +27,7 @@
 
                 @update:model-value="onParams_group"
             >
-                <q-tab name="plan" label="Планы"/>
+                <q-tab name="plan" label="Уровни"/>
                 <q-tab name="game" label="Игры"/>
                 <q-tab name="word" label="Слова"/>
 

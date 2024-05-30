@@ -18,9 +18,8 @@
 
                 </q-btn>
 
-                <div v-if="!title && hasMenuAlert"
-                     class="el-absolute"
-                     style="left: 1.4rem; top: 0.6rem; z-index: 10000"
+                <div v-if="!title && hasMenuAlert()"
+                     class="el-absolute menu-button-alert"
                      @click="toggleRightDrawer"
                 >
                     <q-icon
@@ -176,7 +175,7 @@
 
                                 <div
                                     class="el-absolute"
-                                    v-if="menuAlert?.link"
+                                    v-if="menuAlerts()?.link"
                                     style="right: -0.9rem; top: -0.6rem;"
                                 >
                                     <q-icon
@@ -345,22 +344,6 @@ export default {
 
 
     computed: {
-        menuAlert() {
-            let userInfo = auth.getUserInfo()
-            if (userInfo.linksToWait && userInfo.linksToWait.length > 0) {
-                return {link: true}
-            }
-
-            return {}
-        },
-
-        hasMenuAlert() {
-            let userInfo = auth.getUserInfo()
-            if (userInfo.linksToWait && userInfo.linksToWait.length > 0) {
-                return true
-            }
-        },
-
         getFooterDisplay() {
             if (this.showFooter) {
                 return "block"
@@ -382,11 +365,11 @@ export default {
                 return apx.url.ref("run/game/web/img/logo-mono-white.svg")
             }
         },
-/*
-        iconBottomLeft() {
-            return apx.url.ref("run/game/web/img/logo-mono-white.svg")
-        },
-*/
+        /*
+                iconBottomLeft() {
+                    return apx.url.ref("run/game/web/img/logo-mono-white.svg")
+                },
+        */
         avatar() {
             return apx.url.ref("run/game/web/img/boy-avatar.png")
         },
@@ -403,6 +386,20 @@ export default {
 
 
     methods: {
+
+        menuAlerts() {
+            let userInfo = auth.getUserInfo()
+
+            if (userInfo.linksToWait && userInfo.linksToWait.length > 0) {
+                return {link: true}
+            }
+
+            return null
+        },
+
+        hasMenuAlert() {
+            return this.menuAlerts() !== null
+        },
 
         async clearContextUser() {
             let currentFrame = this.getCurrentFrame()
@@ -550,6 +547,12 @@ export default {
     font-size: 1.3rem;
     margin-left: -0.3rem;
     margin-right: -0.6rem;
+}
+
+.menu-button-alert {
+    left: 1.8rem;
+    top: 0.5rem;
+    z-index: 10000
 }
 
 .menuBarDropdown {

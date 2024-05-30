@@ -16,6 +16,22 @@ export default {
             userInfo.planDefault = 0
         }
 
+        // Где-то после AuthServiceImpl.setCurrentUser поле UserInfo.linksToWait
+        // превращается из массива (с ключами 1, 2, ...) в map с ключами #1, #2, ...
+        // Поэтому превратим обратно из
+        //   "#0": {...},
+        //   "#1": {...}
+        // в обычный массив
+        //   0: {...},
+        //   1: {...}
+        let linksToWait = []
+        for (let key in userInfo.linksToWait) {
+            linksToWait.push(userInfo.linksToWait[key])
+        }
+        userInfo.linksToWait = linksToWait
+
+
+        //
         return userInfo
     },
 

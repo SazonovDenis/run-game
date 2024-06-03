@@ -79,7 +79,17 @@
 
                 <template v-slot:append>
 
+                    <!--
+                                        <q-btn icon="image"
+                                               rounded
+                                               color="secondary"
+                                               _class="q-my-xnone q-mx-none"
+                                               size="1.3rem"
+                                               @click="clickImageBtn"/>
+                    -->
+
                     <q-icon name="image"
+                            _size="1.3rem"
                             @click="clickImageBtn"/>
 
                     <!--
@@ -98,8 +108,6 @@
                    ref="fileInput"
                    @change="onFileChoose"
             >
-
-            <div ref="output">Paste an image here</div>
 
             <TaskList
                 v-if="itemsShouldLoad"
@@ -225,7 +233,7 @@
                     rounded
                     color="purple-4"
                     class="q-my-xnone q-mx-xs"
-                    size="1.3em"
+                    size="1.3rem"
                     icon="edit"
                     @click="this.setFrameMode('editPlan')"
                 />
@@ -236,7 +244,7 @@
                     color="yellow-10"
                     class="q-my-xnone q-mx-xs"
                     align="left"
-                    size="1.3em"
+                    size="1.3rem"
                     icon="word-add-keyboard"
                     @click="this.setFrameMode('addByText')"
                 />
@@ -247,7 +255,7 @@
                     color="yellow-8"
                     class="q-my-xnone q-mx-xs"
                     align="left"
-                    size="1.3em"
+                    size="1.3rem"
                     icon="word-add-photo"
                     @click="this.setFrameMode('addByPhoto')"
                 />
@@ -1251,11 +1259,12 @@ export default {
 
 
         async clickImageBtn() {
+            // Читаем буфер обмена?
             let blob = await this.handleClipboardItems()
 
             // Есть буфер обмена?
             if (blob) {
-                // Вставим из буфера обмена
+                // Берем содержимое буфера обмена
                 this.handleImage(blob)
 
                 // Чистим буфер обмена, чтобы второй раз не вставлять, а могла сработать вставка из файла
@@ -1303,35 +1312,20 @@ export default {
             elFileInput.value = null
         },
 
-        handleImage(blob) {
-            if (!blob) {
-                return
-            }
+        async handleImage(blob) {
+            // Преобразуем в формат dataUrl
+            const blobDataUrl = await this.readFileAsDataURL(blob);
 
-            //this.frameMode = "addByPhoto"
-
-            // Найдено - покажем
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(blob);
-            let elOutput = this.$refs.output
-            elOutput.innerHTML = ''; // Clear previous content
-            elOutput.appendChild(img);
+            // Берем содержимое буфера обмена
+            this.handleImageBase64(blobDataUrl)
         },
 
         handleImageBase64(text) {
             this.imageLoaded = text;
             this.frameMode = "addByPhoto"
 
+            //
             this.$refs.textInputPhoto.applyImage(text)
-
-            /*
-                        // Найдено - покажем
-                        const img = document.createElement('img');
-                        img.src = text
-                        let elOutput = this.$refs.output
-                        elOutput.innerHTML = ''; // Clear previous content
-                        elOutput.appendChild(img);
-            */
         },
 
         clearClipboardItems() {

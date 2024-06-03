@@ -510,12 +510,6 @@ export default {
                 return
             }
 
-            //
-            this.stillWidth = this.videoStreamWidth
-            this.stillHeight = this.videoStreamHeight
-            // Исходно - видимый размер снимка по ширине контейнера изображения
-            this.stillVisibleWidth = this.elImageClientWidth
-
             // Заберем картинку с окна захвата
             var canvasContext = canvas.getContext('2d');
             canvasContext.drawImage(videoStream, 0, 0, this.videoStreamWidth, this.videoStreamHeight);
@@ -524,11 +518,7 @@ export default {
             // Отреагируем
             await this.applyImage(dataImage)
         },
-        /*
-                            :с в какой момент читать размер контейнера и изображения
-        вставленное из буфера не работает
-        кнопка "новый файл"
-        */
+
         async applyImage(dataImage) {
             this.info = "size: " + dataImage.length + ", " + this.videoStreamWidth + "x" + this.videoStreamHeight
             console.info(this.info)

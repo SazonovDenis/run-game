@@ -11,7 +11,14 @@
             v-model="filterText"
 
             ref="filterText"
-        />
+        >
+
+            <!-- Если родительский компонент захочет поставить что-то в конец -->
+            <template v-slot:append>
+                <slot name="append"/>
+            </template>
+
+        </RgmInputText>
 
         <slot name="toolbar"></slot>
 
@@ -22,21 +29,18 @@
 <script>
 
 import {daoApi} from "../dao"
-import MenuContainer from "./MenuContainer"
 import ctx from "../gameplayCtx"
 import RgmInputText from "./RgmInputText"
 
 export default {
 
     components: {
-        MenuContainer, RgmInputText,
+        RgmInputText,
     },
 
     props: {
         planId: null,
         items: {type: Array, default: []},
-        itemsOnChange: {type: Function},
-        itemsOnLoading: {type: Function},
         isToolbarUsed: {type: Boolean},
     },
 
@@ -121,9 +125,7 @@ export default {
                         }
 
                         // Уведомим родителя
-                        if (this.itemsOnLoading) {
-                            this.itemsOnLoading(this.filterTextLoading)
-                        }
+                        this.$emit("itemsLoading", this.filterTextLoading)
                     }
                 })
 
@@ -147,9 +149,7 @@ export default {
             }
 
             // Уведомим родителя
-            if (this.itemsOnChange) {
-                this.itemsOnChange(this.filterTextShouldLoad)
-            }
+            this.$emit("itemsChange", this.filterTextShouldLoad)
         },
 
     },

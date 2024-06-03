@@ -2,7 +2,7 @@
 
     <q-input
         dense outlined clearable
-        debounce="300"
+        _debounce="300"
 
         v-model="valueInternal"
         @update:modelValue="updateParent('modelValue', $event)"
@@ -15,8 +15,13 @@
         ref="inputText"
     >
 
-        <template v-slot:append v-if="!valueInternal">
+        <template v-slot:prepend v-if="!valueInternal">
             <q-icon name="search"/>
+        </template>
+
+        <!-- Если родительский компонент захочет поставить что-то в конец -->
+        <template v-slot:append v-if="!loading && !valueInternal">
+            <slot name="append"/>
         </template>
 
     </q-input>

@@ -6,6 +6,9 @@
         :frameReturnProps="frameReturnProps"
         :showFooter="true">
 
+
+        <!-- frameMode: editPlan -->
+
         <div v-if="frameMode==='editPlan'">
 
             <q-input class="q-mb-sm"
@@ -53,15 +56,18 @@
         </div>
 
 
+        <!-- frameMode: addByText -->
+
         <div v-show="canEditItemList() && frameMode==='addByText'">
 
             <TextInputText
+                ref="textInputText"
                 :planId="planId"
                 :items="itemsLoaded"
-                :itemsOnChange="itemsOnChange"
-                :itemsOnLoading="itemsOnLoading"
                 :isToolbarUsed="this.hiddenCountLoaded > 0"
-                ref="textInputText"
+                @itemsChange="itemsOnChange"
+                @itemsLoading="itemsOnLoading"
+                @paste="onTextInputPaste"
             >
 
                 <template v-slot:toolbar>
@@ -71,8 +77,29 @@
                         :label="'Известные (' + this.hiddenCountLoaded + ')'"/>
                 </template>
 
+                <template v-slot:append>
+
+                    <q-icon name="image"
+                            @click="clickImageBtn"/>
+
+                    <!--
+                    <q-icon v-if="!hasClipboardImage" name="folder-open"
+                            @click="clickFileChoose"/>
+                    -->
+
+                </template>
 
             </TextInputText>
+
+            <input style="display: none;"
+                   type="file"
+                   _multiple
+                   accept="image/*"
+                   ref="fileInput"
+                   @change="onFileChoose"
+            >
+
+            <div ref="output">Paste an image here</div>
 
             <TaskList
                 v-if="itemsShouldLoad"
@@ -89,14 +116,19 @@
         </div>
 
 
+        <!-- frameMode: addByPhoto -->
+
         <div v-show="canEditItemList() && frameMode==='addByPhoto'">
 
             <TextInputPhoto
+                ref="textInputPhoto"
                 :planId="planId"
                 :items="itemsLoaded"
-                :itemsOnChange="itemsOnChange"
-                :itemOnClick="itemOnClick"
+                :image="imageLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
+                @itemsChange="itemsOnChange"
+                @itemClick="itemOnClick"
+                @fileChoose="clickFileChoose"
             >
 
                 <template v-slot:toolbar>
@@ -133,6 +165,7 @@
 
         </div>
 
+
         <div v-if="frameMode==='viewItemsAdd'">
 
             <q-input v-if="!this.plan" class="q-mb-sm"
@@ -149,6 +182,7 @@
 
         </div>
 
+
         <div v-if="frameMode==='viewItemsDel'">
 
             <TaskList
@@ -158,6 +192,7 @@
             />
 
         </div>
+
 
         <div v-if="frameMode==='viewItemsHideAdd'">
 
@@ -231,20 +266,6 @@
                     <div class="row" style="width: 100%">
 
                         <div class="row" style="flex-grow: 10; align-content: end">
-
-                            <!--
-                                                        <template v-if="itemsLoaded.length > 0">
-
-                                                            <div
-                                                                class="q-ma-xs items-count-info"
-                                                                @click="clickItemsLoadedText()">
-                                                                <span class="rgm-link">
-                                                                    {{ itemsLoadedText }}
-                                                                </span>
-                                                            </div>
-
-                                                        </template>
-                            -->
 
                             <q-space/>
 
@@ -418,6 +439,9 @@ export default {
 
             itemsExternal: [],
             itemsLoaded: [],
+
+            //
+            imageLoaded: null,
 
             // Странный способ получить данные из дочернего компонента
             itemsShouldLoad: false,
@@ -1226,6 +1250,169 @@ export default {
         },
 
 
+        async clickImageBtn() {
+            let blob = await this.handleClipboardItems()
+
+            // Есть буфер обмена?
+            if (blob) {
+                // Вставим из буфера обмена
+                this.handleImage(blob)
+
+                // Чистим буфер обмена, чтобы второй раз не вставлять, а могла сработать вставка из файла
+                this.clearClipboardItems()
+
+            } else {
+                // Начинаем выбирать файл
+                this.clickFileChoose()
+            }
+        },
+
+        async onTextInputPaste(event) {
+            let blob = await this.handleDataTransferItems(event.clipboardData)
+
+            // Вставим из буфера обмена
+            this.handleImage(blob)
+
+            // Чистим буфер, чтобы второй раз не вставлять, а могла сработать вставка из файла
+            this.clearClipboardItems()
+        },
+
+        clickFileChoose() {
+            // Чистим файл, чтобы второй раз можно было выбрать тот же файл,
+            // иначе:
+            //  - неудобно при отладке,
+            //  - событие @change не иницируется и тогда пользователю покажется,
+            //    что нет никакой реакции
+            this.clearChoosenFile()
+
+            // Начинаем выбирать файл
+            let elFileInput = this.$refs.fileInput
+            elFileInput.click()
+        },
+
+        async onFileChoose(event) {
+            let blob = await this.handleFileItems(event.target)
+
+            if (blob) {
+                this.handleImageBase64(blob[0])
+            }
+        },
+
+        clearChoosenFile() {
+            let elFileInput = this.$refs.fileInput
+            elFileInput.value = null
+        },
+
+        handleImage(blob) {
+            if (!blob) {
+                return
+            }
+
+            //this.frameMode = "addByPhoto"
+
+            // Найдено - покажем
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(blob);
+            let elOutput = this.$refs.output
+            elOutput.innerHTML = ''; // Clear previous content
+            elOutput.appendChild(img);
+        },
+
+        handleImageBase64(text) {
+            this.imageLoaded = text;
+            this.frameMode = "addByPhoto"
+
+            this.$refs.textInputPhoto.applyImage(text)
+
+            /*
+                        // Найдено - покажем
+                        const img = document.createElement('img');
+                        img.src = text
+                        let elOutput = this.$refs.output
+                        elOutput.innerHTML = ''; // Clear previous content
+                        elOutput.appendChild(img);
+            */
+        },
+
+        clearClipboardItems() {
+            // Чистим буфер обмена
+            navigator.clipboard.writeText("");
+        },
+
+        async handleClipboardItems() {
+            let blob = null
+
+            // Буфер обмена пуст?
+            // В десктопной версии всега не null,
+            // на мобилке == null когда буфер пуст (после перезагрузки)
+            if (!navigator.clipboard) {
+                return
+            }
+
+            // Запрос доступа к содержимому буфера обмена
+            const clipboardItems = await navigator.clipboard.read();
+
+            // Ищем изображение
+            for (const clipboardItem of clipboardItems) {
+                for (const type of clipboardItem.types) {
+                    if (type.startsWith('image/')) {
+                        blob = await clipboardItem.getType(type);
+                        break
+                    }
+                }
+            }
+
+            //
+            return blob
+        },
+
+        async handleDataTransferItems(dataTransfer) {
+            let blob = null
+
+            // Содержимое буфера обмена
+            const dataTransferItems = dataTransfer.items;
+
+            // Ищем изображение
+            for (let i = 0; i < dataTransferItems.length; i++) {
+                const dataItem = dataTransferItems[i]
+                if (dataItem.type.startsWith('image/')) {
+                    blob = await dataItem.getAsFile();
+                    break;
+                }
+            }
+
+            return blob
+        },
+
+        async handleFileItems(eventDataTarget) {
+            let blob = []
+
+            const files = eventDataTarget.files;
+
+            for (const file of files) {
+                const img = await this.readFileAsDataURL(file);
+                //const imgElement = document.createElement('img');
+                //imgElement.src = img;
+                blob.push(img);
+            }
+
+            //
+            if (blob.length === 0) {
+                return null
+            } else {
+                return blob
+            }
+        },
+
+        readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsDataURL(file);
+            });
+        },
+
         returnFrameMode() {
             if (this.frameModePrior) {
                 this.setFrameMode(this.frameModePrior)
@@ -1256,7 +1443,7 @@ export default {
 
                     // Уведомим кому надо.
                     // Например, ввод по фото инициализирует камеру.
-                    ctx.eventBus.emit('editModeChanged')
+                    ctx.eventBus.emit('editModeChanged', frameMode)
                 }
 
 
@@ -1276,7 +1463,7 @@ export default {
         },
 
         isEditModeChanged(viewModeNow, viewModeNew) {
-            if (viewModeNew.startsWith("add") && this.editMode !== viewModeNew) {
+            if (viewModeNew.startsWith("add") && viewModeNow !== viewModeNew) {
                 return true
             } else {
                 return false

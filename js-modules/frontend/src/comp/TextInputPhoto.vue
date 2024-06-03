@@ -1,25 +1,36 @@
 <template>
 
-    <div style="position: relative; justify-content: center;" :class="getClassComponent()">
+    <div style="position: relative; justify-content: center;"
+         :class="getClassComponent()">
 
         <div v-if="isDev" style="position: absolute; z-index: 10; padding: 5px">
             info: {{ info }}
         </div>
 
 
-        <div class="camera-container" :class="getClassCamera"
-             id="camera-container"
-             @click="onCameraContainerClick">
+        <div class="camera-container">
 
-            <div style="text-align: center;">
+            <!-- Захват с камеры и canvas для стоп-кадра с неё -->
+            <div v-show="this.isCameraCapturing === true" style="text-align: center;">
 
-                <div :class="'video-container ' + getClassVideo" id="video-container">
-                    <video id="video">Video stream will appear in this box</video>
+                <div class="video-container">
+                    <video id="videoStream">Video stream will appear in this box</video>
                 </div>
 
                 <canvas id="canvas"></canvas>
 
-                <div :class="'photo-container ' + getClassPhoto">
+            </div>
+
+
+            <!-- Полученное изображение с показом позиций -->
+            <div class="image-container">
+
+                <div v-show="isStillImage === true"
+                     ref="photoContainer"
+                     class="photo-container"
+                >
+
+                    <!-- Полученное изображение -->
                     <img
                         ref="photoStill"
                         id="photoStill"
@@ -28,6 +39,7 @@
                         @click="onPictureClick"
                     >
 
+                    <!-- Показ позиций -->
                     <div class="photo-word-positions">
                         <div v-for="position in itemPositions"
                              class="photo-word-position"
@@ -39,62 +51,74 @@
                     </div>
                 </div>
 
-            </div>
 
-
-            <q-icon v-if="isCameraCapturing===true"
-                    class="photo-btn photo-btn-still"
-                    name="circle"
-                    color="grey-2"
-                    size="3.5em"
-                    @click="onTakePicture"
-            />
-
-            <q-btn v-if="isCameraCapturing===false && searchDone===true"
-                   rounded
-                   class="photo-btn photo-btn-clear"
-                   color="accent"
-                   no-caps
-                   label="Новый снимок"
-                   @click="onNewPicture"
-            />
-
-            <div v-if="isCameraCapturing===false && searchDone===true"
-                 class="col zoom-btn"
-            >
-
-                <q-btn
-                    round
-                    color="grey-3"
-                    text-color="grey-10"
-                    icon="add"
-                    size="1em"
-                    @click="onPhotoStillInc()"
+                <!-- Кнопки управления: фото/новый снимок и т.д. -->
+                <q-icon v-if="isCameraCapturing === true"
+                        class="photo-btn photo-btn-still"
+                        name="circle"
+                        color="grey-2"
+                        size="3.5em"
+                        @click="onTakePicture"
                 />
-                <q-btn round
-                       color="grey-3"
-                       text-color="grey-10"
-                       style="margin-top: 0.2em"
-                       icon="quasar.editor.hr"
-                       size="1em"
-                       @click="onPhotoStillDec()"
+
+                <q-btn v-if="isCameraCapturing === false && searchDone === true"
+                       rounded
+                       class="photo-btn photo-btn-clear"
+                       color="accent"
+                       no-caps
+                       label="Новый снимок"
+                       @click="onNewPicture"
                 />
+
+                <q-btn v-if="isCameraCapturing === true || searchDone === true"
+                       rounded
+                       class="photo-btn photo-btn-file"
+                       color="secondary"
+                       no-caps
+                       icon="image"
+                       :label="labelChooseFile()"
+                       @click="onChooseFile"
+                />
+
+                <div v-if="isCameraCapturing === false && searchDone === true"
+                     class="col zoom-btn"
+                >
+                    <q-btn
+                        round
+                        color="grey-3"
+                        text-color="grey-10"
+                        icon="add"
+                        size="1em"
+                        @click="onPhotoStillInc()"
+                    />
+                    <q-btn round
+                           color="grey-3"
+                           text-color="grey-10"
+                           style="margin-top: 0.2em"
+                           icon="quasar.editor.hr"
+                           size="1em"
+                           @click="onPhotoStillDec()"
+                    />
+                </div>
+
             </div>
 
 
         </div>
 
 
-        <div :class="'rgm-state-text photo-state-wait ' + getClassCameraInit">
+        <div v-if="this.isCameraIniting === true"
+             class="rgm-state-text photo-state-wait">
             Инициализация камеры
         </div>
 
-        <div :class="'rgm-state-text photo-state-error ' + getClassCameraInitFalil">
+        <div v-if="this.wasCameraInitFail === true"
+             class="rgm-state-text photo-state-error">
             Нет доступа к камере
         </div>
 
 
-        <div class="selected-list-container col" v-if="searchDone">
+        <div v-if="searchDone" class="selected-list-container col">
 
             <TaskList
                 :showEdit="true"
@@ -106,6 +130,7 @@
         </div>
 
 
+        <!-- slot: toolbar -->
         <div class="row">
 
             <slot name="toolbar"></slot>
@@ -120,44 +145,54 @@
 
 import {apx} from "../vendor"
 import {daoApi} from "../dao"
-import TaskList from "./TaskList"
-import MenuContainer from "./MenuContainer"
 import ctx from "../gameplayCtx"
 import {TouchZoom} from "../TouchZoom"
+import TaskList from "./TaskList"
 
 export default {
 
     components: {
-        MenuContainer, TaskList
+        TaskList
     },
 
     props: {
         planId: null,
+        image: null,
         items: {type: Array, default: []},
-        itemsOnChange: {type: Function},
-        itemOnClick: {type: Function},
         itemsMenu: {type: Array, default: []},
     },
 
     data() {
         return {
-            imageWidth: 1280, // We will scale the photo width to this
-            imageHeight: 0,  // This will be computed based on the input stream
+            //
+            imagePreferableWidth: 1024 * 2,
 
-            imageClientWidth: null,
-            imageClientHeight: null,
+            // Размер кадра видеопотока с камеры
+            videoStreamWidth: 0,
+            videoStreamHeight: 0,
 
+            // Размер снимка (с камеры или из файла)
+            stillWidth: null,
+            stillHeight: null,
+
+            // Видимый размер области просмотра снимка
+            elImageClientWidth: 0,
+            elImageClientHeight: 0,
+            // Видимый размер снимка (используется при zoom in/out)
             stillVisibleWidth: null,
 
             wasCameraInit: false,
-            wasCanplay: false,
             wasCameraInitFail: false,
             wasCameraInitOk: false,
+            isCameraIniting: false,
             isCameraCapturing: false,
+
+            isStillImage: false,
+            stillImage: null,
 
             searchDone: false,
 
-            video: null,
+            videoStream: null,
             canvas: null,
             photoStill: null,
 
@@ -177,46 +212,6 @@ export default {
             return apx.jcBase.cfg.envDev
         },
 
-        getClassCameraInit() {
-            if (this.wasCameraInit === false) {
-                return ""
-            } else {
-                return "hidden"
-            }
-        },
-
-        getClassCameraInitFalil() {
-            if (this.wasCameraInitFail === true) {
-                return ""
-            } else {
-                return "hidden"
-            }
-        },
-
-        getClassCamera() {
-            if (this.wasCameraInitOk === true) {
-                return ""
-            } else {
-                return "hidden"
-            }
-        },
-
-        getClassVideo() {
-            if (this.isCameraCapturing === true) {
-                return ""
-            } else {
-                return "hidden"
-            }
-        },
-
-        getClassPhoto() {
-            if (this.isCameraCapturing === false) {
-                return ""
-            } else {
-                return "hidden"
-            }
-        },
-
     },
 
     methods: {
@@ -230,14 +225,13 @@ export default {
         },
 
         getItemPositionSyle(itemPosition) {
-            let imageRealWidth = this.imageWidth
-            let imageRealHeight = this.imageHeight
+            let imageRealWidth = this.stillWidth
+            let imageRealHeight = this.stillHeight
             //
-            let imageWidth = this.imageClientWidth
-            let imageHeight = this.imageClientHeight
+            let imageWidth = this.stillWidth
+            let imageHeight = this.stillHeight
 
             //
-            //let kWidth = imageWidth / videoWidth
             let kWidth = this.stillVisibleWidth / imageRealWidth
 
             //
@@ -309,29 +303,26 @@ export default {
 
             this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth_ZoomStart * zoomInfo.zoomRate)
 
-            if (this.stillVisibleWidth > this.imageWidth * 3) {
-                this.stillVisibleWidth = this.imageWidth
+            if (this.stillVisibleWidth > this.stillWidth * 2) {
+                this.stillVisibleWidth = this.stillWidth * 2
             }
-            if (this.stillVisibleWidth < this.imageClientWidth) {
-                this.stillVisibleWidth = this.imageClientWidth
+            if (this.stillVisibleWidth < this.elImageClientWidth) {
+                this.stillVisibleWidth = this.elImageClientWidth
             }
         },
 
         onPhotoStillInc() {
             this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth + this.stillVisibleWidth * 0.25)
-            if (this.stillVisibleWidth > this.imageWidth * 3) {
-                this.stillVisibleWidth = this.imageWidth
+            if (this.stillVisibleWidth > this.stillWidth * 2) {
+                this.stillVisibleWidth = this.stillWidth * 2
             }
         },
 
         onPhotoStillDec() {
             this.stillVisibleWidth = Math.trunc(this.stillVisibleWidth - this.stillVisibleWidth * 0.25)
-            if (this.stillVisibleWidth < this.imageClientWidth) {
-                this.stillVisibleWidth = this.imageClientWidth
+            if (this.stillVisibleWidth < this.elImageClientWidth) {
+                this.stillVisibleWidth = this.elImageClientWidth
             }
-        },
-
-        onCameraContainerClick() {
         },
 
         onPictureClick() {
@@ -346,10 +337,8 @@ export default {
             this.itemsSelectedList = itemsLst
 
             //
-            if (this.itemOnClick) {
-                for (let item1 of itemsLst) {
-                    this.itemOnClick(item1)
-                }
+            for (let item1 of itemsLst) {
+                this.$emit("itemClick", item1)
             }
 
             return false
@@ -374,51 +363,91 @@ export default {
             this.isCameraCapturing = false
         },
 
-        onNewPicture() {
+        async onNewPicture() {
             this.clearData(true)
-            this.clearPhoto();
+            this.clearImage();
+            //
+            this.searchDone = false
+            this.isStillImage = false
+            //
+            await this.checkCameraInit()
+            //
             this.isCameraCapturing = true
+        },
+
+        labelChooseFile() {
+            if (this.searchDone) {
+                return "Новый файл"
+            } else {
+                if (Jc.cfg.is.mobile) {
+                    return "Из галереи"
+                } else {
+                    return "Из файла"
+                }
+            }
+        },
+
+        onChooseFile() {
+            this.clearData(true)
+            this.clearImage();
+            //
+            this.searchDone = false
+            this.isStillImage = false
+            //
+            this.$emit("fileChoose")
         },
 
         onItemsCleared() {
             this.clearData(false)
-            this.clearPhoto();
-            this.isCameraCapturing = true
+            this.clearImage();
+            //
+            this.searchDone = false
+            this.isStillImage = false
         },
 
-        onEditModeChanged() {
-            if (!this.wasCameraInit) {
-                this.startup()
+        async onEditModeChanged(frameMode) {
+            if (frameMode === "addByPhoto") {
+                await this.checkCameraInit()
+                this.isCameraCapturing = true
             }
         },
 
-        startup() {
+        async checkCameraInit() {
+            if (!this.wasCameraInit) {
+                await this.initCamera()
+            }
+        },
+
+        async initCamera() {
             let th = this
 
             try {
-                th.video = document.getElementById('video');
+                th.isCameraIniting = true
+
+                th.videoStream = document.getElementById('videoStream');
                 th.canvas = document.getElementById('canvas');
                 th.photoStill = document.getElementById('photoStill');
 
                 //
-                navigator.mediaDevices.getUserMedia({
+                await navigator.mediaDevices.getUserMedia({
                     video: {
-                        width: {ideal: this.imageWidth},
+                        width: {ideal: this.imagePreferableWidth},
                         facingMode: 'environment'
                     },
                     audio: false
 
                 }).then(function(stream) {
-                    video.srcObject = stream;
-                    video.play();
+                    videoStream.srcObject = stream;
+                    videoStream.play();
 
                     //
-                    video.addEventListener('canplay', th.onCanplay, false)
+                    videoStream.addEventListener('canplay', th.onCanplay, false)
 
                     //
                     th.wasCameraInit = true
                     th.wasCameraInitOk = true
                     th.isCameraCapturing = true
+                    th.isCameraIniting = false
 
                     //
                     th.touchZoom.connect(th.photoStill)
@@ -430,48 +459,50 @@ export default {
                     th.wasCameraInit = true
                     th.wasCameraInitFail = true
                     th.isCameraCapturing = false
+                    th.isCameraIniting = false
 
                 });
 
-            } catch(e) {
-                console.log("An error occurred: " + e);
+            } catch(err) {
+                console.log("An error occurred: " + err);
 
-                th.info = e
+                th.info = err
 
                 th.wasCameraInit = true
                 th.wasCameraInitFail = true
                 th.isCameraCapturing = false
+                th.isCameraIniting = false
             }
 
             //
-            th.clearPhoto();
+            th.clearImage();
         },
 
-        onCanplay() {
-            this.imageHeight = video.videoHeight / (video.videoWidth / this.imageWidth);
-
-            //
-            //video.setAttribute('width', this.imageWidth);
-            //video.setAttribute('height', this.imageHeight);
-            canvas.setAttribute('width', this.imageWidth);
-            canvas.setAttribute('height', this.imageHeight);
-
-
-            ///////////////////////////////
-            console.info("video: " + video.videoWidth + "x" + video.videoHeight)
-            this.info = "video: " + video.videoWidth + "x" + video.videoHeight + ", this: " + this.imageWidth + "x" + this.imageHeight
-            ///////////////////////////////
-        },
-
-        clearPhoto() {
+        clearImage() {
             var context = canvas.getContext('2d');
             context.fillStyle = "#AAA";
             context.fillRect(0, 0, canvas.width, canvas.height);
 
             var data = canvas.toDataURL('image/png');
             photoStill.setAttribute('src', data);
+        },
 
-            this.searchDone = false
+        onCanplay() {
+            // Запомним размер кадра видеопотока
+            this.videoStreamHeight = videoStream.videoHeight;
+            this.videoStreamWidth = videoStream.videoWidth;
+
+            // Размер приёмника выставим по размеру кадра видеопотока
+            canvas.setAttribute('width', this.videoStreamWidth);
+            canvas.setAttribute('height', this.videoStreamHeight);
+
+            // Запомним видимый размер области просмотра снимка
+            this.elImageClientWidth = videoStream.clientWidth
+            this.elImageClientHeight = videoStream.clientHeight
+
+            //
+            this.info = "video: " + videoStream.videoWidth + "x" + videoStream.videoHeight
+            console.info(this.info)
         },
 
         async takePicture() {
@@ -480,28 +511,63 @@ export default {
             }
 
             //
-            this.onCanplay()
+            this.stillWidth = this.videoStreamWidth
+            this.stillHeight = this.videoStreamHeight
+            // Исходно - видимый размер снимка по ширине контейнера изображения
+            this.stillVisibleWidth = this.elImageClientWidth
 
-            //
-            this.imageClientWidth = video.clientWidth
-            this.imageClientHeight = video.clientHeight
-
-            //
-            this.stillVisibleWidth = video.clientWidth
-
-            //
+            // Заберем картинку с окна захвата
             var canvasContext = canvas.getContext('2d');
-            canvasContext.drawImage(video, 0, 0, this.imageWidth, this.imageHeight);
-
+            canvasContext.drawImage(videoStream, 0, 0, this.videoStreamWidth, this.videoStreamHeight);
             var dataImage = canvas.toDataURL('image/png');
+
+            // Отреагируем
+            await this.applyImage(dataImage)
+        },
+        /*
+                            :с в какой момент читать размер контейнера и изображения
+        вставленное из буфера не работает
+        кнопка "новый файл"
+        */
+        async applyImage(dataImage) {
+            this.info = "size: " + dataImage.length + ", " + this.videoStreamWidth + "x" + this.videoStreamHeight
+            console.info(this.info)
+
+            // Нарисуем себе
             photoStill.setAttribute('src', dataImage);
 
-            ///////////////////////////////
-            this.info = "size: " + dataImage.length + ", " + this.imageWidth + "x" + this.imageHeight
-            ///////////////////////////////
+            // Переключаем режимы показа
+            this.isCameraCapturing = false
+            this.isStillImage = true
+            this.stillImage = dataImage
+
+
+            // Прочитаем фактический размер изображения и его контейнера.
+            // Обязательно после await nextTick() и после изменения флагов, т.к.
+            // свойство photoStill.naturalWidth будет правильно вычислятся только
+            // после завершения обработки photoStill.setAttribute,
+            // а photoContainer.clientWidth будет правильно вычислятся после рендеринга.
+            await this.$nextTick()
+
+            // Прочитаем фактический размер изображения.
+            this.stillWidth = photoStill.naturalWidth
+            this.stillHeight = photoStill.naturalHeight
+
+            // Прочитаем фактический размер контейнера изображения на странице.
+            let photoContainer = this.$refs.photoContainer
+            this.elImageClientWidth = photoContainer.clientWidth
+            //
+            console.info("photoContainer: " + photoContainer.clientWidth + "x" + photoContainer.clientHeight)
+            console.info("photoStill: " + photoStill.naturalWidth + "x" + photoStill.naturalHeight)
+
+
+            // Исходно видимый размер снимка - по ширине контейнера изображения
+            this.stillVisibleWidth = this.elImageClientWidth
+
 
             //
             await this.loadData(dataImage)
+
         },
 
         async loadData(dataImage) {
@@ -554,9 +620,7 @@ export default {
 
 
             // --- Уведомим родителя
-            if (this.itemsOnChange) {
-                this.itemsOnChange(this.searchDone)
-            }
+            this.$emit("itemsChange", this.searchDone)
         },
 
         clearData(doEmitParent) {
@@ -573,10 +637,9 @@ export default {
             this.itemsPositionsIdxList = {}
 
             // Уведомим родителя
-            if (this.itemsOnChange && doEmitParent) {
-                this.itemsOnChange(this.searchDone)
+            if (doEmitParent) {
+                this.$emit("itemsChange", this.searchDone)
             }
-
         },
 
     },
@@ -622,7 +685,7 @@ export default {
 }
 
 
-.video-container {
+.videoStream-container {
     display: inline-block;
 }
 
@@ -653,7 +716,7 @@ export default {
 /* --- */
 
 
-#video {
+#videoStream {
     _border: 1px solid black;
 
     width: 100%;
@@ -723,6 +786,17 @@ export default {
     height: 3em;
 
     right: 0.5em;
+    bottom: 0.9em;
+
+    padding: 0 1.5em;
+
+    opacity: 0.7;
+}
+
+.photo-btn-file {
+    height: 3em;
+
+    left: 0.5em;
     bottom: 0.9em;
 
     padding: 0 1.5em;

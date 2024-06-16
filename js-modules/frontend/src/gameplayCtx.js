@@ -1,4 +1,5 @@
 import {reactive} from 'vue'
+import {useQuasar} from 'quasar'
 
 export default {
 
@@ -25,6 +26,11 @@ export default {
         if (this.globalState) {
             return this.globalState
         } else {
+            //
+            let quasar = useQuasar()
+            Jc.cfg.is = quasar.platform.is
+
+            //
             this.globalState = reactive({
                 // Поле flag - хак реактивности. Это написано исключительно,
                 // чтобы заставить перерисоваться при изменении

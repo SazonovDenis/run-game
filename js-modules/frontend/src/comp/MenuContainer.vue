@@ -293,8 +293,6 @@ import gameplay from "../gameplay"
 import utils from "../utils"
 import LogoGame from "./LogoGame"
 
-import {useQuasar} from 'quasar'
-
 export default {
 
     components: {
@@ -324,10 +322,6 @@ export default {
 
         //
         this.mainTab = this.tabMenuName
-
-        //
-        let quasar = useQuasar()
-        Jc.cfg.is = quasar.platform.is
     },
 
 

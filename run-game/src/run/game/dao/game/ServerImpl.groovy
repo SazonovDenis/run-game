@@ -323,20 +323,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     Store findItems(String text, long idPlan) {
-        // Ищем Item по text
-        Item_list itemsList = mdb.create(Item_list)
-        Store stItem = itemsList.find(text)
+        // --- Слова
+        Map<String, Set> textItems = new LinkedHashMap<>()
+        textItems.put(text, null)
 
-        // Превратим список Item в список пар фактов
-        Store stFact = loadFactList(stItem, idPlan)
+        // --- Поиск слов и их свойств среди введенного
+        Store stFactRes = collectItems(textItems, idPlan)
 
-        // Дополним факты в плане "богатыми" данными для вопроса и ответа
-        fillFactBody(stFact)
-
-        // Обеспечим порядок, как в исходном тексте
-        Store stFactRes = makeOrdered(stItem, stFact)
-
-        //
+        // ---
         return stFactRes
     }
 
@@ -349,15 +343,45 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // --- Раскладываем результаты OCR на части
 
-        // Позиции слов
-        List textPositions = new ArrayList<>()
-        // Уникальные слова и их позиции
+        // Слова и их позиции
         Map<String, Set> textItems = new LinkedHashMap<>()
-
-        // Раскладываем на части
+        // Позиции слов (общий список)
+        List textPositions = new ArrayList<>()
+        // Раскладываем
         splitOcrResult(stParsedText, textItems, textPositions)
 
 
+        // --- Поиск слов и их свойств среди введенного
+        Store stFactRes = collectItems(textItems, idPlan)
+
+
+        // --- Позиции
+        List wordList = textItems.keySet().toList()
+        Map<Object, List<StoreRecord>> mapItems = StoreUtils.collectGroupBy_records(stItem, "value")
+        //
+        Store stItemPositions = mdb.createStore("Tesseract.items")
+        for (String word : wordList) {
+            List recs = mapItems.get(word)
+            long item = 0
+            if (recs != null) {
+                item = recs.get(0).getLong("id")
+            }
+            StoreRecord rec = stItemPositions.add()
+            rec.setValue("item", item)
+            rec.setValue("itemValue", word)
+            rec.setValue("positions", textItems.get(word))
+        }
+
+
+        // ---
+        DataBox res = new DataBox()
+        res.put("facts", stFactRes)
+        res.put("positions", stItemPositions)
+        return res
+    }
+
+
+    Store collectItems(Map<String, Set> textItems, long idPlan) {
         // --- Обработка найденного: фильтрация и чистка
         textItems = filterTextItems(textItems, (word, item) -> {
             return Item_list.filterAndSplitWord(word)
@@ -413,12 +437,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             stItemTransformed.copyTo(stItem)
             //
             textItems.putAll(textItemsTranformed)
-            wordList = textItems.keySet().toList()
         }
 
 
         // --- Превратим список Item в список пар фактов (сгенерим комбинации)
-        //Set itemIds = stItem.getUniqueValues("id")
         Store stFact = loadFactList(stItem, idPlan)
 
 
@@ -430,29 +452,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Store stFactRes = makeOrdered(stItem, stFact)
 
 
-        // --- Позиции
-        Map<Object, List<StoreRecord>> mapItems = StoreUtils.collectGroupBy_records(stItem, "value")
         //
-        Store stItemPositions = mdb.createStore("Tesseract.items")
-        for (String word : wordList) {
-            List recs = mapItems.get(word)
-            long item = 0
-            if (recs != null) {
-                item = recs.get(0).getLong("id")
-            }
-            StoreRecord rec = stItemPositions.add()
-            rec.setValue("item", item)
-            rec.setValue("itemValue", word)
-            rec.setValue("positions", textItems.get(word))
-        }
-
-
-        // ---
-        DataBox res = new DataBox()
-        res.put("facts", stFactRes)
-        res.put("positions", stItemPositions)
-        return res
+        return stFactRes
     }
+
 
     Map aggregateStatistic(List<Map> listStatistic) {
         Map resStatistic = new HashMap<>()
@@ -591,11 +594,22 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
+    void splitText(String text, Map<String, Set> textItems) {
+        text = text.trim()
+/*
+        Collection<String> words1 = Item_list. filterAndSplitWord(word)
+
+        Collection textItems = text.split(" ")
+*/
+
+        textItems.put(text, null)
+    }
+
     /**
      *
-     * @param stText
-     * @param textItems
-     * @param textItemsPosition
+     * @param stText данные от Tesseract
+     * @param textItems разобранные слова, ключ: слово, значение: список позиций, где встретился
+     * @param textItemsPosition отдельно спискок позиций
      */
     void splitOcrResult(Store stText, Map<String, Set> textItems, List textItemsPosition) {
         for (int i = 0; i < stText.size(); i++) {

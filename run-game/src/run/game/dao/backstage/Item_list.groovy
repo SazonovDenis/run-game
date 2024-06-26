@@ -378,7 +378,7 @@ where
 
         // mined -> mine
         if (wordEng.endsWith("ed") && wordEng.length() >= 4) {
-            wordEng = wordEng.substring(0, wordEng.length() - 1)
+            wordEng = wordEng.substring(0, wordEng.length() - 2)
             return [wordEng]
         }
 

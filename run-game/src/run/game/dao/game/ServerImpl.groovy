@@ -404,7 +404,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         })
 
 
-        // --- Поиск Items
+        // --- Поиск по точному совпадению
 
         // Ищем Items по точному совпадению с textItems
         List wordList = textItems.keySet().toList()
@@ -412,7 +412,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Store stItem = itemsList.findText(wordList)
 
 
-        // Проверим, все ли слова нашлись по непосредственному написанию
+        // --- Поиск с перобразованем словоформ
+
+        // Проверим, какие слова не нашлись по непосредственному написанию
         StoreIndex idxItems = stItem.getIndex("value")
         Map<String, Set> textItemsNotFound = new LinkedHashMap<>()
         //
@@ -437,6 +439,26 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             stItemTransformed.copyTo(stItem)
             //
             textItems.putAll(textItemsTranformed)
+        }
+
+
+        // --- Поиск по фрагменту
+
+        // Если искали одно слово и нашили мало - то поищем ещё и по фрагменту
+        if (wordList.size() == 1 && stItem.size() <= itemsList.MAX_COUNT_FOUND) {
+            // Ищем Items по фрагменту
+            Set itemsFound = stItem.getUniqueValues("value")
+            String word = wordList.get(0)
+            Store stItemWord = itemsList.findWord(word)
+
+            // Обновляем наши списки
+            for (StoreRecord recItemWord : stItemWord) {
+                String value = recItemWord.getString("value")
+                if (!itemsFound.contains(value)) {
+                    stItem.add(recItemWord)
+                    itemsFound.add(value)
+                }
+            }
         }
 
 

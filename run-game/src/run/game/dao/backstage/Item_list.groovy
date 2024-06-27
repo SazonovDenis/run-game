@@ -12,7 +12,8 @@ import run.game.testdata.fixture.*
 class Item_list extends BaseMdbUtils {
 
 
-    int MAX_COUNT_FOUND = 10
+    public int MAX_COUNT_FOUND = 20
+    public int MAX_COUNT_FOUND_ITEM = 10
 
     /**
      * Ищем Item или Fact по фрагменту написания,
@@ -34,7 +35,7 @@ class Item_list extends BaseMdbUtils {
 
         //
         if (lst.size() > 1) {
-            // Ищем сразу много слов по точному написанию
+            // Ищем сразу много слов по полному написанию
             return findText(lst)
         } else {
             // Ищем одно слово по слову или фрагменту
@@ -53,6 +54,9 @@ class Item_list extends BaseMdbUtils {
         Store stItem = mdb.createStore("Item.find")
 
         //
+        int count = 0
+
+        //
         wordText = wordText.toLowerCase().trim()
 
         //
@@ -63,12 +67,14 @@ class Item_list extends BaseMdbUtils {
 
 
         // ---
-        // word_spelling - точное соответствие
-        Store stFact = list.loadFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
+        // Поиск по атрибуту word_spelling (точное соответствие)
+        Store stFactExact = list.loadFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
 
-        //
-        for (StoreRecord rec : stFact) {
+        // Перенесём в результат по атрибуту word_spelling(точное соответствие),
+        // без ограничений
+        for (StoreRecord rec : stFactExact) {
             long item = rec.getLong("item")
+            String value = rec.getString("itemValue")
 
             // Повторы не нужны
             if (setItems.contains(item)) {
@@ -76,29 +82,103 @@ class Item_list extends BaseMdbUtils {
             }
 
             //
-            stItem.add([id: item, value: rec.getValue("itemValue")])
+            stItem.add([id: item, value: value])
             setItems.add(item)
         }
 
 
         // ---
-        // word_spelling - по фрагменту
-        int count = 0
-        stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
+        // Поиск по атрибуту word_spelling (по фрагменту)
+        Store stFactSpelling = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_spelling)
+        stFactSpelling.sort("itemValue")
 
-        //
-        for (StoreRecord rec : stFact) {
-            count++
-            if (count > MAX_COUNT_FOUND) {
-                break
-            }
 
+        // Перенесём в результат по атрибуту word_spelling (по фрагменту).
+        // В первую очередь слова, НАЧИНАЮЩИЕСЯ на фрагмент.
+        count = 0
+        for (StoreRecord rec : stFactSpelling) {
             long item = rec.getLong("item")
+            String value = rec.getString("itemValue")
+
+            // Сейчас - только слова НАЧИНАЮЩИЕСЯ на фрагмент
+            if (!value.startsWith(wordText)) {
+                continue
+            }
 
             // Повторы не нужны
             if (setItems.contains(item)) {
                 continue
             }
+
+            // Не более MAX_COUNT_FOUND_ITEM в результатах
+            if (count > MAX_COUNT_FOUND_ITEM) {
+                break
+            }
+            count++
+
+            //
+            stItem.add([id: item, value: value])
+            setItems.add(item)
+        }
+
+
+        // Поиск по атрибуту word_translate
+        Store stFactTranslate = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_translate)
+        stFactTranslate.sort("factValue")
+
+
+        // Перенесём в результат по атрибуту word_translate.
+        // В первую очередь слова, НАЧИНАЮЩИЕСЯ на фрагмент.
+        count = 0
+        for (StoreRecord rec : stFactTranslate) {
+            long item = rec.getLong("item")
+            String factValue = rec.getString("factValue")
+            String value = rec.getString("itemValue")
+
+            // Сейчас - только слова НАЧИНАЮЩИЕСЯ на фрагмент
+            if (!factValue.startsWith(wordText)) {
+                continue
+            }
+
+            // Повторы не нужны
+            if (setItems.contains(item)) {
+                continue
+            }
+
+            // Не более MAX_COUNT_FOUND_ITEM в результатах
+            if (count > MAX_COUNT_FOUND_ITEM) {
+                break
+            }
+            count++
+
+            //
+            stItem.add([id: item, value: value, fact: rec.getValue("id")])
+            setItems.add(item)
+        }
+
+
+        // Перенесём в результат по атрибуту word_spelling (по фрагменту).
+        // Во вторую очередь слова СОДЕРЖАЩИЕ фрагмент.
+        count = 0
+        for (StoreRecord rec : stFactSpelling) {
+            long item = rec.getLong("item")
+            String value = rec.getString("itemValue")
+
+            // Сейчас - только слова СОДЕРЖАЩИЕ фрагмент
+            if (value.startsWith(wordText)) {
+                continue
+            }
+
+            // Повторы не нужны
+            if (setItems.contains(item)) {
+                continue
+            }
+
+            // Не более MAX_COUNT_FOUND_ITEM в результатах
+            if (count > MAX_COUNT_FOUND_ITEM) {
+                break
+            }
+            count++
 
             //
             stItem.add([id: item, value: rec.getValue("itemValue")])
@@ -106,26 +186,32 @@ class Item_list extends BaseMdbUtils {
         }
 
 
-        // word_translate
+        // Перенесём в результат по атрибуту word_translate.
+        // Во вторую очередь слова СОДЕРЖАЩИЕ фрагмент.
         count = 0
-        stFact = list.findFactsByValueDataType(wordText, RgmDbConst.DataType_word_translate)
-
-        //
-        for (StoreRecord rec : stFact) {
-            count++
-            if (count > MAX_COUNT_FOUND) {
-                break
-            }
-
+        for (StoreRecord rec : stFactTranslate) {
             long item = rec.getLong("item")
+            String factValue = rec.getString("factValue")
+            String value = rec.getString("itemValue")
+
+            // Сейчас - только слова СОДЕРЖАЩИЕ фрагмент
+            if (factValue.startsWith(wordText)) {
+                continue
+            }
 
             // Повторы не нужны
             if (setItems.contains(item)) {
                 continue
             }
 
+            // Не более MAX_COUNT_FOUND_ITEM в результатах
+            if (count > MAX_COUNT_FOUND_ITEM) {
+                break
+            }
+            count++
+
             //
-            stItem.add([id: item, value: rec.getValue("itemValue"), fact: rec.getValue("id")])
+            stItem.add([id: item, value: value, fact: rec.getValue("id")])
             setItems.add(item)
         }
 
@@ -136,7 +222,7 @@ class Item_list extends BaseMdbUtils {
 
 
     /**
-     * Ищем Item по точному написанию или переводу,
+     * Ищем Item по полному написанию или переводу,
      * среди наших словарных слов
      *
      * @param itemsText список слов
@@ -157,7 +243,7 @@ class Item_list extends BaseMdbUtils {
 
 
     /**
-     * Ищем Item по точному написанию или переводу,
+     * Ищем Item по полному написанию или переводу,
      * среди наших словарных слов
      *
      * @param fileName файл со списком слов
@@ -178,7 +264,7 @@ class Item_list extends BaseMdbUtils {
 
 
     /**
-     * Ищем Item по точному написанию или переводу
+     * Ищем Item по полному написанию или переводу
      *
      * @param itemsText очищенный список слов
      * @param wordsNotFound для слов, не найденных в словаре

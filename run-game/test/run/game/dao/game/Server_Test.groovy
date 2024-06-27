@@ -279,19 +279,6 @@ class Server_Test extends RgmBase_Test {
         }
     }
 
-    @Test
-    void testGameProcess_Users() {
-        testGameProcess_PlanPublic()
-
-        println()
-        setCurrentUser("user1010", null)
-        testGameProcess_PlanPublic()
-
-        println()
-        setCurrentUser("user1011", null)
-        testGameProcess_PlanPublic()
-    }
-
 
     /**
      * Наполняет план idPlan словами, которые начинаются на "ora"
@@ -316,6 +303,13 @@ class Server_Test extends RgmBase_Test {
             upd.addFact(idPlan, DataUtils.storeToList(stFact2))
         }
 
+    }
+
+    @Test
+    void test_Find_ora() {
+        ServerImpl srv = mdb.create(ServerImpl)
+        Store stFact = srv.findItems("ora", 0)
+        mdb.outTable(stFact)
     }
 
     @Test

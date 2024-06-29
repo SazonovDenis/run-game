@@ -1279,11 +1279,13 @@ export default {
         async onTextInputPaste(event) {
             let blob = await this.handleDataTransferItems(event.clipboardData)
 
-            // Вставим из буфера обмена
-            this.handleImage(blob)
+            if (blob) {
+                // Вставим изображение из буфера обмена
+                this.handleImage(blob)
 
-            // Чистим буфер, чтобы второй раз не вставлять, а могла сработать вставка из файла
-            this.clearClipboardItems()
+                // Чистим буфер, чтобы второй раз не вставлять, а могла сработать вставка из файла
+                this.clearClipboardItems()
+            }
         },
 
         clickFileChoose() {
@@ -1303,6 +1305,7 @@ export default {
             let blob = await this.handleFileItems(event.target)
 
             if (blob) {
+                // Вставим изображение из файла
                 this.handleImageBase64(blob[0])
             }
         },

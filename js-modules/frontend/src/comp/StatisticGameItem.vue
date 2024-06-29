@@ -33,11 +33,13 @@
                     text-color="red-5"
                     :label="item.ratingTaskDiff"/>
 
+<!--
                 <q-badge
                     style="font-weight: bold;"
                     class="col"
                     color="green-5"
                     :label="item.ratingTask"/>
+-->
 
             </div>
 

@@ -14,12 +14,12 @@ class RgmCubeUtils extends BaseMdbUtils {
     public void cubesRecalc(long idUsr, long idGame, long idPlan) {
         // Что считаем
         Store stPlanFact = mdb.loadQuery(sqlPlanFact(), [usr: idUsr, plan: idPlan])
-        CoordList coordsUsrFact = createCoords(stPlanFact, ["usr", "factQuestion", "factAnswer"])
+        CoordList coordsPlanFact = createCoords(stPlanFact, ["usr", "factQuestion", "factAnswer"])
         CoordList coordsUsrGame = createCoord([usr: idUsr, game: idGame])
         CoordList coordsUsrPlan = createCoord([usr: idUsr, plan: idPlan])
 
         //
-        cubeRecalc("Cube_UsrFactStatistic", coordsUsrFact)
+        cubeRecalc("Cube_UsrFactStatistic", coordsPlanFact)
         cubeRecalc("Cube_UsrGameStatistic", coordsUsrGame)
         cubeRecalc("Cube_UsrPlanStatistic", coordsUsrPlan)
     }

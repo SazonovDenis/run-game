@@ -281,7 +281,7 @@ class Server_Test extends RgmBase_Test {
 
 
     /**
-     * Наполняет план idPlan словами, которые начинаются на "ora"
+     * Наполняет план idPlan словами, которые начинаются на "cre"
      */
     void checkOrFillPlan(idPlan) {
         ServerImpl srv = mdb.create(ServerImpl)
@@ -293,7 +293,7 @@ class Server_Test extends RgmBase_Test {
             Plan_upd upd = mdb.create(Plan_upd)
 
             //
-            Store stFact1 = srv.findItems("ora", idPlan)
+            Store stFact1 = srv.findItems("cre", idPlan)
             mdb.outTable(stFact1)
             upd.addFact(idPlan, DataUtils.storeToList(stFact1))
 

@@ -5,6 +5,10 @@ import jandcode.core.dbm.std.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 
+/**
+ * Показ статистики по играм.
+ * Если для накопления статистики нужна имитация игр - см. run.game.dao.game.Server_Game_Test
+ */
 class Statistic_list_Test extends RgmBase_Test {
 
     XDate dbeg = XDate.create("2024-05-20")

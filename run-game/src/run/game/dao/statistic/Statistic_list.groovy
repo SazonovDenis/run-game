@@ -9,8 +9,11 @@ import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.game.*
 
+/**
+ * Показывает статистику за период в разрезе: слов, игр, уровней
+ */
 class Statistic_list extends RgmMdbUtils {
-    //^c цифры скачут
+
     /**
      *
      */
@@ -37,6 +40,13 @@ class Statistic_list extends RgmMdbUtils {
         return res
     }
 
+    /**
+     * Период с "2024-10-25" по "2024-10-25" это "один день"
+     * @param dbeg Начало периода
+     * @param dend Окончание периода
+     * @param groupByKey
+     * @return
+     */
     DataBox byInternal(XDate dbeg, XDate dend, String groupByKey) {
         // ---
         // Загружаем
@@ -49,13 +59,15 @@ class Statistic_list extends RgmMdbUtils {
 
         // Загружаем
         Store st = mdb.createStore("Statistic." + groupByKey)
-        mdb.loadQuery(st, getSql(groupByKey), params)
+        String sql = getSql(groupByKey)
+        mdb.loadQuery(st, sql, params)
 
         // Загружаем статистику по фактам для всех игр, сыгранных за указанный период.
         // ВАЖНО! Ключевая зависимость:
         // Статистика расчитывается кубом Cube_UsrGameStatistic. Рассчитываем,
-        // что куб на каждую игру содержит статистику по КАЖДОМУ выданному факту
-        // на момент ОКОНЧАНИЯ игры.
+        // что куб на каждую игру содержит статистику по КАЖДОМУ выданному факту в игре,
+        // по состоянию на момент ОКОНЧАНИЯ игры.
+        // В противном случае для факта будет показана пустая или неправильная статистика.
         Store stStatistic = mdb.loadQuery(sqlStatistic(), params)
 
 
@@ -66,12 +78,11 @@ class Statistic_list extends RgmMdbUtils {
         // Распределяем агрегированную статистику в список
         distributeStatistic(statistic, st, groupByKey)
 
-
         // ---
-        // Статистику по словам агрегируем по словам
+        // Статистику по фактам агрегируем по фактам (схлопываем игры)
         Map<String, Map> statisticByWord = groupStatisticBy(stStatistic, "word")
 
-        // Суммируем агрегированную статистику
+        // Суммируем статистику по фактам
         StoreRecord rating = summStatisticByWord(statisticByWord)
 
 
@@ -86,11 +97,11 @@ class Statistic_list extends RgmMdbUtils {
 
     String getSql(String groupByKey) {
         switch (groupByKey) {
-            case "game": {
-                return sqlGame()
-            }
             case "plan": {
                 return sqlPlan()
+            }
+            case "game": {
+                return sqlGame()
             }
             case "word": {
                 return sqlWord()
@@ -102,29 +113,8 @@ class Statistic_list extends RgmMdbUtils {
     }
 
     Map<String, Map> groupStatisticBy(Store stStatistic, String groupByKey) {
-/*
-        /////////////////
-        println()
-        println("stStatistic")
-        mdb.outTable(stStatistic)
-        /////////////////
-*/
-
         // Копим статистику из BLOB по записям stStatistic
         Map<String, Map> resStatistic = new HashMap<>()
-
-/*
-        /////////////////
-        println()
-        println("stStatistic")
-        for (StoreRecord rec : stStatistic) {
-            //println()
-            //mdb.outTable(rec)
-            List<Map> listTaskStatistic = UtJson.fromJson(new String(rec.getValue("taskStatistic"), "utf-8"))
-            println(listTaskStatistic)
-        }
-        /////////////////
-*/
 
         //
         for (StoreRecord rec : stStatistic) {
@@ -184,24 +174,6 @@ class Statistic_list extends RgmMdbUtils {
 
 
     void distributeStatistic(Map<String, Map> statistic, Store st, String groupByKey) {
-/*
-        ////////////////
-        println()
-        mdb.outTable(st)
-        println()
-        for (String keyGroup : statistic.keySet()) {
-            Object statisticGroup = statistic.get(keyGroup)
-            if (statisticGroup instanceof Map) {
-                println(keyGroup)
-                for (String key : statisticGroup.keySet()) {
-                    Object item = statisticGroup.get(key)
-                    println("  " + key + ": " + item)
-                }
-            }
-        }
-        ////////////////
-*/
-
         for (StoreRecord rec : st) {
             // Значение ключа для группы groupByKey
             Map keyValues = rec.getValues()
@@ -210,36 +182,25 @@ class Statistic_list extends RgmMdbUtils {
             // Берем статистику для ключа группы
             Map groupStatistic = statistic.get(key)
 
+            // Если статистики нет, то это означает, что игра еще не завершилась
             if (groupStatistic == null) {
                 continue
             }
 
-/*
-            ///////////////////
-            if (groupStatistic == null) {
-                println("key: " + key)
-                println()
-            }
-            ///////////////////
-*/
-
             // Суммируем по всем словам внутри группы
-            Map sumStatistic = summStatisticMap(groupStatistic)
+            Map sumStatistic = summStatistic(groupStatistic)
 
             // Сумму в запись
-            rec.setValues(sumStatistic)
-
-/*
-            // Статистика для ключа
-            rec.setValue("ratingTask", groupStatistic.get("ratingTask"))
-            rec.setValue("ratingQuickness", groupStatistic.get("ratingQuickness"))
-            rec.setValue("ratingTaskDiff", groupStatistic.get("ratingTaskDiff"))
-            rec.setValue("ratingQuicknessDiff", groupStatistic.get("ratingQuicknessDiff"))
-*/
+            rec.setValue("ratingTaskDiff", UtCnv.toDouble(sumStatistic.get("ratingTaskDiff")))
+            rec.setValue("ratingQuicknessDiff", UtCnv.toDouble(sumStatistic.get("ratingQuicknessDiff")))
+            if (groupByKey.equals("word") || groupByKey.equals("game")) {
+                rec.setValue("ratingTask", UtCnv.toDouble(sumStatistic.get("ratingTask")))
+                rec.setValue("ratingQuickness", UtCnv.toDouble(sumStatistic.get("ratingQuickness")))
+            }
         }
     }
 
-    Map<String, Double> summStatisticMap(Map<String, Map> statistic) {
+    Map<String, Double> summStatistic(Map<String, Map> statistic) {
         Map res = new HashMap()
 
         for (String key : statistic.keySet()) {
@@ -255,23 +216,6 @@ class Statistic_list extends RgmMdbUtils {
     }
 
     StoreRecord summStatisticByWord(Map<String, Map> statisticByWord) {
-/*
-        ////////////////
-        println()
-        for (String keyGroup : statisticByWord.keySet()) {
-            Object statisticGroup = statisticByWord.get(keyGroup)
-            if (statisticGroup instanceof Map) {
-                println(keyGroup)
-                for (String key : statisticGroup.keySet()) {
-                    Object item = statisticGroup.get(key)
-                    println("  " + key + ": " + item)
-                }
-            }
-        }
-        ////////////////
-*/
-
-
         // Сумма
         double ratingTask = 0
         double ratingQuickness = 0
@@ -328,39 +272,13 @@ class Statistic_list extends RgmMdbUtils {
         rating.setValue("ratingQuicknessInc", ratingQuicknessInc)
         rating.setValue("ratingQuicknessDec", ratingQuicknessDec)
         //
-        rating.setValue("wordCount", statisticByWord.keySet().size())
+        rating.setValue("wordCountAll", statisticByWord.keySet().size())
+        rating.setValue("wordCountDone", Math.round(Math.random() * statisticByWord.keySet().size() / 2))
 
 
         //
         return rating
     }
-
-/*
-    StoreRecord summStatistic(Store st) {
-        StoreRecord rating = mdb.createStoreRecord("Statistic.diff")
-
-        for (StoreRecord rec : st) {
-            rating.setValue("ratingTask", rating.getDouble("ratingTask") + rec.getDouble("ratingTask"))
-            rating.setValue("ratingQuickness", rating.getDouble("ratingQuickness") + rec.getDouble("ratingQuickness"))
-            //
-            rating.setValue("ratingTaskDiff", rating.getDouble("ratingTaskDiff") + rec.getDouble("ratingTaskDiff"))
-            if (rec.getDouble("ratingTaskDiff") > 0) {
-                rating.setValue("ratingTaskInc", rating.getDouble("ratingTaskInc") + rec.getDouble("ratingTaskDiff"))
-            } else {
-                rating.setValue("ratingTaskDec", rating.getDouble("ratingTaskDec") - rec.getDouble("ratingTaskDiff"))
-            }
-            //
-            rating.setValue("ratingQuicknessDiff", rating.getDouble("ratingQuicknessDiff") + rec.getDouble("ratingQuicknessDiff"))
-            if (rec.getDouble("ratingQuicknessDiff") > 0) {
-                rating.setValue("ratingQuicknessInc", rating.getDouble("ratingQuicknessInc") + rec.getDouble("ratingQuicknessDiff"))
-            } else {
-                rating.setValue("ratingQuicknessDec", rating.getDouble("ratingQuicknessDec") - rec.getDouble("ratingQuicknessDiff"))
-            }
-        }
-
-        return rating
-    }
-*/
 
 
     String createKey(Map keyValues, String groupByKey) {
@@ -372,12 +290,12 @@ class Statistic_list extends RgmMdbUtils {
         long factAnswer = UtCnv.toLong(keyValues.get("factAnswer"))
 
         switch (groupByKey) {
-            case "game": {
-                key = game
-                break
-            }
             case "plan": {
                 key = plan
+                break
+            }
+            case "game": {
+                key = game
                 break
             }
             case "word": {
@@ -420,31 +338,6 @@ where
 """
     }
 
-    String sqlStatistic() {
-        return """
-select 
-    Game.id game,
-    Game.dbeg,
-    Game.dend,
-    Game.plan,
-    GameUsr.usr,
-    Cube_UsrGame.taskStatistic
-    
-from
-    Game 
-    join GameUsr on (GameUsr.game = Game.id) 
-    left join Cube_UsrGame on (Cube_UsrGame.game = Game.id and Cube_UsrGame.usr = GameUsr.usr)
-
-where
-    Game.dbeg >= :dbeg and
-    Game.dbeg <= :dend and 
-    GameUsr.usr = :usr 
-    
-order by    
-    Game.dbeg 
-"""
-    }
-
 
     String sqlPlan() {
         return """
@@ -455,17 +348,28 @@ ${sqlBase()}
 
 select 
     LstBase.plan,
-    Plan.text as planText
+    Plan.text as planText,
+    
+    Cube_UsrPlan.count,
+    Cube_UsrPlan.countFull,
+    Cube_UsrPlan.ratingTask,
+    Cube_UsrPlan.ratingQuickness
 
 from
     LstBase 
     join Plan on (
         LstBase.plan = Plan.id
-    )   
+    )
+    left join Cube_UsrPlan on (Cube_UsrPlan.plan = Plan.id and Cube_UsrPlan.usr = :usr)
 
 group by
     LstBase.plan,
-    Plan.text
+    Plan.text,
+    
+    Cube_UsrPlan.count,
+    Cube_UsrPlan.countFull,
+    Cube_UsrPlan.ratingTask,
+    Cube_UsrPlan.ratingQuickness
 
 order by
     Plan.text 
@@ -532,5 +436,30 @@ group by
 """
     }
 
+
+    String sqlStatistic() {
+        return """
+select 
+    Game.id game,
+    Game.dbeg,
+    Game.dend,
+    Game.plan,
+    GameUsr.usr,
+    Cube_UsrGame.taskStatistic
+    
+from
+    Game 
+    join GameUsr on (GameUsr.game = Game.id) 
+    left join Cube_UsrGame on (Cube_UsrGame.game = Game.id and Cube_UsrGame.usr = GameUsr.usr)
+
+where
+    Game.dbeg >= :dbeg and
+    Game.dbeg <= :dend and 
+    GameUsr.usr = :usr 
+    
+order by    
+    Game.dbeg 
+"""
+    }
 
 }

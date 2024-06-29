@@ -21,6 +21,11 @@
         <field name="plan" parent="Plan/id"/>
         <field name="planText" parent="Plan/text"/>
 
+        <field name="count" parent="Cube_UsrPlan/count"/>
+        <field name="countFull" parent="Cube_UsrPlan/countFull"/>
+        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
+
     </domain>
 
 
@@ -62,7 +67,8 @@
         <field name="ratingQuicknessDec" parent="Cube_UsrPlan/ratingQuickness"/>
 
         <!--  -->
-        <field name="wordCount" parent="int"/>
+        <field name="wordCountAll" parent="int"/>
+        <field name="wordCountDone" parent="int"/>
     </domain>
 
 

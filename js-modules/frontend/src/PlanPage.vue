@@ -8,9 +8,7 @@
         <div v-if="dataLoaded">
 
             <PlanInfo :planText="null"
-                      :ratingTask="statistic.ratingTask"
-                      :ratingQuickness="statistic.ratingQuickness"
-                      :ratingMax="statistic.ratingMax"
+                      :statistic="statistic"
             />
 
             <q-separator/>

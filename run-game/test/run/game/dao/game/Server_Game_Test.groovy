@@ -53,6 +53,15 @@ class Server_Game_Test extends Server_Test {
     }
 
     @Test
+    void testGameProcess_3() {
+        testGameProcess_PlanDefault_allOk()
+        Thread.sleep(1000)
+        testGameProcess_PlanDefault_allOk()
+        Thread.sleep(2000)
+        testGameProcess_PlanDefault_allOk()
+    }
+
+    @Test
     void testGameProcess_PlanDefault() {
         long idUsr = getCurrentUserId()
         Usr_upd upd = mdb.create(Usr_upd)
@@ -86,6 +95,26 @@ class Server_Game_Test extends Server_Test {
 
         // Игра
         doGameProcess_internal(idPlan, false, true)
+
+        // Обновленная статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+    }
+
+
+    @Test
+    void testGameProcess_PlanDefault_allOk() {
+        long idUsr = getCurrentUserId()
+        Usr_upd upd = mdb.create(Usr_upd)
+        long idPlan = upd.loadPlanDefault(idUsr)
+
+        // Наполняет план planDefault словами
+        checkOrFillPlan(idPlan)
+
+        // Статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+
+        // Игра
+        doGameProcess_internal(idPlan, true, false)
 
         // Обновленная статистика по уровню
         printTaskStatisticByPlan(idPlan)

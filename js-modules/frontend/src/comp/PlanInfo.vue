@@ -6,12 +6,15 @@
 
         <div class="row">
 
+            <StatisticWordsLearned :rating="statistic"/>
+
+
             <q-circular-progress
                 show-value
                 rounded
                 size="10rem"
                 font-size="1rem"
-                :value="100*ratingTask/ratingMax"
+                :value="100*statistic.ratingTask/statistic.ratingMax"
                 :thickness="0.2"
                 color="green-7"
                 track-color="grey-3"
@@ -19,16 +22,16 @@
             >
                 <div class="col">
                     <div>
-                        <span class="game-info__rating-value">{{ ratingTask }}</span>
+                        <span class="game-info__rating-value">{{ statistic.ratingTask }}</span>
                     </div>
                     <div>
                         <span class="game-info__rating-text">
-                            {{ ratingText(ratingTask) }}
+                            {{ ratingText(statistic.ratingTask) }}
                         </span>
                     </div>
                     <div>
                         <span>из </span>
-                        <span class="game-info__rating-max">{{ ratingMax }}
+                        <span class="game-info__rating-max">{{ statistic.ratingMax }}
                     </span>
                     </div>
                 </div>
@@ -42,11 +45,11 @@
                     </div>
                     <div>
                     <span class="game-info__rating-quickness">
-                        {{ ratingQuickness }}
+                        {{ statistic.ratingQuickness }}
                     </span>
                     </div>
                     <div class="game-info__rating-quickness-text">
-                        {{ ratingText(ratingQuickness) }}
+                        {{ ratingText(statistic.ratingQuickness) }}
                     </div>
 
                 </div>
@@ -61,15 +64,17 @@
 <script>
 
 import utils from "../utils"
+import StatisticWordsLearned from "./StatisticWordsLearned"
 
 export default {
     name: "PlanInfo",
+    components: {
+        StatisticWordsLearned,
+    },
 
     props: {
         planText: null,
-        ratingMax: null,
-        ratingTask: null,
-        ratingQuickness: null,
+        statistic: null,
     },
 
     methods: {

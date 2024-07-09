@@ -14,6 +14,12 @@ class UtCubeRating {
     protected double[] ratingDurationGrade = [2, 3, 5, 8]
     protected double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
 
+    // Период анализа ответов для расчета рейтинга - количество дней назад от даты последней игры
+    public static int RAITING_ANALYZE_DAYS_DIFF = 10
+
+    // Максимально возможный рейтинг одного факта
+    public static int RATING_FACT_MAX = 1
+
 
     /**
      * Выполняет анализ списка GameTask, расчитывает рейтинг для каждого factQuestion+factAnswer

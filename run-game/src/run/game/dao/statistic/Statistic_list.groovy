@@ -3,9 +3,11 @@ package run.game.dao.statistic
 import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.error.*
+import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
+import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.game.*
 
@@ -14,22 +16,41 @@ import run.game.dao.game.*
  */
 class Statistic_list extends RgmMdbUtils {
 
+
+    public String groupByKey = null
+    public Store stItems = null
+    public Store stStatistic = null
+    public Map<String, Map> statistic = null
+    public Map<String, Map> statisticByWord = null
+
     /**
      *
      */
     @DaoMethod
     DataBox byPlan(XDate dbeg, XDate dend) {
-        return byInternal(dbeg, dend, "plan")
+        // Параметры
+        Map params = prepareParams(dbeg, dend)
+
+        // Загружаем
+        return byInternal(params, "plan")
     }
 
     @DaoMethod
     DataBox byGame(XDate dbeg, XDate dend) {
-        return byInternal(dbeg, dend, "game")
+        // Параметры
+        Map params = prepareParams(dbeg, dend)
+
+        // Загружаем
+        return byInternal(params, "game")
     }
 
     @DaoMethod
     DataBox byWord(XDate dbeg, XDate dend) {
-        DataBox res = byInternal(dbeg, dend, "word")
+        // Параметры
+        Map params = prepareParams(dbeg, dend)
+
+        // Загружаем
+        DataBox res = byInternal(params, "word")
 
         // Дополним факты в плане "богатыми" данными для вопроса и ответа
         Store st = res.get("items")
@@ -40,6 +61,37 @@ class Statistic_list extends RgmMdbUtils {
         return res
     }
 
+    @DaoMethod
+    prepareForGame(XDateTime dbeg, XDateTime dend) {
+        // Параметры
+        long idUsr = getContextOrCurrentUsrId()
+        XDateTime paramDbeg = dbeg
+        XDateTime paramDend = dend
+        Map params = [usr: idUsr, dbeg: paramDbeg, dend: paramDend]
+
+        // Загружаем
+        byInternal(params, "word")
+    }
+
+    @DaoMethod
+    prepareForPlan(long idPlan, XDateTime dbeg, XDateTime dend) {
+        // Параметры
+        long idUsr = getContextOrCurrentUsrId()
+        Map params = [plan: idPlan, usr: idUsr, dbeg: dbeg, dend: dend]
+
+        // Загружаем
+        byInternal(params, "day")
+    }
+
+    Map prepareParams(XDate dbeg, XDate dend) {
+        long idUsr = getContextOrCurrentUsrId()
+        XDateTime paramDbeg = dbeg.toDateTime()
+        XDateTime paramDend = dend.toDateTime().addDays(1).addMSec(-1000)
+        Map params = [usr: idUsr, dbeg: paramDbeg, dend: paramDend]
+
+        return params
+    }
+
     /**
      * Период с "2024-10-25" по "2024-10-25" это "один день"
      * @param dbeg Начало периода
@@ -47,56 +99,81 @@ class Statistic_list extends RgmMdbUtils {
      * @param groupByKey
      * @return
      */
-    DataBox byInternal(XDate dbeg, XDate dend, String groupByKey) {
+    DataBox byInternal(Map params, String groupByKey) {
+        this.groupByKey = groupByKey
+
         // ---
         // Загружаем
+        stItems = mdb.createStore("Statistic." + groupByKey)
+        String sql = getSqlItems(groupByKey, params)
+        mdb.loadQuery(stItems, sql, params)
 
-        // Параметры
-        long idUsr = getContextOrCurrentUsrId()
-        XDateTime paramDbeg = dbeg.toDateTime()
-        XDateTime paramDend = dend.toDateTime().addDays(1).addMSec(-1000)
-        Map params = [usr: idUsr, dbeg: paramDbeg, dend: paramDend]
-
-        // Загружаем
-        Store st = mdb.createStore("Statistic." + groupByKey)
-        String sql = getSql(groupByKey)
-        mdb.loadQuery(st, sql, params)
-
-        // Загружаем статистику по фактам для всех игр, сыгранных за указанный период.
-        // ВАЖНО! Ключевая зависимость:
-        // Статистика расчитывается кубом Cube_UsrGameStatistic. Рассчитываем,
-        // что куб на каждую игру содержит статистику по КАЖДОМУ выданному факту в игре,
-        // по состоянию на момент ОКОНЧАНИЯ игры.
-        // В противном случае для факта будет показана пустая или неправильная статистика.
-        Store stStatistic = mdb.loadQuery(sqlStatistic(), params)
-
+        // Загружаем статистику по фактам.
+        // Для всех игр, сыгранных за указанный период.
+        // ВАЖНО! Ключевая зависимость: Статистика расчитывается кубом Cube_UsrGameStatistic.
+        // Рассчитываем, что куб на каждую игру содержит статистику
+        // по КАЖДОМУ выданному факту в игре, по состоянию на момент ОКОНЧАНИЯ ИГРЫ.
+        // В противном случае (если куб пуст) для факта будет показана пустая
+        // или неправильная статистика.
+        SqlFilter filter = SqlFilter.create(mdb, sqlStatistic(), params)
+        filter.addWhere("plan", "equal")
+        stStatistic = filter.load()
 
         // ---
         // Статистику по фактам агрегируем по groupByKey
-        Map<String, Map> statistic = groupStatisticBy(stStatistic, groupByKey)
+        statistic = groupStatisticBy(stStatistic, groupByKey)
 
         // Распределяем агрегированную статистику в список
-        distributeStatistic(statistic, st, groupByKey)
+        distributeStatistic(statistic, stItems, groupByKey)
+
+
+        //////////////////////////
+        println()
+        println("Statistic raw:")
+        mdb.outTable(stStatistic, 10)
+        //////////////////////////
+        println()
+        println("Statistic group by " + groupByKey + ":")
+        int n = 0
+        for (String key : statistic.keySet()) {
+            println(groupByKey + ": " + key + ",  statistic: " + statistic.get(key))
+            //
+            n++
+            if (n > 10) {
+                break
+            }
+        }
+        //////////////////////////
+        println()
+        println("Result by " + groupByKey + ":")
+        mdb.outTable(stItems, 10)
+        //////////////////////////
+
 
         // ---
-        // Статистику по фактам агрегируем по фактам (схлопываем игры)
-        Map<String, Map> statisticByWord = groupStatisticBy(stStatistic, "word")
+        // Сумма по статистике
+
+        // Статистику по фактам агрегируем по фактам
+        statisticByWord = groupStatisticBy(stStatistic, "word")
 
         // Суммируем статистику по фактам
-        StoreRecord rating = summStatisticByWord(statisticByWord)
+        StoreRecord statisticSumm = summStatisticByWord(statisticByWord)
 
 
         // ---
         DataBox res = new DataBox()
-        res.put("items", st)
-        res.put("rating", rating)
+        res.put("items", stItems)
+        res.put("rating", statisticSumm)
 
         //
         return res
     }
 
-    String getSql(String groupByKey) {
+    String getSqlItems(String groupByKey, Map params) {
         switch (groupByKey) {
+            case "day": {
+                return sqlForPlanByDay(params)
+            }
             case "plan": {
                 return sqlPlan()
             }
@@ -176,11 +253,11 @@ class Statistic_list extends RgmMdbUtils {
     void distributeStatistic(Map<String, Map> statistic, Store st, String groupByKey) {
         for (StoreRecord rec : st) {
             // Значение ключа для группы groupByKey
-            Map keyValues = rec.getValues()
-            String key = createKey(keyValues, groupByKey)
+            Map recValues = rec.getValues()
+            String recKey = createKey(recValues, groupByKey)
 
             // Берем статистику для ключа группы
-            Map groupStatistic = statistic.get(key)
+            Map groupStatistic = statistic.get(recKey)
 
             // Если статистики нет, то это означает, что игра еще не завершилась
             if (groupStatistic == null) {
@@ -221,6 +298,7 @@ class Statistic_list extends RgmMdbUtils {
         double ratingQuickness = 0
         double ratingTaskDiff = 0
         double ratingQuicknessDiff = 0
+        int wordCountLearned = 0
 
         // Прибавка и потери рейтинга - по отдельности
         double ratingTaskInc = 0
@@ -243,6 +321,9 @@ class Statistic_list extends RgmMdbUtils {
             ratingQuickness = ratingQuickness + ratingQuicknessRec
             ratingTaskDiff = ratingTaskDiff + ratingTaskDiffRec
             ratingQuicknessDiff = ratingQuicknessDiff + ratingQuicknessDiffRec
+            if (ratingTaskRec == UtCubeRating.RATING_FACT_MAX) {
+                wordCountLearned = wordCountLearned + 1
+            }
 
             // Прибавка и потери рейтинга
             if (ratingTaskDiffRec > 0) {
@@ -272,8 +353,9 @@ class Statistic_list extends RgmMdbUtils {
         rating.setValue("ratingQuicknessInc", ratingQuicknessInc)
         rating.setValue("ratingQuicknessDec", ratingQuicknessDec)
         //
-        rating.setValue("wordCountAll", statisticByWord.keySet().size())
-        rating.setValue("wordCountDone", Math.round(Math.random() * statisticByWord.keySet().size() / 2))
+        rating.setValue("wordCountRepeated", statisticByWord.keySet().size())
+        rating.setValue("wordCountLearned", wordCountLearned)
+        //rating.setValue("wordCount", 39)
 
 
         //
@@ -284,12 +366,17 @@ class Statistic_list extends RgmMdbUtils {
     String createKey(Map keyValues, String groupByKey) {
         String key
 
+        XDate dbeg = UtCnv.toDate(keyValues.get("dbeg"))
         long plan = UtCnv.toLong(keyValues.get("plan"))
         long game = UtCnv.toLong(keyValues.get("game"))
         long factQuestion = UtCnv.toLong(keyValues.get("factQuestion"))
         long factAnswer = UtCnv.toLong(keyValues.get("factAnswer"))
 
         switch (groupByKey) {
+            case "day": {
+                key = dbeg
+                break
+            }
             case "plan": {
                 key = plan
                 break
@@ -331,10 +418,10 @@ from
     join Task on (GameTask.task = Task.id)
 
 where
-    Game.dbeg >= :dbeg and
-    Game.dbeg <= :dend and 
+    GameTask.dtTask is not null and 
     GameUsr.usr = :usr and
-    GameTask.dtTask is not null 
+    Game.dbeg >= :dbeg and
+    Game.dbeg <= :dend 
 """
     }
 
@@ -412,6 +499,19 @@ order by
     }
 
 
+    String sqlForPlanByDay(Map params) {
+        return """
+SELECT
+    day.date dbeg
+from
+    generate_series(date '${params.get("dbeg")}', date '${params.get("dend")}', '1 day') day
+order by
+    day.date
+"""
+
+    }
+
+
     String sqlWord() {
         return """
 with LstBase as (
@@ -453,9 +553,9 @@ from
     left join Cube_UsrGame on (Cube_UsrGame.game = Game.id and Cube_UsrGame.usr = GameUsr.usr)
 
 where
+    GameUsr.usr = :usr and 
     Game.dbeg >= :dbeg and
-    Game.dbeg <= :dend and 
-    GameUsr.usr = :usr 
+    Game.dbeg <= :dend 
     
 order by    
     Game.dbeg 

@@ -13,9 +13,7 @@
             <PlanInfo
                 v-if="localState.game"
                 :planText="localState.game.planText"
-                :ratingTask="localState.statistic.ratingTask"
-                :ratingQuickness="localState.statistic.ratingQuickness"
-                :ratingMax="localState.statistic.ratingMax"
+                :statistic="localState.statistic"
             />
 
             <q-separator v-if="localState.game"/>
@@ -114,12 +112,13 @@ import MenuContainer from "./comp/MenuContainer"
 import GameInfo from "./comp/GameInfo"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
+import StatisticWordsLearned from "run-game-frontend/src/comp/StatisticWordsLearned"
 
 export default {
 
     name: "GameInfoPage",
 
-    components: {MenuContainer, GameInfo, PlanInfo, TaskList},
+    components: {StatisticWordsLearned, MenuContainer, GameInfo, PlanInfo, TaskList},
 
     props: {
         gameId: null,

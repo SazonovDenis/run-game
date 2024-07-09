@@ -23,8 +23,6 @@ import kis.molap.model.value.*
 public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
 
 
-    public static int RAITING_ANALYZE_DAYS_DIFF = 10
-
     public CoordList getDirtyCoords(long auditAgeFrom, long auditAgeTo) throws Exception {
         CoordList coords = CoordList.create()
 
@@ -56,7 +54,7 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
     public void calc(Iterable<Coord> coords, XDate intervalDbeg, XDate intervalDend, ICalcResultStream res) throws Exception {
         // Период анализа ответов - за некоторое количество дней от начала
         XDateTime dend = XDateTime.today().addDays(1)
-        XDateTime dbeg = dend.addDays(-RAITING_ANALYZE_DAYS_DIFF)
+        XDateTime dbeg = dend.addDays(-UtCubeRating.RAITING_ANALYZE_DAYS_DIFF)
         Map params = UtCnv.toMap(
                 "dbeg", dbeg,
                 "dend", dend
@@ -91,9 +89,24 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
             params.put("usr", usr)
             params.put("factQuestion", factQuestion)
             params.put("factAnswer", factAnswer)
-            Store stGameTask = mdb.loadQuery(sqlGameTaskByFact(), params)
-            //mdb.outTable(stGameTask)
 
+            // Кода последний раз играли факты?
+            StoreRecord recLastGame = mdb.loadQueryRecord(sqlLastGameRec(), params, false)
+            if (recLastGame == null) {
+                continue
+            }
+            XDateTime gameDbeg = recLastGame.getDateTime("dbeg")
+            XDateTime gameDend = recLastGame.getDateTime("dend")
+
+            // Период анализа - от некоторого количества дней назад до конца последней игры
+            params.put("dbeg", gameDend.addDays(-UtCubeRating.RAITING_ANALYZE_DAYS_DIFF))
+            params.put("dend", gameDend)
+
+            // Грузим историю заданий по этим фактам
+            Store stGameTask = mdb.loadQuery(sqlGameTaskByFact(), params)
+            mdb.outTable(stGameTask)
+
+            //
             int pos = 0
             while (pos < stGameTask.size()) {
                 Map resMap = new HashMap()
@@ -189,5 +202,24 @@ order by
 
 """
     }
+
+    String sqlLastGameRec() {
+        return """
+select
+    Game.*
+from
+    Game
+    join GameTask on (Game.id = GameTask.game)
+    join Task on (GameTask.task = Task.id)
+where
+    GameTask.usr = :usr and
+    Task.factQuestion = :factQuestion and
+    Task.factAnswer = :factAnswer
+order by
+    Game.dbeg desc
+limit 1    
+"""
+    }
+
 
 }

@@ -16,27 +16,32 @@
 
     <domain name="Statistic.plan">
 
+        <!-- Показатели рейтинга -->
         <include name="Statistic.base"/>
 
+        <!-- Группировка -->
         <field name="plan" parent="Plan/id"/>
-        <field name="planText" parent="Plan/text"/>
 
+        <!-- Дополнительная информация для показа -->
+        <field name="planText" parent="Plan/text"/>
         <field name="count" parent="Cube_UsrPlan/count"/>
         <field name="countFull" parent="Cube_UsrPlan/countFull"/>
-        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
 
     </domain>
 
 
     <domain name="Statistic.game">
 
+        <!-- Показатели рейтинга -->
         <include name="Statistic.base"/>
 
+        <!-- Группировка -->
         <field name="game" parent="Game/id"/>
+
+        <!-- Дополнительная информация для показа -->
         <field name="dbeg" parent="Game/dbeg"/>
         <field name="dend" parent="Game/dend"/>
-        <field name="game" parent="Game/plan"/>
+        <field name="plan" parent="Game/plan"/>
         <field name="planText" parent="Plan/text"/>
 
     </domain>
@@ -44,17 +49,32 @@
 
     <domain name="Statistic.word">
 
+        <!-- Показатели рейтинга -->
         <include name="Statistic.base"/>
 
-        <field name="item" parent="Item/ref"/>
+        <!-- Группировка -->
         <field name="factQuestion" parent="Task/factQuestion"/>
         <field name="factAnswer" parent="Task/factAnswer"/>
 
+        <!-- Дополнительная информация для показа -->
+        <field name="item" parent="Item/ref"/>
         <!-- Тело задания (вопрос и ответ) -->
         <field name="question" parent="object"
                title="Данные вопроса в задании (TaskQuestion.*, структура - Task.fields)"/>
         <field name="answer" parent="object"
                title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
+
+    </domain>
+
+
+
+    <domain name="Statistic.day">
+
+        <!-- Показатели рейтинга -->
+        <include name="Statistic.base"/>
+
+        <!-- Группировка -->
+        <field name="dbeg" parent="date"/>
 
     </domain>
 
@@ -67,8 +87,9 @@
         <field name="ratingQuicknessDec" parent="Cube_UsrPlan/ratingQuickness"/>
 
         <!--  -->
-        <field name="wordCountAll" parent="int"/>
-        <field name="wordCountDone" parent="int"/>
+        <field name="wordCount" parent="int"/>
+        <field name="wordCountRepeated" parent="int"/>
+        <field name="wordCountLearned" parent="int"/>
     </domain>
 
 

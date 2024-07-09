@@ -8,9 +8,11 @@ import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.*
+import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.backstage.*
 import run.game.dao.ocr.*
+import run.game.dao.statistic.*
 import run.game.model.service.*
 import run.game.util.*
 
@@ -308,8 +310,33 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         recStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
         recStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
 
+        // Считаем количество нескрытых и выученных заданий  в плане
+        int wordCount = 0
+        int wordCountLearned = 0
+        for (StoreRecord rec : stPlanFact) {
+            if (!rec.getBoolean("isHidden")) {
+                wordCount = wordCount + 1
+                if (rec.getDouble("ratingTask") == UtCubeRating.RATING_FACT_MAX) {
+                    wordCountLearned = wordCountLearned + 1
+                }
+            }
+        }
+        //
+        recStatistic.setValue("wordCount", wordCount)
+        recStatistic.setValue("wordCountLearned", wordCountLearned)
         // Максимальный балл берем на основе количества нескрытых заданий в плане
-        recStatistic.setValue("ratingMax", recPlanRaw.getValue("count"))
+        recStatistic.setValue("ratingMax", wordCount * UtCubeRating.RATING_FACT_MAX)
+
+        // История
+        Statistic_list sl = mdb.create(Statistic_list)
+        XDateTime dend = XDate.today().addDays(1).toDateTime()
+        XDateTime dbeg = dend.addDays(-7)
+        sl.prepareForPlan(idPlan, dbeg, dend)
+        //mdb.outTable(sl.stItems)
+/*
+        sl.distributeStatistic(sl.statistic, sl.stStatisticDay, "day")
+        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
+*/
 
 
         // ---
@@ -851,7 +878,12 @@ where
 
 
         // Дополним факты игры статистикой
+        Statistic_list sl = mdb.create(Statistic_list)
+        sl.prepareForGame(recGame.getDateTime("dbeg"), recGame.getDateTime("dend"))
+        sl.distributeStatistic(sl.statistic, stGameTasks, "word")
+        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
 
+/*
         // Находим запись о статистике игры
         List<Map> listTaskStatistic = loadGameTaskStaistic(idGame, idUsr)
 
@@ -865,7 +897,7 @@ where
 
         // Максимальный балл берем на основе количества нескрытых заданий в плане
         recGameStatistic.setValue("ratingMax", recGameRaw.getLong("count"))
-
+*/
 
         //
         res.put("game", recGame)
@@ -1550,10 +1582,10 @@ select
 
     UsrFact.isHidden,
     UsrFact.isKnownGood,
-    UsrFact.isKnownBad,
+    UsrFact.isKnownBad--,
 
-    Cube_UsrFact.ratingTask,
-    Cube_UsrFact.ratingQuickness
+    --Cube_UsrFact.ratingTask ratingTaskNow,
+    --Cube_UsrFact.ratingQuickness ratingQuicknessNow
 
 from
     GameTask
@@ -1565,11 +1597,11 @@ from
         UsrFact.factQuestion = Task.factQuestion and 
         UsrFact.factAnswer = Task.factAnswer 
     )
-    left join Cube_UsrFact on (
-        Cube_UsrFact.usr = :usr and 
-        Cube_UsrFact.factQuestion = Task.factQuestion and 
-        Cube_UsrFact.factAnswer = Task.factAnswer
-    )
+    --left join Cube_UsrFact on (
+    --    Cube_UsrFact.usr = :usr and 
+    --    Cube_UsrFact.factQuestion = Task.factQuestion and 
+    --    Cube_UsrFact.factAnswer = Task.factAnswer
+    --)
 
 where
     GameTask.usr = :usr and

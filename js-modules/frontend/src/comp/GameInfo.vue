@@ -4,21 +4,50 @@
 
         <div class="game-info__duration">
             <span>Игра начата {{ dbeg }}</span>
+<!--
             <span v-if="game.done">, завершена {{ dend }}</span>
+-->
         </div>
 
-        <div class="game-info__count" style="padding-top: 0.5em">
-            <span class="">
-                За игру заработано:
-            </span>
-            <span class="game-info__rating-inc"
-                  v-html="ratingText(statistic.ratingTaskInc)">
-            </span>
-            <span class="">, потеряно:&nbsp;</span>
-            <span class="game-info__rating-dec"
-                  v-html="ratingText(statistic.ratingTaskDec)">
-            </span>
+
+        <!-- -->
+
+        <div class="result-words-header">
+            Слова
         </div>
+
+        <div class="row">
+            <template v-if="statistic.wordCountLearned != null">
+                <q-space/>
+
+                <StatisticWordsLearned :rating="statistic"/>
+
+            </template>
+
+            <template v-if="statistic.wordCountRepeated != null">
+
+                <StatisticWordsRepeated :rating="statistic"/>
+
+                <q-space/>
+            </template>
+        </div>
+
+
+        <!-- -->
+
+        <div class="q-mt-sm result-rating-header">
+            Баллы
+        </div>
+
+        <div class="row">
+            <q-space/>
+
+            <StatisticRating :rating="statistic"/>
+
+            <q-space/>
+        </div>
+
+        <!-- -->
 
     </div>
 
@@ -32,8 +61,11 @@
 <script>
 
 import {apx} from '../vendor'
-import LogoGame from "./LogoGame"
 import utils from "../utils"
+import LogoGame from "./LogoGame"
+import StatisticRating from "./StatisticRating"
+import StatisticWordsRepeated from "./StatisticWordsRepeated"
+import StatisticWordsLearned from "./StatisticWordsLearned"
 
 
 /**
@@ -44,7 +76,7 @@ export default {
     name: "GameInfo",
 
     components: {
-        LogoGame,
+        StatisticRating, StatisticWordsRepeated, StatisticWordsLearned, LogoGame,
     },
 
     props: {
@@ -75,7 +107,7 @@ export default {
 
 
 .game-info {
-    font-size: 1.5em;
+    font-size: 2em;
     text-align: center;
     margin: 0 2rem;
 
@@ -88,6 +120,10 @@ export default {
     &__text {
         font-size: 1.5em;
         color: #34558b;
+    }
+
+    &__count {
+        padding-top: 0.5em
     }
 
     &__duration {

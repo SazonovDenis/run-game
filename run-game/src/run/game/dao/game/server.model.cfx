@@ -99,6 +99,8 @@
         <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
 
         <field name="ratingMax" parent="double" scale="3"/>
+        <field name="wordCount" parent="int"/>
+        <field name="wordCountLearned" parent="int"/>
     </domain>
 
 

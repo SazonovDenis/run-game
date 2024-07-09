@@ -29,7 +29,7 @@ class RgmBase_Test extends Apx_Test {
 
     void setCurrentUser(String login, String password) {
         setCurrentUser(new DefaultUserPasswdAuthToken(login, password))
-        println("CurrentUser: " + authSvc.getCurrentUser().attrs.get("login") + ", attrs: " + authSvc.getCurrentUser().attrs)
+        println("CurrentUser: " + authSvc.getCurrentUser().attrs.get("login") + ":" + authSvc.getCurrentUser().attrs.get("id") + ", attrs: " + authSvc.getCurrentUser().attrs)
     }
 
     void setCurrentUser(UserPasswdAuthToken authToken) {

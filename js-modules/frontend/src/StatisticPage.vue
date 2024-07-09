@@ -9,9 +9,10 @@
         </template>
 
 
-        <template v-else-if="rating.wordCountAll > 0">
+        <template v-else-if="rating.wordCountRepeated > 0">
 
             <div class="message-statistic">
+
                 <!-- -->
 
                 <div class="result-words-header">
@@ -19,61 +20,16 @@
                 </div>
 
                 <div class="row">
-                    <template v-if="rating.wordCountDone != null">
+                    <template v-if="rating.wordCountLearned != null">
                         <q-space/>
 
-                        <q-circular-progress
-                            show-value
-                            rounded
-                            size="8rem"
-                            :value="100*rating.wordCountDone/rating.wordCountAll"
-                            :thickness="0.2"
-                            color="green-7"
-                            track-color="grey-4"
-                            class="q-mx-sm result-words-done"
-                        >
-                            <div class="col">
-                                <div class="result-value">{{
-                                        rating.wordCountDone
-                                    }}
-                                </div>
-                                <div class="result-title">
-                                    выучено
-                                </div>
-                                <div class="result-words2" v-if="false">
-                                    <span class="result-words2-title">из </span>
-                                    <span class="result-words2-value">{{
-                                            rating.wordCountAll
-                                        }}
-                                    </span>
-                                </div>
-                            </div>
-                        </q-circular-progress>
+                        <StatisticWordsLearned :rating="rating"/>
 
                     </template>
 
-                    <template v-if="rating.wordCountAll != null">
+                    <template v-if="rating.wordCountRepeated != null">
 
-                        <q-circular-progress
-                            show-value
-                            rounded
-                            size="8rem"
-                            :thickness="0"
-                            _color="green-7"
-                            track-color="white"
-                            class="q-mx-sm result-words-all"
-                        >
-                            <div class="col">
-                                <div class="result-value">{{
-                                        rating.wordCountAll
-                                    }}
-                                </div>
-                                <div class="result-title">
-                                    повторено
-                                </div>
-                            </div>
-                        </q-circular-progress>
-
+                        <StatisticWordsRepeated :rating="rating"/>
 
                         <q-space/>
                     </template>
@@ -89,27 +45,7 @@
                 <div class="row">
                     <q-space/>
 
-                    <template v-if="rating.ratingTaskInc != 0">
-                        <div class="col result-rating result-rating-inc">
-                            <div class="result-value"><span
-                                class="result-no-bold">&plus;</span>{{
-                                    rating.ratingTaskInc
-                                }}
-                            </div>
-                            <div class="result-title">заработано</div>
-                        </div>
-                    </template>
-
-                    <template v-if="rating.ratingTaskDec != 0">
-                        <div class="col result-rating result-rating-dec">
-                            <div class="result-value"><span
-                                class="result-no-bold">&minus;</span>{{
-                                    rating.ratingTaskDec
-                                }}
-                            </div>
-                            <div class="result-title">потеряно</div>
-                        </div>
-                    </template>
+                    <StatisticRating :rating="rating"/>
 
                     <q-space/>
                 </div>
@@ -117,33 +53,6 @@
                 <!-- -->
 
             </div>
-
-            <!--
-                        <div class="message-statistic-hint">
-                            <template v-if="rating.ratingTaskInc != 0 || rating.ratingTaskDec != 0">
-                                <span>{{ "(" }}</span>
-
-                                <template v-if="rating.ratingTaskInc != 0">
-                                    <span>заработано:&nbsp;</span><span>{{
-                                        rating.ratingTaskInc
-                                    }}</span>
-                                </template>
-
-                                <template
-                                    v-if="rating.ratingTaskInc != 0 && rating.ratingTaskDec != 0">
-                                    <span>{{ ", " }}</span>
-                                </template>
-
-                                <template v-if="rating.ratingTaskDec != 0">
-                                    <span>потеряно:&nbsp;</span><span>{{
-                                        rating.ratingTaskDec
-                                    }}</span>
-                                </template>
-
-                                <span>{{ ")" }}</span>
-                            </template>
-                        </div>
-            -->
 
 
             <div>
@@ -248,6 +157,9 @@ import {daoApi} from "run-game-frontend/src/dao"
 import {apx} from './vendor'
 import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
+import StatisticWordsLearned from "./comp/StatisticWordsLearned"
+import StatisticWordsRepeated from "./comp/StatisticWordsRepeated"
+import StatisticRating from "./comp/StatisticRating"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
 import StatisticGameItem from "./comp/StatisticGameItem"
 import TaskItem from "./comp/TaskItem"
@@ -258,6 +170,7 @@ export default {
 
     components: {
         MenuContainer, LogoGame,
+        StatisticWordsLearned, StatisticWordsRepeated, StatisticRating,
         StatisticPlanItem, StatisticGameItem, TaskItem,
     },
 
@@ -413,21 +326,15 @@ export default {
 }
 
 .items-container {
-    height: calc(100vh - 14rem);
-    overflow-y: scroll;
-    overflow-x: auto;
+    _height: calc(100vh - 14rem);
+    _overflow-y: scroll;
+    _overflow-x: auto;
 }
 
 .message-statistic {
     text-align: center;
     color: #404040;
     font-size: 2em;
-}
-
-.message-statistic-hint {
-    text-align: center;
-    color: gray;
-    font-size: 1.5em;
 }
 
 .message-no-data {
@@ -449,84 +356,14 @@ export default {
 
 /* --- */
 
-.result-value {
-    font-weight: bold;
-    font-size: 1.3em;
-}
-
-.result-title {
-    font-weight: bold;
-    font-size: 0.5em;
-}
-
-.result-rating .result-title {
-    padding-left: 0.5em;
-}
-
-/* --- */
-
 .result-words-header {
     font-size: 1em;
-}
-
-.result-words {
-    max-width: 5em;
-    padding: 0.2em;
-    margin: 0 0.2em;
-    border-radius: 5em;
-    border-width: 3px;
-    border-style: solid;
-}
-
-.result-words-done {
-    font-weight: bold;
-    color: #43a047;
-}
-
-.result-words2 {
-    position: relative;
-    top: -0.1em;
-    color: #535353;
-}
-
-.result-words2-title {
-    font-size: 0.5em;
-}
-
-.result-words2-value {
-    font-size: 0.8em;
-}
-
-.result-words-all {
-    font-weight: bold;
-    color: #00307e;
-    background-color: #004ecf14;
-    border-radius: 10em;
 }
 
 /* --- */
 
 .result-rating-header {
     font-size: 1em;
-}
-
-.result-rating {
-    max-width: 5em;
-    border-radius: 5em;
-    padding: 0;
-    margin: 0 0;
-}
-
-.result-rating-inc {
-    color: #43a047;
-}
-
-.result-rating-dec {
-    color: #b30000;
-}
-
-.result-no-bold {
-    font-weight: normal;
 }
 
 </style>

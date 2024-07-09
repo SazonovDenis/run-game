@@ -78,22 +78,34 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
             params.put("game", game)
 
             //
-            StoreRecord recGameRec = mdb.loadQueryRecord(sqlGameRec(), params)
-            XDateTime gameDbeg = recGameRec.getDateTime("dbeg")
-            XDateTime gameDend = recGameRec.getDateTime("dend")
+            StoreRecord recGame = mdb.loadQueryRecord(sqlGameRec(), params)
+            XDateTime gameDbeg = recGame.getDateTime("dbeg")
+            XDateTime gameDend = recGame.getDateTime("dend")
 
             //
             StoreRecord recGameTaskCount = mdb.loadQueryRecord(sqlGameTaskCount(), params)
 
             // Период анализа ответов за игру game - от некоторого количества дней назад до конца игры
-            params.put("dbeg", gameDend.addDays(-Cube_UsrFactStatistic.RAITING_ANALYZE_DAYS_DIFF))
+            params.put("dbeg", gameDend.addDays(-UtCubeRating.RAITING_ANALYZE_DAYS_DIFF))
             params.put("dend", gameDend)
             Store stGameTask = mdb.loadQuery(sqlGameTasks(), params)
 
             // Период анализа ответов ДО игры game - от некоторого количества дней назад до НАЧАЛА игры
-            params.put("dbeg", gameDbeg.addDays(-Cube_UsrFactStatistic.RAITING_ANALYZE_DAYS_DIFF))
+            params.put("dbeg", gameDbeg.addDays(-UtCubeRating.RAITING_ANALYZE_DAYS_DIFF))
             params.put("dend", gameDbeg.addMSec(-1000))
             Store stGameTaskPrior = mdb.loadQuery(sqlGameTasks(), params)
+
+            /*
+            /////////////////////////
+            println()
+            println("stGameTask")
+            mdb.outTable(stGameTask)
+            println()
+            println("stGameTaskPrior")
+            mdb.outTable(stGameTaskPrior)
+            /////////////////////////
+            */
+
 
             // Собираем рейтинг фактов в игре
             UtCubeRating utCubeRating = new UtCubeRating()

@@ -330,9 +330,44 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // История
         Statistic_list sl = mdb.create(Statistic_list)
         XDateTime dend = XDate.today().addDays(1).toDateTime()
-        XDateTime dbeg = dend.addDays(-7)
+        XDateTime dbeg = dend.addDays(-10)
         sl.prepareForPlan(idPlan, dbeg, dend)
-        //mdb.outTable(sl.stItems)
+
+        /////////////////////////
+        println()
+        println("recStatistic")
+        mdb.outTable(recStatistic)
+        /////////////////////////
+
+        // Отмотаем от последней даты назад на основе разницы
+        double ratingTask = recStatistic.getDouble("ratingTask")
+        double ratingQuickness = recStatistic.getDouble("ratingQuickness")
+        for (int n = sl.stItems.size() - 1; n >= 0; n--) {
+            StoreRecord rec = sl.stItems.get(n)
+            //
+            double ratingTaskDiff = rec.getDouble("ratingTaskDiff")
+            double ratingTaskInc = rec.getDouble("ratingTaskInc")
+            double ratingTaskDec = rec.getDouble("ratingTaskDec")
+            double ratingQuicknessDiff = rec.getDouble("ratingQuicknessDiff")
+            //
+            rec.setValue("ratingTask", ratingTask)
+            rec.setValue("ratingQuickness", ratingQuickness)
+            rec.setValue("ratingTaskDiff", ratingTaskDiff)
+            rec.setValue("ratingTaskInc", ratingTaskInc)
+            rec.setValue("ratingTaskDec", ratingTaskDec)
+            rec.setValue("ratingQuicknessDiff", ratingQuicknessDiff)
+            //
+            ratingTask = ratingTask - ratingTaskDiff
+            ratingQuickness = ratingQuickness - ratingQuicknessDiff
+        }
+        sl.stItems.remove(sl.stItems.size() - 1)
+
+        /////////////////////////
+        println()
+        println("Result filled:")
+        mdb.outTable(sl.stItems)
+        /////////////////////////
+
 /*
         sl.distributeStatistic(sl.statistic, sl.stStatisticDay, "day")
         StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
@@ -343,6 +378,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         res.put("plan", recPlan)
         res.put("tasks", stPlanFact)
         res.put("statistic", recStatistic.getValues())
+        res.put("statisticPeriod", sl.stItems)
 
         //
         return res

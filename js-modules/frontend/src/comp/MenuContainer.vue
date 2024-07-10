@@ -65,7 +65,7 @@
 
                         <q-tab name="PlanEditPage" label="Слова" @click="onMainPage()"/>
                         <q-tab name="PlansPage" label="Уровни" @click="onPlans()"/>
-                        <q-tab name="GameInfoPage" label="Игры" @click="onGameInfo()"/>
+                        <q-tab name="StatisticPage" label="Результаты" @click="onStatistic()"/>
 
 
                     </q-tabs>
@@ -197,12 +197,14 @@
                                  @click="onAbout()">Об игре
                             </div>
 
-                            <q-separator/>
+                            <!--
+                                                        <q-separator/>
 
 
-                            <div class="q-mt-md q-item__label q-item__label--header"
-                                 @click="onStatistic()">Статистика
-                            </div>
+                                                        <div class="q-mt-md q-item__label q-item__label&#45;&#45;header"
+                                                             @click="onStatistic()">Статистика
+                                                        </div>
+                            -->
 
                         </div>
                     </div>

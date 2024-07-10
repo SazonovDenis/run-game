@@ -116,10 +116,13 @@
                title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
 
         <!-- Изменение рейтинга факта (по сравнению с предыдущей игрой) -->
-        <field name="ratingTaskDiff" parent="double" scale="3"
+        <field name="ratingTaskDiff" parent="Cube_UsrPlan/ratingTask"
                title="Изменение рейтинга за ответы"/>
-        <field name="ratingQuicknessDiff" parent="double" scale="3"
+        <field name="ratingQuicknessDiff" parent="Cube_UsrPlan/ratingQuickness"
                title="Изменение рейтинга за скорость"/>
+        <!-- Рост и падение рейтинга -->
+        <field name="ratingTaskInc" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingTaskDec" parent="Cube_UsrPlan/ratingTask"/>
     </domain>
 
 

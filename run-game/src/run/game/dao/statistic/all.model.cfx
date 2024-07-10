@@ -11,6 +11,9 @@
                title="Изменение рейтинга за ответы"/>
         <field name="ratingQuicknessDiff" parent="Cube_UsrPlan/ratingQuickness"
                title="Изменение рейтинга за скорость"/>
+        <!-- Рост и падение рейтинга -->
+        <field name="ratingTaskInc" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingTaskDec" parent="Cube_UsrPlan/ratingTask"/>
     </domain>
 
 

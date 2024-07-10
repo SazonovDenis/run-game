@@ -8,6 +8,7 @@
 
             <StatisticWordsLearned :rating="statistic"/>
 
+            <jc-chart :options="chartData" style="width: 15em; height: 15em"/>
 
             <q-circular-progress
                 show-value
@@ -22,7 +23,9 @@
             >
                 <div class="col">
                     <div>
-                        <span class="game-info__rating-value">{{ statistic.ratingTask }}</span>
+                        <span class="game-info__rating-value">{{
+                                statistic.ratingTask
+                            }}</span>
                     </div>
                     <div>
                         <span class="game-info__rating-text">
@@ -75,6 +78,7 @@ export default {
     props: {
         planText: null,
         statistic: null,
+        chartData: null,
     },
 
     methods: {

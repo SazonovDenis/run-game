@@ -1,7 +1,7 @@
 <template>
 
     <MenuContainer
-        tabMenuName="GameInfoPage"
+        tabMenuName="StatisticPage"
         :title="title"
         :frameReturn="frameReturn"
         :frameReturnProps="frameReturnProps"
@@ -10,6 +10,7 @@
         <div v-if="dataLoaded"
              class="col justify-center _q-mt-lg _q-mb-lg11 _q-gutter-md">
 
+<!--
             <PlanInfo
                 v-if="localState.game"
                 :planText="localState.game.planText"
@@ -17,6 +18,7 @@
             />
 
             <q-separator v-if="localState.game"/>
+-->
 
             <GameInfo
                 :game="localState.game"

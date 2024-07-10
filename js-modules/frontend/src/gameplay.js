@@ -282,6 +282,7 @@ export default {
             plan: resApi.plan.records[0],
             tasks: resApi.tasks.records,
             statistic: resApi.statistic,
+            statisticPeriod: resApi.statisticPeriod.records,
         }
 
         return res

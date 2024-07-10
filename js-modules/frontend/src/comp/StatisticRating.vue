@@ -17,7 +17,7 @@
             <div class="col result-rating result-rating-dec">
                 <div class="result-value"><span
                     class="result-no-bold">&minus;</span>{{
-                        rating.ratingTaskDec
+                        -rating.ratingTaskDec
                     }}
                 </div>
                 <div class="result-title">потеряно</div>

@@ -1,7 +1,7 @@
 <template>
 
     <MenuContainer
-        tabMenuName="GameInfoPage"
+        tabMenuName="StatisticPage"
     >
 
         <template v-if="!loaded">

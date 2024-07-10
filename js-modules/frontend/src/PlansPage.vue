@@ -57,7 +57,7 @@
                        position="bottom-right"
                        :offset="[10, 10]">
             <q-fab
-                :style="{fontSize: '1.3em', height: '4rem', width: isDesktop ? '14rem':'4rem'}"
+                :style="{fontSize: '1.3em', height: '4rem', width: isDesktop ? '16rem':'4rem'}"
                 color="purple"
                 icon="add"
                 vertical-actions-align="right"
@@ -179,7 +179,8 @@ export default {
 
         onCreatePlan() {
             apx.showFrame({
-                frame: '/planEdit', props: {
+                frame: '/planEdit',
+                props: {
                     immediateSaveMode: false,
                     frameReturn: "/plans",
                     frameReturnProps: {},

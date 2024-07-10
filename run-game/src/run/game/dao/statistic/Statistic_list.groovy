@@ -237,7 +237,7 @@ class Statistic_list extends RgmMdbUtils {
                 double ratingQuicknessDiffAcc = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
                 statisticWord.put("ratingTaskDiff", ratingTaskDiffAcc + ratingTaskDiffRec)
                 statisticWord.put("ratingQuicknessDiff", ratingQuicknessDiffAcc + ratingQuicknessDiffRec)
-                // Итог - берем последний (не суммируем)
+                // Итог - берем последний (его не суммируем)
                 statisticWord.put("ratingTask", ratingTaskRec)
                 statisticWord.put("ratingQuickness", ratingQuicknessRec)
             }
@@ -269,6 +269,8 @@ class Statistic_list extends RgmMdbUtils {
 
             // Сумму в запись
             rec.setValue("ratingTaskDiff", UtCnv.toDouble(sumStatistic.get("ratingTaskDiff")))
+            rec.setValue("ratingTaskInc", UtCnv.toDouble(sumStatistic.get("ratingTaskInc")))
+            rec.setValue("ratingTaskDec", UtCnv.toDouble(sumStatistic.get("ratingTaskDec")))
             rec.setValue("ratingQuicknessDiff", UtCnv.toDouble(sumStatistic.get("ratingQuicknessDiff")))
             if (groupByKey.equals("word") || groupByKey.equals("game")) {
                 rec.setValue("ratingTask", UtCnv.toDouble(sumStatistic.get("ratingTask")))
@@ -283,10 +285,15 @@ class Statistic_list extends RgmMdbUtils {
         for (String key : statistic.keySet()) {
             Map item = statistic.get(key)
 
-            res.put("ratingTask", UtCnv.toDouble(item.get("ratingTask")) + UtCnv.toDouble(res.get("ratingTask")))
-            res.put("ratingQuickness", UtCnv.toDouble(item.get("ratingQuickness")) + UtCnv.toDouble(res.get("ratingQuickness")))
-            res.put("ratingTaskDiff", UtCnv.toDouble(item.get("ratingTaskDiff")) + UtCnv.toDouble(res.get("ratingTaskDiff")))
-            res.put("ratingQuicknessDiff", UtCnv.toDouble(item.get("ratingQuicknessDiff")) + UtCnv.toDouble(res.get("ratingQuicknessDiff")))
+            res.put("ratingTask", UtCnv.toDouble(res.get("ratingTask")) + UtCnv.toDouble(item.get("ratingTask")))
+            res.put("ratingQuickness", UtCnv.toDouble(res.get("ratingQuickness")) + UtCnv.toDouble(item.get("ratingQuickness")))
+            res.put("ratingTaskDiff", UtCnv.toDouble(res.get("ratingTaskDiff")) + UtCnv.toDouble(item.get("ratingTaskDiff")))
+            if (UtCnv.toDouble(item.get("ratingTaskDiff")) > 0) {
+                res.put("ratingTaskInc", UtCnv.toDouble(res.get("ratingTaskInc")) + UtCnv.toDouble(item.get("ratingTaskDiff")))
+            } else {
+                res.put("ratingTaskDec", UtCnv.toDouble(res.get("ratingTaskDec")) + UtCnv.toDouble(item.get("ratingTaskDiff")))
+            }
+            res.put("ratingQuicknessDiff", UtCnv.toDouble(res.get("ratingQuicknessDiff")) + UtCnv.toDouble(item.get("ratingQuicknessDiff")))
         }
 
         return res
@@ -329,13 +336,13 @@ class Statistic_list extends RgmMdbUtils {
             if (ratingTaskDiffRec > 0) {
                 ratingTaskInc = ratingTaskInc + ratingTaskDiffRec
             } else {
-                ratingTaskDec = ratingTaskDec - ratingTaskDiffRec
+                ratingTaskDec = ratingTaskDec + ratingTaskDiffRec
             }
             //
             if (ratingQuicknessDiffRec > 0) {
                 ratingQuicknessInc = ratingQuicknessInc + ratingQuicknessDiffRec
             } else {
-                ratingQuicknessDec = ratingQuicknessDec - ratingQuicknessDiffRec
+                ratingQuicknessDec = ratingQuicknessDec + ratingQuicknessDiffRec
             }
         }
 

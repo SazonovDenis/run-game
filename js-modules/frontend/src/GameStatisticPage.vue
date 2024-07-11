@@ -10,15 +10,6 @@
         <div v-if="dataLoaded"
              class="col justify-center _q-mt-lg _q-mb-lg11 _q-gutter-md">
 
-<!--
-            <PlanInfo
-                v-if="localState.game"
-                :planText="localState.game.planText"
-                :statistic="localState.statistic"
-            />
-
-            <q-separator v-if="localState.game"/>
--->
 
             <GameStatistic
                 :game="localState.game"
@@ -112,15 +103,13 @@ import {apx} from "./vendor"
 import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
 import GameStatistic from "./comp/GameStatistic"
-import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
-import StatisticWordsLearned from "run-game-frontend/src/comp/StatisticWordsLearned"
 
 export default {
 
     name: "GameStatisticPage",
 
-    components: {StatisticWordsLearned, MenuContainer, GameStatistic, PlanInfo, TaskList},
+    components: {MenuContainer, GameStatistic, TaskList},
 
     props: {
         gameId: null,

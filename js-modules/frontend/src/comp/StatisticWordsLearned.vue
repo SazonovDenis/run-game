@@ -79,6 +79,7 @@ export default {
 /* --- */
 
 .result-words-learned {
+    text-align: center;
     font-weight: bold;
     border-radius: 10em;
     color: #43a047;

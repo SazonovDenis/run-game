@@ -258,7 +258,7 @@ export default {
 
         onPlanClick(item) {
             apx.showFrame({
-                frame: '/plan',
+                frame: '/planStatistic',
                 props: {
                     planId: item.plan,
                     frameReturn: "/statistic",

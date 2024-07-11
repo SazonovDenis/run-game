@@ -70,7 +70,7 @@ import utils from "../utils"
 import StatisticWordsLearned from "./StatisticWordsLearned"
 
 export default {
-    name: "PlanInfo",
+    name: "PlanStatistic",
     components: {
         StatisticWordsLearned,
     },

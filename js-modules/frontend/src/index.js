@@ -16,13 +16,14 @@ export function run() {
         {path: '/about', frame: import('./AboutPage')},
         {path: '/login', frame: import('./LoginPage')},
         {path: '/game', frame: import('./GamePage')},
-        {path: '/plans', frame: import('./PlansPage')},
-        {path: '/statistic', frame: import('./StatisticPage')},
-        {path: '/gameStatistic', frame: import('./GameStatisticPage')},
         {path: '/user', frame: import('./UserInfoPage')},
         {path: '/link', frame: import('./LinkPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
+        {path: '/plans', frame: import('./PlansPage')},
+        {path: '/statistic', frame: import('./StatisticPage')},
+        {path: '/planStatistic', frame: import('./PlanStatisticPage')},
+        {path: '/gameStatistic', frame: import('./GameStatisticPage')},
     ]
 
     apx.app.onBeforeRun(async () => {

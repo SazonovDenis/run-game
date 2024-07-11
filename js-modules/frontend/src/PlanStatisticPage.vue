@@ -7,7 +7,13 @@
 
         <div v-if="dataLoaded">
 
-            <StatisticWordsLearned :rating="statistic"/>
+            <PlanStatistic :planText="null"
+                      :statistic="statistic"
+                      :chartData="chartData"
+            />
+
+            <q-separator/>
+
 
             <div class="row">
                 <jc-btn class="q-ma-sm"
@@ -19,21 +25,15 @@
 
                 <jc-btn class="q-ma-sm"
                         kind="secondary"
-                        label="Выбрать другой уровень"
+                        label="Редактировать уровень"
                         style="min-width: 12em;"
                         @click="onSelectPlan()">
-                </jc-btn>
-
-                <jc-btn class="q-ma-sm"
-                        kind="secondary"
-                        label="Статистика"
-                        style="min-width: 12em;"
-                        @click="onPlanStatistic()">
                 </jc-btn>
             </div>
 
 
-            <q-separator class="q-my-sm"/>
+<!--
+            <q-separator/>
 
 
             <div class="row q-mb-sm bg-white"
@@ -81,8 +81,10 @@
                 </q-btn-dropdown>
 
             </div>
+-->
 
 
+<!--
             <TaskList
                 v-if="visibleCount > 0"
                 :showEdit="true"
@@ -96,7 +98,9 @@
                  class="rgm-state-text">
                 В уровне нет ни одного слова
             </div>
+-->
 
+<!--
 
             <q-page-sticky
                 v-if="canDeletePlan()"
@@ -135,6 +139,7 @@
                        @click="onPlanEdit"
                 />
             </q-page-sticky>
+-->
 
         </div>
 
@@ -147,7 +152,7 @@
 <script>
 
 import MenuContainer from "./comp/MenuContainer"
-import StatisticWordsLearned from "./comp/StatisticWordsLearned"
+import PlanStatistic from "./comp/PlanStatistic"
 import RgmInputText from "./comp/RgmInputText"
 import TaskList from "./comp/TaskList"
 import gameplay from "./gameplay"
@@ -158,7 +163,7 @@ import {daoApi} from "./dao"
 
 export default {
 
-    name: "PlanPage",
+    name: "PlanStatisticPage",
 
     props: {
         planId: null,
@@ -168,7 +173,7 @@ export default {
     },
 
     components: {
-        MenuContainer, RgmInputText, StatisticWordsLearned, TaskList
+        MenuContainer, RgmInputText, PlanStatistic, TaskList
     },
 
     data() {
@@ -335,21 +340,6 @@ export default {
 
             apx.showFrame({
                 frame: '/plans',
-            })
-        },
-
-        async onPlanStatistic() {
-            apx.showFrame({
-                frame: '/planStatistic',
-                props: {
-                    planId: this.planId,
-                    frameReturn: "/plan",
-                    frameReturnProps: {
-                        planId: this.planId,
-                        frameReturn: this.frameReturn,
-                        frameReturnProps: this.frameReturnProps,
-                    }
-                }
             })
         },
 
@@ -558,6 +548,7 @@ export default {
 
 
 <style lang="less" scoped>
+
 
 </style>
 

@@ -126,8 +126,10 @@ export default {
 
     computed: {
         title: function() {
-            if (this.gameId) {
-                return "Результат игры"
+            if (this.localState.game) {
+                let displayFormat2 = "d MMMM yyyy, HH:MM"
+                let dbeg = apx.date.toDateTime(this.localState.game.dbeg).toFormat(displayFormat2)
+                return "Игра от " + dbeg
             } else if (!this.localState.game || !this.localState.game.id) {
                 return null
             } else if (this.localState.game.done) {

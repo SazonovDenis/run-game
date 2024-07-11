@@ -176,7 +176,6 @@ export default {
             plan: {},
             tasks: {},
             statistic: {},
-            statisticPeriod: {},
 
             chartData: {},
 
@@ -426,86 +425,6 @@ export default {
         this.plan = res.plan
         this.tasks = res.tasks
         this.statistic = res.statistic
-
-
-        let statisticPeriod = res.statisticPeriod
-        let xAxisData = []
-        let dataRating = []
-        let dataRatingInc = []
-        let dataRatingDec = []
-        let n = 0
-        let displayFormat1 = "dd MMM yyyy"
-        let displayFormat2 = "dd MMM"
-        for (let rec of statisticPeriod) {
-            n++
-            if (n === 1) {
-                xAxisData.push(apx.date.toDateTime(rec.dbeg).toFormat(displayFormat1))
-            } else if (n === statisticPeriod.length) {
-                xAxisData.push(apx.date.toDateTime(rec.dbeg).toFormat(displayFormat2))
-            } else {
-                xAxisData.push('')
-            }
-            dataRating.push(rec.ratingTask - rec.ratingTaskInc + rec.ratingTaskDec)
-            dataRatingInc.push(rec.ratingTaskInc)
-            dataRatingDec.push(-rec.ratingTaskDec)
-        }
-        let chartData = {
-            xAxis: {
-                type: 'category',
-                boundaryGap: true,
-                data: xAxisData //['10 янв 2024', '', '', '', '', '', '16 янв']
-            },
-            yAxis: {
-                type: 'value',
-                show: false,
-                splitLine: {
-                    show: false
-                }
-            },
-            series: [
-                {
-                    data: dataRating, //[456, 788, 733, 597, 355, 345, 744],
-                    type: 'bar',
-                    stack: 'ratingTask',
-                    color: '#1d83d480',
-                },
-                {
-                    data: dataRatingInc, //[12, 95, null, 43, 213, 22, null],
-                    type: 'bar',
-                    stack: 'ratingTask',
-                    color: '#1d83d4f0',
-                    label: {
-                        show: true,
-                        position: 'top',
-                        formatter: function(item) {
-                            if (item.value > 0) {
-                                return "+" + item.value
-                            } else {
-                                return ''
-                            }
-                        }
-                    },
-                },
-                {
-                    data: dataRatingDec, //[120, null, 901, 934, 290, null, 320],
-                    type: 'bar',
-                    stack: 'ratingTask',
-                    //color: '#006FFF11',
-                    color: 'rgba(255,0,0,0.26)',
-                    /*
-                    type: 'line',
-                    lineStyle: {
-                        type: "dashed",
-                        opacity: 1,
-                        width: 1,
-                        color: '#FF0000'
-                    },
-                    */
-                },
-            ]
-
-        }
-        this.chartData = chartData
 
 
         // --- Подготовим возможность сортировки по рейтингу, но с группировкой по фактам

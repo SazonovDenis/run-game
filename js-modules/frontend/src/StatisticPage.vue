@@ -63,7 +63,7 @@
                     inline-label
                     class="bg-grey-1 q-mt-sm"
 
-                    @update:model-value="onParams_group"
+                    @update:modelValue="onParams_group"
                 >
                     <q-tab name="plan" label="Уровни"/>
                     <q-tab name="game" label="Игры"/>
@@ -117,7 +117,7 @@
 
         <template v-else>
             <div class="message-no-data q-mx-md q-mt-xl">
-                Нет игр за {{ periodOptions_text[params.period] }}
+                Нет игр за {{ this.$refs.dateRangeInput.getPeriodText(params.period) }}
             </div>
             <div v-if="params.period !== 'month3'"
                  class="message-no-data-hint q-ma-md">
@@ -126,21 +126,12 @@
         </template>
 
 
-        <div class="q-ma-sm bottom-buttons">
+        <div class="q-my-sm bottom-buttons">
 
-            <q-btn-toggle
+            <DateRangeInput
+                ref="dateRangeInput"
                 v-model="params.period"
-                no-caps
-                rounded
-                _unelevated
-
-                class="rgm-toggle"
-                toggle-color="blue-7"
-                color="white"
-                text-color="primary"
-
-                :options="periodOptions"
-                @update:model-value="onParams_period"
+                @update:modelValue="onParams_period"
             />
 
         </div>
@@ -158,6 +149,7 @@ import {apx} from './vendor'
 import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
 import StatisticWordsLearned from "./comp/StatisticWordsLearned"
+import DateRangeInput from "./comp/DateRangeInput"
 import StatisticWordsRepeated from "./comp/StatisticWordsRepeated"
 import StatisticRating from "./comp/StatisticRating"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
@@ -170,7 +162,7 @@ export default {
 
     components: {
         MenuContainer, LogoGame,
-        StatisticWordsLearned, StatisticWordsRepeated, StatisticRating,
+        StatisticWordsLearned, StatisticWordsRepeated, StatisticRating, DateRangeInput,
         StatisticPlanItem, StatisticGameItem, TaskItem,
     },
 
@@ -192,18 +184,6 @@ export default {
                 sort: null,
             },
 
-            periodOptions: [
-                {label: 'Сегодня', value: 'day'},
-                {label: 'Неделя', value: 'week'},
-                {label: 'Месяц', value: 'month'},
-                {label: 'Три месяца', value: 'month3'},
-            ],
-            periodOptions_text: {
-                day: "сегодня",
-                week: "неделю",
-                month: "месяц",
-                month3: "три месяца",
-            },
             groupOptions: [
                 {label: 'Планы', value: 'plan'},
                 {label: 'Игры', value: 'game'},
@@ -261,6 +241,8 @@ export default {
                 frame: '/planStatistic',
                 props: {
                     planId: item.plan,
+                    period: this.params.period,
+
                     frameReturn: "/statistic",
                     frameReturnProps: {
                         period: this.params.period,
@@ -270,37 +252,24 @@ export default {
             })
         },
 
-        async load(x) {
-            let today = apx.date.today()
-            let dend = today
-            let dbeg
-            //
-            if (this.params.period === "day") {
-                dbeg = apx.date.add(dend, {days: 0})
-            } else if (this.params.period === "week") {
-                dbeg = apx.date.add(dend, {days: -6})
-            } else if (this.params.period === "month") {
-                dbeg = apx.date.add(dend, {days: -30})
-            } else if (this.params.period === "month3") {
-                dbeg = apx.date.add(dend, {days: -30 * 3})
-            }
-
-            //
+        async load() {
             let resApi
+
+            let period = this.$refs.dateRangeInput.createParamsPeriod(this.params.period)
 
             if (this.params.group === "plan") {
                 resApi = await daoApi.loadStore(
-                    "m/Statistic/byPlan", [dbeg, dend]
+                    "m/Statistic/byPlan", [period.dbeg, period.dend]
                 )
 
             } else if (this.params.group === "game") {
                 resApi = await daoApi.loadStore(
-                    "m/Statistic/byGame", [dbeg, dend]
+                    "m/Statistic/byGame", [period.dbeg, period.dend]
                 )
 
             } else if (this.params.group === "word") {
                 resApi = await daoApi.loadStore(
-                    "m/Statistic/byWord", [dbeg, dend]
+                    "m/Statistic/byWord", [period.dbeg, period.dend]
                 )
 
             }
@@ -320,10 +289,6 @@ export default {
 
 
 <style lang="less" scoped>
-
-.rgm-toggle {
-    _border: 1px solid #4072a8;
-}
 
 .items-container {
     _height: calc(100vh - 14rem);
@@ -352,6 +317,13 @@ export default {
 .bottom-buttons {
     position: fixed;
     bottom: 0.2rem;
+
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
 }
 
 /* --- */

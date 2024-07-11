@@ -282,6 +282,19 @@ export default {
             plan: resApi.plan.records[0],
             tasks: resApi.tasks.records,
             statistic: resApi.statistic,
+        }
+
+        return res
+    },
+
+    async api_getPlanStatistic(plan, dbeg, dend) {
+        let resApi = await daoApi.loadStore(
+            'm/Game/getPlanStatistic', [plan, dbeg, dend]
+        )
+
+        let res = {
+            plan: resApi.plan.records[0],
+            statistic: resApi.statistic,
             statisticPeriod: resApi.statisticPeriod.records,
         }
 

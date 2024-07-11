@@ -2,14 +2,6 @@
     <div v-if="game" class="game-info">
 
 
-        <div class="game-info__duration">
-            <span>Игра начата {{ dbeg }}</span>
-<!--
-            <span v-if="game.done">, завершена {{ dend }}</span>
--->
-        </div>
-
-
         <!-- -->
 
         <div class="result-words-header">
@@ -60,13 +52,11 @@
 
 <script>
 
-import {apx} from '../vendor'
 import utils from "../utils"
 import LogoGame from "./LogoGame"
 import StatisticRating from "./StatisticRating"
 import StatisticWordsRepeated from "./StatisticWordsRepeated"
 import StatisticWordsLearned from "./StatisticWordsLearned"
-
 
 /**
  * Состояние игры. Виджет для экрана
@@ -82,15 +72,6 @@ export default {
     props: {
         game: {},
         statistic: {},
-    },
-
-    computed: {
-        dbeg: function() {
-            return apx.date.toDisplayStr(this.game.dbeg)
-        },
-        dend: function() {
-            return apx.date.toDisplayStr(this.game.dend)
-        },
     },
 
     methods: {
@@ -126,9 +107,11 @@ export default {
         padding-top: 0.5em
     }
 
-    &__duration {
-        color: #6c6c6c;
-    }
+    /*
+        &__duration {
+            color: #6c6c6c;
+        }
+    */
 
 }
 

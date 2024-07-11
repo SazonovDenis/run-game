@@ -305,8 +305,32 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // --- statistic
 
-        // По всем заданиям игры - сумма баллов и т.д.
+        StoreRecord recStatistic = loadRecStatistic(recPlanRaw, stPlanFact)
+
+/*
+        ////////////////////////////////////
+        ////////////////////////////////////
+        ////////////////////////////////////
+        удалить и отрефакторить!!!
+        ////////////////////////////////////
+        sl.distributeStatistic(sl.statistic, sl.stStatisticDay, "day")
+        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
+*/
+
+
+        // ---
+        res.put("plan", recPlan)
+        res.put("tasks", stPlanFact)
+        res.put("statistic", recStatistic.getValues())
+
+        //
+        return res
+    }
+
+    StoreRecord loadRecStatistic(StoreRecord recPlanRaw, Store stPlanFact) {
         StoreRecord recStatistic = mdb.createStoreRecord("Plan.statistic.rec")
+
+        // По всем заданиям игры - сумма баллов и т.д.
         recStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
         recStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
 
@@ -327,11 +351,49 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Максимальный балл берем на основе количества нескрытых заданий в плане
         recStatistic.setValue("ratingMax", wordCount * UtCubeRating.RATING_FACT_MAX)
 
-        // История
+
+        //
+        return recStatistic
+    }
+
+    @DaoMethod
+    DataBox getPlanStatistic(long idPlan, XDate dbeg, XDate dend) {
+        DataBox res = new DataBox()
+
+        //
+        long idUsr = getContextOrCurrentUsrId()
+
+        //
+        Plan_list list = mdb.create(Plan_list)
+        StoreRecord recPlanRaw = list.getPlan(idPlan)
+
+
+        // --- plan
+
+        // План
+        StoreRecord recPlan = mdb.createStoreRecord("Plan.server")
+        recPlan.setValues(recPlanRaw.getValues())
+        //
+        if (recPlan.getBoolean("isOwner")) {
+            recPlan.setValue("isAllowed", true)
+        }
+
+        // --- tasks
+
+        // Факты в плане - список
+        Store stPlanFact = mdb.createStore("PlanFact.list")
+        mdb.loadQuery(stPlanFact, sqlPlanFactsStatistic(), [usr: idUsr, plan: idPlan])
+
+
+        // --- statistic
+        StoreRecord recStatistic = loadRecStatistic(recPlanRaw, stPlanFact)
+
+
+        // --- statisticPeriod
         Statistic_list sl = mdb.create(Statistic_list)
-        XDateTime dend = XDate.today().addDays(1).toDateTime()
-        XDateTime dbeg = dend.addDays(-10)
-        sl.prepareForPlan(idPlan, dbeg, dend)
+        XDateTime dendParam = dend.addDays(1).toDateTime()
+        XDateTime dbegParam = dbeg.toDateTime()
+        sl.prepareForPlan(idPlan, dbegParam, dendParam)
 
         /////////////////////////
         println()
@@ -368,21 +430,16 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         mdb.outTable(sl.stItems)
         /////////////////////////
 
-/*
-        sl.distributeStatistic(sl.statistic, sl.stStatisticDay, "day")
-        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
-*/
-
 
         // ---
         res.put("plan", recPlan)
-        res.put("tasks", stPlanFact)
         res.put("statistic", recStatistic.getValues())
         res.put("statisticPeriod", sl.stItems)
 
         //
         return res
     }
+
 
     @DaoMethod
     Store findItems(String text, long idPlan) {

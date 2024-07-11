@@ -1,14 +1,12 @@
 <template>
 
-    <div class="game-info">
+    <div class="plan-statistic">
 
-        <div class="game-info__text">{{ planText }}</div>
+        <div class="plan-statistic__text">{{ planText }}</div>
 
         <div class="row">
 
-            <StatisticWordsLearned :rating="statistic"/>
-
-            <jc-chart :options="chartData" style="width: 15em; height: 15em"/>
+            <StatisticWordsLearned class="q-ma-md" :rating="statistic"/>
 
             <q-circular-progress
                 show-value
@@ -17,47 +15,59 @@
                 font-size="1rem"
                 :value="100*statistic.ratingTask/statistic.ratingMax"
                 :thickness="0.2"
-                color="green-7"
+                color="blue-10"
                 track-color="grey-3"
-                class="q-ma-md game-info__rating-info"
+                class="q-ma-md plan-statistic__rating-info"
             >
                 <div class="col">
                     <div>
-                        <span class="game-info__rating-value">{{
+                        <span class="plan-statistic__rating-value">{{
                                 statistic.ratingTask
                             }}</span>
                     </div>
                     <div>
-                        <span class="game-info__rating-text">
+                        <span class="plan-statistic__rating-text">
                             {{ ratingText(statistic.ratingTask) }}
                         </span>
                     </div>
                     <div>
                         <span>из </span>
-                        <span class="game-info__rating-max">{{ statistic.ratingMax }}
+                        <span class="plan-statistic__rating-max">{{ statistic.ratingMax }}
                     </span>
                     </div>
                 </div>
             </q-circular-progress>
 
-            <div class="game-info__rating-info col self-center">
+<!--
+
+            <div class="plan-statistic__rating-info col self-center">
                 <div class="">
 
                     <div>
                         За скорость:
                     </div>
                     <div>
-                    <span class="game-info__rating-quickness">
+                    <span class="plan-statistic__rating-quickness">
                         {{ statistic.ratingQuickness }}
                     </span>
                     </div>
-                    <div class="game-info__rating-quickness-text">
+                    <div class="plan-statistic__rating-quickness-text">
                         {{ ratingText(statistic.ratingQuickness) }}
                     </div>
 
                 </div>
 
             </div>
+-->
+
+
+            <jc-chart
+                class="chart"
+                :options="chartData"
+                :key="chartDataKey"
+            />
+
+
         </div>
 
     </div>
@@ -70,7 +80,9 @@ import utils from "../utils"
 import StatisticWordsLearned from "./StatisticWordsLearned"
 
 export default {
+
     name: "PlanStatistic",
+
     components: {
         StatisticWordsLearned,
     },
@@ -79,6 +91,7 @@ export default {
         planText: null,
         statistic: null,
         chartData: null,
+        chartDataKey: null,
     },
 
     methods: {
@@ -93,10 +106,15 @@ export default {
 
 <style lang="less" scoped>
 
-.game-info {
+.chart {
+    width: 100%;
+    height: 15rem;
+    border: solid 1px rgba(255, 0, 0, 0.2);
+}
+
+.plan-statistic {
     font-size: 1.5em;
     text-align: center;
-    margin: 0 2rem;
 
     &__text {
         font-size: 1.5em;

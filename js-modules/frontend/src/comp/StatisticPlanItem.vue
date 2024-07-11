@@ -1,6 +1,6 @@
 <template>
 
-    <q-item class="item-first"
+    <q-item class="item"
             clickable v-ripple
     >
         <q-item-section>
@@ -57,5 +57,9 @@ export default {
 </script>
 
 <style scoped>
+
+.item {
+    min-height: 3rem;
+}
 
 </style>

@@ -1,6 +1,6 @@
 <template>
 
-    <q-item class="item-first"
+    <q-item class=""
             clickable v-ripple
     >
         <q-item-section>
@@ -8,7 +8,7 @@
                 {{ item.planText }}
             </div>
             <div class="game-info">
-                {{ item.dbeg }}
+                {{ dbeg }}
             </div>
         </q-item-section>
 
@@ -33,14 +33,6 @@
                     text-color="red-5"
                     :label="item.ratingTaskDiff"/>
 
-<!--
-                <q-badge
-                    style="font-weight: bold;"
-                    class="col"
-                    color="green-5"
-                    :label="item.ratingTask"/>
--->
-
             </div>
 
         </q-item-section>
@@ -51,12 +43,21 @@
 
 <script>
 
+import {apx} from "run-game-frontend/src/vendor"
+
 export default {
 
     name: "StatisticGameItem",
 
     props: {
         item: Object
+    },
+
+    computed: {
+        dbeg() {
+            let displayFormat2 = "d MMMM, HH:MM"
+            return apx.date.toDateTime(this.item.dbeg).toFormat(displayFormat2)
+        }
     },
 
 }

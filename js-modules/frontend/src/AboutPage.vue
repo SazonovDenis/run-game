@@ -44,7 +44,7 @@
                 <div class="q-pa-sm">
                     <jc-btn kind="secondary" label="Последняя игра"
                             style="min-width: 12em;"
-                            @click="gameInfo()">
+                            @click="gameStatistic()">
                     </jc-btn>
                 </div>
 
@@ -128,9 +128,9 @@ export default {
             })
         },
 
-        gameInfo() {
+        gameStatistic() {
             apx.showFrame({
-                frame: '/gameInfo'
+                frame: '/gameStatistic'
             })
         },
 

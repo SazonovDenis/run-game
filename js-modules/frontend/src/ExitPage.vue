@@ -37,7 +37,7 @@
                 <div class="q-pa-sm">
                     <jc-btn kind="secondary" label="Последняя игра"
                             style="min-width: 12em;"
-                            @click="gameInfo()">
+                            @click="gameStatistic()">
                     </jc-btn>
                 </div>
 
@@ -90,14 +90,14 @@ export default {
 
         },
 
-        gameInfo() {
+        gameStatistic() {
             //
-            window.location.replace("#/gameInfo");
-            window.history.pushState({}, "", "#/gameInfo");
+            window.location.replace("#/gameStatistic");
+            window.history.pushState({}, "", "#/gameStatistic");
 
             /*
                         apx.showFrame({
-                            frame: '/gameInfo'
+                            frame: '/gameStatistic'
                         })
             */
         },

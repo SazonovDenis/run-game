@@ -2,7 +2,7 @@
 
     <MenuContainer
         title="Играем!"
-        frameReturn="/gameInfo"
+        frameReturn="/gameStatistic"
         :showFooter="true">
 
         <template v-slot:footerContent>
@@ -55,7 +55,7 @@ export default {
         onLoadedGameTask() {
             if (ctx.globalState.game.done) {
                 apx.showFrame({
-                    frame: '/gameInfo', props: {prop1: 1}
+                    frame: '/gameStatistic', props: {prop1: 1}
                 })
             }
         },
@@ -68,7 +68,7 @@ export default {
         // Если игры нет - нечего тут делать
         if (!ctx?.globalState?.game || ctx.globalState.game.done) {
             apx.showFrame({
-                frame: '/gameInfo',
+                frame: '/gameStatistic',
             })
             return
         }

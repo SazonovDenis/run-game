@@ -153,7 +153,7 @@
 
                             <div class="q-item__label q-item__label--header"
                                  style="margin-top: 1em"
-                                 @click="onGameInfo()">Последняя игра
+                                 @click="onGameStatistic()">Последняя игра
                             </div>
 
                             <div class="q-item__label q-item__label--header"
@@ -429,7 +429,7 @@ export default {
         getReturnFrame(currentPath) {
             let returnPaths = {
                 "/game": "/game",
-                "/gameInfo": "/gameInfo",
+                "/gameStatistic": "/gameStatistic",
                 "/link": "/link",
                 "/plans": "/plans",
                 "/plan": "/plans",
@@ -509,9 +509,9 @@ export default {
             })
         },
 
-        onGameInfo: function() {
+        onGameStatistic: function() {
             apx.showFrame({
-                frame: '/gameInfo',
+                frame: '/gameStatistic',
             })
         },
     },

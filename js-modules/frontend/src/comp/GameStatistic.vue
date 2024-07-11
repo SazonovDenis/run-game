@@ -73,7 +73,7 @@ import StatisticWordsLearned from "./StatisticWordsLearned"
  */
 export default {
 
-    name: "GameInfo",
+    name: "GameStatistic",
 
     components: {
         StatisticRating, StatisticWordsRepeated, StatisticWordsLearned, LogoGame,

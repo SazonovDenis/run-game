@@ -20,7 +20,7 @@
             <q-separator v-if="localState.game"/>
 -->
 
-            <GameInfo
+            <GameStatistic
                 :game="localState.game"
                 :gameTasks="localState.gameTasks"
                 :statistic="localState.statistic"
@@ -111,16 +111,16 @@
 import {apx} from "./vendor"
 import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
-import GameInfo from "./comp/GameInfo"
+import GameStatistic from "./comp/GameStatistic"
 import PlanInfo from "./comp/PlanInfo"
 import TaskList from "./comp/TaskList"
 import StatisticWordsLearned from "run-game-frontend/src/comp/StatisticWordsLearned"
 
 export default {
 
-    name: "GameInfoPage",
+    name: "GameStatisticPage",
 
-    components: {StatisticWordsLearned, MenuContainer, GameInfo, PlanInfo, TaskList},
+    components: {StatisticWordsLearned, MenuContainer, GameStatistic, PlanInfo, TaskList},
 
     props: {
         gameId: null,

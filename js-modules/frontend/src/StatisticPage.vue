@@ -244,7 +244,7 @@ export default {
 
         onGameClick(item) {
             apx.showFrame({
-                frame: '/gameInfo',
+                frame: '/gameStatistic',
                 props: {
                     gameId: item.game,
                     frameReturn: "/statistic",

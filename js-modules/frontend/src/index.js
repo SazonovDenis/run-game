@@ -18,7 +18,7 @@ export function run() {
         {path: '/game', frame: import('./GamePage')},
         {path: '/plans', frame: import('./PlansPage')},
         {path: '/statistic', frame: import('./StatisticPage')},
-        {path: '/gameInfo', frame: import('./GameInfoPage')},
+        {path: '/gameStatistic', frame: import('./GameStatisticPage')},
         {path: '/user', frame: import('./UserInfoPage')},
         {path: '/link', frame: import('./LinkPage')},
         {path: '/plan', frame: import('./PlanPage')},

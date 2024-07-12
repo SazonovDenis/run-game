@@ -12,16 +12,16 @@
     >
         <div class="col">
             <div class="result-value">{{
-                    rating.wordCountLearned
+                    statistic.wordCountLearned
                 }}
             </div>
             <div class="result-title">
                 выучено
             </div>
-            <div class="result-words2" v-if="rating.wordCount">
+            <div class="result-words2" v-if="statistic.wordCount">
                 <span class="result-words2-title">из </span>
                 <span class="result-words2-value">{{
-                        rating.wordCount
+                        statistic.wordCount
                     }}
                 </span>
             </div>
@@ -34,25 +34,25 @@
 export default {
     name: "StatisticWordsLearned",
     props: {
-        rating: Object,
+        statistic: Object,
     },
     computed: {
         value() {
-            if (!this.rating.wordCount) {
+            if (!this.statistic.wordCount) {
                 return null
             } else {
-                return 100 * this.rating.wordCountLearned / this.rating.wordCount
+                return 100 * this.statistic.wordCountLearned / this.statistic.wordCount
             }
         },
         thickness() {
-            if (!this.rating.wordCount) {
+            if (!this.statistic.wordCount) {
                 return 0
             } else {
                 return 0.2
             }
         },
         getClass() {
-            if (!this.rating.wordCount) {
+            if (!this.statistic.wordCount) {
                 return "with-count"
             } else {
                 return ""

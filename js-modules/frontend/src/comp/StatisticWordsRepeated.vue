@@ -10,7 +10,7 @@
     >
         <div class="col">
             <div class="result-value">{{
-                    rating.wordCountRepeated
+                    statistic.wordCountRepeated
                 }}
             </div>
             <div class="result-title">
@@ -25,7 +25,7 @@
 export default {
     name: "StatisticWordsRepeated",
     props: {
-        rating: Object,
+        statistic: Object,
     }
 }
 </script>

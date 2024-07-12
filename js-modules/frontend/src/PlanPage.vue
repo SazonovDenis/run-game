@@ -7,7 +7,7 @@
 
         <div v-if="dataLoaded">
 
-            <StatisticWordsLearned :rating="statistic"/>
+            <StatisticWordsLearned :statistic="statistic"/>
 
             <div class="row">
                 <jc-btn class="q-ma-sm"

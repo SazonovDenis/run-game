@@ -4,138 +4,154 @@
         tabMenuName="StatisticPage"
     >
 
-        <template v-if="!loaded">
+
+        <template v-show="!loaded">
             <LogoGame :_loading="true"/>
         </template>
 
+        <div>
 
-        <template v-else-if="rating.wordCountRepeated > 0">
 
-            <div class="message-statistic">
+            <div v-show="loaded && statistic.wordCountRepeated > 0">
 
-                <!-- -->
+                <div class="message-statistic row">
 
-                <div class="result-words-header">
-                    Слова
+                    <!-- -->
+
+                    <div class="result-words">
+
+                        <div class="result-words-header">
+                            Слова
+                        </div>
+
+                        <div class="row">
+                            <template v-if="statistic.wordCountLearned != null">
+
+                                <StatisticWordsLearned :statistic="statistic"/>
+
+                            </template>
+
+                            <template v-if="statistic.wordCountRepeated != null">
+
+                                <StatisticWordsRepeated :statistic="statistic"/>
+
+                            </template>
+                        </div>
+
+                    </div>
+
+                    <!-- -->
+
+                    <div class="result-words">
+
+                        <div class="q-mt-sm result-statistic-header">
+                            Баллы
+                        </div>
+
+                        <div class="row">
+
+                            <StatisticRating :statistic="statistic"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- -->
+
+                    <PeriodStatisticChart
+                        v-show="params.period !== 'day'"
+                        :statistic="statisticPeriod"
+                    />
+
+                    <!-- -->
+
                 </div>
 
-                <div class="row">
-                    <template v-if="rating.wordCountLearned != null">
-                        <q-space/>
 
-                        <StatisticWordsLearned :rating="rating"/>
+                <div>
 
-                    </template>
+                    <q-tabs
+                        v-model="params.group"
+                        no-caps
+                        inline-label
+                        class="bg-grey-1 q-mt-sm"
 
-                    <template v-if="rating.wordCountRepeated != null">
+                        @update:modelValue="onParams_group"
+                    >
+                        <q-tab name="plan" label="Уровни"/>
+                        <q-tab name="game" label="Игры"/>
+                        <q-tab name="word" label="Слова"/>
 
-                        <StatisticWordsRepeated :rating="rating"/>
+                    </q-tabs>
 
-                        <q-space/>
-                    </template>
                 </div>
 
 
-                <!-- -->
+                <div class="items-container">
 
-                <div class="q-mt-sm result-rating-header">
-                    Баллы
-                </div>
+                    <q-list>
 
-                <div class="row">
-                    <q-space/>
+                        <template v-for="item in items">
 
-                    <StatisticRating :rating="rating"/>
+                            <template v-if="params.group==='plan'">
+                                <StatisticPlanItem
+                                    :item="item"
+                                    @click="onPlanClick(item)"
+                                />
+                            </template>
 
-                    <q-space/>
-                </div>
+                            <template v-if="params.group==='game'">
+                                <StatisticGameItem
+                                    :item="item"
+                                    @click="onGameClick(item)"
+                                />
+                            </template>
 
-                <!-- -->
+                            <template v-if="params.group==='word'">
 
-            </div>
+                                <TaskItem
+                                    :taskItem="item"
+                                    :showAnswerResult="false"
+                                    :showRating="true"
+                                />
 
-
-            <div>
-
-                <q-tabs
-                    v-model="params.group"
-                    no-caps
-                    inline-label
-                    class="bg-grey-1 q-mt-sm"
-
-                    @update:modelValue="onParams_group"
-                >
-                    <q-tab name="plan" label="Уровни"/>
-                    <q-tab name="game" label="Игры"/>
-                    <q-tab name="word" label="Слова"/>
-
-                </q-tabs>
-
-            </div>
+                            </template>
 
 
-            <div class="items-container">
-
-                <q-list>
-
-                    <template v-for="item in items">
-
-                        <template v-if="params.group==='plan'">
-                            <StatisticPlanItem
-                                :item="item"
-                                @click="onPlanClick(item)"
-                            />
                         </template>
 
-                        <template v-if="params.group==='game'">
-                            <StatisticGameItem
-                                :item="item"
-                                @click="onGameClick(item)"
-                            />
-                        </template>
-
-                        <template v-if="params.group==='word'">
-
-                            <TaskItem
-                                :taskItem="item"
-                                :showAnswerResult="false"
-                                :showRating="true"
-                            />
-
-                        </template>
+                    </q-list>
 
 
-                    </template>
-
-                </q-list>
-
+                </div>
 
             </div>
 
-        </template>
 
+            <div v-show="loaded && statistic.wordCountRepeated === 0">
 
-        <template v-else>
-            <div class="message-no-data q-mx-md q-mt-xl">
-                Нет игр за {{ this.$refs.dateRangeInput.getPeriodText(params.period) }}
+                <div class="message-no-data q-mx-md q-mt-xl">
+                    Нет игр за {{ periodText }}
+                </div>
+                <div v-if="params.period !== 'month3'"
+                     class="message-no-data-hint q-ma-md">
+                    Выберите более длительный период
+                </div>
             </div>
-            <div v-if="params.period !== 'month3'"
-                 class="message-no-data-hint q-ma-md">
-                Выберите более длительный период
+
+
+            <div class="q-my-sm bottom-buttons">
+
+                <DateRangeInput
+                    ref="dateRangeInput"
+                    v-model="params.period"
+                    @update:modelValue="onParams_period"
+                />
+
             </div>
-        </template>
-
-
-        <div class="q-my-sm bottom-buttons">
-
-            <DateRangeInput
-                ref="dateRangeInput"
-                v-model="params.period"
-                @update:modelValue="onParams_period"
-            />
 
         </div>
-
 
     </MenuContainer>
 
@@ -150,6 +166,7 @@ import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
 import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import DateRangeInput from "./comp/DateRangeInput"
+import PeriodStatisticChart from "./comp/PeriodStatisticChart"
 import StatisticWordsRepeated from "./comp/StatisticWordsRepeated"
 import StatisticRating from "./comp/StatisticRating"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
@@ -162,8 +179,9 @@ export default {
 
     components: {
         MenuContainer, LogoGame,
-        StatisticWordsLearned, StatisticWordsRepeated, StatisticRating, DateRangeInput,
-        StatisticPlanItem, StatisticGameItem, TaskItem,
+        PeriodStatisticChart, StatisticWordsLearned, StatisticWordsRepeated,
+        StatisticRating,
+        DateRangeInput, StatisticPlanItem, StatisticGameItem, TaskItem,
     },
 
     props: {
@@ -176,12 +194,12 @@ export default {
             items: [],
             loaded: false,
 
-            rating: {},
+            statistic: {},
+            statisticPeriod: [],
 
             params: {
                 period: "day",
                 group: "plan",
-                sort: null,
             },
 
             groupOptions: [
@@ -201,6 +219,15 @@ export default {
         }
 
         await this.load()
+    },
+
+    computed: {
+        periodText() {
+            if (!this.$refs.dateRangeInput) {
+                return "ffff"
+            }
+            return this.$refs.dateRangeInput.getPeriodText(this.params.period)
+        }
     },
 
     methods: {
@@ -276,7 +303,8 @@ export default {
 
             //
             this.items = resApi.items.records
-            this.rating = resApi.rating.records[0]
+            this.statistic = resApi.statistic.records[0]
+            this.statisticPeriod = resApi.statisticPeriod.records
 
             //
             this.loaded = true
@@ -300,6 +328,8 @@ export default {
     text-align: center;
     color: #404040;
     font-size: 2em;
+
+    justify-content: center;
 }
 
 .message-no-data {
@@ -328,13 +358,17 @@ export default {
 
 /* --- */
 
+.result-words {
+    max-width: 20rem;
+}
+
 .result-words-header {
     font-size: 1em;
 }
 
 /* --- */
 
-.result-rating-header {
+.result-statistic-header {
     font-size: 1em;
 }
 

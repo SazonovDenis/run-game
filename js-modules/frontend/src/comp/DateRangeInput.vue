@@ -65,16 +65,6 @@ export default {
             }
         }
         this.options = options
-
-/*
-        // Если текущее значение (this.params.value) не разрешено,
-        // то выберем первое среди разрешенных
-        console.info("this.hiddenValues", this.hiddenValues)
-        console.info("this.value", this.value)
-        if (this.hiddenValues && this.hiddenValues.indexOf(this.params.value) !== -1) {
-            this.params.value = options[0].value
-        }
-*/
     },
 
     methods: {

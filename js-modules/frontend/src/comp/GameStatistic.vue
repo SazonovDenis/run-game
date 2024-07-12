@@ -12,13 +12,13 @@
             <template v-if="statistic.wordCountLearned != null">
                 <q-space/>
 
-                <StatisticWordsLearned :rating="statistic"/>
+                <StatisticWordsLearned :statistic="statistic"/>
 
             </template>
 
             <template v-if="statistic.wordCountRepeated != null">
 
-                <StatisticWordsRepeated :rating="statistic"/>
+                <StatisticWordsRepeated :statistic="statistic"/>
 
                 <q-space/>
             </template>
@@ -34,7 +34,7 @@
         <div class="row">
             <q-space/>
 
-            <StatisticRating :rating="statistic"/>
+            <StatisticRating :statistic="statistic"/>
 
             <q-space/>
         </div>

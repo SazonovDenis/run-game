@@ -20,8 +20,9 @@ class Statistic_list extends RgmMdbUtils {
     public String groupByKey = null
     public Store stItems = null
     public Store stStatistic = null
-    public Map<String, Map> statistic = null
-    public Map<String, Map> statisticByWord = null
+    public Map<String, Map> statisticGroupBy = null
+    public Map<String, Map> statisticGroupByWord = null
+    public Map<String, Map> statisticGroupByDay = null
 
     /**
      *
@@ -103,15 +104,18 @@ class Statistic_list extends RgmMdbUtils {
         this.groupByKey = groupByKey
 
         // ---
-        // Загружаем
+        // Загружаем список по groupByKey
         stItems = mdb.createStore("Statistic." + groupByKey)
         String sql = getSqlItems(groupByKey, params)
         mdb.loadQuery(stItems, sql, params)
 
-        // Загружаем статистику по фактам.
-        // Для всех игр, сыгранных за указанный период.
-        // ВАЖНО! Ключевая зависимость: Статистика расчитывается кубом Cube_UsrGameStatistic.
-        // Рассчитываем, что куб на каждую игру содержит статистику
+        // ---
+        // Статистику по фактам агрегируем по groupByKey и распределяем в список
+
+        // Загружаем за указанный период, при этом каждый факт может встретиться несколько раз.
+        //
+        // ВАЖНО! Ключевая зависимость: статистика расчитывается кубом Cube_UsrGameStatistic.
+        // Предполагаем, что куб на каждую игру содержит статистику
         // по КАЖДОМУ выданному факту в игре, по состоянию на момент ОКОНЧАНИЯ ИГРЫ.
         // В противном случае (если куб пуст) для факта будет показана пустая
         // или неправильная статистика.
@@ -119,12 +123,11 @@ class Statistic_list extends RgmMdbUtils {
         filter.addWhere("plan", "equal")
         stStatistic = filter.load()
 
-        // ---
-        // Статистику по фактам агрегируем по groupByKey
-        statistic = groupStatisticBy(stStatistic, groupByKey)
+        // Агрегируем по groupByKey
+        statisticGroupBy = groupStatisticBy(stStatistic, groupByKey)
 
-        // Распределяем агрегированную статистику в список
-        distributeStatistic(statistic, stItems, groupByKey)
+        // Распределяем в список
+        distributeStatistic(statisticGroupBy, stItems, groupByKey)
 
 
         //////////////////////////
@@ -134,12 +137,12 @@ class Statistic_list extends RgmMdbUtils {
         //////////////////////////
         println()
         println("Statistic group by " + groupByKey + ":")
-        int n = 0
-        for (String key : statistic.keySet()) {
-            println(groupByKey + ": " + key + ",  statistic: " + statistic.get(key))
+        int cnt = 0
+        for (String key : statisticGroupBy.keySet()) {
+            println(groupByKey + ": " + key + ",  statistic: " + statisticGroupBy.get(key))
             //
-            n++
-            if (n > 10) {
+            cnt++
+            if (cnt > 10) {
                 break
             }
         }
@@ -151,19 +154,92 @@ class Statistic_list extends RgmMdbUtils {
 
 
         // ---
-        // Сумма по статистике
+        // Получим сумму по статистике для всего списка, за весь период (без groupBy)
 
-        // Статистику по фактам агрегируем по фактам
-        statisticByWord = groupStatisticBy(stStatistic, "word")
+        // Статистику по фактам агрегируем по фактам: каждый факт может встретиться
+        // несколько раз, нас интересует одно итоговое изменение каждого факта.
+        statisticGroupByWord = groupStatisticBy(stStatistic, "word")
 
-        // Суммируем статистику по фактам
-        StoreRecord statisticSumm = summStatisticByWord(statisticByWord)
+        // Суммируем статистику
+        StoreRecord recStatisticSumm = summStatisticByWord(statisticGroupByWord)
+
+
+        // ---
+        // Получим статистику, сгруппированную по дням.
+
+        // Статистику по фактам агрегируем по дням.
+        statisticGroupByDay = groupStatisticBy(stStatistic, "day")
+
+        // Получим список дней
+        Store stSatisticPeriod = mdb.createStore("Statistic.day")
+        //
+        XDate dbeg = UtCnv.toDate(params.get("dbeg"))
+        XDate dend = UtCnv.toDate(params.get("dend"))
+        XDate dt = dbeg
+        //
+        while (dt.compareTo(dend) <= 0) {
+            stSatisticPeriod.add([dbeg: dt])
+            dt = dt.addDays(1)
+        }
+
+        //////////////////////////
+        println()
+        println("stSatisticPeriod, empty:")
+        mdb.outTable(stSatisticPeriod, 10)
+        //////////////////////////
+
+
+        // Распределяем в список дней
+        distributeStatistic(statisticGroupByDay, stSatisticPeriod, "day")
+
+
+        //////////////////////////
+        println()
+        println("stSatisticPeriod, with statistic:")
+        mdb.outTable(stSatisticPeriod, 10)
+        //////////////////////////
+
+        // Берем статистику от последней даты
+        double ratingTask = recStatisticSumm.getDouble("ratingTask")
+        double ratingQuickness = recStatisticSumm.getDouble("ratingQuickness")
+
+        // Отмотаем от последней даты назад и заполним поля rating*** на основе разницы
+        // от предыдущего дня.
+        // Также заполним пробелы для дней, где не было игр
+        for (int n = stSatisticPeriod.size() - 1; n >= 0; n--) {
+            StoreRecord rec = stSatisticPeriod.get(n)
+            //
+            double ratingTaskDiff = rec.getDouble("ratingTaskDiff")
+            double ratingTaskInc = rec.getDouble("ratingTaskInc")
+            double ratingTaskDec = rec.getDouble("ratingTaskDec")
+            double ratingQuicknessDiff = rec.getDouble("ratingQuicknessDiff")
+            //
+            rec.setValue("ratingTask", ratingTask)
+            rec.setValue("ratingQuickness", ratingQuickness)
+            rec.setValue("ratingTaskDiff", ratingTaskDiff)
+            rec.setValue("ratingTaskInc", ratingTaskInc)
+            rec.setValue("ratingTaskDec", ratingTaskDec)
+            rec.setValue("ratingQuicknessDiff", ratingQuicknessDiff)
+            //
+            ratingTask = ratingTask - ratingTaskDiff
+            ratingQuickness = ratingQuickness - ratingQuicknessDiff
+        }
+        // Последняя запись не нужна
+        //stSatisticPeriod.remove(stSatisticPeriod.size() - 1)
+
+
+        //////////////////////////
+        println()
+        println("stSatisticPeriod, filled:")
+        mdb.outTable(stSatisticPeriod, 10)
+        //////////////////////////
 
 
         // ---
         DataBox res = new DataBox()
         res.put("items", stItems)
-        res.put("rating", statisticSumm)
+        res.put("statistic", recStatisticSumm)
+        res.put("statisticPeriod", stSatisticPeriod)
 
         //
         return res

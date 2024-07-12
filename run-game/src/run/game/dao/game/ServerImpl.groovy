@@ -311,7 +311,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         ////////////////////////////////////
         ////////////////////////////////////
         ////////////////////////////////////
-        удалить и отрефакторить!!!
+        1) удалить и отрефакторить!!!
+        2) statistic", recStatistic.getValues или statistic", recStatistic ? В разных местах по-разному
         ////////////////////////////////////
         sl.distributeStatistic(sl.statistic, sl.stStatisticDay, "day")
         StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
@@ -973,8 +974,8 @@ where
         // Дополним факты игры статистикой
         Statistic_list sl = mdb.create(Statistic_list)
         sl.prepareForGame(recGame.getDateTime("dbeg"), recGame.getDateTime("dend"))
-        sl.distributeStatistic(sl.statistic, stGameTasks, "word")
-        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
+        sl.distributeStatistic(sl.statisticGroupBy, stGameTasks, "word")
+        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticGroupByWord)
 
 /*
         // Находим запись о статистике игры

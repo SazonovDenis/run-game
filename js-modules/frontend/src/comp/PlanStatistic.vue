@@ -6,7 +6,7 @@
 
         <div class="row">
 
-            <StatisticWordsLearned class="q-ma-md" :rating="statistic"/>
+            <StatisticWordsLearned class="q-ma-md" :statistic="statistic"/>
 
             <q-circular-progress
                 show-value
@@ -38,34 +38,6 @@
                 </div>
             </q-circular-progress>
 
-<!--
-
-            <div class="plan-statistic__rating-info col self-center">
-                <div class="">
-
-                    <div>
-                        За скорость:
-                    </div>
-                    <div>
-                    <span class="plan-statistic__rating-quickness">
-                        {{ statistic.ratingQuickness }}
-                    </span>
-                    </div>
-                    <div class="plan-statistic__rating-quickness-text">
-                        {{ ratingText(statistic.ratingQuickness) }}
-                    </div>
-
-                </div>
-
-            </div>
--->
-
-
-            <jc-chart
-                class="chart"
-                :options="chartData"
-                :key="chartDataKey"
-            />
 
 
         </div>
@@ -90,13 +62,11 @@ export default {
     props: {
         planText: null,
         statistic: null,
-        chartData: null,
-        chartDataKey: null,
     },
 
     methods: {
-        ratingText(rating) {
-            return utils.ratingText(rating)
+        ratingText(statistic) {
+            return utils.ratingText(statistic)
         }
     }
 
@@ -105,12 +75,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
-.chart {
-    width: 100%;
-    height: 15rem;
-    border: solid 1px rgba(255, 0, 0, 0.2);
-}
 
 .plan-statistic {
     font-size: 1.5em;

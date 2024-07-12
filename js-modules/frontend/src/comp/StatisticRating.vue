@@ -2,22 +2,22 @@
 
     <div class="row">
 
-        <template v-if="rating.ratingTaskInc != 0">
+        <template v-if="statistic.ratingTaskInc != 0">
             <div class="col result-rating result-rating-inc">
                 <div class="result-value"><span
                     class="result-no-bold">&plus;</span>{{
-                        rating.ratingTaskInc
+                        statistic.ratingTaskInc
                     }}
                 </div>
                 <div class="result-title">заработано</div>
             </div>
         </template>
 
-        <template v-if="rating.ratingTaskDec != 0">
+        <template v-if="statistic.ratingTaskDec != 0">
             <div class="col result-rating result-rating-dec">
                 <div class="result-value"><span
                     class="result-no-bold">&minus;</span>{{
-                        -rating.ratingTaskDec
+                        -statistic.ratingTaskDec
                     }}
                 </div>
                 <div class="result-title">потеряно</div>
@@ -32,7 +32,7 @@
 export default {
     name: "StatisticRating",
     props: {
-        rating: Object,
+        statistic: Object,
     }
 }
 </script>

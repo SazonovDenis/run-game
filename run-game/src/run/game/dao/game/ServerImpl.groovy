@@ -448,11 +448,14 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         Map<String, Set> textItems = new LinkedHashMap<>()
         textItems.put(text, null)
 
-        // --- Поиск слов и их свойств среди введенного
-        Store stFactRes = collectItems(textItems, idPlan)
+        // --- Поиск слов среди введенного
+        Store stItem = collectItems(textItems)
+
+        // --- Заполнение свойств найденных слов
+        Store stFact = makeFactList(stItem, idPlan)
 
         // ---
-        return stFactRes
+        return stFact
     }
 
     @DaoMethod
@@ -472,8 +475,12 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         splitOcrResult(stParsedText, textItems, textPositions)
 
 
-        // --- Поиск слов и их свойств среди введенного
-        Store stFactRes = collectItems(textItems, idPlan)
+        // --- Поиск слов среди введенного
+        Store stItem = collectItems(textItems)
+
+
+        // --- Заполнение свойств найденных слов
+        Store stFact = makeFactList(stItem, idPlan)
 
 
         // --- Позиции
@@ -496,13 +503,13 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // ---
         DataBox res = new DataBox()
-        res.put("facts", stFactRes)
+        res.put("facts", stFact)
         res.put("positions", stItemPositions)
         return res
     }
 
 
-    Store collectItems(Map<String, Set> textItems, long idPlan) {
+    Store collectItems(Map<String, Set> textItems) {
         // --- Обработка найденного: фильтрация и чистка
         textItems = filterTextItems(textItems, (word, item) -> {
             return Item_list.filterAndSplitWord(word)
@@ -528,7 +535,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // --- Поиск по точному совпадению
 
         // Ищем Items по точному совпадению с textItems
-        List wordList = textItems.keySet().toList()
+        List<String> wordList = textItems.keySet().toList()
         Item_list itemsList = mdb.create(Item_list)
         Store stItem = itemsList.findText(wordList)
 
@@ -583,20 +590,22 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         }
 
 
+        // ---
+        return stItem
+    }
+
+    Store makeFactList(Store stItem, long idPlan) {
         // --- Превратим список Item в список пар фактов (сгенерим комбинации)
         Store stFact = loadFactList(stItem, idPlan)
-
 
         // --- Дополним факты в плане "богатыми" данными для вопроса и ответа
         fillFactBody(stFact)
 
-
         // --- Обеспечим порядок, как в исходном тексте
-        Store stFactRes = makeOrdered(stItem, stFact)
-
+        Store stFactOrderd = makeOrdered(stItem, stFact)
 
         //
-        return stFactRes
+        return stFactOrderd
     }
 
 

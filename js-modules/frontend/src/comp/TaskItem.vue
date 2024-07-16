@@ -51,6 +51,7 @@
                 <template v-for="menuItem in itemsMenu">
 
                     <template v-if="menuItem.label">
+
                         <q-btn v-if="menuItem.hidden !== true"
                                no-caps dense rounded unelevated
                                size="0.9em"
@@ -62,6 +63,7 @@
                                :text-color="itemMenuTextColor(menuItem, taskItem)"
                                @click="itemMenuClick(menuItem, taskItem)"
                         />
+
                     </template>
 
                     <template v-else>
@@ -92,46 +94,37 @@
         </q-item-section>
 
 
-        <q-item-section
-            top side
-            style="width: 7em; align-content: end;">
+        <q-item-section top side v-if="showRatingDiff && showRating">
 
-            <div _class="col">
+            <template v-if="showRatingDiff">
 
-                <template v-if="showRatingDiff">
+                <q-badge
+                    v-if="taskItem.ratingTaskDiff > 0"
+                    style="font-weight: bold;"
+                    color="white"
+                    text-color="green-9"
+                    text-weight="bold"
+                    :label="'+' + taskItem.ratingTaskDiff"/>
+                <q-badge
+                    v-if="taskItem.ratingTaskDiff < 0"
+                    style="font-weight: bold;"
+                    color="white"
+                    text-color="red-7"
+                    text-weight="bold"
+                    :label="taskItem.ratingTaskDiff"/>
 
-                    <q-badge
-                        v-if="taskItem.ratingTaskDiff > 0"
-                        style="font-weight: bold;"
-                        color="white"
-                        _class="col"
-                        text-color="green-9"
-                        text-weight="bold"
-                        :label="'+' + taskItem.ratingTaskDiff"/>
-                    <q-badge
-                        v-if="taskItem.ratingTaskDiff < 0"
-                        style="font-weight: bold;"
-                        _class="col"
-                        color="white"
-                        text-color="red-7"
-                        text-weight="bold"
-                        :label="taskItem.ratingTaskDiff"/>
-
-                </template>
+            </template>
 
 
-                <template v-if="showRating">
+            <template v-if="showRating">
 
-                    <q-badge
-                        style="font-weight: bold;"
-                        _class="col"
-                        :text-color="getRatingTextColor(taskItem.ratingTask)"
-                        :color="getRatingColor(taskItem.ratingTask)"
-                        :label="taskItem.ratingTask"/>
+                <q-badge
+                    style="font-weight: bold;"
+                    :text-color="getRatingTextColor(taskItem.ratingTask)"
+                    :color="getRatingColor(taskItem.ratingTask)"
+                    :label="taskItem.ratingTask"/>
 
-                </template>
-
-            </div>
+            </template>
 
         </q-item-section>
 

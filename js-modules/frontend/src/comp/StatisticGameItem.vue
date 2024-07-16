@@ -14,7 +14,7 @@
 
         <q-item-section
             top side
-            style="width: 7em; align-content: end;">
+        >
 
             <div class="col">
 

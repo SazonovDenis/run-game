@@ -96,35 +96,39 @@
 
         <q-item-section top side v-if="showRatingDiff && showRating">
 
-            <template v-if="showRatingDiff">
+            <div>
 
-                <q-badge
-                    v-if="taskItem.ratingTaskDiff > 0"
-                    style="font-weight: bold;"
-                    color="white"
-                    text-color="green-9"
-                    text-weight="bold"
-                    :label="'+' + taskItem.ratingTaskDiff"/>
-                <q-badge
-                    v-if="taskItem.ratingTaskDiff < 0"
-                    style="font-weight: bold;"
-                    color="white"
-                    text-color="red-7"
-                    text-weight="bold"
-                    :label="taskItem.ratingTaskDiff"/>
+                <template v-if="showRatingDiff">
 
-            </template>
+                    <q-badge
+                        v-if="taskItem.ratingTaskDiff > 0"
+                        style="font-weight: bold;"
+                        color="white"
+                        text-color="green-9"
+                        text-weight="bold"
+                        :label="'+' + taskItem.ratingTaskDiff"/>
+                    <q-badge
+                        v-if="taskItem.ratingTaskDiff < 0"
+                        style="font-weight: bold;"
+                        color="white"
+                        text-color="red-7"
+                        text-weight="bold"
+                        :label="taskItem.ratingTaskDiff"/>
+
+                </template>
 
 
-            <template v-if="showRating">
+                <template v-if="showRating">
 
-                <q-badge
-                    style="font-weight: bold;"
-                    :text-color="getRatingTextColor(taskItem.ratingTask)"
-                    :color="getRatingColor(taskItem.ratingTask)"
-                    :label="taskItem.ratingTask"/>
+                    <q-badge
+                        style="font-weight: bold;"
+                        :text-color="getRatingTextColor(taskItem.ratingTask)"
+                        :color="getRatingColor(taskItem.ratingTask)"
+                        :label="taskItem.ratingTask"/>
 
-            </template>
+                </template>
+
+            </div>
 
         </q-item-section>
 

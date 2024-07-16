@@ -449,7 +449,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         textItems.put(text, null)
 
         // --- Поиск слов среди введенного
-        Store stItem = collectItems(textItems)
+        Store stItem = collectItems(textItems, null)
 
         // --- Заполнение свойств найденных слов
         Store stFact = makeFactList(stItem, idPlan)
@@ -476,7 +476,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Поиск слов среди введенного
-        Store stItem = collectItems(textItems)
+        Map<String, Set> textItemsFiltered = new HashMap<>()
+        Store stItem = collectItems(textItems, textItemsFiltered)
 
 
         // --- Заполнение свойств найденных слов
@@ -484,7 +485,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Позиции
-        List wordList = textItems.keySet().toList()
+        List wordList = textItemsFiltered.keySet().toList()
         Map<Object, List<StoreRecord>> mapItems = StoreUtils.collectGroupBy_records(stItem, "value")
         //
         Store stItemPositions = mdb.createStore("Tesseract.items")
@@ -497,7 +498,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             StoreRecord rec = stItemPositions.add()
             rec.setValue("item", item)
             rec.setValue("itemValue", word)
-            rec.setValue("positions", textItems.get(word))
+            rec.setValue("positions", textItemsFiltered.get(word))
         }
 
 
@@ -509,9 +510,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    Store collectItems(Map<String, Set> textItems) {
+    Store collectItems(Map<String, Set> textItemsRaw, Map<String, Set> textItemsFiltered) {
         // --- Обработка найденного: фильтрация и чистка
-        textItems = filterTextItems(textItems, (word, item) -> {
+        Map<String, Set> textItems = filterTextItems(textItemsRaw, (word, item) -> {
             return Item_list.filterAndSplitWord(word)
         })
 
@@ -591,6 +592,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // ---
+        if (textItemsFiltered != null) {
+            textItemsFiltered.putAll(textItems)
+        }
+        //
         return stItem
     }
 

@@ -562,12 +562,15 @@ export default {
 
         async loadData(dataImage) {
             //
-            let resApi = await daoApi.loadStore('m/Game/findStill', [dataImage, this.planId])
+            let resApi
+            try {
+                resApi = await daoApi.loadStore('m/Game/findStill', [dataImage, this.planId])
+            } finally {
+                // Чтобы после ошибки кнопки снова появились
+                this.searchDone = true
+            }
             let resItems = resApi.facts.records
             let resItemsPositions = resApi.positions.records
-
-            //
-            this.searchDone = true
 
 
             // --- Заполним родительский список

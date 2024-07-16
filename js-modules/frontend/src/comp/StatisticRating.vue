@@ -9,7 +9,9 @@
                         statistic.ratingTaskInc
                     }}
                 </div>
-                <div class="result-title">заработано</div>
+                <div class="result-title"
+                     v-html="ratingText(statistic.ratingTaskInc) + '<br>' + ratingTextInc(statistic.ratingTaskInc)">
+                </div>
             </div>
         </template>
 
@@ -20,7 +22,9 @@
                         -statistic.ratingTaskDec
                     }}
                 </div>
-                <div class="result-title">потеряно</div>
+                <div class="result-title"
+                     v-html="ratingText(-statistic.ratingTaskDec) + '<br>' + ratingTextDec(statistic.ratingTaskDec)">
+                </div>
             </div>
         </template>
 
@@ -29,10 +33,23 @@
 </template>
 
 <script>
+import utils from "run-game-frontend/src/utils"
+
 export default {
     name: "StatisticRating",
     props: {
         statistic: Object,
+    },
+    methods: {
+        ratingText(rating) {
+            return utils.ratingText(rating)
+        },
+        ratingTextInc(rating) {
+            return utils.ratingTextInc(rating)
+        },
+        ratingTextDec(rating) {
+            return utils.ratingTextDec(rating)
+        }
     }
 }
 </script>
@@ -65,11 +82,11 @@ export default {
 }
 
 .result-rating-inc {
-    color: #43a047;
+    color: #003090;
 }
 
 .result-rating-dec {
-    color: #b30000;
+    color: #a00020;
 }
 
 .result-no-bold {

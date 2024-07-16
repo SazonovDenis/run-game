@@ -115,6 +115,15 @@ public class Cube_UsrGameStatistic extends CubeCustom implements ICalcData {
             int pos = 0
             while (pos < stGameTask.size()) {
                 Map resMap = new HashMap()
+
+                // Собираем answerResult
+                StoreRecord recLastGame = stGameTask.get(pos)
+                // Первая запись для слова - это запись о последней игре?
+                if (recLastGame.getLong("game") == game) {
+                    resMap.put("answerResult", getAnswerResult(recLastGame))
+                }
+
+                // Считаем рейтинг
                 pos = utCubeRating.stepCollectRaiting(stGameTask, pos, resMap)
                 //
                 String key = resMap.get("factQuestion") + "_" + resMap.get("factAnswer")
@@ -298,6 +307,31 @@ order by
     GameTask.dtTask desc,
     GameTask.game desc
 """
+    }
+
+    /**
+     * Из нескольких отдельных полей собирает одно поле AnswerResult
+     */
+    String getAnswerResult(StoreRecord rec) {
+        if (rec == null) {
+            return null
+        }
+        if (rec.isValueNull("dtAnswer")) {
+            return null
+        }
+        if (rec.getBoolean("wasTrue")) {
+            return "wasTrue"
+        }
+        if (rec.getBoolean("wasFalse")) {
+            return "wasFalse"
+        }
+        if (rec.getBoolean("wasHint")) {
+            return "wasHint"
+        }
+        if (rec.getBoolean("wasSkip")) {
+            return "wasSkip"
+        }
+        return null
     }
 
 

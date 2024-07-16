@@ -12,15 +12,11 @@
 
         <div v-show="loaded && statistic.wordCountRepeated > 0">
 
-            <div class="message-statistic row">
+            <div class="message-statistic row q-mt-md">
 
                 <!-- -->
 
                 <div class="result-words">
-
-                    <div class="result-words-header">
-                        Слова
-                    </div>
 
                     <div class="row">
                         <template v-if="statistic.wordCountLearned != null">
@@ -42,11 +38,7 @@
 
                 <div class="result-words">
 
-                    <div class="q-mt-sm result-statistic-header">
-                        Баллы
-                    </div>
-
-                    <div class="row">
+                    <div class="row q-my-md">
 
                         <StatisticRating :statistic="statistic"/>
 
@@ -107,17 +99,19 @@
                         </template>
 
                         <template v-if="params.group==='word'">
-
                             <TaskItem
                                 :taskItem="item"
                                 :showAnswerResult="false"
                                 :showRating="true"
                             />
-
                         </template>
 
 
                     </template>
+
+                    <!-- Последний, для прокрутки -->
+                    <q-item style="min-height: 4rem"
+                    />
 
                 </q-list>
 

@@ -15,8 +15,8 @@
                     statistic.wordCountLearned
                 }}
             </div>
-            <div class="result-title">
-                выучено
+            <div class="result-title"
+                 v-html="wordsText(statistic.wordCountLearned)">
             </div>
             <div class="result-words2" v-if="statistic.wordCount">
                 <span class="result-words2-title">из </span>
@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import utils from "run-game-frontend/src/utils"
+
 export default {
     name: "StatisticWordsLearned",
     props: {
@@ -58,6 +60,11 @@ export default {
                 return ""
             }
         }
+    },
+    methods: {
+        wordsText(rating) {
+            return utils.wordsText(rating) + "<br>выучено"
+        }
     }
 }
 </script>
@@ -82,11 +89,11 @@ export default {
     text-align: center;
     font-weight: bold;
     border-radius: 10em;
-    color: #43a047;
+    color: #109010;
 }
 
 .with-count {
-    background-color: #43a04719;
+    background-color: #10901010;
 }
 
 .result-words2 {

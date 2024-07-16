@@ -23,9 +23,9 @@
     <!-- Дополнение физической таблицы для space -->
     <domain name="Cube_UsrPlan">
 
-        <field name="count" parent="long" scale="0"
+        <field name="count" parent="long"
                title="Количество слов"/>
-        <field name="countFull" parent="long" scale="0"
+        <field name="countFull" parent="long"
                title="Общее количество слов (включая скрытые)"/>
         <field name="ratingTask" parent="double" scale="3"
                title="Рейтинг за ответы"/>

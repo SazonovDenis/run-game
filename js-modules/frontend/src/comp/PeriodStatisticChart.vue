@@ -59,7 +59,7 @@ export default {
             //
             let chartData = {
                 grid: {
-                    top: '5%',
+                    top: '7%',
                     bottom: '10%',
                     left: '15px',
                     right: '15px'

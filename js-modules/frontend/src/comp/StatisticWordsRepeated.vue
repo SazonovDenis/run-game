@@ -13,8 +13,8 @@
                     statistic.wordCountRepeated
                 }}
             </div>
-            <div class="result-title">
-                повторено
+            <div class="result-title"
+                 v-html="wordsText(statistic.wordCountRepeated)">
             </div>
         </div>
     </q-circular-progress>
@@ -22,10 +22,17 @@
 </template>
 
 <script>
+import utils from "run-game-frontend/src/utils"
+
 export default {
     name: "StatisticWordsRepeated",
     props: {
         statistic: Object,
+    },
+    methods: {
+        wordsText(rating) {
+            return utils.wordsText(rating) + "<br>повторено"
+        }
     }
 }
 </script>
@@ -48,16 +55,13 @@ export default {
 
 .result-words-all {
     font-weight: bold;
-    color: #00307e;
-    background-color: #00307E19;
+    color: #008080;
+    background-color: #00808010;
     border-radius: 10em;
 }
 
-.result-words-done {
-    font-weight: bold;
-    color: #43a047;
-}
 
+/*
 .result-words2 {
     position: relative;
     top: -0.1em;
@@ -71,5 +75,6 @@ export default {
 .result-words2-value {
     font-size: 0.8em;
 }
+*/
 
 </style>

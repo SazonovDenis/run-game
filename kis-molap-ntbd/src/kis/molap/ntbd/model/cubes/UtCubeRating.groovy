@@ -8,17 +8,20 @@ import jandcode.core.store.*
 class UtCubeRating {
 
     // Расчет рейтингов: вес результата текущего, предыдущего и пред-предыдущего ответа
-    protected double[] ratingWeight = [0.5, 0.3, 0.2]
+    //protected double[] ratingWeight = [0.5, 0.3, 0.2]
+    protected double[] ratingWeight = [5, 3, 2]
 
     // Расчет рейтинга за скорость: время ответа и баллы за него
     protected double[] ratingDurationGrade = [2, 3, 5, 8]
-    protected double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
+    //protected double[] ratingDurationWeight = [1, 0.8, 0.5, 0.2]
+    protected double[] ratingDurationWeight = [10, 8, 5, 2]
 
     // Период анализа ответов для расчета рейтинга - количество дней назад от даты последней игры
     public static int RAITING_ANALYZE_DAYS_DIFF = 10
 
     // Максимально возможный рейтинг одного факта
-    public static int RATING_FACT_MAX = 1
+    //public static int RATING_FACT_MAX = 1
+    public static int RATING_FACT_MAX = 10
 
 
     /**
@@ -87,7 +90,7 @@ class UtCubeRating {
                     ratingQuickness = ratingQuickness + ratingQuicknessAnswer * ratingWeight[i]
                 }
 
-                //
+                // ---
                 res.put("factQuestion", recGameTask.getValue("factQuestion"))
                 res.put("factAnswer", recGameTask.getValue("factAnswer"))
                 res.put("ratingTask", ratingTask)

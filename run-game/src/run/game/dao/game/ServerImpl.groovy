@@ -311,6 +311,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         ////////////////////////////////////
         ////////////////////////////////////
         ////////////////////////////////////
+        ////////////////////////////////////
+        ////////////////////////////////////
         1) удалить и отрефакторить!!!
         2) statistic", recStatistic.getValues или statistic", recStatistic ? В разных местах по-разному
         ////////////////////////////////////
@@ -396,6 +398,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         XDateTime dbegParam = dbeg.toDateTime()
         sl.prepareForPlan(idPlan, dbegParam, dendParam)
 
+        /////////////////////////
+        /////////////////////////
+        /////////////////////////
+        /////////////////////////
         /////////////////////////
         println()
         println("recStatistic")

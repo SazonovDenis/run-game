@@ -143,9 +143,11 @@ class Statistic_list extends RgmMdbUtils {
             //
             cnt++
             if (cnt > 10) {
+                println("...")
                 break
             }
         }
+        println(cnt + " / " + statisticGroupBy.keySet().size() + " shown")
         //////////////////////////
         println()
         println("Result by " + groupByKey + ":")
@@ -159,6 +161,22 @@ class Statistic_list extends RgmMdbUtils {
         // Статистику по фактам агрегируем по фактам: каждый факт может встретиться
         // несколько раз, нас интересует одно итоговое изменение каждого факта.
         statisticGroupByWord = groupStatisticBy(stStatistic, "word")
+
+        //////////////////////////
+        println()
+        println("Statistic group by word:")
+        cnt = 0
+        for (String key : statisticGroupByWord.keySet()) {
+            println(groupByKey + ": " + key + ",  statistic: " + statisticGroupByWord.get(key))
+            //
+            cnt++
+            if (cnt > 10) {
+                println("...")
+                break
+            }
+        }
+        println(cnt + " / " + statisticGroupByWord.keySet().size() + " shown")
+        //////////////////////////
 
         // Суммируем статистику
         StoreRecord recStatisticSumm = summStatisticByWord(statisticGroupByWord)
@@ -278,6 +296,8 @@ class Statistic_list extends RgmMdbUtils {
             // Разносим статистику:
             // каждую пару фактов копим с группировкой по groupByKey
             for (Map taskStatistic : listTaskStatistic) {
+                String answerResult = UtCnv.toString(taskStatistic.get("answerResult"))
+                int countRepeatedRec = getWordCountRepeated(answerResult)
                 double ratingTaskRec = UtCnv.toDouble(taskStatistic.get("ratingTask"))
                 double ratingQuicknessRec = UtCnv.toDouble(taskStatistic.get("ratingQuickness"))
                 double ratingTaskDiffRec = UtCnv.toDouble(taskStatistic.get("ratingTaskDiff"))
@@ -311,8 +331,10 @@ class Statistic_list extends RgmMdbUtils {
                 // Разницу - суммируем за период
                 double ratingTaskDiffAcc = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
                 double ratingQuicknessDiffAcc = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
+                int countRepeatedAcc = UtCnv.toDouble(statisticWord.get("wordCountRepeated"))
                 statisticWord.put("ratingTaskDiff", ratingTaskDiffAcc + ratingTaskDiffRec)
                 statisticWord.put("ratingQuicknessDiff", ratingQuicknessDiffAcc + ratingQuicknessDiffRec)
+                statisticWord.put("countRepeated", countRepeatedAcc + countRepeatedRec)
                 // Итог - берем последний (его не суммируем)
                 statisticWord.put("ratingTask", ratingTaskRec)
                 statisticWord.put("ratingQuickness", ratingQuicknessRec)
@@ -344,6 +366,7 @@ class Statistic_list extends RgmMdbUtils {
             Map sumStatistic = summStatistic(groupStatistic)
 
             // Сумму в запись
+            rec.setValue("countRepeated", UtCnv.toInt(sumStatistic.get("countRepeated")))
             rec.setValue("ratingTaskDiff", UtCnv.toDouble(sumStatistic.get("ratingTaskDiff")))
             rec.setValue("ratingTaskInc", UtCnv.toDouble(sumStatistic.get("ratingTaskInc")))
             rec.setValue("ratingTaskDec", UtCnv.toDouble(sumStatistic.get("ratingTaskDec")))
@@ -361,6 +384,7 @@ class Statistic_list extends RgmMdbUtils {
         for (String key : statistic.keySet()) {
             Map item = statistic.get(key)
 
+            res.put("countRepeated", UtCnv.toInt(res.get("countRepeated")) + UtCnv.toInt(item.get("countRepeated")))
             res.put("ratingTask", UtCnv.toDouble(res.get("ratingTask")) + UtCnv.toDouble(item.get("ratingTask")))
             res.put("ratingQuickness", UtCnv.toDouble(res.get("ratingQuickness")) + UtCnv.toDouble(item.get("ratingQuickness")))
             res.put("ratingTaskDiff", UtCnv.toDouble(res.get("ratingTaskDiff")) + UtCnv.toDouble(item.get("ratingTaskDiff")))
@@ -381,6 +405,7 @@ class Statistic_list extends RgmMdbUtils {
         double ratingQuickness = 0
         double ratingTaskDiff = 0
         double ratingQuicknessDiff = 0
+        int wordCountRepeated = 0
         int wordCountLearned = 0
 
         // Прибавка и потери рейтинга - по отдельности
@@ -394,6 +419,7 @@ class Statistic_list extends RgmMdbUtils {
             Map statisticWord = statisticByWord.get(key).get(key)
 
             //
+            int countRepeatedRec = UtCnv.toInt(statisticWord.get("countRepeated"))
             double ratingTaskRec = UtCnv.toDouble(statisticWord.get("ratingTask"))
             double ratingQuicknessRec = UtCnv.toDouble(statisticWord.get("ratingQuickness"))
             double ratingTaskDiffRec = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
@@ -404,6 +430,7 @@ class Statistic_list extends RgmMdbUtils {
             ratingQuickness = ratingQuickness + ratingQuicknessRec
             ratingTaskDiff = ratingTaskDiff + ratingTaskDiffRec
             ratingQuicknessDiff = ratingQuicknessDiff + ratingQuicknessDiffRec
+            wordCountRepeated = wordCountRepeated + countRepeatedRec
             if (ratingTaskRec == UtCubeRating.RATING_FACT_MAX) {
                 wordCountLearned = wordCountLearned + 1
             }
@@ -424,7 +451,7 @@ class Statistic_list extends RgmMdbUtils {
 
 
         //
-        StoreRecord rating = mdb.createStoreRecord("Statistic.diff")
+        StoreRecord rating = mdb.createStoreRecord("Statistic.summ")
         //
         rating.setValue("ratingTask", ratingTask)
         rating.setValue("ratingQuickness", ratingQuickness)
@@ -436,7 +463,7 @@ class Statistic_list extends RgmMdbUtils {
         rating.setValue("ratingQuicknessInc", ratingQuicknessInc)
         rating.setValue("ratingQuicknessDec", ratingQuicknessDec)
         //
-        rating.setValue("wordCountRepeated", statisticByWord.keySet().size())
+        rating.setValue("wordCountRepeated", wordCountRepeated)
         rating.setValue("wordCountLearned", wordCountLearned)
         //rating.setValue("wordCount", 39)
 
@@ -645,4 +672,11 @@ order by
 """
     }
 
+    int getWordCountRepeated(String answerResult) {
+        if (answerResult.equals("wasTrue") || answerResult.equals("wasFalse")) {
+            return 1
+        } else {
+            return 0
+        }
+    }
 }

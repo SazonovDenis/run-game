@@ -6,9 +6,7 @@
     >
 
         <q-item-section top avatar v-if="showAnswerResult">
-            <div
-                :class="getClassAnswerResult(taskItem) + ' task-state-state'">
-            </div>
+            <TaskAnswerResult :item="taskItem"/>
         </q-item-section>
 
 
@@ -140,13 +138,14 @@
 <script>
 
 import TaskValue from "./TaskValue"
+import TaskAnswerResult from "./TaskAnswerResult"
 
 export default {
 
     name: "TaskItem",
 
     components: {
-        TaskValue
+        TaskValue, TaskAnswerResult,
     },
 
     props: {
@@ -312,18 +311,6 @@ export default {
             }
         },
 
-        getClassAnswerResult(task) {
-            if (task.wasTrue) {
-                return "was-true"
-            } else if (task.wasFalse) {
-                return "was-false"
-            } else if (task.wasHint) {
-                return "was-hint"
-            } else if (task.wasSkip) {
-                return "was-skip"
-            }
-            return ""
-        },
 
     },
 
@@ -350,39 +337,6 @@ export default {
 
 .item-in-plan {
     _color: rgba(50, 100, 50, .9);
-}
-
-
-.was-true {
-    background-color: #5b9e3a;
-}
-
-.was-false {
-    background-color: #d61818;
-}
-
-.was-hint {
-    background-color: #ffea1b;
-}
-
-.was-skip {
-    background-color: #c8c8c8;
-}
-
-
-.task-state {
-    width: 1em;
-}
-
-.task-state-state {
-    border: 1px solid silver;
-    border-radius: 1em;
-
-    width: 1em;
-    height: 1em;
-
-    margin-top: 0.3em;
-    margin-right: 0.3em;
 }
 
 

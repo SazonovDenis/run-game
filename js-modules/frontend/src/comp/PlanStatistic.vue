@@ -50,12 +50,14 @@
 
 import utils from "../utils"
 import StatisticWordsLearned from "./StatisticWordsLearned"
+import StatisticRating from "./StatisticRating"
 
 export default {
 
     name: "PlanStatistic",
 
     components: {
+        StatisticRating,
         StatisticWordsLearned,
     },
 

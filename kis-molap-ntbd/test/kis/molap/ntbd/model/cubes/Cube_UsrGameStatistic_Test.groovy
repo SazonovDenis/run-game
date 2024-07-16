@@ -1,9 +1,8 @@
 package kis.molap.ntbd.model.cubes
 
-import kis.molap.model.coord.Coord
-import kis.molap.model.coord.CoordList
-import kis.molap.model.coord.impl.CoordImpl
-import kis.molap.model.coord.impl.CoordListImpl
+import jandcode.core.store.*
+import kis.molap.model.coord.*
+import kis.molap.model.coord.impl.*
 import kis.molap.ntbd.model.base.*
 
 class Cube_UsrGameStatistic_Test extends CubeBase_Test {
@@ -15,11 +14,16 @@ class Cube_UsrGameStatistic_Test extends CubeBase_Test {
     }
 
     CoordList getCoords_for_byOneCoord() {
+        StoreRecord rec = mdb.loadQueryRecord("select * from GameUsr order by id desc limit 1")
+        long usr = rec.getLong("usr")
+        long game = rec.getLong("game")
+
         CoordList res = new CoordListImpl()
         Coord coord = new CoordImpl()
-        coord.put("usr", 1000)
-        coord.put("game", 1000)
+        coord.put("usr", usr)
+        coord.put("game", game)
         res.add(coord)
+
         return res
     }
 

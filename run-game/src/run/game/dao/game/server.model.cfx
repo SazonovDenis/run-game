@@ -25,6 +25,7 @@
         <field name="planText" parent="Plan/text"/>
     </domain>
 
+<!--
     <domain name="Game.statistic">
         <field name="ratingTask" parent="double" scale="3"/>
         <field name="ratingQuickness" parent="double" scale="3"/>
@@ -34,6 +35,7 @@
 
         <field name="ratingMax" parent="double" scale="3"/>
     </domain>
+-->
 
 
     <!--
@@ -86,17 +88,14 @@
         <field name="isInPlan" parent="boolean"/>
 
         <!-- Рейтинг факта -->
-        <field name="ratingTask" parent="double" scale="3"
-               title="Рейтинг за ответы"/>
-        <field name="ratingQuickness" parent="double" scale="3"
-               title="Рейтинг за скорость"/>
+        <include name="Statistic.base"/>
     </domain>
 
 
     <!-- Структура "Статистика по плану" -->
     <domain name="Plan.statistic.rec">
-        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
+        <!-- Рейтинг -->
+        <include name="Statistic.base"/>
 
         <field name="ratingMax" parent="double" scale="3"/>
         <field name="wordCount" parent="int"/>
@@ -115,14 +114,8 @@
         <field name="taskAnswer" parent="object"
                title="Данные правильного ответа в задании (TaskOption.*, структура - Task.fields)"/>
 
-        <!-- Изменение рейтинга факта (по сравнению с предыдущей игрой) -->
-        <field name="ratingTaskDiff" parent="Cube_UsrPlan/ratingTask"
-               title="Изменение рейтинга за ответы"/>
-        <field name="ratingQuicknessDiff" parent="Cube_UsrPlan/ratingQuickness"
-               title="Изменение рейтинга за скорость"/>
         <!-- Рост и падение рейтинга -->
-        <field name="ratingTaskInc" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingTaskDec" parent="Cube_UsrPlan/ratingTask"/>
+        <include name="Statistic.diff"/>
     </domain>
 
 
@@ -139,8 +132,9 @@
 
         <field name="count" parent="Cube_UsrPlan/count"/>
         <field name="countFull" parent="Cube_UsrPlan/countFull"/>
-        <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
+
+        <!-- Рейтинг -->
+        <include name="Statistic.base"/>
     </domain>
 
 

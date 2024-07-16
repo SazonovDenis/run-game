@@ -5,22 +5,33 @@
         <!-- Рейтинг -->
         <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
         <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
+    </domain>
+
+    <domain name="Statistic.diff">
+        <!-- Повторений -->
+        <field name="countRepeated" parent="int"/>
 
         <!-- Изменение рейтинга (по сравнению с предыдущим периодом) -->
         <field name="ratingTaskDiff" parent="Cube_UsrPlan/ratingTask"
                title="Изменение рейтинга за ответы"/>
         <field name="ratingQuicknessDiff" parent="Cube_UsrPlan/ratingQuickness"
                title="Изменение рейтинга за скорость"/>
+
         <!-- Рост и падение рейтинга -->
         <field name="ratingTaskInc" parent="Cube_UsrPlan/ratingTask"/>
         <field name="ratingTaskDec" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuicknessInc" parent="Cube_UsrPlan/ratingTask"/>
+        <field name="ratingQuicknessDec" parent="Cube_UsrPlan/ratingTask"/>
     </domain>
 
 
     <domain name="Statistic.plan">
 
-        <!-- Показатели рейтинга -->
+        <!-- Рейтинг -->
         <include name="Statistic.base"/>
+
+        <!-- Рост и падение рейтинга -->
+        <include name="Statistic.diff"/>
 
         <!-- Группировка -->
         <field name="plan" parent="Plan/id"/>
@@ -35,8 +46,11 @@
 
     <domain name="Statistic.game">
 
-        <!-- Показатели рейтинга -->
+        <!-- Рейтинг -->
         <include name="Statistic.base"/>
+
+        <!-- Рост и падение рейтинга -->
+        <include name="Statistic.diff"/>
 
         <!-- Группировка -->
         <field name="game" parent="Game/id"/>
@@ -52,8 +66,11 @@
 
     <domain name="Statistic.word">
 
-        <!-- Показатели рейтинга -->
+        <!-- Рейтинг -->
         <include name="Statistic.base"/>
+
+        <!-- Рост и падение рейтинга -->
+        <include name="Statistic.diff"/>
 
         <!-- Группировка -->
         <field name="factQuestion" parent="Task/factQuestion"/>
@@ -70,11 +87,16 @@
     </domain>
 
 
-
     <domain name="Statistic.day">
 
-        <!-- Показатели рейтинга -->
+        <!-- Рейтинг -->
         <include name="Statistic.base"/>
+
+        <!-- Рост и падение рейтинга -->
+        <include name="Statistic.diff"/>
+
+        <!-- Рост и падение рейтинга -->
+        <include name="Statistic.diff"/>
 
         <!-- Группировка -->
         <field name="dbeg" parent="date"/>
@@ -82,12 +104,12 @@
     </domain>
 
 
-    <domain name="Statistic.diff" parent="Statistic.base">
+    <domain name="Statistic.summ">
+        <!-- Рейтинг -->
+        <include name="Statistic.base"/>
+
         <!-- Рост и падение рейтинга -->
-        <field name="ratingTaskInc" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingTaskDec" parent="Cube_UsrPlan/ratingTask"/>
-        <field name="ratingQuicknessInc" parent="Cube_UsrPlan/ratingQuickness"/>
-        <field name="ratingQuicknessDec" parent="Cube_UsrPlan/ratingQuickness"/>
+        <include name="Statistic.diff"/>
 
         <!--  -->
         <field name="wordCount" parent="int"/>

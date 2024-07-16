@@ -27,6 +27,9 @@
 
             </div>
 
+            <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
+            <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
+
 
             <q-separator/>
 
@@ -60,6 +63,7 @@
 import MenuContainer from "./comp/MenuContainer"
 import PlanStatistic from "./comp/PlanStatistic"
 import PeriodStatisticChart from "./comp/PeriodStatisticChart"
+import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import DateRangeInput from "./comp/DateRangeInput"
 import gameplay from "./gameplay"
 import {apx} from "./vendor"
@@ -70,7 +74,7 @@ export default {
     name: "PlanStatisticPage",
 
     components: {
-        MenuContainer, PlanStatistic, PeriodStatisticChart, DateRangeInput
+        MenuContainer, PlanStatistic, StatisticWordsLearned, PeriodStatisticChart, DateRangeInput
     },
 
     props: {

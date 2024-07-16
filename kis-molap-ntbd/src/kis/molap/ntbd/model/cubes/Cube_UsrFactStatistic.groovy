@@ -104,7 +104,6 @@ public class Cube_UsrFactStatistic extends CubeCustom implements ICalcData {
 
             // Грузим историю заданий по этим фактам
             Store stGameTask = mdb.loadQuery(sqlGameTaskByFact(), params)
-            mdb.outTable(stGameTask)
 
             //
             int pos = 0

@@ -430,6 +430,7 @@ export default {
             let returnPaths = {
                 "/game": "/game",
                 "/gameStatistic": "/gameStatistic",
+                "/statistic": "/statistic",
                 "/link": "/link",
                 "/plans": "/plans",
                 "/plan": "/plans",

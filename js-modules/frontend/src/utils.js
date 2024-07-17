@@ -192,6 +192,24 @@ export default {
         }
     },
 
+    periodOptions: [
+        {label: 'Сегодня', value: 'day'},
+        {label: 'Неделя', value: 'week'},
+        {label: 'Месяц', value: 'month'},
+        {label: 'Три месяца', value: 'month3'},
+    ],
+
+    periodOptions_text: {
+        day: "сегодня",
+        week: "неделю",
+        month: "месяц",
+        month3: "три месяца",
+    },
+
+    getPeriodText(value) {
+        return this.periodOptions_text[value]
+    },
+
     itemPosInItems(item, itemsList) {
         if (!itemsList) {
             return -1

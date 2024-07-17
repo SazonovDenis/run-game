@@ -4,6 +4,7 @@
         :value="statistic.ratingTask"
         :title="ratingText(statistic.ratingTask)"
         :valueTotal="statistic.ratingMax"
+        valueType="rating"
     />
 
 </template>

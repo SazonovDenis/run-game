@@ -43,3 +43,22 @@
   height: calc(100%);
   width: 100%;
 }
+
+
+.justify-center {
+  justify-content: center;
+}
+
+
+/* Контейнер, прижатый к низу экрана, например: кнопки выбора периода в статистике */
+.bottom-buttons {
+  position: fixed;
+  bottom: 0.2rem;
+
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+}

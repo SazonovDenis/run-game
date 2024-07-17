@@ -60,16 +60,16 @@ export default {
 
 .result-value {
     font-weight: bold;
-    font-size: 1.3em;
+    font-size: 1.5em;
 }
 
 .result-title {
     font-weight: bold;
-    font-size: 0.5em;
+    font-size: 0.6em;
 }
 
 .result-rating .result-title {
-    padding-left: 0.5em;
+    padding-left: 0.6em;
 }
 
 /* --- */
@@ -81,7 +81,7 @@ export default {
     margin: 0 0.3em;
 
     text-align: center;
-    font-size: 1.3em;
+    font-size: 1.5em;
 }
 
 .result-rating-inc {

@@ -10,6 +10,10 @@
         </template>
 
 
+        <div v-show="loaded" class="text-h3 text-center q-mt-sm">
+            За {{ periodText() }}
+        </div>
+
         <div v-show="loaded && statisticPeriod.wordCountRepeated > 0">
 
             <div class="justify-center row q-mt-md">
@@ -42,7 +46,9 @@
 
                     <div class="row q-my-md">
 
-                        <StatisticRatingDiff :statistic="statisticPeriod"/>
+                        <StatisticRatingDiff
+                            class="q-mx-md q-mt-sm"
+                            :statistic="statisticPeriod"/>
 
                     </div>
 
@@ -153,7 +159,7 @@
 
 <script>
 
-import {daoApi} from "run-game-frontend/src/dao"
+import {daoApi} from "./dao"
 import {apx} from './vendor'
 import MenuContainer from "./comp/MenuContainer"
 import LogoGame from "./comp/LogoGame"
@@ -165,6 +171,7 @@ import StatisticRatingDiff from "./comp/StatisticRatingDiff"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
 import StatisticGameItem from "./comp/StatisticGameItem"
 import TaskItem from "./comp/TaskItem"
+import utils from "./utils"
 
 export default {
 
@@ -217,10 +224,7 @@ export default {
     methods: {
 
         periodText() {
-            if (!this.$refs.dateRangeInput) {
-                return ""
-            }
-            return this.$refs.dateRangeInput.getPeriodText(this.params.period)
+            return utils.getPeriodText(this.params.period)
         },
 
         async onParams_period() {
@@ -315,10 +319,6 @@ export default {
     _overflow-x: auto;
 }
 
-.justify-center {
-    justify-content: center;
-}
-
 .message-no-data {
     text-align: center;
     color: #404040;
@@ -331,17 +331,6 @@ export default {
     font-size: 1.5em;
 }
 
-.bottom-buttons {
-    position: fixed;
-    bottom: 0.2rem;
-
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: center;
-}
 
 /* --- */
 

@@ -7,21 +7,51 @@
         :frameReturnProps="frameReturnProps"
     >
 
-        <div v-if="dataLoaded"
-             class="col justify-center _q-mt-lg _q-mb-lg11 _q-gutter-md">
+        <div v-if="dataLoaded">
+            <div class="row justify-center">
 
 
-            <GameStatistic
-                :game="localState.game"
-                :gameTasks="localState.gameTasks"
-                :statistic="localState.statistic"
-            />
+                <!-- -->
+
+                <div class="result-words">
+
+                    <div class="row">
+                        <template v-if="localState.statistic.wordCountLearned != null">
+
+                            <StatisticWordsLearned :statistic="localState.statistic"/>
+
+                        </template>
+
+                        <template v-if="localState.statistic.wordCountRepeated != null">
+
+                            <StatisticWordsRepeated :statistic="localState.statistic"/>
+
+                        </template>
+                    </div>
+
+                </div>
+
+
+                <!-- -->
+
+                <div class="result-words">
+
+                    <div class="row q-my-md">
+
+                        <StatisticRatingDiff
+                            class="q-mx-md q-mt-sm"
+                            :statistic="localState.statistic"/>
+
+                    </div>
+
+                </div>
+
+            </div>
 
 
             <template v-if="localState.game">
 
                 <div class="row">
-
 
                     <div class="q-ma-sm" v-if="!localState.game.done">
                         <jc-btn kind="primary" label="Продолжить игру"
@@ -92,6 +122,11 @@
 
         </div>
 
+        <div v-else class="game-info">
+            <LogoGame/>
+            <div class="game-info__no-data">Нет данных об игре</div>
+        </div>
+
 
     </MenuContainer>
 
@@ -102,14 +137,21 @@
 import {apx} from "./vendor"
 import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
-import GameStatistic from "./comp/GameStatistic"
+import StatisticRatingDiff from "./comp/StatisticRatingDiff"
+import StatisticWordsRepeated from "./comp/StatisticWordsRepeated"
+import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import TaskList from "./comp/TaskList"
+import LogoGame from "./comp/LogoGame"
+
 
 export default {
 
     name: "GameStatisticPage",
 
-    components: {MenuContainer, GameStatistic, TaskList},
+    components: {
+        MenuContainer, TaskList, LogoGame,
+        StatisticRatingDiff, StatisticWordsRepeated, StatisticWordsLearned
+    },
 
     props: {
         gameId: null,

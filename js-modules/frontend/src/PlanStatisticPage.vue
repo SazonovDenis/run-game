@@ -7,6 +7,9 @@
 
         <div v-show="dataLoaded">
 
+            <div class="text-h3 text-center q-mt-sm">
+                За {{ periodText() }}
+            </div>
 
             <div class="justify-center row q-mt-md">
 
@@ -30,8 +33,9 @@
 
                     <div class="row q-my-md">
 
-                        <StatisticRatingDiff class="q-mx-md q-mt-md"
-                                             :statistic="statisticPeriod"/>
+                        <StatisticRatingDiff
+                            class="q-mx-md q-mt-sm"
+                            :statistic="statisticPeriod"/>
 
                     </div>
 
@@ -42,31 +46,21 @@
             </div>
 
             <PeriodStatisticChart
-                __v-show="params.period !== 'day'"
+                v-show="params.period !== 'day'"
                 :statistic="statisticByDay"
             />
 
-            <div class="q-my-sm bottom-buttons">
-
-                <DateRangeInput
-                    ref="dateRangeInput"
-                    v-model="params.period"
-                    :__hiddenValues="['day']"
-                    @update:modelValue="on_params_period"
-                />
-
+            <div class="text-h3 text-center q-mt-md">
+                Всего по уровню
             </div>
 
-            <div v-show="dataLoaded" class="justify-center row q-mt-md">
+            <div v-show="dataLoaded" class="justify-center row q-mt-ms">
                 <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
                 <StatisticRating class="q-mx-md q-mt-md" :statistic="statistic"/>
             </div>
 
 
-            <q-separator/>
-
-
-            <div class="row">
+            <div class="row q-my-lg">
                 <jc-btn class="q-ma-sm"
                         kind="primary"
                         label="Играть уровень"
@@ -80,6 +74,18 @@
                         style="min-width: 12em;"
                         @click="onPlanView()">
                 </jc-btn>
+            </div>
+
+
+            <div class="q-my-sm bottom-buttons">
+
+                <DateRangeInput
+                    ref="dateRangeInput"
+                    v-model="params.period"
+                    :__hiddenValues="['day']"
+                    @update:modelValue="on_params_period"
+                />
+
             </div>
 
 
@@ -102,6 +108,7 @@ import DateRangeInput from "./comp/DateRangeInput"
 import gameplay from "./gameplay"
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
+import utils from "./utils"
 
 export default {
 
@@ -124,7 +131,7 @@ export default {
     data() {
         return {
             params: {
-                period: "week",
+                period: null,
             },
 
             plan: {},
@@ -138,15 +145,17 @@ export default {
 
 
     async mounted() {
-        //if (this.period && this.period !== "day") {
         this.params.period = this.period
-        //}
 
         await this.load()
     },
 
 
     methods: {
+
+        periodText() {
+            return utils.getPeriodText(this.params.period)
+        },
 
         async gameStart() {
             await gameplay.gameStart(this.planId)
@@ -195,20 +204,7 @@ export default {
 </script>
 
 
-<style lang="less" scoped>
-
-.justify-center {
-    justify-content: center;
-}
-
-.bottom-buttons {
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: center;
-}
+<style scoped>
 
 </style>
 

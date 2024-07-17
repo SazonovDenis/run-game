@@ -6,7 +6,6 @@
 
         no-caps
         rounded
-        _unelevated
 
         class="rgm-toggle"
         toggle-color="blue-7"
@@ -19,6 +18,7 @@
 <script>
 
 import {apx} from "../vendor"
+import utils from "../utils"
 
 export default {
 
@@ -39,27 +39,10 @@ export default {
         }
     },
 
-    setup() {
-        return {
-            periodOptions: [
-                {label: 'Сегодня', value: 'day'},
-                {label: 'Неделя', value: 'week'},
-                {label: 'Месяц', value: 'month'},
-                {label: 'Три месяца', value: 'month3'},
-            ],
-            periodOptions_text: {
-                day: "сегодня",
-                week: "неделю",
-                month: "месяц",
-                month3: "три месяца",
-            }
-        }
-    },
-
     mounted() {
         // Выберем разрешенные значения для показа (т.е. все, кроме скрытых)
         let options = []
-        for (let option of this.periodOptions) {
+        for (let option of utils.periodOptions) {
             if (!this.hiddenValues || this.hiddenValues.indexOf(option.value) === -1) {
                 options.push(option)
             }
@@ -86,10 +69,6 @@ export default {
             }
             //
             return {dbeg: dbeg, dend: dend}
-        },
-
-        getPeriodText(value) {
-            return this.periodOptions_text[value]
         },
 
     },

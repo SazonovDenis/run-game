@@ -3,13 +3,13 @@
     <q-circular-progress
         show-value
         rounded
-        size="10rem"
-        font-size="1rem"
+        size="8rem"
+        :font-size="fontSize"
         :value="circularValue"
         :thickness="thickness"
-        color="blue-10"
+        :color="color"
         track-color="grey-3"
-        class="q-ma-md circle-value"
+        :class="'q-mx-sm circular ' + getClass"
     >
         <div class="col">
             <div>
@@ -17,16 +17,15 @@
                     {{ value }}
                 </span>
             </div>
-            <div>
-                <span class="value-title">
-                    {{ title }}
+
+            <div :class="'value-title' + getClassSuffixTotal">
+                <span v-html="title">
                 </span>
             </div>
-            <div>
-                <span>из </span>
-                <span class="value-max">
-                    {{ valueTotal }}
-                </span>
+
+            <div class="total" v-if="valueTotal">
+                <span class="total-title">из </span>
+                <span class="total-value">{{ valueTotal }}</span>
             </div>
         </div>
     </q-circular-progress>
@@ -40,6 +39,7 @@ export default {
 
     props: {
         value: Number,
+        valueType: String,
         title: String,
         valueTotal: Number,
     },
@@ -52,18 +52,41 @@ export default {
                 return 100 * this.value / this.valueTotal
             }
         },
-        thickness() {
-            if (!this.valueTotal) {
-                return 0
+        fontSize() {
+            if (this.valueTotal) {
+                return "0.8rem"
             } else {
+                return "1rem"
+            }
+        },
+        thickness() {
+            if (this.valueTotal) {
                 return 0.2
+            } else {
+                return 0
+            }
+        },
+        color() {
+            if (this.valueType === "learned") {
+                return "green-7"
+            } else if (this.valueType === "rating") {
+                return "blue-10"
+            } else {
+                return "grey-7"
+            }
+        },
+        getClassSuffixTotal() {
+            if (this.valueTotal) {
+                return "-with-total"
+            } else {
+                return "-no-total"
             }
         },
         getClass() {
-            if (!this.valueTotal) {
-                return "with-count"
+            if (this.valueTotal) {
+                return "type-" + this.valueType
             } else {
-                return ""
+                return "type-" + this.valueType + " type-" + this.valueType + "-no-total"
             }
         }
     }
@@ -73,19 +96,62 @@ export default {
 
 <style scoped>
 
-.circle-value {
-    font-size: 1.5em;
+.circular {
     text-align: center;
+    font-weight: bold;
+    border-radius: 10em;
+    _color: #109010;
 }
 
 .value-value {
     font-weight: bold;
-    font-size: 1.4em;
+    font-size: 3em;
 }
 
 .value-title {
-    font-weight: bold;
-    font-size: 0.5em;
+    font-size: 1em;
 }
+
+.value-title-with-total {
+    font-size: 1.3em;
+}
+
+.total {
+    position: relative;
+    __top: -0.1em;
+    color: #303030;
+}
+
+.total-title {
+    font-weight: normal;
+    font-size: 1em;
+}
+
+.total-value {
+    font-weight: normal;
+    font-size: 1.7em;
+}
+
+
+.type-learned {
+    color: #109010;
+}
+
+.type-repeated {
+    color: #008080;
+}
+
+.type-rating {
+    color: #003090;
+}
+
+.type-learned-no-total {
+    background-color: #10901010;
+}
+
+.type-repeated-no-total {
+    background-color: #00808010;
+}
+
 
 </style>

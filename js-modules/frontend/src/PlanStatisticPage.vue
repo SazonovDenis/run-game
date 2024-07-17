@@ -7,13 +7,43 @@
 
         <div v-show="dataLoaded">
 
-            <PlanStatistic
-                :planText="null"
-                :statistic="statistic"
-            />
+
+            <div class="justify-center row q-mt-md">
+
+                <!-- -->
+
+                <div class="result-words">
+
+                    <div class="row">
+
+                        <StatisticWordsLearned :statistic="statisticPeriod"/>
+
+                        <StatisticWordsRepeated :statistic="statisticPeriod"/>
+
+                    </div>
+
+                </div>
+
+                <!-- -->
+
+                <div class="result-words">
+
+                    <div class="row q-my-md">
+
+                        <StatisticRatingDiff class="q-mx-md q-mt-md"
+                                             :statistic="statisticPeriod"/>
+
+                    </div>
+
+                </div>
+
+                <!-- -->
+
+            </div>
 
             <PeriodStatisticChart
-                :statistic="statisticPeriod"
+                __v-show="params.period !== 'day'"
+                :statistic="statisticByDay"
             />
 
             <div class="q-my-sm bottom-buttons">
@@ -21,14 +51,16 @@
                 <DateRangeInput
                     ref="dateRangeInput"
                     v-model="params.period"
-                    :hiddenValues="['day']"
+                    :__hiddenValues="['day']"
                     @update:modelValue="on_params_period"
                 />
 
             </div>
 
-            <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
-            <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
+            <div v-show="dataLoaded" class="justify-center row q-mt-md">
+                <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
+                <StatisticRating class="q-mx-md q-mt-md" :statistic="statistic"/>
+            </div>
 
 
             <q-separator/>
@@ -61,9 +93,11 @@
 <script>
 
 import MenuContainer from "./comp/MenuContainer"
-import PlanStatistic from "./comp/PlanStatistic"
 import PeriodStatisticChart from "./comp/PeriodStatisticChart"
+import StatisticRating from "./comp/StatisticRating"
+import StatisticRatingDiff from "./comp/StatisticRatingDiff"
 import StatisticWordsLearned from "./comp/StatisticWordsLearned"
+import StatisticWordsRepeated from "./comp/StatisticWordsRepeated"
 import DateRangeInput from "./comp/DateRangeInput"
 import gameplay from "./gameplay"
 import {apx} from "./vendor"
@@ -74,12 +108,14 @@ export default {
     name: "PlanStatisticPage",
 
     components: {
-        MenuContainer, PlanStatistic, StatisticWordsLearned, PeriodStatisticChart, DateRangeInput
+        MenuContainer, DateRangeInput,
+        StatisticWordsLearned, StatisticWordsRepeated, PeriodStatisticChart,
+        StatisticRating, StatisticRatingDiff,
     },
 
     props: {
         planId: null,
-        period: null,
+        period: {type: String, default: "week"},
         frameReturn: null,
         frameReturnProps: null,
 
@@ -93,7 +129,8 @@ export default {
 
             plan: {},
             statistic: {},
-            statisticPeriod: [],
+            statisticPeriod: {},
+            statisticByDay: [],
 
             dataLoaded: false,
         }
@@ -101,9 +138,9 @@ export default {
 
 
     async mounted() {
-        if (this.period && this.period !== "day") {
-            this.params.period = this.period
-        }
+        //if (this.period && this.period !== "day") {
+        this.params.period = this.period
+        //}
 
         await this.load()
     },
@@ -144,6 +181,7 @@ export default {
             this.plan = res.plan
             this.statistic = res.statistic
             this.statisticPeriod = res.statisticPeriod
+            this.statisticByDay = res.statisticByDay
 
             //
             this.dataLoaded = true
@@ -158,6 +196,10 @@ export default {
 
 
 <style lang="less" scoped>
+
+.justify-center {
+    justify-content: center;
+}
 
 .bottom-buttons {
     width: 100vw;

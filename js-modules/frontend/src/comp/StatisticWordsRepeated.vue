@@ -6,7 +6,7 @@
         size="8rem"
         :thickness="0"
         track-color="white"
-        class="q-mx-sm result-words-all"
+        class="q-mx-sm result-words-repeated"
     >
         <div class="col">
             <div class="result-value">{{
@@ -53,28 +53,15 @@ export default {
 
 /* --- */
 
-.result-words-all {
+.result-words-repeated {
     font-weight: bold;
     color: #008080;
     background-color: #00808010;
     border-radius: 10em;
+
+    text-align: center;
+    font-size: 2em;
 }
 
-
-/*
-.result-words2 {
-    position: relative;
-    top: -0.1em;
-    color: #535353;
-}
-
-.result-words2-title {
-    font-size: 0.5em;
-}
-
-.result-words2-value {
-    font-size: 0.8em;
-}
-*/
 
 </style>

@@ -10,26 +10,28 @@
         </template>
 
 
-        <div v-show="loaded && statistic.wordCountRepeated > 0">
+        <div v-show="loaded && statisticPeriod.wordCountRepeated > 0">
 
-            <div class="message-statistic row q-mt-md">
+            <div class="justify-center row q-mt-md">
 
                 <!-- -->
 
                 <div class="result-words">
 
                     <div class="row">
-                        <template v-if="statistic.wordCountLearned != null">
 
-                            <StatisticWordsLearned :statistic="statistic"/>
+                        <template v-if="statisticPeriod.wordCountLearned != null">
+
+                            <StatisticWordsLearned :statistic="statisticPeriod"/>
+
+                        </template>
+
+                        <template v-if="statisticPeriod.wordCountRepeated != null">
+
+                            <StatisticWordsRepeated :statistic="statisticPeriod"/>
 
                         </template>
 
-                        <template v-if="statistic.wordCountRepeated != null">
-
-                            <StatisticWordsRepeated :statistic="statistic"/>
-
-                        </template>
                     </div>
 
                 </div>
@@ -40,7 +42,7 @@
 
                     <div class="row q-my-md">
 
-                        <StatisticRating :statistic="statistic"/>
+                        <StatisticRatingDiff :statistic="statisticPeriod"/>
 
                     </div>
 
@@ -51,7 +53,7 @@
 
                 <PeriodStatisticChart
                     v-show="params.period !== 'day'"
-                    :statistic="statisticPeriod"
+                    :statistic="statisticByDay"
                 />
 
                 <!-- -->
@@ -121,7 +123,7 @@
         </div>
 
 
-        <div v-show="loaded && statistic.wordCountRepeated === 0">
+        <div v-show="loaded && statisticPeriod.wordCountRepeated === 0">
 
             <div class="message-no-data q-mx-md q-mt-xl">
                 Нет игр за {{ periodText() }}
@@ -159,7 +161,7 @@ import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import DateRangeInput from "./comp/DateRangeInput"
 import PeriodStatisticChart from "./comp/PeriodStatisticChart"
 import StatisticWordsRepeated from "./comp/StatisticWordsRepeated"
-import StatisticRating from "./comp/StatisticRating"
+import StatisticRatingDiff from "./comp/StatisticRatingDiff"
 import StatisticPlanItem from "./comp/StatisticPlanItem"
 import StatisticGameItem from "./comp/StatisticGameItem"
 import TaskItem from "./comp/TaskItem"
@@ -171,7 +173,7 @@ export default {
     components: {
         MenuContainer, LogoGame,
         PeriodStatisticChart, StatisticWordsLearned, StatisticWordsRepeated,
-        StatisticRating,
+        StatisticRatingDiff,
         DateRangeInput, StatisticPlanItem, StatisticGameItem, TaskItem,
     },
 
@@ -185,8 +187,8 @@ export default {
             items: [],
             loaded: false,
 
-            statistic: {},
-            statisticPeriod: [],
+            statisticPeriod: {},
+            statisticByDay: [],
 
             params: {
                 period: "day",
@@ -216,7 +218,7 @@ export default {
 
         periodText() {
             if (!this.$refs.dateRangeInput) {
-                return "ffff"
+                return ""
             }
             return this.$refs.dateRangeInput.getPeriodText(this.params.period)
         },
@@ -292,8 +294,8 @@ export default {
 
             //
             this.items = resApi.items.records
-            this.statistic = resApi.statistic.records[0]
-            this.statisticPeriod = resApi.statisticPeriod.records
+            this.statisticPeriod = resApi.statisticPeriod
+            this.statisticByDay = resApi.statisticByDay.records
 
             //
             this.loaded = true
@@ -313,11 +315,7 @@ export default {
     _overflow-x: auto;
 }
 
-.message-statistic {
-    text-align: center;
-    color: #404040;
-    font-size: 2em;
-
+.justify-center {
     justify-content: center;
 }
 

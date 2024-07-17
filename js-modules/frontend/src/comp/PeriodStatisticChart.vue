@@ -32,7 +32,7 @@ export default {
     },
 
     watch: {
-        statistic(statisticPeriod) {
+        statistic(statisticByDay) {
             let xAxisData = []
             let dataRating = []
             let dataRatingInc = []
@@ -42,11 +42,11 @@ export default {
             let n = 0
             let displayFormat1 = "d MMMM yyyy"
             let displayFormat2 = "d MMMM"
-            for (let rec of statisticPeriod) {
+            for (let rec of statisticByDay) {
                 n++
                 if (n === 1) {
                     xAxisData.push(apx.date.toDateTime(rec.dbeg).toFormat(displayFormat1))
-                } else if (n === statisticPeriod.length) {
+                } else if (n === statisticByDay.length) {
                     xAxisData.push(apx.date.toDateTime(rec.dbeg).toFormat(displayFormat2))
                 } else {
                     xAxisData.push('')

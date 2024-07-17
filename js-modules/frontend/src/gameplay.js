@@ -295,7 +295,8 @@ export default {
         let res = {
             plan: resApi.plan.records[0],
             statistic: resApi.statistic,
-            statisticPeriod: resApi.statisticPeriod.records,
+            statisticPeriod: resApi.statisticPeriod,
+            statisticByDay: resApi.statisticByDay.records,
         }
 
         return res

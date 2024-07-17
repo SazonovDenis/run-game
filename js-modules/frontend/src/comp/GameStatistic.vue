@@ -34,7 +34,7 @@
         <div class="row">
             <q-space/>
 
-            <StatisticRating :statistic="statistic"/>
+            <StatisticRatingDiff :statistic="statistic"/>
 
             <q-space/>
         </div>
@@ -54,7 +54,7 @@
 
 import utils from "../utils"
 import LogoGame from "./LogoGame"
-import StatisticRating from "./StatisticRating"
+import StatisticRatingDiff from "./StatisticRatingDiff"
 import StatisticWordsRepeated from "./StatisticWordsRepeated"
 import StatisticWordsLearned from "./StatisticWordsLearned"
 
@@ -66,7 +66,7 @@ export default {
     name: "GameStatistic",
 
     components: {
-        StatisticRating, StatisticWordsRepeated, StatisticWordsLearned, LogoGame,
+        StatisticRatingDiff, StatisticWordsRepeated, StatisticWordsLearned, LogoGame,
     },
 
     props: {

@@ -63,7 +63,17 @@ class Statistic_list extends RgmMdbUtils {
     }
 
     @DaoMethod
-    prepareForGame(XDateTime dbeg, XDateTime dend) {
+    DataBox forPlan(long idPlan, XDateTime dbeg, XDateTime dend) {
+        // Параметры
+        long idUsr = getContextOrCurrentUsrId()
+        Map params = [plan: idPlan, usr: idUsr, dbeg: dbeg, dend: dend]
+
+        // Загружаем
+        return byInternal(params, "plan")
+    }
+
+    @DaoMethod
+    DataBox forGame(XDateTime dbeg, XDateTime dend) {
         // Параметры
         long idUsr = getContextOrCurrentUsrId()
         XDateTime paramDbeg = dbeg
@@ -72,16 +82,6 @@ class Statistic_list extends RgmMdbUtils {
 
         // Загружаем
         byInternal(params, "word")
-    }
-
-    @DaoMethod
-    prepareForPlan(long idPlan, XDateTime dbeg, XDateTime dend) {
-        // Параметры
-        long idUsr = getContextOrCurrentUsrId()
-        Map params = [plan: idPlan, usr: idUsr, dbeg: dbeg, dend: dend]
-
-        // Загружаем
-        byInternal(params, "day")
     }
 
     Map prepareParams(XDate dbeg, XDate dend) {
@@ -109,8 +109,10 @@ class Statistic_list extends RgmMdbUtils {
         String sql = getSqlItems(groupByKey, params)
         mdb.loadQuery(stItems, sql, params)
 
+
         // ---
-        // Статистику по фактам агрегируем по groupByKey и распределяем в список
+        // Загружаем статистику для элементов списка:
+        // статистику по фактам агрегируем по groupByKey и распределяем в список
 
         // Загружаем за указанный период, при этом каждый факт может встретиться несколько раз.
         //
@@ -131,27 +133,27 @@ class Statistic_list extends RgmMdbUtils {
 
 
         //////////////////////////
-        println()
-        println("Statistic raw:")
-        mdb.outTable(stStatistic, 10)
-        //////////////////////////
-        println()
-        println("Statistic group by " + groupByKey + ":")
-        int cnt = 0
-        for (String key : statisticGroupBy.keySet()) {
-            println(groupByKey + ": " + key + ",  statistic: " + statisticGroupBy.get(key))
-            //
-            cnt++
-            if (cnt > 10) {
-                println("...")
-                break
-            }
-        }
-        println(cnt + " / " + statisticGroupBy.keySet().size() + " shown")
-        //////////////////////////
-        println()
-        println("Result by " + groupByKey + ":")
-        mdb.outTable(stItems, 10)
+        // println()
+        // println("Statistic raw:")
+        // mdb.outTable(stStatistic, 10)
+        // //////////////////////////
+        // println()
+        // println("Statistic group by " + groupByKey + ":")
+        // int cnt = 0
+        // for (String key : statisticGroupBy.keySet()) {
+        //     println(groupByKey + ": " + key + ",  statistic: " + statisticGroupBy.get(key))
+        //     //
+        //     cnt++
+        //     if (cnt > 10) {
+        //         println("...")
+        //         break
+        //     }
+        // }
+        // println(cnt + " / " + statisticGroupBy.keySet().size() + " shown")
+        // //////////////////////////
+        // println()
+        // println("Result by " + groupByKey + ":")
+        // mdb.outTable(stItems, 10)
         //////////////////////////
 
 
@@ -163,23 +165,23 @@ class Statistic_list extends RgmMdbUtils {
         statisticGroupByWord = groupStatisticBy(stStatistic, "word")
 
         //////////////////////////
-        println()
-        println("Statistic group by word:")
-        cnt = 0
-        for (String key : statisticGroupByWord.keySet()) {
-            println(groupByKey + ": " + key + ",  statistic: " + statisticGroupByWord.get(key))
-            //
-            cnt++
-            if (cnt > 10) {
-                println("...")
-                break
-            }
-        }
-        println(cnt + " / " + statisticGroupByWord.keySet().size() + " shown")
+        // println()
+        // println("Statistic group by word:")
+        // cnt = 0
+        // for (String key : statisticGroupByWord.keySet()) {
+        //     println(groupByKey + ": " + key + ",  statistic: " + statisticGroupByWord.get(key))
+        //     //
+        //     cnt++
+        //     if (cnt > 10) {
+        //         println("...")
+        //         break
+        //     }
+        // }
+        // println(cnt + " / " + statisticGroupByWord.keySet().size() + " shown")
         //////////////////////////
 
         // Суммируем статистику
-        StoreRecord recStatisticSumm = summStatisticByWord(statisticGroupByWord)
+        StoreRecord recStatisticPeriod = summStatisticByWord(statisticGroupByWord)
 
 
         // ---
@@ -189,43 +191,43 @@ class Statistic_list extends RgmMdbUtils {
         statisticGroupByDay = groupStatisticBy(stStatistic, "day")
 
         // Получим список дней
-        Store stSatisticPeriod = mdb.createStore("Statistic.day")
+        Store stSatisticByDay = mdb.createStore("Statistic.day")
         //
         XDate dbeg = UtCnv.toDate(params.get("dbeg"))
         XDate dend = UtCnv.toDate(params.get("dend"))
         XDate dt = dbeg
         //
         while (dt.compareTo(dend) <= 0) {
-            stSatisticPeriod.add([dbeg: dt])
+            stSatisticByDay.add([dbeg: dt])
             dt = dt.addDays(1)
         }
 
         //////////////////////////
-        println()
-        println("stSatisticPeriod, empty:")
-        mdb.outTable(stSatisticPeriod, 10)
+        // println()
+        // println("stSatisticByDay, empty:")
+        // mdb.outTable(stSatisticByDay, 10)
         //////////////////////////
 
 
         // Распределяем в список дней
-        distributeStatistic(statisticGroupByDay, stSatisticPeriod, "day")
+        distributeStatistic(statisticGroupByDay, stSatisticByDay, "day")
 
 
         //////////////////////////
-        println()
-        println("stSatisticPeriod, with statistic:")
-        mdb.outTable(stSatisticPeriod, 10)
+        // println()
+        // println("stSatisticByDay, with statistic:")
+        // mdb.outTable(stSatisticByDay, 10)
         //////////////////////////
 
         // Берем статистику от последней даты
-        double ratingTask = recStatisticSumm.getDouble("ratingTask")
-        double ratingQuickness = recStatisticSumm.getDouble("ratingQuickness")
+        double ratingTask = recStatisticPeriod.getDouble("ratingTask")
+        double ratingQuickness = recStatisticPeriod.getDouble("ratingQuickness")
 
         // Отмотаем от последней даты назад и заполним поля rating*** на основе разницы
         // от предыдущего дня.
         // Также заполним пробелы для дней, где не было игр
-        for (int n = stSatisticPeriod.size() - 1; n >= 0; n--) {
-            StoreRecord rec = stSatisticPeriod.get(n)
+        for (int n = stSatisticByDay.size() - 1; n >= 0; n--) {
+            StoreRecord rec = stSatisticByDay.get(n)
             //
             double ratingTaskDiff = rec.getDouble("ratingTaskDiff")
             double ratingTaskInc = rec.getDouble("ratingTaskInc")
@@ -243,21 +245,21 @@ class Statistic_list extends RgmMdbUtils {
             ratingQuickness = ratingQuickness - ratingQuicknessDiff
         }
         // Последняя запись не нужна
-        //stSatisticPeriod.remove(stSatisticPeriod.size() - 1)
+        //stSatisticByDay.remove(stSatisticByDay.size() - 1)
 
 
         //////////////////////////
-        println()
-        println("stSatisticPeriod, filled:")
-        mdb.outTable(stSatisticPeriod, 10)
+        // println()
+        // println("stSatisticByDay, filled:")
+        // mdb.outTable(stSatisticByDay, 10)
         //////////////////////////
 
 
         // ---
         DataBox res = new DataBox()
         res.put("items", stItems)
-        res.put("statistic", recStatisticSumm)
-        res.put("statisticPeriod", stSatisticPeriod)
+        res.put("statisticPeriod", recStatisticPeriod.getValues())
+        res.put("statisticByDay", stSatisticByDay)
 
         //
         return res
@@ -265,9 +267,6 @@ class Statistic_list extends RgmMdbUtils {
 
     String getSqlItems(String groupByKey, Map params) {
         switch (groupByKey) {
-            case "day": {
-                return sqlForPlanByDay(params)
-            }
             case "plan": {
                 return sqlPlan()
             }

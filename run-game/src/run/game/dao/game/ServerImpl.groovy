@@ -392,56 +392,20 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         StoreRecord recStatistic = loadRecStatistic(recPlanRaw, stPlanFact)
 
 
-        // --- statisticPeriod
-        Statistic_list sl = mdb.create(Statistic_list)
-        XDateTime dendParam = dend.addDays(1).toDateTime()
+        // --- statisticByDay
+        XDateTime dendParam = dend.addDays(1).toDateTime().addMSec(-1000)
         XDateTime dbegParam = dbeg.toDateTime()
-        sl.prepareForPlan(idPlan, dbegParam, dendParam)
-
-        /////////////////////////
-        /////////////////////////
-        /////////////////////////
-        /////////////////////////
-        /////////////////////////
-        println()
-        println("recStatistic")
-        mdb.outTable(recStatistic)
-        /////////////////////////
-
-        // Отмотаем от последней даты назад на основе разницы
-        double ratingTask = recStatistic.getDouble("ratingTask")
-        double ratingQuickness = recStatistic.getDouble("ratingQuickness")
-        for (int n = sl.stItems.size() - 1; n >= 0; n--) {
-            StoreRecord rec = sl.stItems.get(n)
-            //
-            double ratingTaskDiff = rec.getDouble("ratingTaskDiff")
-            double ratingTaskInc = rec.getDouble("ratingTaskInc")
-            double ratingTaskDec = rec.getDouble("ratingTaskDec")
-            double ratingQuicknessDiff = rec.getDouble("ratingQuicknessDiff")
-            //
-            rec.setValue("ratingTask", ratingTask)
-            rec.setValue("ratingQuickness", ratingQuickness)
-            rec.setValue("ratingTaskDiff", ratingTaskDiff)
-            rec.setValue("ratingTaskInc", ratingTaskInc)
-            rec.setValue("ratingTaskDec", ratingTaskDec)
-            rec.setValue("ratingQuicknessDiff", ratingQuicknessDiff)
-            //
-            ratingTask = ratingTask - ratingTaskDiff
-            ratingQuickness = ratingQuickness - ratingQuicknessDiff
-        }
-        sl.stItems.remove(sl.stItems.size() - 1)
-
-        /////////////////////////
-        println()
-        println("Result filled:")
-        mdb.outTable(sl.stItems)
-        /////////////////////////
+        Statistic_list statisticList = mdb.create(Statistic_list)
+        DataBox resStatisticList = statisticList.forPlan(idPlan, dbegParam, dendParam)
+        Store stSatisticByDay = resStatisticList.get("statisticByDay")
+        Map mapStatisticPeriod = resStatisticList.get("statisticPeriod")
 
 
         // ---
         res.put("plan", recPlan)
         res.put("statistic", recStatistic.getValues())
-        res.put("statisticPeriod", sl.stItems)
+        res.put("statisticPeriod", mapStatisticPeriod)
+        res.put("statisticByDay", stSatisticByDay)
 
         //
         return res
@@ -992,10 +956,9 @@ where
 
 
         // Дополним факты игры статистикой
-        Statistic_list sl = mdb.create(Statistic_list)
-        sl.prepareForGame(recGame.getDateTime("dbeg"), recGame.getDateTime("dend"))
-        sl.distributeStatistic(sl.statisticGroupBy, stGameTasks, "word")
-        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticGroupByWord)
+        Statistic_list statisticList = mdb.create(Statistic_list)
+        DataBox resStatisticList = statisticList.forGame(recGame.getDateTime("dbeg"), recGame.getDateTime("dend"))
+        Map mapStatistic = resStatisticList.get("statisticPeriod")
 
 /*
         // Находим запись о статистике игры
@@ -1016,7 +979,7 @@ where
         //
         res.put("game", recGame)
         res.put("tasks", stGameTasks)
-        res.put("statistic", recGameStatistic.getValues())
+        res.put("statistic", mapStatistic)
 
         //
         return res

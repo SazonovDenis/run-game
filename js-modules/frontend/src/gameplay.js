@@ -422,7 +422,7 @@ export default {
     },
 
     async api_updUsr(userInfo) {
-        let res = await ajax.request({
+        let res = await apx.ajax.request({
             url: "auth/updUsr",
             params: {
                 text: userInfo.text, login: userInfo.login, password: userInfo.password

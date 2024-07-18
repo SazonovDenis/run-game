@@ -10,15 +10,18 @@
 
                     <LogoGame/>
 
-                    <q-card-section class="q-pa-lg text-center">
+                    <q-card-section class="q-pb-none text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
-                            Вход / регистрация
+                            <div v-if="frameMode==='login'">Вход существующим игроком</div>
+                            <div v-if="frameMode==='register'">Регистрация нового игрока
+                            </div>
                         </div>
                     </q-card-section>
 
-                    <q-card-section class="q-pa-lg q-gutter-y-md">
+                    <q-card-section class="q-px-lg q-gutter-y-md">
 
-                        <q-input v-model="text"
+                        <q-input v-if="isModeRegister"
+                                 v-model="text"
                                  label="Имя*"
                                  outlined
                                  stack-label :dense="true">
@@ -27,7 +30,7 @@
                             </template>
                         </q-input>
 
-                        <q-input v-if="!loginIsGenerated(login) || user_login_isShown"
+                        <q-input _v-if="!loginIsGenerated(login)"
                                  v-model="login"
                                  label="Почта или телефон"
                                  outlined
@@ -38,7 +41,7 @@
                             </template>
                         </q-input>
 
-                        <q-input v-if="!loginIsGenerated(login) || user_login_isShown"
+                        <q-input _v-if="!loginIsGenerated(login)"
                                  v-model="password"
                                  outlined
                                  stack-label
@@ -61,29 +64,50 @@
                             </template>
                         </q-input>
 
-                        <div v-if="loginIsGenerated(login) && !user_login_isShown"
-                             class="row justify-left q-mt-lg q-mb-lg11"
-                             style="_padding-top: 1em"
-                             @click="user_login_isShown = true">
 
-                            <span class="rgm-link-soft">Дополнительно</span>
-                        </div>
-
-
-                        <div class="row justify-center q-mt-lg q-mb-lg11">
-                            <jc-btn kind="primary" :label="loginModeText"
+                        <div v-if="isModeLogin" class="row justify-center q-mt-lg">
+                            <jc-btn kind="primary" label="Вход"
+                                    :disable="!isValidLogin()"
                                     style="min-width: 10em;"
                                     @click="execLogin">
                             </jc-btn>
                         </div>
 
-                        <div v-if="localUserList.length>0"
-                             class="row justify-left q-mt-lg q-mb-lg11"
-                             style="padding-top: 1em"
-                             @click="checkLocalUserLogin">
-
-                            <span class="rgm-link-soft">Выбрать пользователя</span>
+                        <div v-if="isModeRegister" class="row justify-center q-mt-lg">
+                            <jc-btn kind="primary" label="Регистрация нового игрока"
+                                    :disable="!isValidRegistration()"
+                                    style="min-width: 10em;"
+                                    @click="execRegister">
+                            </jc-btn>
                         </div>
+
+                        <div class="">
+
+                            <div v-if="isModeLogin"
+                                 class="justify-left q-pt-lg"
+                                 @click="frameMode = 'register'">
+
+                                <span
+                                    class="rgm-link-soft">Регистрация нового игрока</span>
+                            </div>
+
+                            <div v-if="isModeRegister"
+                                 class="justify-left q-pt-lg"
+                                 @click="frameMode = 'login'">
+
+                                <span
+                                    class="rgm-link-soft">Вход существующим игроком</span>
+                            </div>
+
+                            <div v-if="localUserList.length>0"
+                                 class="justify-left q-pt-lg"
+                                 @click="setLocalUserLogin">
+
+                                <span class="rgm-link-soft">Выбрать игрока</span>
+                            </div>
+
+                        </div>
+
 
                     </q-card-section>
 
@@ -97,13 +121,13 @@
 
                     <LogoGame/>
 
-                    <q-card-section class="q-page flex flex-center text-center">
+                    <q-card-section class="q-pb-none text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
-                            Вход
+                            Вход существующим игроком
                         </div>
                     </q-card-section>
 
-                    <q-card-section class="q-pa-lg q-gutter-y-md">
+                    <q-card-section class="q-px-lg q-gutter-y-md">
 
                         <div>
                             <q-icon name="user"
@@ -141,10 +165,11 @@
                             </template>
                         </q-input>
 
-                        <div class="row justify-center q-mt-lg q-mb-lg11 q-gutter-x-sm">
+                        <div class="row justify-center q-mt-lg q-gutter-x-sm">
                             <div>
-                                <jc-btn kind="secondary" label="Забыть пользователя"
-                                        @click="clearLocalUser(id)">
+                                <jc-btn kind="secondary" label="Забыть игрока"
+                                        v-if="!loginIsGenerated(this.login)"
+                                        @click="clearLocalUser({id: this.id, login: this.login})">
                                 </jc-btn>
                             </div>
 
@@ -160,8 +185,12 @@
 
                     <q-card-section>
 
-                        <div @click="doFullLogin">
-                            <span class="rgm-link-soft">Войти другим пользователем</span>
+                        <div class="">
+
+                            <div @click="doFullLogin">
+                                <span class="rgm-link-soft">Войти другим игроком</span>
+                            </div>
+
                         </div>
 
                     </q-card-section>
@@ -176,15 +205,15 @@
 
                     <LogoGame/>
 
-                    <q-card-section class="q-pa-lg text-center">
+                    <q-card-section class="q-pb-none text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
-                            Выбор пользователя
+                            Выбор игрока
                         </div>
                     </q-card-section>
 
                     <template v-for="user in localUserList">
 
-                        <q-card-section class="q-pa-lg q-gutter-y-md">
+                        <q-card-section class="q-px-lg q-mt-xl q-gutter-y-md">
 
                             <div>
                                 <q-icon name="user" style="padding: 0 0.3em;"
@@ -223,10 +252,11 @@
 
 
                             <div
-                                class="row justify-center q-mt-lg q-mb-lg11d q-gutter-x-sm">
+                                class="row justify-center q-mt-lg q-gutter-x-sm">
                                 <div>
-                                    <jc-btn kind="secondary" label="Забыть пользователя"
-                                            @click="clearLocalUser(user.id)">
+                                    <jc-btn kind="secondary" label="Забыть игрока"
+                                            :disable="loginIsGenerated(user.login)"
+                                            @click="clearLocalUser(user)">
                                     </jc-btn>
                                 </div>
 
@@ -245,8 +275,12 @@
 
                     <q-card-section>
 
-                        <div @click="doFullLogin">
-                            <span class="rgm-link-soft">Войти другим пользователем</span>
+                        <div class="">
+
+                            <div @click="doFullLogin">
+                                <span class="rgm-link-soft">Войти другим игроком</span>
+                            </div>
+
                         </div>
 
                     </q-card-section>
@@ -276,8 +310,7 @@ export default {
 
     data: function() {
         return {
-            loginMode: null,
-            loginModeText: null,
+            frameMode: null,
             loginType: null,
             localUserList: [],
             //
@@ -288,48 +321,41 @@ export default {
             //
             globalState: ctx.getGlobalState(),
             //
-            user_login_isShown: false,
             user_password_isHidden: true,
         }
     },
 
-    watch: {
-        "text": function(oldVal, newVal) {
-            this.checkLoginMode()
-        }
-    },
+    watch: {},
 
     created() {
         gameplay.init()
 
         //
         this.localUserList = this.getLocalUserList()
-        this.checkLocalUserLogin()
-
-        //
-        this.checkLoginMode()
+        this.setLocalUserLogin()
     },
 
-    computed: {},
+    computed: {
+        isModeRegister() {
+            return this.frameMode === "register"
+        },
+        isModeLogin() {
+            return this.frameMode === "login"
+        },
+    },
 
     methods: {
 
-        loginIsGenerated(login) {
-            if (!login) {
-                return true
-            }
-
-            return login.length === 32
+        isValidRegistration() {
+            return this.text && this.text != ""
         },
 
-        checkLoginMode() {
-            if (this.text) {
-                this.loginMode = "register"
-                this.loginModeText = "Регистрация нового пользователя"
-            } else {
-                this.loginMode = "login"
-                this.loginModeText = "Вход"
-            }
+         isValidLogin() {
+            return this.login && this.login != ""
+        },
+
+        loginIsGenerated(login) {
+            return utils.loginIsGenerated(login)
         },
 
         getLocalUserList() {
@@ -354,20 +380,28 @@ export default {
             utils.setCookie(utils.getLocalUserCookeName(ui.id), ui, {expires: expires})
         },
 
-        clearLocalUser(userId) {
+        clearLocalUser(user) {
+            let userId = user.id
+            let userLogin = user.login
+
+            //
+            if (this.loginIsGenerated(userLogin)) {
+                return
+            }
+
             utils.deleteCookie(utils.getLocalUserCookeName(userId))
 
             //
             this.localUserList = this.getLocalUserList()
-            this.checkLocalUserLogin()
+            this.setLocalUserLogin()
         },
 
         execLogin() {
-            if (this.loginMode === "login") {
-                this.execLoginAsUser(this.login, this.password)
-            } else if (this.loginMode === "register") {
-                this.execRegisterUser(this.text, this.login, this.password)
-            }
+            this.execLoginAsUser(this.login, this.password)
+        },
+
+        execRegister() {
+            this.execRegisterUser(this.text, this.login, this.password)
         },
 
         async execLoginAsUser(login, password) {
@@ -406,20 +440,21 @@ export default {
         },
 
         doFullLogin() {
+            this.frameMode = "login"
             this.loginType = "full"
             this.id = null
             this.text = null
             this.login = null
             this.password = null
-            //
-            this.checkLoginMode()
         },
 
-        checkLocalUserLogin() {
+        setLocalUserLogin() {
             if (this.localUserList.length > 1) {
+                this.frameMode = "login"
                 this.loginType = "localUserList"
             } else if (this.localUserList.length === 1) {
                 let userItem = this.localUserList[0]
+                this.frameMode = "login"
                 this.loginType = "localOneUser"
                 this.id = userItem.id
                 this.text = userItem.text

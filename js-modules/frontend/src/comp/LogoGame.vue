@@ -36,15 +36,14 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    height: 6rem;
+    height: 5rem;
 }
 
 .logo img {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 5rem;
+    height: 4rem;
 }
 
 @keyframes fade {

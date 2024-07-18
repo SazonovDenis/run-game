@@ -76,6 +76,8 @@
 
 <script>
 
+import utils from "../utils"
+
 
 export default {
     components: {},
@@ -95,13 +97,8 @@ export default {
      },
 
     methods: {
-
         loginIsGenerated(login) {
-            if (!login) {
-                return true
-            }
-
-            return login.length === 32
+                return utils.loginIsGenerated(login)
         },
     },
 

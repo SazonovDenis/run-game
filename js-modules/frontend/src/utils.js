@@ -136,6 +136,15 @@ export default {
         return apx.url.ref("sound/" + task.valueSound)
     },
 
+    loginIsGenerated(login) {
+        if (!login) {
+            return true
+        }
+
+        return login.length === 32
+    },
+
+
     ratingText(rating) {
         rating = Math.abs(Math.trunc(rating))
         if (rating >= 10 && rating <= 20) {

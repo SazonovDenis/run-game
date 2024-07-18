@@ -40,13 +40,14 @@ export default {
 
             //
             let n = 0
+            let cnt = statisticByDay.length
             let displayFormat1 = "d MMMM yyyy"
             let displayFormat2 = "d MMMM"
             for (let rec of statisticByDay) {
                 n++
                 if (n === 1) {
                     xAxisData.push(apx.date.toDateTime(rec.dbeg).toFormat(displayFormat1))
-                } else if (n === statisticByDay.length) {
+                } else if (n === cnt) {
                     xAxisData.push(apx.date.toDateTime(rec.dbeg).toFormat(displayFormat2))
                 } else {
                     xAxisData.push('')
@@ -66,8 +67,38 @@ export default {
                 },
                 xAxis: {
                     type: 'category',
-                    boundaryGap: true,
-                    data: xAxisData
+                    data: xAxisData,
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        interval: 0,
+                        align: 'center',
+                        formatter: function(value, index) {
+                            // Такие танцы с подбором отступа сделаны пототму, что
+                            // rich: {alignLeft: {align: 'left'}}
+                            // не срабатывает
+                            let charsPafddingL
+                            let charsPafddingR
+                            if (cnt < 20) {
+                                charsPafddingL = 5
+                                charsPafddingR = 0
+                            } else if (cnt < 50) {
+                                charsPafddingL = 18
+                                charsPafddingR = 10
+                            } else {
+                                charsPafddingL = 22
+                                charsPafddingR = 12
+                            }
+                            if (index === 0) {
+                                return " ".repeat(charsPafddingL) + value
+                            } else if (index === cnt - 1) {
+                                return value + " ".repeat(charsPafddingR)
+                            } else {
+                                return ''
+                            }
+                        },
+                    },
                 },
                 yAxis: {
                     type: 'value',

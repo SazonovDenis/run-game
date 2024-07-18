@@ -21,10 +21,6 @@
 
 
         <div class="game-field">
-            <!--
-            <div class="">&nbsp;</div>
-            -->
-
 
             <div v-if="gameTask" class="task-options">
                 <TaskOptions :taskOptions="gameTask.taskOptions" :state="dataState"/>

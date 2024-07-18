@@ -672,7 +672,7 @@ order by
     }
 
     int getWordCountRepeated(String answerResult) {
-        if (answerResult.equals("wasTrue") || answerResult.equals("wasFalse")) {
+        if (answerResult.equals("wasTrue") || answerResult.equals("wasFalse") || answerResult.equals("wasHint")) {
             return 1
         } else {
             return 0

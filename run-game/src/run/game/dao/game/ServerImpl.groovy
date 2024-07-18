@@ -7,7 +7,6 @@ import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
-import kis.molap.ntbd.model.*
 import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.backstage.*
@@ -570,65 +569,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    Map aggregateStatistic(List<Map> listStatistic) {
-        Map resStatistic = new HashMap<>()
-
-        // Сумма
-        double ratingTask = 0
-        double ratingQuickness = 0
-        double ratingTaskDiff = 0
-        double ratingQuicknessDiff = 0
-
-        // Прибавка и потери рейтинга - по отдельности
-        double ratingTaskInc = 0
-        double ratingTaskDec = 0
-        double ratingQuicknessInc = 0
-        double ratingQuicknessDec = 0
-
-        // Копим
-        for (Map statisticRec : listStatistic) {
-            //
-            double ratingTaskRec = UtCnv.toDouble(statisticRec.get("ratingTask"))
-            double ratingQuicknessRec = UtCnv.toDouble(statisticRec.get("ratingQuickness"))
-            double ratingTaskDiffRec = UtCnv.toDouble(statisticRec.get("ratingTaskDiff"))
-            double ratingQuicknessDiffRec = UtCnv.toDouble(statisticRec.get("ratingQuicknessDiff"))
-
-            // Сумма
-            ratingTask = ratingTask + ratingTaskRec
-            ratingQuickness = ratingQuickness + ratingQuicknessRec
-            ratingTaskDiff = ratingTaskDiff + ratingTaskDiffRec
-            ratingQuicknessDiff = ratingQuicknessDiff + ratingQuicknessDiffRec
-
-            // Прибавка и потери рейтинга
-            if (ratingTaskDiffRec > 0) {
-                ratingTaskInc = ratingTaskInc + ratingTaskDiffRec
-            } else {
-                ratingTaskDec = ratingTaskDec - ratingTaskDiffRec
-            }
-            //
-            if (ratingQuicknessDiffRec > 0) {
-                ratingQuicknessInc = ratingQuicknessInc + ratingQuicknessDiffRec
-            } else {
-                ratingQuicknessDec = ratingQuicknessDec - ratingQuicknessDiffRec
-            }
-        }
-
-        // Сумма
-        resStatistic.put("ratingTask", ratingTask)
-        resStatistic.put("ratingQuickness", ratingQuickness)
-        resStatistic.put("ratingTaskDiff", ratingTaskDiff)
-        resStatistic.put("ratingQuicknessDiff", ratingQuicknessDiff)
-
-        // Прибавка и потери рейтинга
-        resStatistic.put("ratingTaskInc", ratingTaskInc)
-        resStatistic.put("ratingTaskDec", ratingTaskDec)
-        resStatistic.put("ratingQuicknessInc", ratingQuicknessInc)
-        resStatistic.put("ratingQuicknessDec", ratingQuicknessDec)
-
-        //
-        return resStatistic
-    }
-
     interface IWordAnalyzer {
         Collection<String> analyzeText(String text, Set item)
     }
@@ -946,21 +886,6 @@ where
         DataBox resStatisticList = statisticList.forGame(recGame.getDateTime("dbeg"), recGame.getDateTime("dend"))
         Map mapStatistic = resStatisticList.get("statisticPeriod")
 
-/*
-        // Находим запись о статистике игры
-        List<Map> listTaskStatistic = loadGameTaskStaistic(idGame, idUsr)
-
-        // Разносим статистику по записям stGameTasks
-        distributeStatisticGameTask(listTaskStatistic, stGameTasks)
-
-        // Суммируем статистику, считаем прибавку и потери рейтинга
-        Map mapStatisticAggretated = aggregateStatistic(listTaskStatistic)
-        StoreRecord recGameStatistic = mdb.createStoreRecord("Game.statistic")
-        recGameStatistic.setValues(mapStatisticAggretated)
-
-        // Максимальный балл берем на основе количества нескрытых заданий в плане
-        recGameStatistic.setValue("ratingMax", recGameRaw.getLong("count"))
-*/
 
         //
         res.put("game", recGame)
@@ -968,18 +893,6 @@ where
         res.put("statistic", mapStatistic)
 
         //
-        return res
-    }
-
-    public static Map<String, Double> getSum(Store store, Collection<String> fields) {
-        Map<String, Double> res = new HashMap<>()
-
-        for (String field : fields) {
-            double sum = StoreUtils.getSum(store, field)
-            sum = CubeUtils.discardExtraDigits(sum)
-            res.put(field, sum)
-        }
-
         return res
     }
 
@@ -1295,70 +1208,6 @@ where
             recDest.setValue(fieldDest, recTaskQuestion.getValues())
         }
 
-    }
-
-    void convertToFlatRecord(List<StoreRecord> recsFactSource, String fieldName, StoreRecord recDest) {
-        StoreRecord recXXX = mdb.createStoreRecord("Task.fields")
-        recXXX.setValues(recDest.getValue(fieldName))
-
-        for (StoreRecord recFact : recsFactSource) {
-            convertFactToFlatRecord(recFact, recXXX)
-        }
-
-        recDest.setValue(fieldName, recXXX.getValues())
-    }
-
-    void convertToFlatRecord(StoreRecord recFact, String fieldName, StoreRecord recDest) {
-        StoreRecord recXXX = mdb.createStoreRecord("Task.fields")
-        recXXX.setValues(recDest.getValue(fieldName))
-
-        convertFactToFlatRecord(recFact, recXXX)
-
-        recDest.setValue(fieldName, recXXX.getValues())
-    }
-
-    List<Map> loadGameTaskStaistic(long idGame, long idUsr) {
-        // Грузим запись
-        StoreRecord recUsrGameStatistic = mdb.loadQueryRecord(sqlUsrGameStatistic(), [
-                usr : idUsr,
-                game: idGame,
-        ], false)
-
-        // Нет статистики
-        if (recUsrGameStatistic == null) {
-            return null
-        }
-
-        // Извлекаем из BLOB
-        List<Map> listTaskStatistic = UtJson.fromJson(new String(recUsrGameStatistic.getValue("taskStatistic"), "utf-8"))
-
-        //
-        return listTaskStatistic
-    }
-
-    void distributeStatisticGameTask(List<Map> listTaskStatistic, Store stGameTasks) {
-
-        // В Map, где ключ - пара фактов (factQuestion+factAnswer)
-        Map<String, Map> mapTaskStatistic = new HashMap<>()
-        for (Map taskStatistic : listTaskStatistic) {
-            long factQuestion = UtCnv.toLong(taskStatistic.get("factQuestion"))
-            long factAnswer = UtCnv.toLong(taskStatistic.get("factAnswer"))
-            String key = factQuestion + "_" + factAnswer
-            //
-            mapTaskStatistic.put(key, taskStatistic)
-        }
-
-        // Map по записям
-        for (StoreRecord recGameTask : stGameTasks) {
-            String key = recGameTask.getLong("factQuestion") + "_" + recGameTask.getLong("factAnswer")
-            Map taskStatistic = mapTaskStatistic.get(key)
-            if (taskStatistic != null) {
-                recGameTask.setValue("ratingTask", taskStatistic.get("ratingTask"))
-                recGameTask.setValue("ratingQuickness", taskStatistic.get("ratingQuickness"))
-                recGameTask.setValue("ratingTaskDiff", taskStatistic.get("ratingTaskDiff"))
-                recGameTask.setValue("ratingQuicknessDiff", taskStatistic.get("ratingQuicknessDiff"))
-            }
-        }
     }
 
 

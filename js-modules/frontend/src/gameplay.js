@@ -5,6 +5,7 @@ import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
 import auth from "./auth"
+import appConst from "./dao/appConst"
 
 export default {
 
@@ -58,15 +59,10 @@ export default {
 
     //
     onAfterInvokeError(res) {
-        let ERROR_CODE = {
-            USER_NOT_SET: "RGM_USER_NOT_SET"
-        }
-
-        //
         let message = res?.error?.message
 
         //
-        if (message && message.includes(ERROR_CODE.USER_NOT_SET)) {
+        if (message && message.includes(appConst.ERROR_CODES.USER_NOT_SET)) {
             apx.showFrame({
                 frame: '/login'
             })
@@ -534,9 +530,9 @@ export default {
 
     // Сбрасываем состояние результата (цели)
     resetGoal(text) {
-        ctx.globalState.dataState.mode.goalHitSize = ctx.settings.goalHitSizeDefault
+        ctx.globalState.dataState.mode.goalHitSize = appConst.settings.goalHitSizeDefault
         ctx.globalState.dataState.goal.text = text
-        ctx.globalState.dataState.goal.valueGoal = ctx.settings.goalHitSizeDefault
+        ctx.globalState.dataState.goal.valueGoal = appConst.settings.valueGoalDefault
         ctx.globalState.dataState.goal.valueDone = 0
     },
 
@@ -604,13 +600,18 @@ export default {
         } else {
             // Выбрали не правильный ответ
             stateBall.text = ""
-            stateGoal.valueGoal = stateGoal.valueGoal + 1
-            if (stateGoal.valueGoal > ctx.settings.valueGoalMax) {
-                stateGoal.valueGoal = ctx.settings.valueGoalMax
+
+            // Увеличим размер цели
+            stateGoal.valueGoal = stateGoal.valueGoal + appConst.settings.valueGoalIncError
+            if (stateGoal.valueGoal > appConst.settings.valueGoalMax) {
+                stateGoal.valueGoal = appConst.settings.valueGoalMax
             }
+
+            // Уменьшим наносимый ущерб
+            stateMode.goalHitSize = appConst.settings.goalHitSizeError
+
             // Покажем подсказки
             stateMode.modeShowOptions = "hint-true"
-            stateMode.goalHitSize = ctx.settings.goalHitSizeError
         }
 
         // Показать текст подсказки после первого выбора
@@ -683,13 +684,21 @@ export default {
 
     onShowHint(doShowHint) {
         if (doShowHint) {
-            // Показывать подсказки
-            ctx.globalState.dataState.mode.modeShowOptions = "hint-true"
+            let stateGoal = ctx.globalState.dataState.goal
+
+            // Увеличим размер цели
+            stateGoal.valueGoal = stateGoal.valueGoal + appConst.settings.valueGoalIncHint
+            if (stateGoal.valueGoal > appConst.settings.valueGoalMax) {
+                stateGoal.valueGoal = appConst.settings.valueGoalMax
+            }
 
             // Уменьшим силу удара
-            if (ctx.globalState.dataState.mode.goalHitSize > ctx.settings.goalHitSizeHint) {
-                ctx.globalState.dataState.mode.goalHitSize = ctx.settings.goalHitSizeHint
+            if (ctx.globalState.dataState.mode.goalHitSize > appConst.settings.goalHitSizeHint) {
+                ctx.globalState.dataState.mode.goalHitSize = appConst.settings.goalHitSizeHint
             }
+
+            // Покажем подсказки
+            ctx.globalState.dataState.mode.modeShowOptions = "hint-true"
 
             // Если не отправляли ответ - отправим
             if (!ctx.globalState.dataState.mode.postTaskAnswerDone) {

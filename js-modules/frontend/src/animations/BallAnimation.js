@@ -1,6 +1,6 @@
 import AnimationBase from "../AnimationBase"
-import ctx from "../gameplayCtx"
 import utilsCore from "../utils2D"
+import appConst from "../dao/appConst"
 
 class BallAnimation extends AnimationBase {
 
@@ -86,7 +86,7 @@ class BallAnimation extends AnimationBase {
 
         // ---
         // Выход шарика за границы экрана?
-        if (data.x + ctx.settings.ballWidth > innerWidth || data.x < 0 || data.y + ctx.settings.ballHeihth > innerHeight || data.y < 0) {
+        if (data.x + appConst.settings.ballWidth > innerWidth || data.x < 0 || data.y + appConst.settings.ballHeihth > innerHeight || data.y < 0) {
             data.result = {
                 goal: false,
                 x: data.x,

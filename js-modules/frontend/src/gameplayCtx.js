@@ -3,19 +3,6 @@ import {useQuasar} from 'quasar'
 
 export default {
 
-    /**
-     * Не меняющиеся настройки приложения
-     */
-    settings: {
-        ballWidth: 32,
-        ballHeihth: 32,
-        goalSize: 16,
-        valueGoalMax: 10,
-        goalHitSizeDefault: 5,
-        goalHitSizeHint: 2,
-        goalHitSizeError: 1,
-    },
-
     globalState: null,
 
     /**

@@ -16,17 +16,11 @@
                 <div class="result-words">
 
                     <div class="row">
-                        <template v-if="localState.statistic.wordCountLearned != null">
 
-                            <StatisticWordsLearned :statistic="localState.statistic"/>
+                        <StatisticWordsLearned :statistic="localState.statistic"/>
 
-                        </template>
+                        <StatisticWordsRepeated :statistic="localState.statistic"/>
 
-                        <template v-if="localState.statistic.wordCountRepeated != null">
-
-                            <StatisticWordsRepeated :statistic="localState.statistic"/>
-
-                        </template>
                     </div>
 
                 </div>

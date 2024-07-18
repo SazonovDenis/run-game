@@ -100,7 +100,6 @@ export default {
     text-align: center;
     font-weight: bold;
     border-radius: 10em;
-    _color: #109010;
 }
 
 .value-value {
@@ -118,7 +117,7 @@ export default {
 
 .total {
     position: relative;
-    __top: -0.1em;
+    top: 0.1em;
     color: #303030;
 }
 

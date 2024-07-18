@@ -24,17 +24,9 @@
 
                     <div class="row">
 
-                        <template v-if="statisticPeriod.wordCountLearned != null">
+                        <StatisticWordsLearned :statistic="statisticPeriod"/>
 
-                            <StatisticWordsLearned :statistic="statisticPeriod"/>
-
-                        </template>
-
-                        <template v-if="statisticPeriod.wordCountRepeated != null">
-
-                            <StatisticWordsRepeated :statistic="statisticPeriod"/>
-
-                        </template>
+                        <StatisticWordsRepeated :statistic="statisticPeriod"/>
 
                     </div>
 

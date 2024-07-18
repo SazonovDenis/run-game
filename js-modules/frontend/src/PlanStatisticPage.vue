@@ -55,8 +55,11 @@
             </div>
 
             <div v-show="dataLoaded" class="justify-center row q-mt-ms">
+
                 <StatisticWordsLearned class="q-mx-md q-mt-md" :statistic="statistic"/>
+
                 <StatisticRating class="q-mx-md q-mt-md" :statistic="statistic"/>
+
             </div>
 
 

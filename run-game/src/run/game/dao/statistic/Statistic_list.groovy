@@ -132,31 +132,6 @@ class Statistic_list extends RgmMdbUtils {
         distributeStatistic(statisticGroupBy, stItems, groupByKey)
 
 
-        //////////////////////////
-        // println()
-        // println("Statistic raw:")
-        // mdb.outTable(stStatistic, 10)
-        // //////////////////////////
-        // println()
-        // println("Statistic group by " + groupByKey + ":")
-        // int cnt = 0
-        // for (String key : statisticGroupBy.keySet()) {
-        //     println(groupByKey + ": " + key + ",  statistic: " + statisticGroupBy.get(key))
-        //     //
-        //     cnt++
-        //     if (cnt > 10) {
-        //         println("...")
-        //         break
-        //     }
-        // }
-        // println(cnt + " / " + statisticGroupBy.keySet().size() + " shown")
-        // //////////////////////////
-        // println()
-        // println("Result by " + groupByKey + ":")
-        // mdb.outTable(stItems, 10)
-        //////////////////////////
-
-
         // ---
         // Получим сумму по статистике для всего списка, за весь период (без groupBy)
 
@@ -164,21 +139,6 @@ class Statistic_list extends RgmMdbUtils {
         // несколько раз, нас интересует одно итоговое изменение каждого факта.
         statisticGroupByWord = groupStatisticBy(stStatistic, "word")
 
-        //////////////////////////
-        // println()
-        // println("Statistic group by word:")
-        // cnt = 0
-        // for (String key : statisticGroupByWord.keySet()) {
-        //     println(groupByKey + ": " + key + ",  statistic: " + statisticGroupByWord.get(key))
-        //     //
-        //     cnt++
-        //     if (cnt > 10) {
-        //         println("...")
-        //         break
-        //     }
-        // }
-        // println(cnt + " / " + statisticGroupByWord.keySet().size() + " shown")
-        //////////////////////////
 
         // Суммируем статистику
         StoreRecord recStatisticPeriod = summStatisticByWord(statisticGroupByWord)
@@ -202,22 +162,9 @@ class Statistic_list extends RgmMdbUtils {
             dt = dt.addDays(1)
         }
 
-        //////////////////////////
-        // println()
-        // println("stSatisticByDay, empty:")
-        // mdb.outTable(stSatisticByDay, 10)
-        //////////////////////////
-
-
         // Распределяем в список дней
         distributeStatistic(statisticGroupByDay, stSatisticByDay, "day")
 
-
-        //////////////////////////
-        // println()
-        // println("stSatisticByDay, with statistic:")
-        // mdb.outTable(stSatisticByDay, 10)
-        //////////////////////////
 
         // Берем статистику от последней даты
         double ratingTask = recStatisticPeriod.getDouble("ratingTask")
@@ -244,15 +191,6 @@ class Statistic_list extends RgmMdbUtils {
             ratingTask = ratingTask - ratingTaskDiff
             ratingQuickness = ratingQuickness - ratingQuicknessDiff
         }
-        // Последняя запись не нужна
-        //stSatisticByDay.remove(stSatisticByDay.size() - 1)
-
-
-        //////////////////////////
-        // println()
-        // println("stSatisticByDay, filled:")
-        // mdb.outTable(stSatisticByDay, 10)
-        //////////////////////////
 
 
         // ---
@@ -264,6 +202,25 @@ class Statistic_list extends RgmMdbUtils {
         //
         return res
     }
+
+
+    /**
+     * Отладочная печать сгруппиррванной статистики
+     */
+    void printStatisticMap(Map<String, Map> statisticGroupBy) {
+        int cnt = 0
+        for (String key : statisticGroupBy.keySet()) {
+            println(groupByKey + ": " + key + ",  statistic: " + statisticGroupBy.get(key))
+            //
+            cnt++
+            if (cnt > 10) {
+                println("...")
+                break
+            }
+        }
+        println(cnt + " / " + statisticGroupBy.keySet().size() + " shown")
+    }
+
 
     String getSqlItems(String groupByKey, Map params) {
         switch (groupByKey) {

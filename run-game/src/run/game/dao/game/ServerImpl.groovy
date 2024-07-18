@@ -304,21 +304,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- statistic
-
         StoreRecord recStatistic = loadRecStatistic(recPlanRaw, stPlanFact)
-
-/*
-        ////////////////////////////////////
-        ////////////////////////////////////
-        ////////////////////////////////////
-        ////////////////////////////////////
-        ////////////////////////////////////
-        1) удалить и отрефакторить!!!
-        2) statistic", recStatistic.getValues или statistic", recStatistic ? В разных местах по-разному
-        ////////////////////////////////////
-        sl.distributeStatistic(sl.statistic, sl.stStatisticDay, "day")
-        StoreRecord recGameStatistic = sl.summStatisticByWord(sl.statisticByWord)
-*/
 
 
         // ---
@@ -337,7 +323,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         recStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
         recStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
 
-        // Считаем количество нескрытых и выученных заданий  в плане
+        // Считаем количество нескрытых и выученных фактов в плане
         int wordCount = 0
         int wordCountLearned = 0
         for (StoreRecord rec : stPlanFact) {
@@ -351,7 +337,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //
         recStatistic.setValue("wordCount", wordCount)
         recStatistic.setValue("wordCountLearned", wordCountLearned)
-        // Максимальный балл берем на основе количества нескрытых заданий в плане
+        // Максимальный балл берем на основе количества нескрытых фактов в плане
         recStatistic.setValue("ratingMax", wordCount * UtCubeRating.RATING_FACT_MAX)
 
 
@@ -396,9 +382,9 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         XDateTime dendParam = dend.addDays(1).toDateTime().addMSec(-1000)
         XDateTime dbegParam = dbeg.toDateTime()
         Statistic_list statisticList = mdb.create(Statistic_list)
-        DataBox resStatisticList = statisticList.forPlan(idPlan, dbegParam, dendParam)
-        Store stSatisticByDay = resStatisticList.get("statisticByDay")
-        Map mapStatisticPeriod = resStatisticList.get("statisticPeriod")
+        DataBox resStatistic = statisticList.forPlan(idPlan, dbegParam, dendParam)
+        Store stSatisticByDay = resStatistic.get("statisticByDay")
+        Map mapStatisticPeriod = resStatistic.get("statisticPeriod")
 
 
         // ---

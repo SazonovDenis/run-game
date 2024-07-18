@@ -191,7 +191,9 @@ export default {
             this.localState = await gameplay.loadLastGame()
         },
 
-        continueActiveGame() {
+        async continueActiveGame() {
+            await gameplay.loadActiveGame()
+
             apx.showFrame({
                 frame: '/game'
             })

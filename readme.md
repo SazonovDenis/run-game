@@ -158,3 +158,18 @@ local   all             postgres                                md5
 ```
 sudo systemctl restart postgresql
 ```
+
+
+### Полезные команды с базой данных
+                                 
+
+Снятие резервной копии БД на сервере
+
+```
+pg_dump --username=postgres --clean --dbname=run_game --format=tar --file=run_game_srv.tar
+```
+
+Выполнение скрипта на сервере, например обновление версии БД
+```
+psql --dbname=run_game postgres --file=/home/dvsa/projects/jc2-projects/run-game/data/verdb/001/001.sql 
+```

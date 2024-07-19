@@ -17,8 +17,11 @@ import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
 
+    private long MAX_FACT_FOR_GAME = 8
+    private long MAX_TASK_COUNT_FOR_FACT_IN_GAME = 2
+    private long MAX_TASK_COUNT_FOR_FACT_IN_GAME_IF_ERROR = 4
     private long MAX_TASK_FOR_GAME = 10
-    private double RATING_DECREASE_FOR_STARRED = 0.25
+    private double RATING_DECREASE_FOR_STARRED = 0.1
 
     private Rnd rnd = new RndImpl()
 
@@ -67,26 +70,24 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public void closeActiveGame() {
-        // Закроем игру
         long idUsr = getCurrentUsrId()
 
+        // Все незакрытые игры
+        Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
+
         //
-        StoreRecord recGame = loadActiveGameRec()
-        if (recGame == null) {
-            return
+        for (StoreRecord recGame : stGames) {
+            long idGame = recGame.getLong("id")
+
+            // Закроем игру
+            XDateTime dt = XDateTime.now()
+            mdb.execQuery(sqlCloseGame(), [game: idGame, dt: dt])
+
+            // Пересчитаем кубы
+            long idPlan = recGame.getLong("plan")
+            RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
+            cubeUtils.cubesRecalc(idUsr, idGame, idPlan)
         }
-
-        //
-        long idGame = recGame.getLong("id")
-
-        //
-        XDateTime dt = XDateTime.now()
-        mdb.execQuery(sqlCloseGame(), [game: idGame, dt: dt])
-
-        // Пересчитаем кубы
-        long idPlan = recGame.getLong("plan")
-        RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
-        cubeUtils.cubesRecalc(idUsr, idGame, idPlan)
     }
 
 
@@ -128,49 +129,120 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // ---
-        // Отберем подходящие задания на игру (с учетом статистики пользователя)
+        // Отберем подходящие факты (самые плохо выученные с учетом статистики пользователя),
+        // а по ним - задания на игру.
 
-        // Задания для плана
-        Store stPlanTasks = mdb.loadQuery(sqlPlanFact_TaskCombinations(), [plan: idPlan, usr: idUsr])
 
-        // Слегка рандомизируем рейтинг - иначе для для фактов без рейтинга (например,
-        // для которых никогда не выдавали заданий) рейтинг перестает быть
-        // хорошим выбором порядка - получается список идущих подряд одних тех же слов
-        // (потому, что задания сортируются по номеру факта, а для одного факта -
-        // несколько заданий).
-        for (StoreRecord recPlanTask : stPlanTasks) {
-            double progressSeed = rnd.num(-1000, 1000) / 10000
-            recPlanTask.setValue("ratingTask", recPlanTask.getDouble("ratingTask") + progressSeed)
+        // ---
+        // Факты
+
+
+        // Загрузим факты в плане
+        Store stPlanFact = mdb.loadQuery(sqlPlanFact(), [plan: idPlan, usr: idUsr])
+
+        // Слегка рандомизируем рейтинг фактов - иначе для фактов без рейтинга
+        // (например, для которых никогда не выдавали заданий) рейтинг перестает быть
+        // хорошим выбором порядка - от игры к игре будет выбираться список идущих подряд
+        // одних тех же слов с нулевым рейтингом - по порядку в sql-запросе, а нам нужно случайно.
+        for (StoreRecord recPlanFact : stPlanFact) {
+            // Получаем поправку, чтобы получить изменение не более 10%
+            double rndSeed = UtCubeRating.RATING_FACT_MAX * rnd.num(0, 1000) / 10000
+            // Исказим рейтинг факта
+            recPlanFact.setValue("ratingTask", recPlanFact.getDouble("ratingTask") + rndSeed)
         }
 
-        // Откорректируем рейтинг - от помеченных как "любимые" отнимем немного баллов,
-        // чтобы они с большей вероятностью выпадали
-        for (StoreRecord recTask : stPlanTasks) {
+        // Откорректируем рейтинг - от фактов, помеченных как "любимые",
+        // отнимем немного баллов, чтобы они с большей вероятностью выпадали
+        for (StoreRecord recPlanFact : stPlanFact) {
             // Факт помечен как "isKnownBad"?
-            if (recTask.getBoolean("isKnownBad")) {
-                recTask.setValue("rating", recTask.getDouble("rating") - RATING_DECREASE_FOR_STARRED)
+            if (recPlanFact.getBoolean("isKnownBad")) {
+                recPlanFact.setValue("ratingTask", recPlanFact.getDouble("ratingTask") - recPlanFact.getDouble("ratingTask") * RATING_DECREASE_FOR_STARRED)
             }
         }
 
-        // Сортируем задания по рейтингу
-        stPlanTasks.sort("ratingTask,ratingQuickness")
+        // Сортируем факты по рейтингу
+        stPlanFact.sort("ratingTask,ratingQuickness")
 
-        // Теперь выберем задания на игру
-        long taskForGameCount = 0
-        for (StoreRecord recTask : stPlanTasks) {
+
+        // Отберем факты на игру.
+        // Начинаем с начала (там самый плохой рейтинг) и выходим
+        // при достижении максимального количества фактов.
+        Set<String> factsForGame = new HashSet<>()
+        for (StoreRecord recPlanFact : stPlanFact) {
             // Скрытые факты не выдаем
-            if (recTask.getBoolean("isHidden")) {
+            if (recPlanFact.getBoolean("isHidden")) {
                 continue
             }
 
-            //
+            // Копим факты
+            long factQuestion = recPlanFact.getLong("factQuestion")
+            long factAnswer = recPlanFact.getLong("factAnswer")
+            String key = factQuestion + "_" + factAnswer
+            factsForGame.add(key)
+
+            // Набрали фактов сколько нужно
+            if (factsForGame.size() >= MAX_FACT_FOR_GAME) {
+                break
+            }
+        }
+
+
+        // ---
+        // Задания
+
+
+        // Загрузим задания для плана
+        Store stPlanTask = mdb.loadQuery(sqlPlanTask(), [plan: idPlan, usr: idUsr])
+
+        // Слегка рандомизируем порядок заданий - иначе всегда будут выходить
+        // одни и те же задания - по порядку в sql-запросе, а нам нужно случайно.
+        // Кроме того, учет рейтинга факта позволит добавить больше
+        // повторных заданий на факты с самым низким рейтингом.
+        for (StoreRecord recPlanTask : stPlanTask) {
+            // Получаем поправку, чтобы получить изменение не более 10%
+            double rndSeed = UtCubeRating.RATING_FACT_MAX * rnd.num(0, 1000) / 10000
+            // Исказим рейтинг факта задания
+            recPlanTask.setValue("ratingTask", recPlanTask.getDouble("ratingTask") + rndSeed)
+        }
+
+        // Сортируем задания по рейтингу факта
+        stPlanTask.sort("ratingTask")
+
+
+        // Для отобранных фактов выберем задания на игру
+        Map<String, Integer> factsForGameSelected = new HashMap<>()
+        long taskForGameCount = 0
+        for (StoreRecord recTask : stPlanTask) {
+            long factQuestion = recTask.getLong("factQuestion")
+            long factAnswer = recTask.getLong("factAnswer")
+            String key = factQuestion + "_" + factAnswer
+
+            // Отбираем задания только среди выбранных фактов
+            if (!factsForGame.contains(key)) {
+                continue
+            }
+
+            // Не превышаем максимального количества заданий на каждую пару фактов в одной игре,
+            // а то скучно получать задания про одно и то же.
+            int tasksForFactSelectedCount = factsForGameSelected.getOrDefault(key, 0)
+
+            // Для такой пары фактов еще можно добавить задание?
+            if (tasksForFactSelectedCount >= MAX_TASK_COUNT_FOR_FACT_IN_GAME) {
+                continue
+            }
+
+            // Запоминаем количество заданий на игру для каждой пары фактов.
+            tasksForFactSelectedCount = tasksForFactSelectedCount + 1
+            factsForGameSelected.put(key, tasksForFactSelectedCount)
+
+            // Добавляем задание
             mdb.insertRec("GameTask", [
                     game: idGame,
                     usr : idUsr,
                     task: recTask.getLong("task"),
             ])
 
-            //
+            // Набрали заданий на игру сколько нужно?
             taskForGameCount = taskForGameCount + 1
             if (taskForGameCount >= MAX_TASK_FOR_GAME) {
                 break
@@ -178,7 +250,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         }
 
 
-        //
+        // ---
         return loadAndPrepareGame_Short(idGame, idUsr)
     }
 
@@ -207,7 +279,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox currentTask(long idGame) {
-        // Выбираем последнее выданное задание
+        // Выбираем последнее выданное, но не отвеченное задание
         StoreRecord recGameTask = getGameLastTask(idGame)
 
         //
@@ -257,14 +329,45 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
 
         // --- Игра окончена?
-        // Выбираем, что осталось спросить по плану
+        // Выбираем, осталось что-нибудь спросить по плану
         long idGame = recGameTask.getLong("game")
-        StoreRecord recGameTaskNext = choiceGameTask(idGame)
+        StoreRecord stGameTask = mdb.loadQueryRecord(sqlGameTaskRemainderCount(), [
+                game: idGame,
+                usr : idUsr,
+        ])
 
         // Закрываем игру, если нечего
-        if (recGameTaskNext == null) {
+        if (stGameTask.getLong("cnt") == 0) {
             closeActiveGame()
+            return
         }
+
+
+        // --- При ошибке - попробуем добавить еще одно задание на эти же факты
+        if (taskResult.get("wasFalse") == true || taskResult.get("wasHint") == true) {
+            // Выясним пару фактов текущего задания
+            long idTask = recGameTask.getLong("task")
+            StoreRecord recTask = mdb.loadQueryRecord(sqlTask(), [id: idTask])
+            long factQuestion = recTask.getLong("factQuestion")
+            long factAnswer = recTask.getLong("factAnswer")
+
+            // Есть/были в игре еще вопросы на эти факты?
+            Store stOtherTask = mdb.loadQuery(
+                    sqlOtherTask(),
+                    [game: idGame, usr: idUsr, factQuestion: factQuestion, factAnswer: factAnswer]
+            )
+            //
+            if (stOtherTask.size() >= MAX_TASK_COUNT_FOR_FACT_IN_GAME_IF_ERROR) {
+                // Заданий с такми фактами уже достаточно, новое не нужно
+                return
+            }
+
+            // Повторим задание
+            mdb.insertRec("GameTask",
+                    [game: idGame, usr: idUsr, task: idTask]
+            )
+        }
+
     }
 
 
@@ -1219,14 +1322,49 @@ where
                 game: idGame,
                 usr : idUsr,
         ])
+        // Первое выданное будет впереди, а не отвеченные с конца
+        stGameTask.sort("*dtTask")
 
-        if (stGameTask.size() == 0) {
+
+        // Запомним factQuestion последнего задания (
+        long factQuestionLast = stGameTask.get(0).getLong("factQuestion")
+
+
+        // Узнаем, с какой позиции начинаются не отвеченные задания
+        int posTask = Integer.MAX_VALUE
+        for (int pos = 0; pos < stGameTask.size(); pos++) {
+            StoreRecord recGameTask = stGameTask.get(pos)
+            if (recGameTask.isValueNull("dtTask")) {
+                posTask = pos
+                break
+            }
+        }
+
+        // Все задания уже отвечены?
+        if (posTask > stGameTask.size() - 1) {
             return null
         }
 
+        // Узнаем, есль ли возможность выдать задание, где factQuestion не совпадает
+        // с factQuestion последнего задания (factQuestionLast).
+        // Такая возможность будет, если в наборе setFactQuestion будет
+        // больше одного элемента, что говорит о том, что кроме факта factQuestionLast
+        // в невыданных заданиях есть и другие factQuestion
+        Set<Long> setFactQuestion = new HashSet<>()
+        for (int pos = posTask; pos < stGameTask.size(); pos++) {
+            StoreRecord recGameTask = stGameTask.get(pos)
+            setFactQuestion.add(recGameTask.getLong("factQuestion"))
+        }
+
         // Выберем случайное
-        int n = rnd.num(0, stGameTask.size() - 1)
-        StoreRecord rec = stGameTask.get(n)
+        StoreRecord rec
+        while (true) {
+            int n = rnd.num(posTask, stGameTask.size() - 1)
+            rec = stGameTask.get(n)
+            if (rec.getLong("factQuestion") != factQuestionLast || setFactQuestion.size() <= 1) {
+                break
+            }
+        }
 
         //
         return rec
@@ -1254,16 +1392,14 @@ where
     }
 
 
-    String sqlPlanFact_TaskCombinations() {
+    String sqlPlanFact() {
         return """ 
--- Подбор всех комбинаций заданий для каждой пары фактов в плане
+-- Все пары фактов в плане
 select 
     PlanFact.id, 
     
     PlanFact.factQuestion, 
     PlanFact.factAnswer, 
-    
-    Task.id task,
     
     UsrFact.isHidden,
     UsrFact.isKnownGood,
@@ -1274,14 +1410,41 @@ select
 
 from
     PlanFact
-    left join Task on (
-        Task.factQuestion = PlanFact.factQuestion and 
-        Task.factAnswer = PlanFact.factAnswer 
-    )
     left join UsrFact on (
         UsrFact.usr = :usr and
         UsrFact.factQuestion = PlanFact.factQuestion and 
         UsrFact.factAnswer = PlanFact.factAnswer 
+    )
+    left join Cube_UsrFact on (
+        Cube_UsrFact.usr = :usr and 
+        Cube_UsrFact.factQuestion = PlanFact.factQuestion and 
+        Cube_UsrFact.factAnswer = PlanFact.factAnswer
+    )
+    
+where
+    PlanFact.plan = :plan    
+"""
+    }
+
+    String sqlPlanTask() {
+        return """ 
+-- Подбор всех заданий для каждой пары фактов в плане
+select 
+    PlanFact.id, 
+    
+    PlanFact.factQuestion, 
+    PlanFact.factAnswer, 
+    
+    Task.id task,
+    
+    Cube_UsrFact.ratingTask,
+    Cube_UsrFact.ratingQuickness
+
+from
+    PlanFact
+    left join Task on (
+        Task.factQuestion = PlanFact.factQuestion and 
+        Task.factAnswer = PlanFact.factAnswer 
     )
     left join Cube_UsrFact on (
         Cube_UsrFact.usr = :usr and 
@@ -1529,7 +1692,22 @@ order by
     private String sqlChoiceTask() {
         return """
 select
-    GameTask.*
+    GameTask.*,
+    Task.factQuestion,
+    Task.factAnswer
+from
+    GameTask 
+    join Task on (GameTask.task = Task.id)
+where
+    GameTask.game = :game and
+    GameTask.usr = :usr
+"""
+    }
+
+    private String sqlGameTaskRemainderCount() {
+        return """
+select
+    count(*) cnt
 from
     GameTask 
 where
@@ -1573,6 +1751,35 @@ where
     }
 
 
+    private String sqlTask() {
+        return """
+select 
+    Task.* 
+from 
+    Task
+where
+    Task.id = :id 
+"""
+    }
+
+
+    String sqlOtherTask() {
+        """
+select 
+    GameTask.*
+from
+    GameTask
+    join Task on (GameTask.task = Task.id)
+where
+    GameTask.usr = :usr and
+    GameTask.game = :game and
+    --GameTask.dtTask is null and
+    Task.factQuestion = :factQuestion and
+    Task.factAnswer = :factAnswer
+"""
+    }
+
+
     private String sqlLastGame() {
         return """
 select
@@ -1601,7 +1808,7 @@ where
     Game.dend is null and
     GameUsr.usr = :usr
 order by    
-    Game.dbeg,
+    Game.dbeg desc,
     Game.id
 """
     }

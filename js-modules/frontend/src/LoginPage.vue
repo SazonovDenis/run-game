@@ -12,8 +12,9 @@
 
                     <q-card-section class="q-pb-none text-center">
                         <div class="text-grey-9 text-h4 text-weight-bold">
-                            <div v-if="frameMode==='login'">Вход существующим игроком</div>
-                            <div v-if="frameMode==='register'">Регистрация нового игрока
+                            <div v-if="frameMode==='login'">Вход существующим игроком
+                            </div>
+                            <div v-if="frameMode==='register'">Создание нового игрока
                             </div>
                         </div>
                     </q-card-section>
@@ -74,7 +75,7 @@
                         </div>
 
                         <div v-if="isModeRegister" class="row justify-center q-mt-lg">
-                            <jc-btn kind="primary" label="Регистрация нового игрока"
+                            <jc-btn kind="primary" label="Создать нового игрока"
                                     :disable="!isValidRegistration()"
                                     style="min-width: 10em;"
                                     @click="execRegister">
@@ -85,25 +86,30 @@
 
                             <div v-if="isModeLogin"
                                  class="justify-left q-pt-lg"
-                                 @click="frameMode = 'register'">
+                                 @click="setModeRegister"
+                            >
 
-                                <span
-                                    class="rgm-link-soft">Регистрация нового игрока</span>
+                                <span class="rgm-link-soft">
+                                    Создание нового игрока
+                                </span>
                             </div>
 
                             <div v-if="isModeRegister"
                                  class="justify-left q-pt-lg"
                                  @click="frameMode = 'login'">
 
-                                <span
-                                    class="rgm-link-soft">Вход существующим игроком</span>
+                                <span class="rgm-link-soft">
+                                    Вход существующим игроком
+                                </span>
                             </div>
 
                             <div v-if="localUserList.length>0"
                                  class="justify-left q-pt-lg"
-                                 @click="setLocalUserLogin">
+                                 @click="setModeLocalUserLogin">
 
-                                <span class="rgm-link-soft">Выбрать игрока</span>
+                                <span class="rgm-link-soft">
+                                    Выбрать игрока
+                                </span>
                             </div>
 
                         </div>
@@ -187,7 +193,7 @@
 
                         <div class="">
 
-                            <div @click="doFullLogin">
+                            <div @click="setModeFullLogin">
                                 <span class="rgm-link-soft">Войти другим игроком</span>
                             </div>
 
@@ -277,7 +283,7 @@
 
                         <div class="">
 
-                            <div @click="doFullLogin">
+                            <div @click="setModeFullLogin">
                                 <span class="rgm-link-soft">Войти другим игроком</span>
                             </div>
 
@@ -332,7 +338,7 @@ export default {
 
         //
         this.localUserList = this.getLocalUserList()
-        this.setLocalUserLogin()
+        this.setModeLocalUserLogin()
     },
 
     computed: {
@@ -350,7 +356,7 @@ export default {
             return this.text && this.text != ""
         },
 
-         isValidLogin() {
+        isValidLogin() {
             return this.login && this.login != ""
         },
 
@@ -393,7 +399,7 @@ export default {
 
             //
             this.localUserList = this.getLocalUserList()
-            this.setLocalUserLogin()
+            this.setModeLocalUserLogin()
         },
 
         execLogin() {
@@ -439,7 +445,7 @@ export default {
             }
         },
 
-        doFullLogin() {
+        setModeFullLogin() {
             this.frameMode = "login"
             this.loginType = "full"
             this.id = null
@@ -448,7 +454,16 @@ export default {
             this.password = null
         },
 
-        setLocalUserLogin() {
+        setModeRegister() {
+            this.frameMode = "register"
+            this.loginType = "full"
+            this.id = null
+            this.text = null
+            this.login = null
+            this.password = null
+        },
+
+        setModeLocalUserLogin() {
             if (this.localUserList.length > 1) {
                 this.frameMode = "login"
                 this.loginType = "localUserList"
@@ -461,7 +476,7 @@ export default {
                 this.login = userItem.login
                 this.password = userItem.password
             } else {
-                this.doFullLogin()
+                this.setModeRegister()
             }
         },
 

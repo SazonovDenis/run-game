@@ -456,6 +456,12 @@ where
      * @return дополнительные формы слова
      */
     public static Collection<String> transformWord(String wordEng) {
+        // witnesses -> witness
+        if (wordEng.endsWith("es") && wordEng.length() >= 4) {
+            wordEng = wordEng.substring(0, wordEng.length() - 2)
+            return [wordEng]
+        }
+
         // boys -> boy
         if (wordEng.endsWith("s") && wordEng.length() >= 3) {
             wordEng = wordEng.substring(0, wordEng.length() - 1)

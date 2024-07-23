@@ -73,7 +73,9 @@
                 <q-btn color="purple"
                        icon="add"
                        size="1.3em"
-                       round no-caps
+                       rounded no-caps
+                       class="btn-add"
+                       label="Добавить друзей"
                        @click="setFrameMode_find"
                 >
                 </q-btn>

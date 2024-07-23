@@ -144,13 +144,5 @@ hr {
     margin: 1.5em 0;
 }
 
-.value-label {
-    color: #4e4e4e;
-}
-
-.value-value {
-    color: #34558b;
-}
-
 
 </style>

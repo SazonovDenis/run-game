@@ -186,12 +186,12 @@ export default {
         }
     },
 
-    wordsText(rating) {
-        rating = Math.abs(Math.trunc(rating))
-        if (rating >= 10 && rating <= 20) {
+    wordsText(wordCount) {
+        wordCount = Math.abs(Math.trunc(wordCount))
+        if (wordCount >= 10 && wordCount <= 20) {
             return "слов"
         }
-        let r = rating % 10
+        let r = wordCount % 10
         if (r === 1) {
             return "слово"
         } else if (r === 2 || r === 3 || r === 4) {

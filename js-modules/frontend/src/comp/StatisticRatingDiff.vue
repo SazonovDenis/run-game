@@ -93,14 +93,6 @@ export default {
     left: -0.2em;
 }
 
-.result-rating-inc {
-    color: #003090;
-}
-
-.result-rating-dec {
-    color: #a00020;
-}
-
 .result-value-sign {
     font-weight: normal;
 }

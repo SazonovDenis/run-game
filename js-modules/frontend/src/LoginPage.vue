@@ -27,7 +27,7 @@
                                  outlined
                                  stack-label :dense="true">
                             <template #prepend>
-                                <q-icon name="user" size="1em" color="gray-600"/>
+                                <q-icon name="user" size="0.8em" color="gray-600"/>
                             </template>
                         </q-input>
 
@@ -38,7 +38,7 @@
                                  stack-label
                                  :dense="true">
                             <template #prepend>
-                                <q-icon name="mail" size="1em" color="gray-600"/>
+                                <q-icon name="mail" size="0.9em" color="gray-600"/>
                             </template>
                         </q-input>
 

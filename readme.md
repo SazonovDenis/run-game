@@ -172,4 +172,7 @@ pg_dump --username=postgres --clean --dbname=run_game --format=tar --file=run_ga
 Выполнение скрипта на сервере, например обновление версии БД
 ```
 psql --dbname=run_game postgres --file=/home/dvsa/projects/jc2-projects/run-game/data/verdb/001/001.sql 
+
+psql --dbname=run_game postgres --file=/home/wordstrike.me/product/verdb/002/001.sql
 ```
+

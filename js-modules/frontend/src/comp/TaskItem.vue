@@ -1,27 +1,27 @@
 <template>
 
     <q-item
-        :class="getClassItemRow(taskItem, index)"
+        :class="getClassItemRow(item, index)"
         clickable v-ripple
     >
 
         <q-item-section top avatar v-if="showAnswerResult">
-            <TaskAnswerResult :item="taskItem"/>
+            <TaskAnswerResult :item="item"/>
         </q-item-section>
 
 
         <q-item-section>
 
             <q-item-label overline
-                          :class="'question' + getItemClass(taskItem)"
-                          v-if="isFactFirstAnswer(taskItem, index)">
+                          :class="'question' + getItemClass(item)"
+                          v-if="isFactFirstAnswer(item, index)">
 
                 <TaskValue v-if="showTaskData"
-                           :task="taskItem.taskQuestion"
+                           :task="item.taskQuestion"
                            :doShowText="true"/>
 
                 <TaskValue v-else
-                           :task="taskItem.question"
+                           :task="item.question"
                            :doShowText="true"/>
 
             </q-item-label>
@@ -30,11 +30,11 @@
             <q-item-label class="answer">
 
                 <TaskValue v-if="showTaskData"
-                           :task="taskItem.taskAnswer"
+                           :task="item.taskAnswer"
                            :doShowText="true"/>
 
                 <TaskValue v-else
-                           :task="taskItem.answer"
+                           :task="item.answer"
                            :doShowText="true"/>
 
             </q-item-label>
@@ -46,7 +46,7 @@
 
             <div class="text-grey-8 q-gutter-xs">
 
-                <template v-for="menuItem in itemsMenu">
+                <template v-for="menuItem in itemMenu">
 
                     <template v-if="menuItem.label">
 
@@ -54,26 +54,26 @@
                                no-caps dense rounded unelevated
                                size="0.9em"
                                :label="menuItem.label"
-                               :_flat="!itemMenuOutline(menuItem, taskItem)"
-                               :outline="itemMenuOutline(menuItem, taskItem)"
-                               :icon="itemMenuIcon(menuItem, taskItem)"
-                               :color="itemMenuColor(menuItem, taskItem)"
-                               :text-color="itemMenuTextColor(menuItem, taskItem)"
-                               @click="itemMenuClick(menuItem, taskItem)"
+                               :_flat="!itemMenuOutline(menuItem, item)"
+                               :outline="itemMenuOutline(menuItem, item)"
+                               :icon="itemMenuIcon(menuItem, item)"
+                               :color="itemMenuColor(menuItem, item)"
+                               :text-color="itemMenuTextColor(menuItem, item)"
+                               @click="itemMenuClick(menuItem, item)"
                         />
 
                     </template>
 
                     <template v-else>
 
-                        <q-btn v-if="!itemMenuHidden(menuItem, taskItem)"
+                        <q-btn v-if="!itemMenuHidden(menuItem, item)"
                                dense round
                                size="1.2em"
-                               :flat="!itemMenuOutline(menuItem, taskItem)"
-                               :outline="itemMenuOutline(menuItem, taskItem)"
-                               :icon="itemMenuIcon(menuItem, taskItem)"
-                               :color="itemMenuColor(menuItem, taskItem)"
-                               @click="itemMenuClick(menuItem, taskItem)"
+                               :flat="!itemMenuOutline(menuItem, item)"
+                               :outline="itemMenuOutline(menuItem, item)"
+                               :icon="itemMenuIcon(menuItem, item)"
+                               :color="itemMenuColor(menuItem, item)"
+                               @click="itemMenuClick(menuItem, item)"
                         />
                     </template>
 
@@ -94,39 +94,56 @@
 
         <q-item-section top side v-if="showRatingDiff && showRating">
 
-            <div>
 
-                <template v-if="showRatingDiff">
+            <div v-if="showRatingDiff">
 
-                    <q-badge
-                        v-if="taskItem.ratingTaskDiff > 0"
-                        style="font-weight: bold;"
-                        color="white"
-                        text-color="green-9"
-                        text-weight="bold"
-                        :label="'+' + taskItem.ratingTaskDiff"/>
-                    <q-badge
-                        v-if="taskItem.ratingTaskDiff < 0"
-                        style="font-weight: bold;"
-                        color="white"
-                        text-color="red-7"
-                        text-weight="bold"
-                        :label="taskItem.ratingTaskDiff"/>
-
-                </template>
-
-
-                <template v-if="showRating">
-
-                    <q-badge
-                        style="font-weight: bold;"
-                        :text-color="getRatingTextColor(taskItem.ratingTask)"
-                        :color="getRatingColor(taskItem.ratingTask)"
-                        :label="taskItem.ratingTask"/>
-
-                </template>
+                <q-badge
+                    v-if="item.ratingTaskDiff > 0"
+                    class="rgm-bage statistic-type-rating"
+                    color="white"
+                    :label="'+' + item.ratingTaskDiff + ' ' + ratingText(item.ratingTaskDiff)"
+                />
+                <q-badge
+                    v-if="item.ratingTaskDiff < 0"
+                    class="rgm-bage result-rating-dec"
+                    color="white"
+                    :label="item.ratingTaskDiff + ' ' + ratingText(item.ratingTaskDiff)"
+                />
 
             </div>
+
+            <!--
+                            <template v-if="showRatingDiff">
+
+                                <q-badge
+                                    v-if="item.ratingTaskDiff > 0"
+                                    style="font-weight: bold;"
+                                    color="white"
+                                    text-color="green-9"
+                                    text-weight="bold"
+                                    :label="'+' + item.ratingTaskDiff"/>
+                                <q-badge
+                                    v-if="item.ratingTaskDiff < 0"
+                                    style="font-weight: bold;"
+                                    color="white"
+                                    text-color="red-7"
+                                    text-weight="bold"
+                                    :label="item.ratingTaskDiff"/>
+
+                            </template>
+            -->
+
+
+            <div v-if="showRating">
+
+                <q-badge
+                    class="rgm-bage _statistic-type-rating-bage"
+                    :text-color="getRatingTextColor(item.ratingTask)"
+                    :color="getRatingColor(item.ratingTask)"
+                    :label="getRatingText(item.ratingTask)"/>
+
+            </div>
+
 
         </q-item-section>
 
@@ -139,6 +156,7 @@
 
 import TaskValue from "./TaskValue"
 import TaskAnswerResult from "./TaskAnswerResult"
+import utils from "run-game-frontend/src/utils"
 
 export default {
 
@@ -149,9 +167,9 @@ export default {
     },
 
     props: {
-        taskItem: Object,
+        item: Object,
 
-        itemsMenu: null,
+        itemMenu: {type: Array, default: null},
 
         /**
          * Какое тело вопроса и ответа показывать.
@@ -178,6 +196,10 @@ export default {
 
     methods: {
 
+        ratingText(rating) {
+            return utils.ratingText(rating)
+        },
+
         getItemClass(item) {
             if (!item) {
                 return ""
@@ -194,10 +216,10 @@ export default {
             return classStr
         },
 
-        itemMenuOutline(menuItem, taskItem) {
+        itemMenuOutline(menuItem, item) {
             if (menuItem.outline) {
                 if (menuItem.outline instanceof Function) {
-                    return menuItem.outline(taskItem)
+                    return menuItem.outline(item)
                 } else {
                     return menuItem.outline
                 }
@@ -207,10 +229,10 @@ export default {
 
         },
 
-        itemMenuIcon(menuItem, taskItem) {
+        itemMenuIcon(menuItem, item) {
             if (menuItem.icon) {
                 if (menuItem.icon instanceof Function) {
-                    return menuItem.icon(taskItem)
+                    return menuItem.icon(item)
                 } else {
                     return menuItem.icon
                 }
@@ -220,10 +242,10 @@ export default {
 
         },
 
-        itemMenuColor(menuItem, taskItem) {
+        itemMenuColor(menuItem, item) {
             if (menuItem.color) {
                 if (menuItem.color instanceof Function) {
-                    return menuItem.color(taskItem)
+                    return menuItem.color(item)
                 } else {
                     return menuItem.color
                 }
@@ -233,10 +255,10 @@ export default {
 
         },
 
-        itemMenuTextColor(menuItem, taskItem) {
+        itemMenuTextColor(menuItem, item) {
             if (menuItem.textColor) {
                 if (menuItem.textColor instanceof Function) {
-                    return menuItem.textColor(taskItem)
+                    return menuItem.textColor(item)
                 } else {
                     return menuItem.textColor
                 }
@@ -246,10 +268,10 @@ export default {
 
         },
 
-        itemMenuHidden(menuItem, taskItem) {
+        itemMenuHidden(menuItem, item) {
             if (menuItem.hidden) {
                 if (menuItem.hidden instanceof Function) {
-                    return menuItem.hidden(taskItem)
+                    return menuItem.hidden(item)
                 } else {
                     return menuItem.hidden
                 }
@@ -258,33 +280,41 @@ export default {
             }
         },
 
-        itemMenuClick(menuItem, taskItem) {
+        itemMenuClick(menuItem, item) {
             if (menuItem.onClick) {
-                menuItem.onClick(taskItem)
+                menuItem.onClick(item)
             }
         },
 
         getRatingColor(rating) {
-            if (rating >= 0.8) {
+            if (rating === 3) {
                 return "green-8"
-            } else if (rating >= 0.5) {
+            } else if (rating >= 2) {
                 return "green-3"
-            } else if (rating >= 0.1) {
-                return "yellow-5"
+            } else if (rating >= 1) {
+                return "green-1"
             } else {
                 return "blue-grey-1"
             }
         },
 
         getRatingTextColor(rating) {
-            if (rating >= 0.8) {
+            if (rating === 3) {
                 return "white"
-            } else if (rating >= 0.5) {
+            } else if (rating >= 2) {
                 return "black"
-            } else if (rating >= 0.1) {
+            } else if (rating >= 1) {
                 return "black"
             } else {
                 return "black"
+            }
+        },
+
+        getRatingText(rating) {
+            if (rating === 3) {
+                return "выучено"
+            } else {
+                return rating
             }
         },
 
@@ -338,17 +368,5 @@ export default {
 .item-in-plan {
     _color: rgba(50, 100, 50, .9);
 }
-
-
-.item-first {
-    border-top: 1px solid silver;
-}
-
-.item-next {
-    padding-top: 0;
-    _padding-top: 0.2em;
-    _padding-bottom: 0.2em;
-}
-
 
 </style>

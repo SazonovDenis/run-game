@@ -252,12 +252,13 @@ class Statistic_list extends RgmMdbUtils {
             // Разносим статистику:
             // каждую пару фактов копим с группировкой по groupByKey
             for (Map taskStatistic : listTaskStatistic) {
-                String answerResult = UtCnv.toString(taskStatistic.get("answerResult"))
-                int countRepeatedRec = getWordCountRepeated(answerResult)
                 double ratingTaskRec = UtCnv.toDouble(taskStatistic.get("ratingTask"))
                 double ratingQuicknessRec = UtCnv.toDouble(taskStatistic.get("ratingQuickness"))
                 double ratingTaskDiffRec = UtCnv.toDouble(taskStatistic.get("ratingTaskDiff"))
                 double ratingQuicknessDiffRec = UtCnv.toDouble(taskStatistic.get("ratingQuicknessDiff"))
+                String answerResult = UtCnv.toString(taskStatistic.get("answerResult"))
+                int wordCountRepeatedRec = getWordCountRepeated(answerResult)
+                int wordCountLearnedRec = getWordCountLearned(ratingTaskRec, ratingTaskDiffRec)
 
                 // Значение ключа группы
                 Map keyValues = rec.getValues()
@@ -287,10 +288,12 @@ class Statistic_list extends RgmMdbUtils {
                 // Разницу - суммируем за период
                 double ratingTaskDiffAcc = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
                 double ratingQuicknessDiffAcc = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
-                int countRepeatedAcc = UtCnv.toDouble(statisticWord.get("wordCountRepeated"))
+                int wordCountRepeatedAcc = UtCnv.toDouble(statisticWord.get("wordCountRepeatedDiff"))
+                int wordCountLearnedAcc = UtCnv.toDouble(statisticWord.get("wordCountLearnedDiff"))
                 statisticWord.put("ratingTaskDiff", ratingTaskDiffAcc + ratingTaskDiffRec)
                 statisticWord.put("ratingQuicknessDiff", ratingQuicknessDiffAcc + ratingQuicknessDiffRec)
-                statisticWord.put("countRepeated", countRepeatedAcc + countRepeatedRec)
+                statisticWord.put("wordCountRepeatedDiff", wordCountRepeatedAcc + wordCountRepeatedRec)
+                statisticWord.put("wordCountLearnedDiff", wordCountLearnedAcc + wordCountLearnedRec)
                 // Итог - берем последний (его не суммируем)
                 statisticWord.put("ratingTask", ratingTaskRec)
                 statisticWord.put("ratingQuickness", ratingQuicknessRec)
@@ -322,7 +325,6 @@ class Statistic_list extends RgmMdbUtils {
             Map sumStatistic = summStatistic(groupStatistic)
 
             // Сумму в запись
-            rec.setValue("countRepeated", UtCnv.toInt(sumStatistic.get("countRepeated")))
             rec.setValue("ratingTaskDiff", UtCnv.toDouble(sumStatistic.get("ratingTaskDiff")))
             rec.setValue("ratingTaskInc", UtCnv.toDouble(sumStatistic.get("ratingTaskInc")))
             rec.setValue("ratingTaskDec", UtCnv.toDouble(sumStatistic.get("ratingTaskDec")))
@@ -331,6 +333,8 @@ class Statistic_list extends RgmMdbUtils {
                 rec.setValue("ratingTask", UtCnv.toDouble(sumStatistic.get("ratingTask")))
                 rec.setValue("ratingQuickness", UtCnv.toDouble(sumStatistic.get("ratingQuickness")))
             }
+            rec.setValue("wordCountRepeatedDiff", UtCnv.toInt(sumStatistic.get("wordCountRepeatedDiff")))
+            rec.setValue("wordCountLearnedDiff", UtCnv.toInt(sumStatistic.get("wordCountLearnedDiff")))
         }
     }
 
@@ -340,7 +344,6 @@ class Statistic_list extends RgmMdbUtils {
         for (String key : statistic.keySet()) {
             Map item = statistic.get(key)
 
-            res.put("countRepeated", UtCnv.toInt(res.get("countRepeated")) + UtCnv.toInt(item.get("countRepeated")))
             res.put("ratingTask", UtCnv.toDouble(res.get("ratingTask")) + UtCnv.toDouble(item.get("ratingTask")))
             res.put("ratingQuickness", UtCnv.toDouble(res.get("ratingQuickness")) + UtCnv.toDouble(item.get("ratingQuickness")))
             res.put("ratingTaskDiff", UtCnv.toDouble(res.get("ratingTaskDiff")) + UtCnv.toDouble(item.get("ratingTaskDiff")))
@@ -350,6 +353,8 @@ class Statistic_list extends RgmMdbUtils {
                 res.put("ratingTaskDec", UtCnv.toDouble(res.get("ratingTaskDec")) + UtCnv.toDouble(item.get("ratingTaskDiff")))
             }
             res.put("ratingQuicknessDiff", UtCnv.toDouble(res.get("ratingQuicknessDiff")) + UtCnv.toDouble(item.get("ratingQuicknessDiff")))
+            res.put("wordCountRepeatedDiff", UtCnv.toInt(res.get("wordCountRepeatedDiff")) + UtCnv.toInt(item.get("wordCountRepeatedDiff")))
+            res.put("wordCountLearnedDiff", UtCnv.toInt(res.get("wordCountLearnedDiff")) + UtCnv.toInt(item.get("wordCountLearnedDiff")))
         }
 
         return res
@@ -361,8 +366,8 @@ class Statistic_list extends RgmMdbUtils {
         double ratingQuickness = 0
         double ratingTaskDiff = 0
         double ratingQuicknessDiff = 0
-        int wordCountRepeated = 0
-        int wordCountLearned = 0
+        int wordCountRepeatedDiff = 0
+        int wordCountLearnedDiff = 0
 
         // Прибавка и потери рейтинга - по отдельности
         double ratingTaskInc = 0
@@ -375,21 +380,20 @@ class Statistic_list extends RgmMdbUtils {
             Map statisticWord = statisticByWord.get(key).get(key)
 
             //
-            int countRepeatedRec = UtCnv.toInt(statisticWord.get("countRepeated"))
             double ratingTaskRec = UtCnv.toDouble(statisticWord.get("ratingTask"))
             double ratingQuicknessRec = UtCnv.toDouble(statisticWord.get("ratingQuickness"))
             double ratingTaskDiffRec = UtCnv.toDouble(statisticWord.get("ratingTaskDiff"))
             double ratingQuicknessDiffRec = UtCnv.toDouble(statisticWord.get("ratingQuicknessDiff"))
+            int wordCountRepeatedRec = UtCnv.toInt(statisticWord.get("wordCountRepeatedDiff"))
+            int wordCountLearnedRec = UtCnv.toInt(statisticWord.get("wordCountLearnedDiff"))
 
             // Сумма
             ratingTask = ratingTask + ratingTaskRec
             ratingQuickness = ratingQuickness + ratingQuicknessRec
             ratingTaskDiff = ratingTaskDiff + ratingTaskDiffRec
             ratingQuicknessDiff = ratingQuicknessDiff + ratingQuicknessDiffRec
-            wordCountRepeated = wordCountRepeated + countRepeatedRec
-            if (ratingTaskRec == UtCubeRating.RATING_FACT_MAX) {
-                wordCountLearned = wordCountLearned + 1
-            }
+            wordCountRepeatedDiff = wordCountRepeatedDiff + wordCountRepeatedRec
+            wordCountLearnedDiff = wordCountLearnedDiff + wordCountLearnedRec
 
             // Прибавка и потери рейтинга
             if (ratingTaskDiffRec > 0) {
@@ -419,8 +423,8 @@ class Statistic_list extends RgmMdbUtils {
         rating.setValue("ratingQuicknessInc", ratingQuicknessInc)
         rating.setValue("ratingQuicknessDec", ratingQuicknessDec)
         //
-        rating.setValue("wordCountRepeated", wordCountRepeated)
-        rating.setValue("wordCountLearned", wordCountLearned)
+        rating.setValue("wordCountRepeatedDiff", wordCountRepeatedDiff)
+        rating.setValue("wordCountLearnedDiff", wordCountLearnedDiff)
         //rating.setValue("wordCount", 39)
 
 
@@ -503,8 +507,9 @@ select
     LstBase.plan,
     Plan.text as planText,
     
-    Cube_UsrPlan.count,
-    Cube_UsrPlan.countFull,
+    Cube_UsrPlan.count wordCount,
+    Cube_UsrPlan.countFull wordCountFull,
+    Cube_UsrPlan.countLearned wordCountLearned,
     Cube_UsrPlan.ratingTask,
     Cube_UsrPlan.ratingQuickness
 
@@ -521,6 +526,7 @@ group by
     
     Cube_UsrPlan.count,
     Cube_UsrPlan.countFull,
+    Cube_UsrPlan.countLearned,
     Cube_UsrPlan.ratingTask,
     Cube_UsrPlan.ratingQuickness
 
@@ -635,4 +641,13 @@ order by
             return 0
         }
     }
+
+    int getWordCountLearned(double taskResult, double taskResultDiff) {
+        if (taskResult == UtCubeRating.RATING_FACT_MAX && taskResultDiff != 0) {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
 }

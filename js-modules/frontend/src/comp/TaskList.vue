@@ -39,12 +39,12 @@
 
 
                 <TaskItem v-if="isItemShown(taskItem)"
-                          :taskItem="taskItem"
+                          :item="taskItem"
                           :showTaskData="showTaskData"
                           :showAnswerResult="showAnswerResult"
                           :showRating="showRating"
                           :showEdit="showEdit"
-                          :itemsMenu="itemsMenu"
+                          :itemMenu="itemsMenu"
                 />
 
 

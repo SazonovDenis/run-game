@@ -120,8 +120,11 @@ select
     coalesce(UsrPlan.isAllowed, 0) isAllowed,
     (case when PlanTag_access_default.plan is null then 0 else 1 end) as isDefault,
     
-    coalesce(Cube_UsrPlan.count, Cube_Plan.count, 0) count,
-    coalesce(Cube_UsrPlan.countFull, 0) countFull,
+    -- Подзапрос Cube_Plan становится важен, 
+    -- если у пользователя нет игр в плане и пользователь не скрывал никаких слов
+    coalesce(Cube_UsrPlan.count, Cube_Plan.count, 0) wordCount,
+    coalesce(Cube_UsrPlan.countFull, 0) wordCountFull,
+    coalesce(Cube_UsrPlan.countLearned, 0) wordCountLearned,
     coalesce(Cube_UsrPlan.ratingTask, 0) ratingTask,
     coalesce(Cube_UsrPlan.ratingQuickness, 0) ratingQuickness
     

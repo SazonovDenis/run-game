@@ -1,8 +1,8 @@
 <template>
 
     <CircularValue
-        :value="statistic.wordCountLearned"
-        :title="wordsText(statistic.wordCountLearned)"
+        :value="statistic.wordCountLearnedDiff"
+        :title="wordsText(statistic.wordCountLearnedDiff)"
         :valueTotal="statistic.wordCount"
         valueType="learned"
     />

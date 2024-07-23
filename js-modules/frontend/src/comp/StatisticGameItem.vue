@@ -1,6 +1,6 @@
 <template>
 
-    <q-item class=""
+    <q-item class="item-first"
             clickable v-ripple
     >
         <q-item-section>
@@ -16,22 +16,31 @@
             top side
         >
 
-            <div class="col">
+            <div>
+
+                <q-badge
+                    v-if="item.wordCountLearnedDiff > 0"
+                    class="rgm-bage statistic-type-learned"
+                    color="white"
+                    :label="item.wordCountLearnedDiff + ' выучено'"
+                />
+
+            </div>
+
+            <div>
 
                 <q-badge
                     v-if="item.ratingTaskDiff > 0"
-                    style="font-weight: bold;"
-                    _class="col"
+                    class="rgm-bage statistic-type-rating"
                     color="white"
-                    text-color="green-5"
-                    :label="'+' + item.ratingTaskDiff"/>
+                    :label="'+' + item.ratingTaskDiff + ' ' + ratingText(item.ratingTaskDiff)"
+                />
                 <q-badge
                     v-if="item.ratingTaskDiff < 0"
-                    style="font-weight: bold;"
-                    _class="col"
+                    class="rgm-bage result-rating-dec"
                     color="white"
-                    text-color="red-5"
-                    :label="item.ratingTaskDiff"/>
+                    :label="item.ratingTaskDiff + ' ' + ratingText(item.ratingTaskDiff)"
+                />
 
             </div>
 
@@ -43,7 +52,8 @@
 
 <script>
 
-import {apx} from "run-game-frontend/src/vendor"
+import {apx} from "../vendor"
+import utils from "../utils"
 
 export default {
 
@@ -60,6 +70,11 @@ export default {
         }
     },
 
+    methods: {
+        ratingText(rating) {
+            return utils.ratingText(rating)
+        }
+    }
 }
 
 </script>

@@ -427,18 +427,18 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Считаем количество нескрытых и выученных фактов в плане
         int wordCount = 0
-        int wordCountLearned = 0
+        int wordCountLearnedDiff = 0
         for (StoreRecord rec : stPlanFact) {
             if (!rec.getBoolean("isHidden")) {
                 wordCount = wordCount + 1
                 if (rec.getDouble("ratingTask") == UtCubeRating.RATING_FACT_MAX) {
-                    wordCountLearned = wordCountLearned + 1
+                    wordCountLearnedDiff = wordCountLearnedDiff + 1
                 }
             }
         }
         //
         recStatistic.setValue("wordCount", wordCount)
-        recStatistic.setValue("wordCountLearned", wordCountLearned)
+        recStatistic.setValue("wordCountLearnedDiff", wordCountLearnedDiff)
         // Максимальный балл берем на основе количества нескрытых фактов в плане
         recStatistic.setValue("ratingMax", wordCount * UtCubeRating.RATING_FACT_MAX)
 
@@ -1819,8 +1819,9 @@ select
     Game.*,
     Plan.text planText,
     
-    Cube_UsrPlan.count,
-    Cube_UsrPlan.countFull,
+    Cube_UsrPlan.count wordCount,
+    Cube_UsrPlan.countFull wordCountFull,
+    Cube_UsrPlan.countLearned wordCountLearned,
     Cube_UsrPlan.ratingTask,
     Cube_UsrPlan.ratingQuickness
 

@@ -62,3 +62,85 @@
   align-content: center;
   justify-content: center;
 }
+
+
+.btn-add {
+  font-size: 1.1em;
+  height: 3.0rem;
+  min-width: 15rem;
+}
+
+.btn-add-submenu {
+  height: 3.5rem !important;
+  min-width: 18em;
+}
+
+/* Кнопка внутри списка */
+.item-list-bitton {
+  font-size: 1rem;
+}
+
+/* Первый элемент списка */
+.item-first {
+  border-top: 1px solid #c0c0c050;
+}
+
+/* НЕ первый элемент списка */
+.item-next {
+  padding-top: 0;
+}
+
+
+/* План в списке */
+.plan-text {
+}
+
+.plan-info {
+  font-size: 0.9em;
+  color: gray;
+}
+
+
+/* bage */
+.rgm-bage {
+  font-weight: bold !important;
+}
+
+/* Элемент статистики */
+.statistic-type-learned {
+  color: #109010 !important;
+}
+
+.statistic-type-repeated {
+  color: #008080 !important;
+}
+
+.statistic-type-rating {
+  color: #003090 !important;
+}
+
+.statistic-type-rating-bage {
+  color: white !important;
+  background-color: rgba(0, 48, 144, 0.8) !important;
+}
+
+.result-rating-inc {
+  color: #003090 !important;
+}
+
+.result-rating-dec {
+  color: #a00020 !important;
+}
+
+
+.statistic-type-learned-no-total {
+  background-color: #10901010 !important;
+}
+
+.statistic-type-repeated-no-total {
+  background-color: #00808010 !important;
+}
+
+
+
+

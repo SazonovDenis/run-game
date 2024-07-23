@@ -67,9 +67,9 @@
                     v-if="usr.usrFrom !== userId && usr.confirmState === ConfirmState_waiting">
 
                     <q-btn
+                        class="item-list-bitton"
                         label="Отказать"
                         no-caps dense rounded unelevated
-                        size="0.9em"
 
                         icon="del"
                         color="red"
@@ -78,9 +78,9 @@
                     />
 
                     <q-btn
+                        class="item-list-bitton"
                         label="Принять"
                         no-caps dense rounded unelevated
-                        size="0.9em"
                         icon="quasar.chip.selected"
                         color="green"
                         @click="accept(usr)"
@@ -92,9 +92,9 @@
                     v-if="usr.usrFrom === userId && (usr.confirmState === ConfirmState_waiting || usr.confirmState === ConfirmState_refused)">
 
                     <q-btn
+                        class="item-list-bitton"
                         label="Отменить"
                         no-caps dense rounded unelevated
-                        size="0.9em"
 
                         icon="del"
                         color="blue-8"
@@ -110,7 +110,6 @@
                         fab-mini no-caps unelevated
                         dropdown-icon=""
                         color="primary"
-                        _icon="quasar.chip.selected"
                         label="Добавить..."
                     >
                         <q-menu>
@@ -187,7 +186,7 @@
                 <q-btn-dropdown
                     dropdown-icon="more-h"
                     fab-mini unelevated
-                    _color="grey-2"
+                    @click.stop
                 >
                     <q-list>
                         <q-item

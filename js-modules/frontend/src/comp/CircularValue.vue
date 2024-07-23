@@ -8,7 +8,7 @@
         :value="circularValue"
         :thickness="thickness"
         :color="color"
-        track-color="grey-3"
+        track-color="grey-2"
         :class="'q-mx-sm circular ' + getClass"
     >
         <div class="col">
@@ -84,9 +84,9 @@ export default {
         },
         getClass() {
             if (this.valueTotal) {
-                return "type-" + this.valueType
+                return "statistic-type-" + this.valueType
             } else {
-                return "type-" + this.valueType + " type-" + this.valueType + "-no-total"
+                return "statistic-type-" + this.valueType + " statistic-type-" + this.valueType + "-no-total"
             }
         }
     }
@@ -129,27 +129,6 @@ export default {
 .total-value {
     font-weight: normal;
     font-size: 1.7em;
-}
-
-
-.type-learned {
-    color: #109010;
-}
-
-.type-repeated {
-    color: #008080;
-}
-
-.type-rating {
-    color: #003090;
-}
-
-.type-learned-no-total {
-    background-color: #10901010;
-}
-
-.type-repeated-no-total {
-    background-color: #00808010;
 }
 
 

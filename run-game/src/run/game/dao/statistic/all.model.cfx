@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
 
+    <!-- Текущее состояние -->
     <domain name="Statistic.base">
         <!-- Рейтинг -->
         <field name="ratingTask" parent="Cube_UsrPlan/ratingTask"/>
         <field name="ratingQuickness" parent="Cube_UsrPlan/ratingQuickness"/>
     </domain>
 
+
+    <!-- Разница между состояниями за период -->
     <domain name="Statistic.diff">
-        <!-- Повторений -->
-        <field name="countRepeated" parent="int"/>
+        <!-- Сколько повторено (отвечено) слов за период -->
+        <field name="wordCountRepeatedDiff" parent="int"/>
+        <!-- У скольких слов за период увеличен рейтинг до максимального -->
+        <field name="wordCountLearnedDiff" parent="int"/>
 
         <!-- Изменение рейтинга (по сравнению с предыдущим периодом) -->
         <field name="ratingTaskDiff" parent="Cube_UsrPlan/ratingTask"
@@ -25,6 +30,19 @@
     </domain>
 
 
+    <!-- Общее количество слов -->
+    <domain name="Statistic.words">
+        <!-- Количество используемых (не скрытых) слов -->
+        <field name="wordCount" parent="int"/>
+
+        <!-- Количество выученных слов (с максимальным рейтингом) -->
+        <field name="wordCountLearned" parent="int"/>
+
+        <!-- Общее количество слов в плане (включая скрытые) -->
+        <field name="wordCountFull" parent="int"/>
+    </domain>
+
+
     <domain name="Statistic.plan">
 
         <!-- Рейтинг -->
@@ -33,13 +51,14 @@
         <!-- Рост и падение рейтинга -->
         <include name="Statistic.diff"/>
 
+        <!-- Общее количество слов -->
+        <include name="Statistic.words"/>
+
         <!-- Группировка -->
         <field name="plan" parent="Plan/id"/>
 
         <!-- Дополнительная информация для показа -->
         <field name="planText" parent="Plan/text"/>
-        <field name="count" parent="Cube_UsrPlan/count"/>
-        <field name="countFull" parent="Cube_UsrPlan/countFull"/>
 
     </domain>
 
@@ -95,9 +114,6 @@
         <!-- Рост и падение рейтинга -->
         <include name="Statistic.diff"/>
 
-        <!-- Рост и падение рейтинга -->
-        <include name="Statistic.diff"/>
-
         <!-- Группировка -->
         <field name="dbeg" parent="date"/>
 
@@ -111,10 +127,8 @@
         <!-- Рост и падение рейтинга -->
         <include name="Statistic.diff"/>
 
-        <!--  -->
-        <field name="wordCount" parent="int"/>
-        <field name="wordCountRepeated" parent="int"/>
-        <field name="wordCountLearned" parent="int"/>
+        <!-- Общее количество слов -->
+        <include name="Statistic.words"/>
     </domain>
 
 

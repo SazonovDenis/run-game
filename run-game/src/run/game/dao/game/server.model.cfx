@@ -99,7 +99,7 @@
 
         <field name="ratingMax" parent="double" scale="3"/>
         <field name="wordCount" parent="int"/>
-        <field name="wordCountLearned" parent="int"/>
+        <field name="wordCountLearnedDiff" parent="int"/>
     </domain>
 
 
@@ -130,8 +130,8 @@
 
         <field name="isPublic" parent="Plan/isPublic"/>
 
-        <field name="count" parent="Cube_UsrPlan/count"/>
-        <field name="countFull" parent="Cube_UsrPlan/countFull"/>
+        <!-- Общее количество слов -->
+        <include name="Statistic.words"/>
 
         <!-- Рейтинг -->
         <include name="Statistic.base"/>

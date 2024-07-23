@@ -8,6 +8,7 @@
         <!-- Поля -->
         <field name="count"/>
         <field name="countFull"/>
+        <field name="countLearned"/>
         <field name="ratingTask"/>
         <field name="ratingQuickness"/>
 
@@ -27,6 +28,8 @@
                title="Количество слов"/>
         <field name="countFull" parent="long"
                title="Общее количество слов (включая скрытые)"/>
+        <field name="countLearned" parent="long"
+               title="Количество выученных слов"/>
         <field name="ratingTask" parent="double" scale="3"
                title="Рейтинг за ответы"/>
         <field name="ratingQuickness" parent="double" scale="3"

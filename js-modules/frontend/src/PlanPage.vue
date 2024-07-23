@@ -6,8 +6,14 @@
     >
 
         <div v-if="dataLoaded">
+            
+            <div class="justify-center row q-pt-sm">
 
-            <StatisticWordsLearned :statistic="statistic"/>
+                <StatisticWordsLearned :statistic="statistic"/>
+
+                <StatisticRating :statistic="statistic"/>
+
+            </div>
 
             <div class="row">
                 <jc-btn class="q-ma-sm"
@@ -15,13 +21,6 @@
                         label="Играть уровень"
                         style="min-width: 10em;"
                         @click="gameStart()">
-                </jc-btn>
-
-                <jc-btn class="q-ma-sm"
-                        kind="secondary"
-                        label="Выбрать другой уровень"
-                        style="min-width: 12em;"
-                        @click="onSelectPlan()">
                 </jc-btn>
 
                 <jc-btn class="q-ma-sm"
@@ -148,6 +147,7 @@
 
 import MenuContainer from "./comp/MenuContainer"
 import StatisticWordsLearned from "./comp/StatisticWordsLearned"
+import StatisticRating from "./comp/StatisticRating"
 import RgmInputText from "./comp/RgmInputText"
 import TaskList from "./comp/TaskList"
 import gameplay from "./gameplay"
@@ -168,7 +168,7 @@ export default {
     },
 
     components: {
-        MenuContainer, RgmInputText, StatisticWordsLearned, TaskList
+        MenuContainer, RgmInputText, StatisticWordsLearned, StatisticRating, TaskList
     },
 
     data() {
@@ -200,12 +200,7 @@ export default {
                 ratingAsc: "quasar.arrow.down",
             },
 
-            /*
-                        showHidden: false,
-            */
             filterText: null,
-
-            //sticky_filter: false,
         }
     },
 
@@ -326,14 +321,6 @@ export default {
 
             apx.showFrame({
                 frame: '/game'
-            })
-        },
-
-        async onSelectPlan() {
-            await gameplay.closeActiveGame()
-
-            apx.showFrame({
-                frame: '/plans',
             })
         },
 

@@ -1,8 +1,8 @@
 <template>
 
     <CircularValue
-        :value="statistic.wordCountRepeated"
-        :title="wordsText(statistic.wordCountRepeated)"
+        :value="statistic.wordCountRepeatedDiff"
+        :title="wordsText(statistic.wordCountRepeatedDiff)"
         valueType="repeated"
     />
 

@@ -2,20 +2,25 @@
 
     <MenuContainer
         tabMenuName="PlansPage"
-        :title="title">
+        :title="getTitle()"
+        :frameReturn="getFrameReturn()"
+    >
 
+        <!--
         <q-tabs
             v-model="viewPlanType"
             no-caps
             inline-label
             class="bg-grey-1 _shadow-5 q-my-sm"
         >
-            <q-tab name="pesonal" label="Мои уровни" _icon="alarm"/>
-            <q-tab name="common" label="Библиотека" _icon="mail"/>
+            <q-tab name="personal" label="Мои уровни"/>
+            <q-tab name="common" label="Библиотека"/>
         </q-tabs>
-
+        -->
 
         <PlansFilterBar
+            class="q-my-sm"
+            v-if="this.viewPlanType === 'common'"
             v-model:filterText="filterText"
             v-model:sortField="sortField"
         />
@@ -57,26 +62,26 @@
                        position="bottom-right"
                        :offset="[10, 10]">
             <q-fab
-                :style="{fontSize: '1.3em', height: '4rem', width: isDesktop ? '16rem':'4rem'}"
                 color="purple"
                 icon="add"
                 vertical-actions-align="right"
                 direction="up"
-                :label="isDesktop ? 'Добавить уровень' : ''"
+                class="btn-add"
+                label="Добавить уровень"
             >
-                <q-fab-action style="height: 4em; min-width: 18em;"
+                <q-fab-action class="btn-add-submenu"
                               color="secondary"
+                              icon="edit"
                               label="Создать свой уровень"
                               square
-                              icon="edit"
                               @click="onCreatePlan"
                 />
-                <q-fab-action style="height: 4em; min-width: 18em;"
+                <q-fab-action class="btn-add-submenu"
                               color="amber-10"
                               text-color="black"
+                              icon="add"
                               label="Подключить из библиотеки"
                               square
-                              icon="add"
                               @click="onAddPlan"
                 />
             </q-fab>
@@ -122,7 +127,7 @@ export default {
         return {
             plans: [],
 
-            viewPlanType: "pesonal",
+            viewPlanType: "personal",
 
             filterText: "",
             sortField: "ratingAsc",
@@ -145,9 +150,30 @@ export default {
         isDesktop() {
             return Jc.cfg.is.desktop
         },
+
     },
 
     methods: {
+
+        getTitle() {
+            if (this.viewPlanType === "personal") {
+                return null
+            } else {
+                return "Добавление уровней"
+            }
+        },
+
+        getFrameReturn() {
+            if (this.viewPlanType === "personal") {
+                return null
+            } else {
+                return this.setViewPlanTypepersonal
+            }
+        },
+
+        setViewPlanTypepersonal() {
+            this.viewPlanType = "personal"
+        },
 
         isItemShown(item) {
             if (!this.filter) {
@@ -278,7 +304,7 @@ export default {
         },
 
         async loadPlans(viewPlanType) {
-            if (viewPlanType === "pesonal") {
+            if (viewPlanType === "personal") {
                 this.plans = await gameplay.api_getPlansVisible()
             } else if (viewPlanType === "common") {
                 this.plans = await gameplay.api_getPlansPublic()

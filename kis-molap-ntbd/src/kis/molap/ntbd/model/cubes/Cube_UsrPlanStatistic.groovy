@@ -97,6 +97,7 @@ public class Cube_UsrPlanStatistic extends CubeCustom implements ICalcData {
             ValueSingle valueSingle = ValueSingle.create()
             valueSingle.put("count", rec.getLong("count"))
             valueSingle.put("countFull", rec.getLong("countFull"))
+            valueSingle.put("countLearned", rec.getLong("countLearned"))
             valueSingle.put("ratingTask", rec.getDouble("ratingTask"))
             valueSingle.put("ratingQuickness", rec.getDouble("ratingQuickness"))
             calcResult.value = valueSingle
@@ -118,6 +119,7 @@ select
     --PlanFact.plan, 
     sum(case when UsrFact.isHidden is null or UsrFact.isHidden = 0 then 1 else 0 end) count, 
     count(PlanFact.id) countFull, 
+    sum(case when Cube_UsrFact.ratingTask = ${UtCubeRating.RATING_FACT_MAX} then 1 else 0 end) countLearned, 
     sum(case when UsrFact.isHidden is null or UsrFact.isHidden = 0 then Cube_UsrFact.ratingTask else 0 end) ratingTask, 
     sum(case when UsrFact.isHidden is null or UsrFact.isHidden = 0 then Cube_UsrFact.ratingQuickness else 0 end) ratingQuickness
 

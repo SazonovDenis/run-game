@@ -14,7 +14,7 @@
             За {{ periodText() }}
         </div>
 
-        <div v-show="loaded && statisticPeriod.wordCountRepeated > 0">
+        <div v-show="loaded && statisticPeriod.wordCountRepeatedDiff > 0">
 
             <div class="justify-center row q-mt-md">
 
@@ -36,7 +36,7 @@
 
                 <div class="result-words">
 
-                    <div class="row q-my-md">
+                    <div class="row q-mt-md">
 
                         <StatisticRatingDiff
                             class="q-mx-md q-mt-sm"
@@ -100,7 +100,7 @@
 
                         <template v-if="params.group==='word'">
                             <TaskItem
-                                :taskItem="item"
+                                :item="item"
                                 :showAnswerResult="false"
                                 :showRating="true"
                             />
@@ -121,7 +121,7 @@
         </div>
 
 
-        <div v-show="loaded && statisticPeriod.wordCountRepeated === 0">
+        <div v-show="loaded && statisticPeriod.wordCountRepeatedDiff === 0">
 
             <div class="message-no-data q-mx-md q-mt-xl">
                 Нет игр за {{ periodText() }}

@@ -111,6 +111,10 @@
   color: #109010 !important;
 }
 
+.statistic-type-learned-all {
+  background-color: rgba(16, 144, 16, 0.2) !important;
+}
+
 .statistic-type-repeated {
   color: #008080 !important;
 }

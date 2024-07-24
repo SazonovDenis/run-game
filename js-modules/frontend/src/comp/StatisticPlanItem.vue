@@ -33,7 +33,7 @@
                     v-if="item.wordCountLearnedDiff > 0"
                     class="rgm-bage statistic-type-learned"
                     color="white"
-                    :label="item.wordCountLearnedDiff + ' выучено'"/>
+                    :label="'+' + item.wordCountLearnedDiff + ' выучено'"/>
 
             </div>
 

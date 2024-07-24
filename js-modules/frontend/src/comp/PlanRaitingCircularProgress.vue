@@ -7,29 +7,30 @@
             rounded
             size="3rem"
             font-size="1rem"
-            :value="100 * statistic.wordCountLearned / statistic.wordCount"
+            :value="value"
             :thickness=".3"
             color="green-7"
             track-color="grey-2"
-            class="circular"
+            :class="'circular '+ getClass"
         >
 
         </q-circular-progress>
 
 
         <div class="col circular-value-text statistic-type-learned">
-            <div>
+
+            <div v-if="statistic.wordCountLearned > 0">
                 <span class="value-value statistic-type-learned">
                     {{ statistic.wordCountLearned }}
                 </span>
             </div>
 
-<!--
+            <!--
             <div class="total" v-if="statistic.wordCount">
                 <span class="total-title">из </span>
                 <span class="total-value">{{ statistic.wordCount }}</span>
             </div>
--->
+            -->
 
         </div>
 
@@ -46,6 +47,23 @@ export default {
 
     props: {
         statistic: {},
+    },
+
+    computed: {
+        value() {
+            if (this.statistic.wordCount > 0 && this.statistic.wordCountLearned > 0) {
+                return 100 * this.statistic.wordCountLearned / this.statistic.wordCount
+            } else {
+                return null
+            }
+        },
+        getClass() {
+            if (this.statistic.wordCount > 0 && this.statistic.wordCountLearned === this.statistic.wordCount) {
+                return "statistic-type-learned-all"
+            } else {
+                return ""
+            }
+        },
     }
 
 }

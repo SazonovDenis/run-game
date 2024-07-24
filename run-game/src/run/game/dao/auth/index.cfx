@@ -6,6 +6,9 @@
                         class="run.game.dao.auth.RgmAuthProcessor"/>
     </bean>
 
+    <!-- Мы хотим по-своему отправлять атрибуты на клиента -->
+    <bean name="jandcode.core.apx.auth.AuthClientCfgProvider"
+          class="run.game.dao.auth.RgmAuthClientCfgProvider"/>
 
     <web>
         <action name="auth"

@@ -28,7 +28,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox getGame(long idGame) {
-        long idUsr = getCurrentUsrId()
+        long idUsr = getContextOrCurrentUsrId()
 
         //
         return loadAndPrepareGame(idGame, idUsr)
@@ -36,10 +36,10 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
     @DaoMethod
     public DataBox getLastGame() {
-        long idUsr = getCurrentUsrId()
-        StoreRecord recGame = mdb.loadQueryRecord(sqlLastGame(), [usr: idUsr], false)
+        long idUsr = getContextOrCurrentUsrId()
 
         //
+        StoreRecord recGame = mdb.loadQueryRecord(sqlLastGame(), [usr: idUsr], false)
         if (recGame == null) {
             return null
         }

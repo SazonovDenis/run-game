@@ -20,4 +20,16 @@ export default {
     ConfirmState_refused: 1003,    // Отвергнут
     ConfirmState_cancelled: 1004,  // Отменен
 
+    TagType_word_lang: 1001,                 // Язык слова
+    TagType_word_translate_direction: 1002,  // Направление перевода слова
+    TagType_word_part_of_speech: 1003,       // Часть речи
+    TagType_word_use_sample: 1004,           // Пример использования слова
+    TagType_word_category: 1005,             // Тема слова
+    TagType_level_grade: 1006,               // Уровень сложности
+    TagType_top_list: 1007,                  // Топ ххх слов
+    TagType_word_sound_info: 1008,           // Звук для слова
+    TagType_plan_access: 1010,               // Уровень доступа к плану
+    TagType_plan_question_datatype: 1011,    // Тип вопросов в плане
+    TagType_plan_answer_datatype: 1012,      // Тип ответов в плане
+
 }

@@ -299,47 +299,8 @@ class Item_list extends BaseMdbUtils {
             }
         }
 
-/*
-        // Загрузим тэги для item
-        Store stItemTag = mdb.loadQuery(sqlItemTag(stItem.getUniqueValues("id")))
-        Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "item")
-
-        // Заполним поле тэги (itemTag)
-        for (StoreRecord recItem : stItem) {
-            List<StoreRecord> lstRecItemTag = mapItemsTag.get(recItem.getLong("id"))
-            if (lstRecItemTag != null) {
-                // Превратим список тэгов в Map тегов
-                Map<Long, String> mapItemTag = new HashMap<>()
-                for (StoreRecord recItemTag : lstRecItemTag) {
-                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
-                }
-                recItem.setValue("itemTag", mapItemTag)
-            }
-        }
-*/
-
-
         //
         return stItem
-    }
-
-    String sqlItemTag(Set ids) {
-        String strIds
-        if (ids.size() == 0) {
-            strIds = "0"
-        } else {
-            strIds = ids.join(",")
-        }
-        return """
-select 
-    ItemTag.item, 
-    Tag.* 
-from
-    ItemTag 
-    join Tag on (ItemTag.tag = Tag.id) 
-where
-    ItemTag.item in ( ${strIds} )
-"""
     }
 
 

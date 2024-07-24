@@ -6,5 +6,7 @@ id,text,code
 1005,Тема слова,word-category
 1006,Уровень сложности,level-grade
 1007,Топ ххх слов,top-list
-1008,Свойства звукового файла,word-sound-info
+1008,Звук для слова,word-sound-info
 1010,Уровень доступа к плану,plan-access
+1011,Тип вопросов в плане,plan-question-datatype
+1012,Тип ответов в плане,plan-answer-datatype

@@ -7,7 +7,7 @@ import run.game.dao.*
 class PlanCreator_Test extends RgmBase_Test {
 
 
-    def planDefs = [
+    def planDefsViaDataType = [
             //[planTextEng: "color-base", dataTypeQuestion: RgmDbConst.DataType_word_spelling, dataTypeAnswer: RgmDbConst.DataType_word_translate],
             //[planTextEng: "color-base-sound-en-ru", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
             //[planTextEng: "color-base-sound-en-en", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_spelling, combinationLimit: 5],
@@ -20,7 +20,7 @@ class PlanCreator_Test extends RgmBase_Test {
             [planTextEng: "kz.numbers-sound", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
     ]
 
-    def planDefsA = [
+    def planDefsViaFile = [
             //[planTextEng: "color-base", planText: "Цвета базовые (en-ru) "],
             //[planTextEng: "color-base-sound-en-ru", planText: "Цвета базовые (en-ru, аудио)"],
             //[planTextEng: "color-base-sound-en-en", planText: "Цвета базовые (en-en, аудио)"],
@@ -53,7 +53,7 @@ class PlanCreator_Test extends RgmBase_Test {
         PlanCreator planCreator = mdb.create(PlanCreator)
 
         //
-        for (Map planDef : planDefs) {
+        for (Map planDef : planDefsViaDataType) {
             String fileName = "res:run/game/testdata/csv/plan/" + planDef.get("planTextEng") + ".txt"
             String fileNameFactsCombinations = "temp/" + planDef.get("planTextEng") + ".csv"
             long dataTypeQuestion = planDef.get("dataTypeQuestion")
@@ -88,7 +88,7 @@ class PlanCreator_Test extends RgmBase_Test {
         PlanCreator planCreator = mdb.create(PlanCreator)
 
         //
-        for (Map planDef : planDefsA) {
+        for (Map planDef : planDefsViaFile) {
             String planName = planDef.get("planText")
             String fileNameFactsCombinations = "res:run/game/testdata/csv/plan/" + planDef.get("planTextEng") + ".csv"
 

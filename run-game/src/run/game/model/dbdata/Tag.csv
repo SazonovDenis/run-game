@@ -8,3 +8,7 @@ id,tagType,value
 203,1002,kaz-rus
 204,1002,eng-eng
 300,1010,default
+500,1011,word-spelling
+501,1011,word-sound
+510,1012,word-spelling
+511,1012,word-sound

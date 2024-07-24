@@ -20,9 +20,11 @@
 
         <PlansFilterBar
             class="q-my-sm"
-            v-if="this.viewPlanType === 'common'"
+            :showFullFilter="this.viewPlanType === 'common'"
             v-model:filterText="filterText"
             v-model:sortField="sortField"
+            v-model:tags="filterTags"
+            @update:tags="toggleKazEng()"
         />
 
 
@@ -101,6 +103,7 @@ import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
 import {daoApi} from "./dao"
 import PlanItem from "./comp/PlanItem"
+import dbConst from "./dao/dbConst"
 
 export default {
 
@@ -131,6 +134,7 @@ export default {
 
             filterText: "",
             sortField: "ratingAsc",
+            filterTags: {},
         }
     },
 
@@ -154,6 +158,14 @@ export default {
     },
 
     methods: {
+
+        toggleKazEng() {
+            if (this.filterTags.clickedTag === "kaz") {
+                delete this.filterTags["eng"]
+            } else if (this.filterTags.clickedTag === "eng") {
+                delete this.filterTags["kaz"]
+            }
+        },
 
         getTitle() {
             if (this.viewPlanType === "personal") {
@@ -266,6 +278,49 @@ export default {
         },
 
         filter(plan) {
+            return this.machText(plan) && this.machTags(plan)
+        },
+
+        machTags(plan) {
+            let filterTagsCount = Object.keys(this.filterTags).length
+            if (!this.filterTags || filterTagsCount === 0) {
+                return true
+            }
+
+            //
+            let filterTag_sound = this.filterTags["word-sound"]
+            if (filterTag_sound) {
+                let planTag_question_datatype = plan.tags[dbConst.TagType_plan_question_datatype]
+                let planTag_answer_datatype = plan.tags[dbConst.TagType_plan_answer_datatype]
+                if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
+                    return false
+                }
+            }
+
+            //
+            let planTag_translate_direction = plan.tags[dbConst.TagType_word_translate_direction]
+            if (planTag_translate_direction) {
+                //
+                let filterTag_eng = this.filterTags["eng"]
+                if (filterTag_eng) {
+                    if (planTag_translate_direction.indexOf("eng") === -1) {
+                        return false
+                    }
+                }
+                //
+                let filterTag_kaz = this.filterTags["kaz"]
+                if (filterTag_kaz) {
+                    if (planTag_translate_direction.indexOf("kaz") === -1) {
+                        return false
+                    }
+                }
+            }
+
+            //
+            return true
+        },
+
+        machText(plan) {
             if (!this.filterText) {
                 return true
             }

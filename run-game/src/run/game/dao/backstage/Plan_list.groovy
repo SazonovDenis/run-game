@@ -5,6 +5,7 @@ import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.util.StoreUtils
 
 class Plan_list extends RgmMdbUtils {
 
@@ -51,7 +52,7 @@ class Plan_list extends RgmMdbUtils {
     Store getPlansInternal(Map params) {
         Store res = mdb.createStore("Plan.list.statistic")
 
-        //
+        // ---
         long idUsr = getContextOrCurrentUsrId()
         params.put("usr", idUsr)
 
@@ -84,8 +85,50 @@ class Plan_list extends RgmMdbUtils {
         //
         filter.load(res)
 
+
+        // --- Тэги
+        fillPlanTags(res, "id")
+
         //
         return res
+    }
+
+    public void fillPlanTags(Store stPlan, String keyField) {
+        // Загрузим тэги
+        Store stItemTag = mdb.loadQuery(sqlTag("PlanTag", "plan", stPlan.getUniqueValues(keyField)))
+        Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "plan")
+
+        // Заполним поле "тэги" (tags)
+        for (StoreRecord rec : stPlan) {
+            List<StoreRecord> lstRecItemTag = mapItemsTag.get(rec.getLong(keyField))
+            if (lstRecItemTag != null) {
+                // Превратим список тэгов в Map тегов
+                Map<Long, String> mapItemTag = new HashMap<>()
+                for (StoreRecord recItemTag : lstRecItemTag) {
+                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
+                }
+                rec.setValue("tags", mapItemTag)
+            }
+        }
+    }
+
+    String sqlTag(String tagTableName, String refName, Set ids) {
+        String strIds
+        if (ids.size() == 0) {
+            strIds = "0"
+        } else {
+            strIds = ids.join(",")
+        }
+        return """
+select 
+    ${tagTableName}.${refName}, 
+    Tag.* 
+from
+    ${tagTableName} 
+    join Tag on (${tagTableName}.tag = Tag.id) 
+where
+    ${tagTableName}.${refName} in (${strIds})
+"""
     }
 
 

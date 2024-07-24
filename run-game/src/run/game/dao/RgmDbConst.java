@@ -24,8 +24,8 @@ public class RgmDbConst {
     public static long TagType_word_category = 1005;            // Тема слова
     public static long TagType_level_grade = 1006;              // Уровень сложности
     public static long TagType_top_list = 1007;                 // Топ ххх слов
-    public static long TagType_word_sound_info = 1008;          // Свойства звукового файла
-    public static long TagType_plan_access = 3000;              // Уровень доступа к плану
+    public static long TagType_word_sound_info = 1008;          // Звук для слова
+    public static long TagType_plan_access = 1010;              // Уровень доступа к плану
 
     public static long LinkType_myFriend = 1001;   // Друг
     public static long LinkType_myParent = 1002;   // Родитель

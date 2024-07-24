@@ -9,6 +9,7 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
+import run.game.dao.backstage.*
 import run.game.dao.game.*
 
 /**
@@ -108,6 +109,14 @@ class Statistic_list extends RgmMdbUtils {
         stItems = mdb.createStore("Statistic." + groupByKey)
         String sql = getSqlItems(groupByKey, params)
         mdb.loadQuery(stItems, sql, params)
+
+
+        // ---
+        // Тэги плана
+        if (groupByKey.equals("plan")) {
+            Plan_list planList = mdb.create(Plan_list)
+            planList.fillPlanTags(stItems, "plan")
+        }
 
 
         // ---

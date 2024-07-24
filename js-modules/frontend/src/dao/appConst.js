@@ -4,6 +4,11 @@ export default {
      * Настройки приложения
      */
     settings: {
+        /**
+         * Родной язык пользователя
+         */
+        mainLanguage: "rus",
+
         ballWidth: 32,
         ballHeihth: 32,
         goalSize: 16,

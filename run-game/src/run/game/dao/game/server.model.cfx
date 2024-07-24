@@ -130,6 +130,9 @@
 
         <field name="isPublic" parent="Plan/isPublic"/>
 
+        <!-- Тэги плана -->
+        <field name="tags" parent="object"/>
+
         <!-- Общее количество слов -->
         <include name="Statistic.words"/>
 

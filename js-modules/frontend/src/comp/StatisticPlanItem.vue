@@ -21,6 +21,7 @@
             <div class="plan-info">
                 {{ item.wordCount }} {{ wordsText(item.wordCount) }}
             </div>
+            <TagTranslateDirection :tags="item.tags"/>
         </q-item-section>
 
         <q-item-section
@@ -63,6 +64,7 @@
 <script>
 
 import PlanRaitingCircularProgress from "./PlanRaitingCircularProgress"
+import TagTranslateDirection from "./TagTranslateDirection"
 import utils from "../utils"
 
 export default {
@@ -70,7 +72,7 @@ export default {
     name: "StatisticPlanItem",
 
     components: {
-        PlanRaitingCircularProgress
+        PlanRaitingCircularProgress, TagTranslateDirection
     },
 
     props: {

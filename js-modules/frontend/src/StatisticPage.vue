@@ -39,13 +39,12 @@
                     <div class="row q-mt-md">
 
                         <StatisticRatingDiff
-                            class="q-mx-md q-mt-sm"
+                            class="q-mx-md q-my-sm q-mb-md"
                             :statistic="statisticPeriod"/>
 
                     </div>
 
                 </div>
-
 
                 <!-- -->
 

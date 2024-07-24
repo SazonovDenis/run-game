@@ -33,7 +33,7 @@
                     <div class="row q-my-md">
 
                         <StatisticRatingDiff
-                            class="q-mx-md q-mt-sm"
+                            class="q-mx-md q-my-sm q-mb-md"
                             :statistic="localState.statistic"/>
 
                     </div>

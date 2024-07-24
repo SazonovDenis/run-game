@@ -34,21 +34,21 @@
                     <div class="row q-my-md">
 
                         <StatisticRatingDiff
-                            class="q-mx-md q-mt-sm"
+                            class="q-mx-md q-my-sm q-mb-md"
                             :statistic="statisticPeriod"/>
 
                     </div>
 
                 </div>
 
-                <!-- -->
-
             </div>
+
 
             <PeriodStatisticChart
                 v-show="params.period !== 'day'"
                 :statistic="statisticByDay"
             />
+
 
             <div class="text-h3 text-center q-mt-md">
                 Всего по уровню

@@ -15,7 +15,17 @@
 <head>
   <meta charset="UTF-8">
   <title>${ctx.title}!</title>
+%{--
   <link rel="icon" href="data:,">
+--}%
+
+  <link rel="apple-touch-icon" href="${th.ref(th.path('./icon/apple-touch-icon.png'))}">
+  <!-- 180x180 - ставим первым для safari -->
+  <link rel="icon" href="${th.ref(th.path('./icon/favicon.ico'))}" sizes="any">
+  <!-- 32x32 -->
+  <link rel="icon" href="${th.ref(th.path('./icon/icon.svg'))}" type="image/svg+xml">
+  <link rel="manifest" href="${th.ref(th.path('./icon/manifest.txt'))}">
+
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -84,10 +94,14 @@
     display: flex;
     justify-content: center;
     padding: 1em;
+
+    opacity: 0.4;
   }
 
   .jc-splash-icon img {
-    height: 5em;
+    width: 5rem;
+    height: 5rem;
+
     animation-name: fade-icon;
     animation-duration: 2s;
     animation-iteration-count: infinite;
@@ -143,7 +157,7 @@
 
   <div class="jc-splash-icon">
     <img id="jc-splash-icon" class="jc-splash-icon"
-         src="${th.ref(th.path('./img/cube.png'))}"/>
+         src="${th.ref(th.path('./icon/icon.svg'))}"/>
   </div>
 
   <div class="jc-progress">

@@ -1,6 +1,6 @@
 <template>
     <div :class="classLogo">
-        <img v-bind:src="backgroundImage">
+        <img class="logo-image" v-bind:src="backgroundImage">
     </div>
 </template>
 
@@ -21,7 +21,7 @@ export default {
             return "logo" + (this.loading ? " animated" : "")
         },
         backgroundImage() {
-            return apx.url.ref("run/game/web/img/cube.png")
+            return apx.url.ref("run/game/web/icon/icon.svg")
         },
     },
 
@@ -36,7 +36,12 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 5rem;
+}
+
+.logo-image {
+    width: 4rem;
+    height: 4rem;
+    opacity: 0.4;
 }
 
 .logo img {

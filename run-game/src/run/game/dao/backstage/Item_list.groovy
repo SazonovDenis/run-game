@@ -394,6 +394,8 @@ class Item_list extends BaseMdbUtils {
         //
         word = word.replace(",", "")
         word = word.replace(".", "")
+        word = word.replace(";", "")
+        word = word.replace(":", "")
         word = word.replace("/", "")
         word = word.replace("-", "")
         word = word.replace("_", "")

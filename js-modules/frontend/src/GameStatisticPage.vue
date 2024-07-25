@@ -8,6 +8,12 @@
     >
 
         <div v-if="dataLoaded">
+
+            <div v-if="!this.localState.game">
+                <LogoGame/>
+                <div class="message-no-data">Нет данных об игре</div>
+            </div>
+
             <div class="row justify-center">
 
 
@@ -116,9 +122,9 @@
 
         </div>
 
+
         <div v-else class="game-info">
             <LogoGame/>
-            <div class="game-info__no-data">Нет данных об игре</div>
         </div>
 
 
@@ -311,8 +317,10 @@ export default {
 
 <style lang="less" scoped>
 
-.game-tasks {
-    _font-size: 1.2em;
+.message-no-data {
+    text-align: center;
+    color: #404040;
+    font-size: 2em;
 }
 
 hr {

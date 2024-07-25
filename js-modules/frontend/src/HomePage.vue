@@ -41,6 +41,7 @@ export default {
     },
 
     async mounted() {
+        // Текущий пользователь и его план
         let userInfo = auth.getContextUserInfo()
         let planDefaultId = userInfo.planDefault
 

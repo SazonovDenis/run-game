@@ -52,24 +52,23 @@
         <div class="row q-mr-sm q-gutter-x-xs">
 
             <q-btn
+                class="q-my-sm"
                 @click="toggleTag('kaz')" color="primary"
                 :outline="getOutline('kaz')"
-                class="q-my-sm"
                 label="Каз"
             />
             <q-btn
+                class="q-my-sm"
                 @click="toggleTag('eng')" color="primary"
                 :outline="getOutline('eng')"
-                class="q-my-sm"
                 label="Анг"
             />
 
             <q-btn
-                @click="toggleTag('word-sound')" color="orange-10"
-                :outline="getOutline('word-sound')"
                 class="q-my-sm"
-                _label="Звук"
-                icon="headphones"
+                @click="toggleTag('word-sound')" color="orange-10"
+                :outline="getOutline_WordSound()"
+                :icon="getIcon_WordSound()"
             />
 
         </div>
@@ -123,9 +122,33 @@ export default {
             return !this.inputTags[lang]
         },
 
+        getOutline_WordSound() {
+            let tag = "word-sound"
+            if (this.inputTags[tag] === false) {
+                return false
+            } else if (this.inputTags[tag] === true) {
+                return false
+            } else {
+                return true
+            }
+        },
+
+        getIcon_WordSound() {
+            let tag = "word-sound"
+            if (this.inputTags[tag] === false) {
+                return "speaker-cross"
+            } else if (this.inputTags[tag] === true) {
+                return "headphones"
+            } else {
+                return "headphones"
+            }
+        },
+
         toggleTag(tag) {
-            if (this.inputTags[tag]) {
-                delete this.inputTags[tag];
+            if (this.inputTags[tag] === false) {
+                delete this.inputTags[tag]
+            } else if (this.inputTags[tag] === true) {
+                this.inputTags[tag] = false
             } else {
                 this.inputTags[tag] = true
             }

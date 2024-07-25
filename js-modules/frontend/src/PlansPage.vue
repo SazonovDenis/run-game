@@ -289,10 +289,17 @@ export default {
 
             //
             let filterTag_sound = this.filterTags["word-sound"]
-            if (filterTag_sound) {
+            if (filterTag_sound === true) {
                 let planTag_question_datatype = plan.tags[dbConst.TagType_plan_question_datatype]
                 let planTag_answer_datatype = plan.tags[dbConst.TagType_plan_answer_datatype]
                 if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
+                    return false
+                }
+            }
+            if (filterTag_sound === false) {
+                let planTag_question_datatype = plan.tags[dbConst.TagType_plan_question_datatype]
+                let planTag_answer_datatype = plan.tags[dbConst.TagType_plan_answer_datatype]
+                if (planTag_question_datatype === "word-sound" || planTag_answer_datatype === "word-sound") {
                     return false
                 }
             }

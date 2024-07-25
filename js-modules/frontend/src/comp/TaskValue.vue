@@ -4,26 +4,32 @@
 
         <div class="row" @click="play()">
 
-            <div class="task-sound">
-                <template v-if="canPlaySound">
-                    <q-icon name="speaker-on"/>
-                </template>
-                <template v-else>
-                    <q-icon name="speaker"/>
-                </template>
-            </div>
-
-
-            <div v-if="doShowText" class="task-text">
+            <div v-if="doShowText" class="row task-text">
                 <div v-if="task.valueSpelling" class="task-spelling">
                     {{ task.valueSpelling }}
                 </div>
                 <div v-if="task.valueTranslate" class="task-translate">
                     {{ task.valueTranslate }}
                 </div>
+
+                <div class="task-sound q-ml-xs">
+                    <template v-if="soundPlaying">
+                        <q-icon name="speaker-on" class="q-pb-xs" color="orange-10"
+                                size="0.9em"/>
+                    </template>
+                    <template v-else>
+                        <q-icon name="headphones" class="q-pb-xs" color="orange-10"
+                                size="0.9em"/>
+                    </template>
+                </div>
             </div>
-            <div v-else class="task-text-image">
-                <img :src="wave">
+
+            <div v-else :class="'task-text-image ' + classAnimation">
+                <q-icon name="soundwave" class="animation animation-1" size="1.2em"/>
+                <q-icon name="soundwave" class="animation animation-2" size="1.2em"/>
+                <q-icon name="soundwave" class="animation animation-3" size="1.2em"/>
+                <q-icon name="soundwave" class="animation animation-4" size="1.2em"/>
+                <q-icon name="soundwave" class="animation animation-5" size="1.2em"/>
             </div>
 
         </div>
@@ -33,12 +39,7 @@
 
     <template v-else>
 
-        <div class="row task">
-
-            <div class="task-sound">
-                <q-icon name="speaker-off"/>
-            </div>
-
+        <div class="row">
 
             <div v-if="task.valueSpelling" class="task-spelling">
                 {{ task.valueSpelling }}
@@ -56,7 +57,6 @@
 
 <script>
 
-import {apx} from "../vendor"
 import utils from '../utils'
 import dbConst from "run-game-frontend/src/dao/dbConst"
 
@@ -82,6 +82,7 @@ export default {
     data() {
         return {
             taskSoundLoaded: false,
+            soundPlaying: false,
         }
     },
 
@@ -131,7 +132,14 @@ export default {
 
         onSoundError() {
             this.taskSoundLoaded = false
-            //console.info("onSoundError: " + this.audio.src)
+        },
+
+        onSoundPlay() {
+            this.soundPlaying = true
+        },
+
+        onSoundPause() {
+            this.soundPlaying = false
         },
 
         canPlaySoundAuto() {
@@ -148,8 +156,8 @@ export default {
 
     computed: {
 
-        wave() {
-            return apx.url.ref("run/game/web/img/wave.png")
+        classAnimation() {
+            if (this.soundPlaying) {return "animated"} else {return ""}
         },
 
         taskHasSound() {
@@ -174,12 +182,16 @@ export default {
         this.audio = new Audio()
         this.audio.addEventListener('loadeddata', this.onSoundLoaded, false)
         this.audio.addEventListener('error', this.onSoundError, false)
+        this.audio.addEventListener('play', this.onSoundPlay, false)
+        this.audio.addEventListener('pause', this.onSoundPause, false)
     },
 
     unmounted() {
         if (this.audio != null) {
             this.audio.removeEventListener('loadeddata', this.onSoundLoaded)
-            this.audio.addEventListener('error', this.onSoundError)
+            this.audio.removeEventListener('error', this.onSoundError)
+            this.audio.removeEventListener('play', this.onSoundPlay)
+            this.audio.removeEventListener('pause', this.onSoundPause)
             this.audio = null
         }
     },
@@ -194,9 +206,6 @@ export default {
 }
 
 .task-sound {
-    color: #7a7a7a;
-    padding-right: 0.2em;
-    size: 1em;
 }
 
 .task-spelling {
@@ -210,5 +219,44 @@ export default {
     height: 1em;
     opacity: 0.8;
 }
+
+.animated > .animation {
+    animation-name: play;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes play {
+    from {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.2;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animation-1 {
+    animation-delay: .0s;
+}
+
+.animation-2 {
+    animation-delay: .1s;
+}
+
+.animation-3 {
+    animation-delay: .2s;
+}
+
+.animation-4 {
+    animation-delay: .3s;
+}
+
+.animation-5 {
+    animation-delay: .4s;
+}
+
 
 </style>

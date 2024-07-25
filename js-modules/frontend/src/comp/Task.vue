@@ -5,6 +5,7 @@
                    :task="task"
                    :showTaskHint="state.showTaskHint"
                    :doShowText="doShowText"
+                   ref="taskValue"
         />
 
         <div class="task-help-icon">
@@ -16,10 +17,8 @@
 
 <script>
 
-import {apx} from "../vendor"
 import dbConst from "../dao/dbConst"
 import ctx from "../gameplayCtx"
-import utils from '../utils'
 import TaskValue from "../comp/TaskValue"
 
 
@@ -36,30 +35,8 @@ export default {
 
     methods: {
 
-        loadAudioTask() {
-            // Останавливаем текущий звук
-            try {
-                this.audio.pause()
-            } catch(e) {
-                console.error(e)
-            }
-
-            //
-            this.state.showTaskHint = false
-
-            // Новый звук
-            this.state.taskSoundLoaded = false
-            this.audio.src = utils.getAudioSrc(this.task)
-        },
-
         play() {
-            if (this.canPlaySound) {
-                try {
-                    this.audio.play()
-                } catch(e) {
-                    console.error(e)
-                }
-            }
+            this.$refs.taskValue.play()
         },
 
         showHint() {
@@ -80,53 +57,17 @@ export default {
             }
         },
 
-        onSoundLoaded() {
-            this.state.taskSoundLoaded = true
-
-            // Автоматически играем звук, если тип попроса это разрешает (тап вопроса - правописание или звук)
-            if (this.canPlaySoundAuto()) {
-                this.audio.play()
-            }
-        },
-
-        onSoundError() {
-            this.state.taskSoundLoaded = false
-            //console.info("onSoundError: " + this.audio.src)
-        },
-
-        canPlaySoundAuto() {
-            return (
-                this.state.showTaskHint ||
-                this.task.dataType === dbConst.DataType_word_sound ||
-                this.task.dataType === dbConst.DataType_word_spelling
-            )
-        },
-
-
     },
 
     watch: {
         task: {
             handler(newValue, oldValue) {
-                this.loadAudioTask()
+                this.$refs.taskValue.play()
             }, deep: true
         }
     },
 
     computed: {
-
-        wave() {
-            return apx.url.ref("run/game/web/img/wave.png")
-        },
-
-        canPlaySound() {
-            return (
-                this.task != null &&
-                this.task.valueSound != null &&
-                this.state.taskSoundLoaded &&
-                this.canPlaySoundAuto()
-            )
-        },
 
         doShowText() {
             return (
@@ -139,25 +80,13 @@ export default {
             )
         },
 
-        doShowSound() {
-            return (
-                this.task != null &&
-                this.task.valueSound != null
-            )
-        },
-
     },
 
     mounted() {
-        let audio = this.audio = new Audio()
-        audio.addEventListener('loadeddata', this.onSoundLoaded, false)
-        audio.addEventListener('error', this.onSoundError, false)
-
-        //
         ctx.eventBus.on("taskOptionSelected", this.onTaskOptionSelected)
 
         //
-        this.loadAudioTask()
+        this.play()
     },
 
     unmounted() {

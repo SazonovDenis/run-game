@@ -65,7 +65,6 @@
                        :offset="[10, 10]">
             <q-fab
                 color="purple"
-                icon="add"
                 vertical-actions-align="right"
                 direction="up"
                 class="btn-add"
@@ -73,17 +72,17 @@
             >
                 <q-fab-action class="btn-add-submenu"
                               color="secondary"
-                              icon="edit"
+                              icon="gallery-add"
                               label="Создать свой уровень"
-                              square
+                              rounded
                               @click="onCreatePlan"
                 />
                 <q-fab-action class="btn-add-submenu"
                               color="amber-10"
                               text-color="black"
-                              icon="add"
+                              icon="gallery-favourite"
                               label="Подключить из библиотеки"
-                              square
+                              rounded
                               @click="onAddPlan"
                 />
             </q-fab>

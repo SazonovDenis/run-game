@@ -65,14 +65,15 @@
 
 
 .btn-add {
-  font-size: 1.1em;
+  font-size: 1.2em;
   height: 3.0rem;
   min-width: 15rem;
 }
 
 .btn-add-submenu {
+  font-size: 1.2em;
   height: 3.5rem !important;
-  min-width: 18em;
+  left: 0.4em;
 }
 
 /* Кнопка внутри списка */

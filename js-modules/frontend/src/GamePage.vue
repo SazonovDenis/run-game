@@ -5,14 +5,14 @@
         frameReturn="/gameStatistic"
         :showFooter="true">
 
-        <template v-slot:footerContent>
-            <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
-        </template>
-
         <UserTaskPanel
             v-if="isAuth()"
             :gameTask="globalState.gameTask" :dataState="globalState.dataState"
         />
+
+        <template v-slot:footerContent>
+            <GameState :game="globalState.game" :tasksResult="globalState.tasksResult"/>
+        </template>
 
     </MenuContainer>
 

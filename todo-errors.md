@@ -76,10 +76,6 @@ So many dumb ways to die
 В предложении "...this steps in when ..." не находит выражение "step in", т.к. нет
 преобразования "steps in" -> "step in"
 
-### Компоненты Task и TaskValue имеют дубоирующийся комплект логики
-
-Функции по загрузке и проигрыванию звука
-
 ### /home/dvsa/projects/jc2-projects/run-game/data/web-grab/5000-studynow/mp3/as\ well\ as.mp3
 
 нет звука

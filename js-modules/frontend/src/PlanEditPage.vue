@@ -88,7 +88,7 @@
                                                @click="clickImageBtn"/>
                     -->
 
-                    <q-icon name="image"
+                    <q-icon name="picture"
                             _size="1.3rem"
                             @click="clickImageBtn"/>
 
@@ -245,7 +245,7 @@
                     class="q-my-xnone q-mx-xs"
                     align="left"
                     size="1.3rem"
-                    icon="word-add-keyboard"
+                    icon="keyboard"
                     @click="this.setFrameMode('addByText')"
                 />
 
@@ -256,7 +256,7 @@
                     class="q-my-xnone q-mx-xs"
                     align="left"
                     size="1.3rem"
-                    icon="word-add-photo"
+                    icon="camera"
                     @click="this.setFrameMode('addByPhoto')"
                 />
             </div>

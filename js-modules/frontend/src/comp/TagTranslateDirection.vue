@@ -7,19 +7,16 @@
             :color="backgroundColor(tagTranslateDirection.from)">
             {{ tagTranslateDirection.fromText }}
         </q-badge>
-        <q-badge v-if="tagTranslateDirection.fromAudio" outline color="green-8">
-            Звук
-        </q-badge>
+        <q-icon v-if="tagTranslateDirection.fromAudio"
+                name="headphones" outline color="orange-10" size="1.2rem"/>
         <span class="tag-arrow">&rarr;</span>
         <q-badge
             :text-color="textColor(tagTranslateDirection.to)"
             :color="backgroundColor(tagTranslateDirection.to)">
             {{ tagTranslateDirection.toText }}
         </q-badge>
-        <q-badge v-if="tagTranslateDirection.toAudio" outline color="green-8">
-            Звук
-        </q-badge>
-
+        <q-icon v-if="tagTranslateDirection.toAudio"
+                name="headphones" outline color="orange-10" size="1.2rem"/>
     </div>
 
 </template>

@@ -54,21 +54,22 @@
             <q-btn
                 @click="toggleTag('kaz')" color="primary"
                 :outline="getOutline('kaz')"
-                class="q-my-sm" _size="sm"
+                class="q-my-sm"
                 label="Каз"
             />
             <q-btn
                 @click="toggleTag('eng')" color="primary"
                 :outline="getOutline('eng')"
-                class="q-my-sm" _size="sm"
+                class="q-my-sm"
                 label="Анг"
             />
 
             <q-btn
-                @click="toggleTag('word-sound')" color="green-8"
+                @click="toggleTag('word-sound')" color="orange-10"
                 :outline="getOutline('word-sound')"
-                class="q-my-sm" _size="sm"
-                label="Звук"
+                class="q-my-sm"
+                _label="Звук"
+                icon="headphones"
             />
 
         </div>

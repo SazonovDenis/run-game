@@ -783,7 +783,7 @@ export default {
 
     padding: 0 1.5em;
 
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .photo-btn-file {
@@ -794,7 +794,7 @@ export default {
 
     padding: 0 1.5em;
 
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .zoom-btn {

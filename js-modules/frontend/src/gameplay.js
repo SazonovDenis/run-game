@@ -614,10 +614,7 @@ export default {
             stateMode.modeShowOptions = "hint-true"
         }
 
-        // Показать текст подсказки после первого выбора
-        ctx.globalState.dataState.showTaskHint = true
-
-        // Показать текст подсказки после первого выбора
+        // Показать подсказки после первого выбора
         ctx.globalState.dataState.showTaskHint = true
 
         //

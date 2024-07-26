@@ -9,7 +9,7 @@
         />
 
         <div class="task-help-icon">
-            <q-icon size="2em" name="help" @click="showHint"/>
+            <q-icon size="2em" name="help" @click="doShowHint"/>
         </div>
 
     </div>
@@ -39,7 +39,7 @@ export default {
             this.$refs.taskValue.play()
         },
 
-        showHint() {
+        doShowHint() {
             this.state.showTaskHint = true
 
             //

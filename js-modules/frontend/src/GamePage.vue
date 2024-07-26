@@ -53,6 +53,10 @@ export default {
         },
 
         onLoadedGameTask() {
+            // Перестать показывать подсказки после первого выбора
+            ctx.globalState.dataState.showTaskHint = false
+
+            //
             if (ctx.globalState.game.done) {
                 apx.showFrame({
                     frame: '/gameStatistic', props: {prop1: 1}

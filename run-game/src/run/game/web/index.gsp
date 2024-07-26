@@ -15,9 +15,6 @@
 <head>
   <meta charset="UTF-8">
   <title>${ctx.title}!</title>
-%{--
-  <link rel="icon" href="data:,">
---}%
 
   <link rel="apple-touch-icon" href="${th.ref(th.path('./icon/apple-touch-icon.png'))}">
   <!-- 180x180 - ставим первым для safari -->

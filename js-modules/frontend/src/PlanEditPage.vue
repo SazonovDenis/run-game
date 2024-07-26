@@ -126,7 +126,7 @@
 
                 <template v-if="!isModeView()">
 
-                    <div style="_display: flex;">
+                    <div>
 
                         <!--
                                                 <q-btn
@@ -227,7 +227,7 @@
 
             </TextInputPhoto>
 
-            <div class="btn-keyboard-container btn-container-on-top row">
+            <div class="btn-top-container btn-container-on-top row">
 
                 <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
                         name="picture"
@@ -308,49 +308,35 @@
 
         </div>
 
+        <div class="btn-bottom-container btn-container-on-top row">
 
-        <!--
-                <template v-slot:menuBarRight v-if="!isModeView()">
+            <q-btn
+                v-if="canEditPlan() && this.frameMode !== 'editPlan'"
+                round no-caps
+                _label="Редактировать"
+                color="purple-4"
+                class="q-py-none q-px-md btn-set-frame-mode"
+                icon="edit"
+                size="1.2em"
+                _style="width: 14rem"
+                @click="this.setFrameMode('editPlan')"
+            />
 
-                    <div style="display: flex;">
+            <q-btn
+                v-if="canEditPlan() && this.frameMode !== 'addByText' && this.frameMode !== 'addByPhoto'"
+                rounded no-caps
+                color="green-7"
+                class="q-my-xnone q-mx-xs btn-set-frame-mode"
+                size="1.3rem"
+                icon="add"
+                label="Добавить слова"
+                @click="this.setFrameMode('addByText')"
+            />
 
-                        <q-btn
-                            v-if="canEditPlan() && this.frameMode !== 'editPlan'"
-                            rounded
-                            color="purple-4"
-                            class="q-my-xnone q-mx-xs"
-                            size="1.3rem"
-                            icon="edit"
-                            @click="this.setFrameMode('editPlan')"
-                        />
-
-                        <q-btn
-                            v-if="canEditItemList() && this.frameMode !== 'addByText'"
-                            rounded
-                            color="yellow-10"
-                            class="q-my-xnone q-mx-xs"
-                            align="left"
-                            size="1.3rem"
-                            icon="keyboard"
-                            @click="this.setFrameMode('addByText')"
-                        />
-
-                        <q-btn
-                            v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
-                            rounded
-                            color="yellow-8"
-                            class="q-my-xnone q-mx-xs"
-                            align="left"
-                            size="1.3rem"
-                            icon="camera"
-                            @click="this.setFrameMode('addByPhoto')"
-                        />
-                    </div>
-
-                </template>
-        -->
+        </div>
 
 
+<!--
         <q-page-sticky
             class="btn-container-on-top"
             position="bottom-right"
@@ -359,61 +345,11 @@
             <div class="row q-gutter-x-sm"
                  style="_border: solid 1px green; align-items: end;">
 
-                <!--
-                                <q-btn
-                                    v-if="canEditPlan() && this.frameMode !== 'editPlan'"
-                                    rounded
-                                    color="purple-4"
-                                    class="q-my-xnone q-mx-xs"
-                                    size="1.3rem"
-                                    icon="edit"
-                                    @click="this.setFrameMode('editPlan')"
-                                />
-                -->
-
-                <q-btn
-                    v-if="canEditPlan() && this.frameMode !== 'editPlan'"
-                    round no-caps
-                    _label="Редактировать"
-                    color="purple-4"
-                    class="q-py-none q-px-md btn-set-frame-mode"
-                    icon="edit"
-                    size="1.2em"
-                    _style="width: 14rem"
-                    @click="this.setFrameMode('editPlan')"
-                />
-
-                <q-btn
-                    v-if="canEditPlan() && this.frameMode !== 'addByText' && this.frameMode !== 'addByPhoto'"
-                    rounded no-caps
-                    color="green-7"
-                    class="q-my-xnone q-mx-xs btn-set-frame-mode"
-                    size="1.3rem"
-                    icon="add"
-                    label="Добавить слова"
-                    @click="this.setFrameMode('addByText')"
-                />
-
-
-                <!--
-                                <div>
-
-                                    <q-btn
-                                        v-if="plan.isOwner === true"
-                                        rounded no-caps class="q-py-xs q-px-md"
-                                        label="Добавить слова"
-                                        color="green-7"
-                                        icon="add"
-                                        size="1.2em"
-                                        style="width: 15rem"
-                                        @click="onPlanAddFact"
-                                    />
-                                </div>
-                -->
 
             </div>
 
         </q-page-sticky>
+-->
 
 
         <template v-slot:footer>
@@ -1764,10 +1700,10 @@ export default {
     margin-bottom: auto;
 }
 
-.btn-keyboard-container {
+.btn-top-container {
     right: 0rem;
     top: 3.1rem;
-    position: absolute;
+    position: fixed;
 }
 
 .btn-container-on-top {
@@ -1778,6 +1714,12 @@ export default {
 .btn-keyboard {
     background-color: #fbc02d;
     border-radius: 20.5rem;
+}
+
+.btn-bottom-container {
+    right: 0.5rem;
+    bottom: 0.5rem;
+    position: fixed;
 }
 
 .btn-set-frame-mode {

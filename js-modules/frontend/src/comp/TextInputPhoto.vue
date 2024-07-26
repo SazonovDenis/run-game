@@ -6,18 +6,18 @@
             info: {{ info }}
         </div>
 
-        <div v-if="this.isCameraIniting === true"
+        <div v-if="this.isCameraIniting === true && this.isStillImage !== true"
              class="rgm-state-text photo-state-wait">
             Инициализация камеры
         </div>
 
-        <div v-if="this.wasCameraInitFail === true"
+        <div v-if="this.wasCameraInitFail === true && this.isStillImage !== true"
              class="rgm-state-text photo-state-error">
             Нет доступа к камере
         </div>
 
 
-        <div v-show="this.wasCameraInitOk === true"
+        <div v-show="this.wasCameraInitOk === true || this.isStillImage === true"
              class="camera-container">
 
             <!-- Захват с камеры и canvas для стоп-кадра с неё -->
@@ -80,17 +80,17 @@
                        @click="onNewPicture"
                 />
 
-<!--
-                <q-btn v-if="isCameraCapturing === true || searchDone === true"
-                       rounded
-                       class="photo-btn photo-btn-file"
-                       color="secondary"
-                       no-caps
-                       icon="picture"
-                       :label="labelChooseFile()"
-                       @click="onChooseFile"
-                />
--->
+                <!--
+                                <q-btn v-if="isCameraCapturing === true || searchDone === true"
+                                       rounded
+                                       class="photo-btn photo-btn-file"
+                                       color="secondary"
+                                       no-caps
+                                       icon="picture"
+                                       :label="labelChooseFile()"
+                                       @click="onChooseFile"
+                                />
+                -->
 
                 <div v-if="isCameraCapturing === false && searchDone === true"
                      class="col zoom-btn"
@@ -708,14 +708,14 @@ export default {
 @media (orientation: landscape) {
     .photo-container {
         max-width: 50vw;
-        height: calc(100vh - 3.125rem);
+        height: calc(100vh - 4.4rem);
     }
 }
 
 @media (orientation: portrait) {
     .photo-container {
         width: 100vw;
-        height: calc(70vh - 3.125rem);
+        height: calc(70vh - 4.4rem);
     }
 }
 
@@ -728,7 +728,7 @@ export default {
 
     width: 100%;
     height: auto;
-    max-height: calc(100vh - 3.125rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
+    max-height: calc(100vh - 4.4rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
 }
 
 
@@ -754,7 +754,7 @@ export default {
 
 @media (orientation: portrait) {
     .selected-list-container {
-        height: calc(30vh - 3.125rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
+        height: calc(30vh - 4.4rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
     }
 }
 
@@ -792,7 +792,7 @@ export default {
 .photo-btn-clear {
     height: 3em;
 
-    right: 0.5em;
+    left: 0.5em;
     bottom: 0.9em;
 
     padding: 0 1.5em;
@@ -822,9 +822,11 @@ export default {
     width: 2.5em;
 }
 
+/*
 .hidden {
     display: none;
 }
+*/
 
 .state-text {
     font-size: 3em;

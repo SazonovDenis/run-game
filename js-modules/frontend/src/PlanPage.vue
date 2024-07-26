@@ -6,7 +6,7 @@
     >
 
         <div v-if="dataLoaded">
-            
+
             <div class="justify-center row q-pt-sm">
 
                 <StatisticWordsLearned :statistic="statistic"/>
@@ -32,10 +32,7 @@
             </div>
 
 
-            <q-separator class="q-my-sm"/>
-
-
-            <div class="row q-mb-sm bg-white"
+            <div class="row q-my-sm bg-white"
                  v-if="visibleCount > 0"
             >
 
@@ -98,42 +95,71 @@
 
 
             <q-page-sticky
-                v-if="canDeletePlan()"
                 position="bottom-left"
                 :offset="[10, 10]">
-                <q-btn no-caps
-                       color="red-7"
-                       icon="del"
-                       label="Удалить уровень"
-                       size="1.2em"
-                       @click="onPlanDelete"
-                />
-            </q-page-sticky>
+                <div class="row q-gutter-x-sm"
+                     style="_border: solid 1px red; align-items: end;">
+                    <q-btn
+                        v-if="canDeletePlan()"
+                        rounded no-caps class="q-py-xs q-px-md"
+                        color="red-7"
+                        icon="del"
+                        label="Удалить уровень"
+                        size="1.2em"
+                        style="width: 15rem"
+                        @click="onPlanDelete"
+                    />
+                </div>
 
-
-            <q-page-sticky
-                v-if="plan.isOwner === true"
-                position="bottom-right"
-                :offset="[70, 5]">
-                <q-btn round
-                       color="green-7"
-                       icon="add"
-                       size="1.2em"
-                       @click="onPlanAddFact"
-                />
             </q-page-sticky>
 
             <q-page-sticky
-                _v-if="plan.isOwner === true"
                 position="bottom-right"
-                :offset="[10, 5]">
-                <q-btn round
-                       color="purple-4"
-                       icon="edit"
-                       size="1.2em"
-                       @click="onPlanEdit"
-                />
+                :offset="[10, 10]">
+
+                <div class="row q-gutter-x-sm"
+                     style="_border: solid 1px green; align-items: end;">
+
+                    <q-btn
+                        _v-if="plan.isOwner === true"
+                        round no-caps class="q-py-none q-px-md"
+                        _label="Редактировать"
+                        color="purple-4"
+                        icon="edit"
+                        size="1.2em"
+                        _style="width: 14rem"
+                        @click="onPlanEdit"
+                    />
+
+
+
+                    <q-btn
+                        v-if="plan.isOwner === true"
+                        rounded no-caps class="q-py-xs q-px-md"
+                        label="Добавить слова"
+                        color="green-7"
+                        icon="add"
+                        size="1.2em"
+                        style="width: 15rem"
+                        @click="onPlanAddFact"
+                    />
+
+                </div>
+
             </q-page-sticky>
+
+            <!--
+
+                        <q-page-sticky
+                            position="bottom-right"
+                            :offset="[10, 10]">
+                        </q-page-sticky>
+
+                        <q-page-sticky
+                            position="bottom-right"
+                            :offset="[70, 11]">
+                        </q-page-sticky>
+            -->
 
         </div>
 

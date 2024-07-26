@@ -1,14 +1,24 @@
 <template>
 
-    <div style="position: relative; justify-content: center;"
-         :class="getClassComponent()">
+    <div :class="'input-container ' + getClassComponent()">
 
         <div v-if="isDev" style="position: absolute; z-index: 10; padding: 5px">
             info: {{ info }}
         </div>
 
+        <div v-if="this.isCameraIniting === true"
+             class="rgm-state-text photo-state-wait">
+            Инициализация камеры
+        </div>
 
-        <div class="camera-container">
+        <div v-if="this.wasCameraInitFail === true"
+             class="rgm-state-text photo-state-error">
+            Нет доступа к камере
+        </div>
+
+
+        <div v-show="this.wasCameraInitOk === true"
+             class="camera-container">
 
             <!-- Захват с камеры и canvas для стоп-кадра с неё -->
             <div v-show="this.isCameraCapturing === true" style="text-align: center;">
@@ -70,15 +80,17 @@
                        @click="onNewPicture"
                 />
 
+<!--
                 <q-btn v-if="isCameraCapturing === true || searchDone === true"
                        rounded
                        class="photo-btn photo-btn-file"
                        color="secondary"
                        no-caps
-                       icon="image"
+                       icon="picture"
                        :label="labelChooseFile()"
                        @click="onChooseFile"
                 />
+-->
 
                 <div v-if="isCameraCapturing === false && searchDone === true"
                      class="col zoom-btn"
@@ -104,17 +116,6 @@
             </div>
 
 
-        </div>
-
-
-        <div v-if="this.isCameraIniting === true"
-             class="rgm-state-text photo-state-wait">
-            Инициализация камеры
-        </div>
-
-        <div v-if="this.wasCameraInitFail === true"
-             class="rgm-state-text photo-state-error">
-            Нет доступа к камере
         </div>
 
 
@@ -671,10 +672,23 @@ export default {
 
 
 /* --- */
+.input-container {
+    position: relative;
+    justify-content: center;
+}
+
+@media (orientation: landscape) {
+    .input-container {
+        flex-direction: row-reverse;
+    }
+}
+
+/* --- */
 
 
 .camera-container {
     position: relative;
+    z-index: 3000;
 }
 
 

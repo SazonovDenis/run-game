@@ -6,18 +6,6 @@
         :frameReturn="getFrameReturn()"
     >
 
-        <!--
-        <q-tabs
-            v-model="viewPlanType"
-            no-caps
-            inline-label
-            class="bg-grey-1 _shadow-5 q-my-sm"
-        >
-            <q-tab name="personal" label="Мои уровни"/>
-            <q-tab name="common" label="Библиотека"/>
-        </q-tabs>
-        -->
-
         <PlansFilterBar
             class="q-my-sm"
             :showFullFilter="this.viewPlanType === 'common'"
@@ -28,7 +16,7 @@
         />
 
 
-        <q-scroll-area class="q-scroll-area" style="height: calc(100% - 11rem);">
+        <q-scroll-area class="q-scroll-area" style="height: calc(100% - 8rem);">
 
 
             <q-list>
@@ -51,7 +39,7 @@
                 Чтобы кнопки списка не загораживали последнюю строку
                 -->
                 <q-item>
-                    <div style="height: 3em">&nbsp;</div>
+                    <div style="height: 2em">&nbsp;</div>
                 </q-item>
 
             </q-list>

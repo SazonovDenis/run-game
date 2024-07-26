@@ -31,6 +31,7 @@
 
                 <TaskList
                     v-if="(!showHidden && visibleCount > 0) || (showHidden && hiddenCount > 0)"
+                    :showLastItemPadding="true"
                     :showEdit="true"
                     :tasks="itemsExternal"
                     :itemsMenu="itemsMenu_modeEdit"
@@ -60,54 +61,120 @@
 
         <div v-show="canEditItemList() && frameMode==='addByText'">
 
-            <TextInputText
-                ref="textInputText"
-                :planId="planId"
-                :items="itemsLoaded"
-                :isToolbarUsed="this.hiddenCountLoaded > 0"
-                @itemsChange="itemsOnChange"
-                @itemsLoading="itemsOnLoading"
-                @paste="onTextInputPaste"
-            >
+            <div class="row">
 
-                <template v-slot:toolbar>
-                    <q-toggle
-                        v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
-                        v-model="showHiddenLoaded"
-                        :label="'Известные (' + this.hiddenCountLoaded + ')'"/>
+                <TextInputText
+                    style="flex-grow: 2"
+                    ref="textInputText"
+                    :planId="planId"
+                    :items="itemsLoaded"
+                    :isToolbarUsed="this.hiddenCountLoaded > 0"
+                    @itemsChange="itemsOnChange"
+                    @itemsLoading="itemsOnLoading"
+                    @paste="onTextInputPaste"
+                >
+
+                    <template v-slot:toolbar>
+                        <q-toggle
+                            v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
+                            v-model="showHiddenLoaded"
+                            :label="'Известные (' + this.hiddenCountLoaded + ')'"/>
+                    </template>
+
+                    <template v-slot:append>
+
+                        <!--
+                                            <q-btn icon="image"
+                                                   rounded
+                                                   color="secondary"
+                                                   _class="q-my-xnone q-mx-none"
+                                                   size="1.3rem"
+                                                   @click="clickImageBtn"/>
+                        -->
+
+
+                        <!--
+                        <q-icon v-if="!hasClipboardImage" name="folder-open"
+                                @click="clickFileChoose"/>
+                        -->
+
+                    </template>
+
+                </TextInputText>
+
+
+                <input style="display: none;"
+                       type="file"
+                       accept="image/*"
+                       ref="fileInput"
+                       @change="onFileChoose"
+                >
+
+
+                <!--
+                                ^c перекладывание контролов переключения фото/клавиатура и
+                                редактор/добавление
+                -->
+
+                <!--
+                                <q-icon class="q-my-sm q-mx-xs q-pa-sm"
+                                        name="folder-open"
+                                        size="2rem"
+                                        style="background-color: silver; border-radius: 20.5rem;"
+                                        @click="clickFileChoose"/>
+                -->
+
+                <template v-if="!isModeView()">
+
+                    <div style="_display: flex;">
+
+                        <!--
+                                                <q-btn
+                                                    v-if="canEditItemList() && this.frameMode !== 'addByText'"
+                                                    rounded
+                                                    color="yellow-10"
+                                                    class="q-my-xnone q-mx-xs"
+                                                    align="left"
+                                                    size="1.3rem"
+                                                    icon="keyboard"
+                                                    @click="this.setFrameMode('addByText')"
+                                                />
+                        -->
+
+
+                        <!--
+                                                <q-btn
+                                                    v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
+                                                    round dense
+                                                    color="yellow-8"
+                                                    class="q-ma-sm"
+                                                    size="1.2rem"
+                                                    icon="camera"
+                                                    @click="this.setFrameMode('addByPhoto')"
+                                                />
+                        -->
+
+                        <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
+                                name="picture"
+                                size="2rem"
+                                style="background-color: #e0e0e0; border-radius: 20.5rem;"
+                                @click="clickImageBtn"
+                        />
+
+                        <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
+                                v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
+                                name="camera"
+                                size="2rem"
+                                style="background-color: #fbc02d; border-radius: 20.5rem;"
+                                @click="this.setFrameMode('addByPhoto')"
+                        />
+
+                    </div>
+
                 </template>
 
-                <template v-slot:append>
 
-                    <!--
-                                        <q-btn icon="image"
-                                               rounded
-                                               color="secondary"
-                                               _class="q-my-xnone q-mx-none"
-                                               size="1.3rem"
-                                               @click="clickImageBtn"/>
-                    -->
-
-                    <q-icon name="picture"
-                            _size="1.3rem"
-                            @click="clickImageBtn"/>
-
-                    <!--
-                    <q-icon v-if="!hasClipboardImage" name="folder-open"
-                            @click="clickFileChoose"/>
-                    -->
-
-                </template>
-
-            </TextInputText>
-
-            <input style="display: none;"
-                   type="file"
-                   _multiple
-                   accept="image/*"
-                   ref="fileInput"
-                   @change="onFileChoose"
-            >
+            </div>
 
             <TaskList
                 v-if="itemsShouldLoad"
@@ -159,6 +226,24 @@
                 </template>
 
             </TextInputPhoto>
+
+            <div class="btn-keyboard-container btn-container-on-top row">
+
+                <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
+                        name="picture"
+                        size="2rem"
+                        style="background-color: #e0e0e0; border-radius: 20.5rem;"
+                        @click="clickImageBtn"
+                />
+
+                <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-keyboard btn-set-frame-mode"
+                        v-if="canEditItemList() && this.frameMode !== 'addByText'"
+                        name="keyboard"
+                        size="2rem"
+                        @click="this.setFrameMode('addByText')"
+                />
+
+            </div>
 
         </div>
 
@@ -224,44 +309,111 @@
         </div>
 
 
-        <template v-slot:menuBarRight v-if="!isModeView()">
+        <!--
+                <template v-slot:menuBarRight v-if="!isModeView()">
 
-            <div style="display: flex;">
+                    <div style="display: flex;">
+
+                        <q-btn
+                            v-if="canEditPlan() && this.frameMode !== 'editPlan'"
+                            rounded
+                            color="purple-4"
+                            class="q-my-xnone q-mx-xs"
+                            size="1.3rem"
+                            icon="edit"
+                            @click="this.setFrameMode('editPlan')"
+                        />
+
+                        <q-btn
+                            v-if="canEditItemList() && this.frameMode !== 'addByText'"
+                            rounded
+                            color="yellow-10"
+                            class="q-my-xnone q-mx-xs"
+                            align="left"
+                            size="1.3rem"
+                            icon="keyboard"
+                            @click="this.setFrameMode('addByText')"
+                        />
+
+                        <q-btn
+                            v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
+                            rounded
+                            color="yellow-8"
+                            class="q-my-xnone q-mx-xs"
+                            align="left"
+                            size="1.3rem"
+                            icon="camera"
+                            @click="this.setFrameMode('addByPhoto')"
+                        />
+                    </div>
+
+                </template>
+        -->
+
+
+        <q-page-sticky
+            class="btn-container-on-top"
+            position="bottom-right"
+            :offset="[10, 10]">
+
+            <div class="row q-gutter-x-sm"
+                 style="_border: solid 1px green; align-items: end;">
+
+                <!--
+                                <q-btn
+                                    v-if="canEditPlan() && this.frameMode !== 'editPlan'"
+                                    rounded
+                                    color="purple-4"
+                                    class="q-my-xnone q-mx-xs"
+                                    size="1.3rem"
+                                    icon="edit"
+                                    @click="this.setFrameMode('editPlan')"
+                                />
+                -->
 
                 <q-btn
                     v-if="canEditPlan() && this.frameMode !== 'editPlan'"
-                    rounded
+                    round no-caps
+                    _label="Редактировать"
                     color="purple-4"
-                    class="q-my-xnone q-mx-xs"
-                    size="1.3rem"
+                    class="q-py-none q-px-md btn-set-frame-mode"
                     icon="edit"
+                    size="1.2em"
+                    _style="width: 14rem"
                     @click="this.setFrameMode('editPlan')"
                 />
 
                 <q-btn
-                    v-if="canEditItemList() && this.frameMode !== 'addByText'"
-                    rounded
-                    color="yellow-10"
-                    class="q-my-xnone q-mx-xs"
-                    align="left"
+                    v-if="canEditPlan() && this.frameMode !== 'addByText' && this.frameMode !== 'addByPhoto'"
+                    rounded no-caps
+                    color="green-7"
+                    class="q-my-xnone q-mx-xs btn-set-frame-mode"
                     size="1.3rem"
-                    icon="keyboard"
+                    icon="add"
+                    label="Добавить слова"
                     @click="this.setFrameMode('addByText')"
                 />
 
-                <q-btn
-                    v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
-                    rounded
-                    color="yellow-8"
-                    class="q-my-xnone q-mx-xs"
-                    align="left"
-                    size="1.3rem"
-                    icon="camera"
-                    @click="this.setFrameMode('addByPhoto')"
-                />
+
+                <!--
+                                <div>
+
+                                    <q-btn
+                                        v-if="plan.isOwner === true"
+                                        rounded no-caps class="q-py-xs q-px-md"
+                                        label="Добавить слова"
+                                        color="green-7"
+                                        icon="add"
+                                        size="1.2em"
+                                        style="width: 15rem"
+                                        @click="onPlanAddFact"
+                                    />
+                                </div>
+                -->
+
             </div>
 
-        </template>
+        </q-page-sticky>
 
 
         <template v-slot:footer>
@@ -274,8 +426,6 @@
                     <div class="row" style="width: 100%">
 
                         <div class="row" style="flex-grow: 10; align-content: end">
-
-                            <q-space/>
 
                             <template v-if="itemsAdd.length > 0">
 
@@ -325,7 +475,6 @@
 
                             </template>
 
-
                             <template v-if="!plan && frameMode !== 'viewItemsAdd'">
 
                                 <q-btn
@@ -350,6 +499,7 @@
 
                             </template>
 
+                            <q-space/>
 
                         </div>
                     </div>
@@ -1612,6 +1762,26 @@ export default {
 .items-count-info {
     margin-top: auto;
     margin-bottom: auto;
+}
+
+.btn-keyboard-container {
+    right: 0rem;
+    top: 3.1rem;
+    position: absolute;
+}
+
+.btn-container-on-top {
+    opacity: 0.8;
+    z-index: 5000;
+}
+
+.btn-keyboard {
+    background-color: #fbc02d;
+    border-radius: 20.5rem;
+}
+
+.btn-set-frame-mode {
+    _z-index: 5000;
 }
 
 </style>

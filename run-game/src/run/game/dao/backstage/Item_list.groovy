@@ -419,25 +419,28 @@ class Item_list extends BaseMdbUtils {
      * @return дополнительные формы слова
      */
     public static Collection<String> transformWord(String wordEng) {
-        // witnesses -> witness
-        if (wordEng.endsWith("es") && wordEng.length() >= 4) {
-            wordEng = wordEng.substring(0, wordEng.length() - 2)
-            return [wordEng]
-        }
-
-        // boys -> boy
+        // boy[s] -> boy
+        // witness[es] -> witness
         if (wordEng.endsWith("s") && wordEng.length() >= 3) {
-            wordEng = wordEng.substring(0, wordEng.length() - 1)
-            return [wordEng]
+            String wordEng_1 = wordEng.substring(0, wordEng.length() - 1)
+
+            // witnesses -> witness
+            if (wordEng.endsWith("es") && wordEng.length() >= 4) {
+                String wordEng_2 = wordEng.substring(0, wordEng.length() - 2)
+                return [wordEng_1, wordEng_2]
+            }
+
+            return [wordEng_1]
         }
 
-        // mined -> mine
+
+        // min[ed] -> mine
         if (wordEng.endsWith("ed") && wordEng.length() >= 4) {
             wordEng = wordEng.substring(0, wordEng.length() - 2)
             return [wordEng]
         }
 
-        // dreaming -> dream
+        // dream[ing] -> dream
         if (wordEng.endsWith("ing") && wordEng.length() >= 5) {
             wordEng = wordEng.substring(0, wordEng.length() - 3)
             return [wordEng]

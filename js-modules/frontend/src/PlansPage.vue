@@ -269,46 +269,60 @@ export default {
         },
 
         machTags(plan) {
+            // Фильтр по тэгам не задан
+            // В filterTags всегда есть флаг clickedTag, поэтому для определения
+            // пустоты количество сравниваем с 1, а не с 0
             let filterTagsCount = Object.keys(this.filterTags).length
-            if (!this.filterTags || filterTagsCount === 0) {
+            if (!this.filterTags || filterTagsCount <= 1) {
                 return true
             }
 
-            //
+
+            // Чтобы не было ошибок, если у плана нет тэгов
+            let planTags = plan.tags
+            if (!planTags) {
+                planTags = []
+            }
+
+
+            // Значение тэга, выставленное в фильтре, должно совпадать со значением тэга у плана
             let filterTag_sound = this.filterTags["word-sound"]
             if (filterTag_sound === true) {
-                let planTag_question_datatype = plan.tags[dbConst.TagType_plan_question_datatype]
-                let planTag_answer_datatype = plan.tags[dbConst.TagType_plan_answer_datatype]
+                let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
+                let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
                 if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
                     return false
                 }
             }
             if (filterTag_sound === false) {
-                let planTag_question_datatype = plan.tags[dbConst.TagType_plan_question_datatype]
-                let planTag_answer_datatype = plan.tags[dbConst.TagType_plan_answer_datatype]
+                let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
+                let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
                 if (planTag_question_datatype === "word-sound" || planTag_answer_datatype === "word-sound") {
                     return false
                 }
             }
 
+
             //
-            let planTag_translate_direction = plan.tags[dbConst.TagType_word_translate_direction]
-            if (planTag_translate_direction) {
-                //
-                let filterTag_eng = this.filterTags["eng"]
-                if (filterTag_eng) {
-                    if (planTag_translate_direction.indexOf("eng") === -1) {
-                        return false
-                    }
-                }
-                //
-                let filterTag_kaz = this.filterTags["kaz"]
-                if (filterTag_kaz) {
-                    if (planTag_translate_direction.indexOf("kaz") === -1) {
-                        return false
-                    }
+            let planTag_translate_direction = planTags[dbConst.TagType_word_translate_direction]
+            if (!planTag_translate_direction) {
+                return false
+            }
+            //
+            let filterTag_eng = this.filterTags["eng"]
+            if (filterTag_eng) {
+                if (planTag_translate_direction.indexOf("eng") === -1) {
+                    return false
                 }
             }
+            //
+            let filterTag_kaz = this.filterTags["kaz"]
+            if (filterTag_kaz) {
+                if (planTag_translate_direction.indexOf("kaz") === -1) {
+                    return false
+                }
+            }
+
 
             //
             return true

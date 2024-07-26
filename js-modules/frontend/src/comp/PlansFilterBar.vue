@@ -53,20 +53,20 @@
 
             <q-btn
                 class="q-my-sm"
-                @click="toggleTag('kaz')" color="primary"
+                @click="toggleTag_TrueNull('kaz')" color="primary"
                 :outline="getOutline('kaz')"
                 label="Каз"
             />
             <q-btn
                 class="q-my-sm"
-                @click="toggleTag('eng')" color="primary"
+                @click="toggleTag_TrueNull('eng')" color="primary"
                 :outline="getOutline('eng')"
                 label="Анг"
             />
 
             <q-btn
                 class="q-my-sm"
-                @click="toggleTag('word-sound')" color="orange-10"
+                @click="toggleTag_TrueFalseNull('word-sound')" color="orange-10"
                 :outline="getOutline_WordSound()"
                 :icon="getIcon_WordSound()"
             />
@@ -144,11 +144,23 @@ export default {
             }
         },
 
-        toggleTag(tag) {
+        toggleTag_TrueFalseNull(tag) {
             if (this.inputTags[tag] === false) {
                 delete this.inputTags[tag]
             } else if (this.inputTags[tag] === true) {
                 this.inputTags[tag] = false
+            } else {
+                this.inputTags[tag] = true
+            }
+            //
+            this.inputTags.clickedTag = tag
+            //
+            this.updateParent('tags', this.inputTags, tag)
+        },
+
+        toggleTag_TrueNull(tag) {
+            if (this.inputTags[tag] === true) {
+                delete this.inputTags[tag]
             } else {
                 this.inputTags[tag] = true
             }

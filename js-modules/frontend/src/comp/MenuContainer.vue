@@ -358,7 +358,7 @@ export default {
             if (this.frameReturn) {
                 return apx.url.ref("run/game/web/img/back-arrow.svg")
             } else {
-                return apx.url.ref("run/game/web/img/logo-mono-white.svg")
+                return apx.url.ref("run/game/web/img/logo-icon.svg")
             }
         },
         /*

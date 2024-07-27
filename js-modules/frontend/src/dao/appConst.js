@@ -50,11 +50,23 @@ export default {
         goalHitSizeError: 2,
     },
 
+
     /**
-     * Разные нужные константы
+     * Коды ошибок
      */
     ERROR_CODES: {
         USER_NOT_SET: "USER_NOT_SET"
-    }
+    },
+
+
+    /**
+     * Разные нужные константы
+     */
+
+    /**
+     * Максимально возможный рейтинг одного факта
+     */
+    RATING_FACT_MAX: 3,
+
 
 }

@@ -89,7 +89,7 @@
                 :showRating="true"
             />
             <div v-else
-                 class="rgm-state-text">
+                 class="q-pa-md rgm-state-text">
                 В уровне нет ни одного слова
             </div>
 

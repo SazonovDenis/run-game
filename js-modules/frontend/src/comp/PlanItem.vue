@@ -35,7 +35,7 @@
                     dense round flat no-caps
                     class="item-list-bitton"
                     icon="star-filled"
-                    color="green-6"
+                    color="green-9"
                     :text-color="itemTextColor(plan)"
                     @click="$emit('delUsrPlan', plan)"
                 />
@@ -45,7 +45,7 @@
                     dense round flat no-caps
                     class="item-list-bitton"
                     icon="star"
-                    color="green-6"
+                    color="green-9"
                     :text-color="itemTextColor(plan)"
                     @click="$emit('addUsrPlan', plan)"
                 />
@@ -55,7 +55,7 @@
                     name="star-star-filled"
                     size="xs"
                     class="q-mr-sm"
-                    color="deep-orange"
+                    color="yellow-9"
                 />
 
                 <q-icon
@@ -63,30 +63,13 @@
                     name="star-star-filled"
                     size="xs"
                     class="q-mr-sm"
-                    color="orange"
+                    color="green"
                 />
 
             </div>
 
         </q-item-section>
 
-
-        <!--
-                <q-item-section
-                    top side
-                    style="width: 2em; align-content: end;">
-
-                    <div>
-
-                        <q-badge
-                            v-if="plan.ratingTask > 0"
-                            color="green-5"
-                            :label="plan.ratingTask"/>
-
-                    </div>
-
-                </q-item-section>
-        -->
 
     </q-item>
 

@@ -31,7 +31,7 @@
 
                 <div class="result-words">
 
-                    <div class="row q-my-md">
+                    <div class="row q-mt-md">
 
                         <StatisticRatingDiff
                             class="q-mx-md q-my-sm q-mb-md"

@@ -63,7 +63,8 @@
 
             <q-btn
                 class="_q-my-sm"
-                @click="toggleValueFavourite()" color="green-9"
+                @click="toggleValueFavourite()"
+                :color="this.input_favourite !== true ? 'green-9' : 'green'"
                 :outline="this.input_favourite !== true"
                 icon="star"
             />
@@ -72,13 +73,15 @@
 
             <q-btn
                 class="_q-my-sm"
-                @click="toggleTag_TrueNull('kaz')" color="primary"
+                @click="toggleTag_TrueNull('kaz')"
+                color="primary"
                 :outline="getOutline('kaz')"
                 label="Каз"
             />
             <q-btn
                 class="_q-my-sm"
-                @click="toggleTag_TrueNull('eng')" color="primary"
+                @click="toggleTag_TrueNull('eng')"
+                color="primary"
                 :outline="getOutline('eng')"
                 label="Анг"
             />
@@ -171,7 +174,7 @@ export default {
         getIcon_WordSound() {
             let tag = "word-sound"
             if (this.input_tags[tag] === false) {
-                return "speaker-cross"
+                return "headphones-cross"
             } else if (this.input_tags[tag] === true) {
                 return "headphones"
             } else {

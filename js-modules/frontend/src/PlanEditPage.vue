@@ -43,12 +43,12 @@
                 </TaskList>
 
                 <div v-else-if="hiddenCount > 0"
-                     class="rgm-state-text">
+                     class="q-pa-md rgm-state-text">
                     В уровне есть только скрытые слова
                 </div>
 
                 <div v-else
-                     class="rgm-state-text">
+                     class="q-pa-md rgm-state-text">
                     В уровне нет ни одного слова
                 </div>
 

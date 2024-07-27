@@ -21,7 +21,7 @@ export default {
             return "logo" + (this.loading ? " animated" : "")
         },
         backgroundImage() {
-            return apx.url.ref("run/game/web/icon/icon.svg")
+            return apx.url.ref("run/game/web/img/logo.svg")
         },
     },
 
@@ -41,7 +41,7 @@ export default {
 .logo-image {
     width: 4rem;
     height: 4rem;
-    opacity: 0.4;
+    opacity: 0.7;
 }
 
 .logo img {

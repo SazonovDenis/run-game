@@ -14,7 +14,7 @@
                 <div class="message-no-data">Нет данных об игре</div>
             </div>
 
-            <div class="row justify-center">
+            <div class="justify-center row q-mt-md">
 
 
                 <!-- -->
@@ -36,7 +36,7 @@
 
                 <div class="result-words">
 
-                    <div class="row q-my-md">
+                    <div class="row q-mt-md">
 
                         <StatisticRatingDiff
                             class="q-mx-md q-my-sm q-mb-md"

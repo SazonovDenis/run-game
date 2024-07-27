@@ -6,15 +6,15 @@
 
 
         <template v-show="!loaded">
-            <LogoGame :_loading="true"/>
+            <LogoGame/>
         </template>
 
 
-        <div v-show="loaded" class="text-h3 text-center q-mt-sm">
-            За {{ periodText() }}
-        </div>
-
         <div v-show="loaded && statisticPeriod.wordCountRepeatedDiff > 0">
+
+            <div class="text-h3 text-center q-mt-sm">
+                За {{ periodText() }}
+            </div>
 
             <div class="justify-center row q-mt-md">
 

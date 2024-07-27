@@ -136,11 +136,7 @@
 
             <div v-if="showRating">
 
-                <q-badge
-                    class="rgm-bage _statistic-type-rating-bage"
-                    :text-color="getRatingTextColor(item.ratingTask)"
-                    :color="getRatingColor(item.ratingTask)"
-                    :label="getRatingText(item.ratingTask)"/>
+                <RaitingValue :item="item"/>
 
             </div>
 
@@ -154,16 +150,17 @@
 
 <script>
 
+import utils from "../utils"
 import TaskValue from "./TaskValue"
 import TaskAnswerResult from "./TaskAnswerResult"
-import utils from "run-game-frontend/src/utils"
+import RaitingValue from "./RaitingValue"
 
 export default {
 
     name: "TaskItem",
 
     components: {
-        TaskValue, TaskAnswerResult,
+        TaskValue, TaskAnswerResult, RaitingValue,
     },
 
     props: {
@@ -283,38 +280,6 @@ export default {
         itemMenuClick(menuItem, item) {
             if (menuItem.onClick) {
                 menuItem.onClick(item)
-            }
-        },
-
-        getRatingColor(rating) {
-            if (rating === 3) {
-                return "green-8"
-            } else if (rating >= 2) {
-                return "green-3"
-            } else if (rating >= 1) {
-                return "green-1"
-            } else {
-                return "blue-grey-1"
-            }
-        },
-
-        getRatingTextColor(rating) {
-            if (rating === 3) {
-                return "white"
-            } else if (rating >= 2) {
-                return "black"
-            } else if (rating >= 1) {
-                return "black"
-            } else {
-                return "black"
-            }
-        },
-
-        getRatingText(rating) {
-            if (rating === 3) {
-                return "выучено"
-            } else {
-                return rating
             }
         },
 

@@ -92,7 +92,7 @@
     justify-content: center;
     padding: 1em;
 
-    opacity: 0.4;
+    opacity: 0.7;
   }
 
   .jc-splash-icon img {
@@ -154,7 +154,7 @@
 
   <div class="jc-splash-icon">
     <img id="jc-splash-icon" class="jc-splash-icon"
-         src="${th.ref(th.path('./icon/icon.svg'))}"/>
+         src="${th.ref(th.path('./img/logo.svg'))}"/>
   </div>
 
   <div class="jc-progress">

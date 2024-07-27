@@ -2,7 +2,7 @@
 
     <q-input
         dense outlined clearable
-        _debounce="300"
+        debounce="300"
 
         v-model="valueInternal"
         @update:modelValue="updateParent('modelValue', $event)"

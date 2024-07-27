@@ -10,6 +10,7 @@
             <div class="game-info">
                 {{ dbeg }}
             </div>
+            <TagTranslateDirection :tags="item.tags"/>
         </q-item-section>
 
         <q-item-section
@@ -54,10 +55,15 @@
 
 import {apx} from "../vendor"
 import utils from "../utils"
+import TagTranslateDirection from "./TagTranslateDirection"
 
 export default {
 
     name: "StatisticGameItem",
+
+    components: {
+        TagTranslateDirection
+    },
 
     props: {
         item: Object

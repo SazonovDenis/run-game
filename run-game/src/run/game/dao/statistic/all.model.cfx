@@ -83,6 +83,9 @@
         <field name="plan" parent="Game/plan"/>
         <field name="planText" parent="Plan/text"/>
 
+        <!-- Тэги плана -->
+        <field name="tags" parent="object"/>
+
     </domain>
 
 

@@ -113,7 +113,7 @@ class Statistic_list extends RgmMdbUtils {
 
         // ---
         // Тэги плана
-        if (groupByKey.equals("plan")) {
+        if (groupByKey.equals("plan") || groupByKey.equals("game")) {
             Plan_list planList = mdb.create(Plan_list)
             planList.fillPlanTags(stItems, "plan")
         }

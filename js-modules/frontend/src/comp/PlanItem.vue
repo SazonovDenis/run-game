@@ -31,23 +31,39 @@
             <div class="text-grey-8 q-gutter-xs">
 
                 <q-btn
-                    v-if="plan.isPublic && plan.isAllowed /*&& viewPlanType==='personal'*/"
-                    dense rounded flat no-caps
+                    v-if="plan.isPublic && plan.isAllowed"
+                    dense round flat no-caps
                     class="item-list-bitton"
-                    label="Скрыть"
-                    icon="del"
-                    color="blue-10"
+                    icon="star-filled"
+                    color="green-6"
+                    :text-color="itemTextColor(plan)"
                     @click="$emit('delUsrPlan', plan)"
                 />
 
                 <q-btn
-                    v-if="plan.isPublic && !plan.isAllowed && viewPlanType==='common'"
-                    dense rounded flat no-caps
+                    v-if="plan.isPublic && !plan.isAllowed"
+                    dense round flat no-caps
                     class="item-list-bitton"
-                    label="Добавить"
-                    icon="add"
-                    color="green-9"
+                    icon="star"
+                    color="green-6"
+                    :text-color="itemTextColor(plan)"
                     @click="$emit('addUsrPlan', plan)"
+                />
+
+                <q-icon
+                    v-if="plan.isDefault"
+                    name="star-star-filled"
+                    size="xs"
+                    class="q-mr-sm"
+                    color="deep-orange"
+                />
+
+                <q-icon
+                    v-else-if="plan.isOwner"
+                    name="star-star-filled"
+                    size="xs"
+                    class="q-mr-sm"
+                    color="orange"
                 />
 
             </div>
@@ -92,7 +108,6 @@ export default {
 
     props: {
         plan: Object,
-        viewPlanType: String,
     },
 
     emits: [
@@ -105,6 +120,13 @@ export default {
         },
         wordsText(wordCount) {
             return utils.wordsText(wordCount)
+        },
+        itemTextColor(plan) {
+            if (plan.isPublic && plan.isAllowed) {
+                return "green"
+            } else {
+                return "green-9"
+            }
         },
     },
 

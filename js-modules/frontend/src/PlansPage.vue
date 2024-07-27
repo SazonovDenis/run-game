@@ -8,11 +8,11 @@
 
         <PlansFilterBar
             class="q-my-sm"
-            :showFullFilter="this.viewPlanType === 'common'"
             v-model:filterText="filterText"
             v-model:sortField="sortField"
             v-model:tags="filterTags"
-            @update:tags="toggleKazEng()"
+            v-model:favourite="favourite"
+            @update:tags="toggleKazXorEng()"
         />
 
 
@@ -26,7 +26,6 @@
                     <PlanItem
                         v-if="isItemShown(plan)"
                         :plan="plan"
-                        :viewPlanType="viewPlanType"
                         @planClick="planClick"
                         @delUsrPlan="delUsrPlan"
                         @addUsrPlan="addUsrPlan"
@@ -48,32 +47,20 @@
         </q-scroll-area>
 
 
-        <q-page-sticky v-if="showEdit && viewPlanType !== 'common'"
+        <q-page-sticky v-if="showEdit"
                        position="bottom-right"
                        :offset="[10, 10]">
-            <q-fab
-                color="purple"
-                vertical-actions-align="right"
-                direction="up"
-                class="btn-add"
-                label="Добавить уровень"
-            >
-                <q-fab-action class="btn-add-submenu"
-                              color="secondary"
-                              icon="gallery-add"
-                              label="Создать свой уровень"
-                              rounded
-                              @click="onCreatePlan"
-                />
-                <q-fab-action class="btn-add-submenu"
-                              color="amber-10"
-                              text-color="black"
-                              icon="gallery-favourite"
-                              label="Подключить из библиотеки"
-                              rounded
-                              @click="onAddPlan"
-                />
-            </q-fab>
+
+            <q-btn
+                round no-caps class="q-py-none q-px-md"
+                color="purple-4"
+                icon="gallery-add"
+                _label="Создать свой уровень"
+                size="1.2em"
+                @click="onCreatePlan"
+            />
+
+
         </q-page-sticky>
 
     </MenuContainer>
@@ -83,12 +70,12 @@
 <script>
 
 import {apx} from './vendor'
-import gameplay from "./gameplay"
+import {daoApi} from "./dao"
 import auth from "./auth"
+import gameplay from "./gameplay"
 import PlansFilterBar from "./comp/PlansFilterBar"
 import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
-import {daoApi} from "./dao"
 import PlanItem from "./comp/PlanItem"
 import dbConst from "./dao/dbConst"
 
@@ -117,18 +104,19 @@ export default {
         return {
             plans: [],
 
-            viewPlanType: "personal",
+            viewPlanType: "common",
 
             filterText: "",
             sortField: "ratingAsc",
             filterTags: {},
+            favourite: false,
         }
     },
 
     watch: {
 
-        viewPlanType: function(viewPlanType, oldVal) {
-            this.loadPlans(viewPlanType)
+        favourite: function() {
+            this.loadPlans()
         },
 
         sortField: function(value, old) {
@@ -137,41 +125,26 @@ export default {
 
     },
 
-    computed: {
-        isDesktop() {
-            return Jc.cfg.is.desktop
-        },
-
-    },
+    computed: {},
 
     methods: {
 
-        toggleKazEng() {
-            if (this.filterTags.clickedTag === "kaz") {
+        // Не допускает одновременного наличия двух языков: при ВКЛЮЧЕНИИ одного языка,
+        // остальные сбрасываются; при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
+        toggleKazXorEng() {
+            if (this.filterTags.tagLastClicked === "kaz") {
                 delete this.filterTags["eng"]
-            } else if (this.filterTags.clickedTag === "eng") {
+            } else if (this.filterTags.tagLastClicked === "eng") {
                 delete this.filterTags["kaz"]
             }
         },
 
         getTitle() {
-            if (this.viewPlanType === "personal") {
-                return null
-            } else {
-                return "Добавление уровней"
-            }
+            return null
         },
 
         getFrameReturn() {
-            if (this.viewPlanType === "personal") {
-                return null
-            } else {
-                return this.setViewPlanTypepersonal
-            }
-        },
-
-        setViewPlanTypepersonal() {
-            this.viewPlanType = "personal"
+            return null
         },
 
         isItemShown(item) {
@@ -213,26 +186,34 @@ export default {
             })
         },
 
-        onAddPlan() {
-            this.viewPlanType = "common"
-        },
-
         compareFunction(v1, v2) {
-            if (this.sortField === "ratingAsc") {
+            if (v1.isDefault === true) {
+                return -1
+            } else if (v2.isDefault === true) {
+                return 1
+
+            } else if (v1.isOwner !== true && v2.isOwner === true) {
+                return 1
+            } else if (v1.isOwner === true && v2.isOwner !== true) {
+                return -1
+
+
+            } else if (this.sortField === "ratingAsc") {
                 if (v1.ratingTask > v2.ratingTask) {
                     return 1
                 } else if (v1.ratingTask < v2.ratingTask) {
                     return -1
                 } else {
                     // Если рейтинг одинаковый - то сложнее тот, у кого больше слов
-                    if (v1.count < v2.count) {
+                    if (v1.wordCount < v2.wordCount) {
                         return 1
-                    } else if (v1.count > v2.count) {
+                    } else if (v1.wordCount > v2.wordCount) {
                         return -1
                     } else {
                         return 0
                     }
                 }
+
             } else if (this.sortField === "ratingDesc") {
                 if (v1.ratingTask < v2.ratingTask) {
                     return 1
@@ -240,14 +221,15 @@ export default {
                     return -1
                 } else {
                     // Если рейтинг одинаковый - то сложнее тот, у кого больше слов
-                    if (v1.count < v2.count) {
+                    if (v1.wordCount < v2.wordCount) {
                         return 1
-                    } else if (v1.count > v2.count) {
+                    } else if (v1.wordCount > v2.wordCount) {
                         return -1
                     } else {
                         return 0
                     }
                 }
+
             } else {
                 // По умолчанию сортируем по lastDt, а потом по рейтингу
                 if (v1.lastDt > v2.lastDt) {
@@ -270,7 +252,7 @@ export default {
 
         machTags(plan) {
             // Фильтр по тэгам не задан
-            // В filterTags всегда есть флаг clickedTag, поэтому для определения
+            // В filterTags всегда есть флаг tagLastClicked, поэтому для определения
             // пустоты количество сравниваем с 1, а не с 0
             let filterTagsCount = Object.keys(this.filterTags).length
             if (!this.filterTags || filterTagsCount <= 1) {
@@ -366,13 +348,11 @@ export default {
             plan.isAllowed = true
         },
 
-        async loadPlans(viewPlanType) {
-            if (viewPlanType === "personal") {
-                this.plans = await gameplay.api_getPlansVisible()
-            } else if (viewPlanType === "common") {
-                this.plans = await gameplay.api_getPlansPublic()
-            } else if (viewPlanType === "deleted") {
-                this.plans = []
+        async loadPlans() {
+            if (this.favourite) {
+                this.plans = await gameplay.api_getPlansAttached()
+            } else {
+                this.plans = await gameplay.api_getPlansAvailable()
             }
 
             // Заполним plan.isDefault
@@ -386,12 +366,13 @@ export default {
 
             //
             this.plans.sort(this.compareFunction)
+            console.info(this.plans)
         },
 
     },
 
     async mounted() {
-        await this.loadPlans(this.viewPlanType)
+        await this.loadPlans()
     },
 
 }

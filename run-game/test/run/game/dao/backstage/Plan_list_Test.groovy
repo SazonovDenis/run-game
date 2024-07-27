@@ -15,7 +15,7 @@ class Plan_list_Test extends RgmBase_Test {
 
 
         // ---
-        Store stUsr = list.getPlansVisible()
+        Store stUsr = list.getPlansAttached()
         Store stPublic = list.getPlansPublic()
         //
         println()
@@ -31,7 +31,7 @@ class Plan_list_Test extends RgmBase_Test {
         println("CurrentUser: " + authSvc.getCurrentUser().attrs)
 
         //
-        stUsr = list.getPlansVisible()
+        stUsr = list.getPlansAttached()
         stPublic = list.getPlansPublic()
         //
         println()

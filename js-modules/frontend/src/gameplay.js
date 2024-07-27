@@ -253,9 +253,9 @@ export default {
         await daoApi.invoke('m/Game/closeActiveGame', [])
     },
 
-    async api_getPlansVisible() {
+    async api_getPlansAttached() {
         let resApi = await daoApi.loadStore(
-            "m/Plan/getPlansVisible", []
+            "m/Plan/getPlansAttached", []
         )
 
         return resApi.records
@@ -264,6 +264,14 @@ export default {
     async api_getPlansPublic() {
         let resApi = await daoApi.loadStore(
             "m/Plan/getPlansPublic", []
+        )
+
+        return resApi.records
+    },
+
+    async api_getPlansAvailable() {
+        let resApi = await daoApi.loadStore(
+            "m/Plan/getPlansAvailable", []
         )
 
         return resApi.records

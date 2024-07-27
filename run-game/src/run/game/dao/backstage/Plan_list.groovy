@@ -5,7 +5,7 @@ import jandcode.core.apx.dbm.sqlfilter.*
 import jandcode.core.dao.*
 import jandcode.core.store.*
 import run.game.dao.*
-import run.game.util.StoreUtils
+import run.game.util.*
 
 class Plan_list extends RgmMdbUtils {
 
@@ -29,22 +29,32 @@ class Plan_list extends RgmMdbUtils {
     }
 
     /**
-     * Список планов (уровней), доступных пользователю.
+     * Список планов (уровней), подключенных к пользователю: личные + подключенные публичные.
      * С рейтингом.
      */
     @DaoMethod
-    Store getPlansVisible() {
-        Map params = [accessModeVisible: true, isHidden: false]
+    Store getPlansAttached() {
+        Map params = [accessModeAttached: true, isHidden: false]
         return getPlansInternal(params)
     }
 
     /**
-     * Список общедоступных планов (уровней).
+     * Список общедоступных (публичных) планов (уровней).
      * С рейтингом.
      */
     @DaoMethod
     Store getPlansPublic() {
         Map params = [accessModePublic: true, isHidden: false]
+        return getPlansInternal(params)
+    }
+
+    /**
+     * Список планов (уровней), доступных пользователю: личные + все публичные
+     * С рейтингом.
+     */
+    @DaoMethod
+    Store getPlansAvailable() {
+        Map params = [isHidden: false]
         return getPlansInternal(params)
     }
 
@@ -74,7 +84,7 @@ class Plan_list extends RgmMdbUtils {
         SqlFilterBuilder part_visible = { SqlFilterContext ctx ->
             ctx.addPart("accessModeFilter", "and (isOwner = 1 or isAllowed = 1)")
         }
-        filter.addWhere("accessModeVisible", part_visible)
+        filter.addWhere("accessModeAttached", part_visible)
 
         // Только личные
         SqlFilterBuilder part_privateOnly = { SqlFilterContext ctx ->

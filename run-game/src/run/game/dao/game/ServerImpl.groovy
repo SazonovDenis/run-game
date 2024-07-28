@@ -1,6 +1,5 @@
 package run.game.dao.game
 
-import jandcode.commons.*
 import jandcode.commons.datetime.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
@@ -10,12 +9,10 @@ import jandcode.core.store.*
 import kis.molap.ntbd.model.cubes.*
 import run.game.dao.*
 import run.game.dao.backstage.*
-import run.game.dao.ocr.*
 import run.game.dao.statistic.*
-import run.game.model.service.*
-import run.game.util.*
 
 public class ServerImpl extends RgmMdbUtils implements Server {
+
 
     private long MAX_FACT_FOR_GAME = 8
     private long MAX_TASK_COUNT_FOR_FACT_IN_GAME = 2
@@ -34,6 +31,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return loadAndPrepareGame(idGame, idUsr)
     }
 
+
     @DaoMethod
     public DataBox getLastGame() {
         long idUsr = getContextOrCurrentUsrId()
@@ -51,6 +49,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return loadAndPrepareGame(idGame, idUsr)
     }
 
+
     @DaoMethod
     public DataBox getActiveGame() {
         long idUsr = getCurrentUsrId()
@@ -67,6 +66,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         //
         return loadAndPrepareGame(idGame, idUsr)
     }
+
 
     @DaoMethod
     public void closeActiveGame() {
@@ -88,23 +88,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             RgmCubeUtils cubeUtils = mdb.create(RgmCubeUtils)
             cubeUtils.cubesRecalc(idUsr, idGame, idPlan)
         }
-    }
-
-
-    protected StoreRecord loadActiveGameRec() {
-        long idUsr = getCurrentUsrId()
-        Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
-
-        //
-        if (stGames.size() == 0) {
-            return null
-        }
-
-        //
-        StoreRecord recGame = stGames.get(0)
-
-        //
-        return recGame
     }
 
 
@@ -402,7 +385,8 @@ public class ServerImpl extends RgmMdbUtils implements Server {
 
         // Дополним факты в плане "богатыми" данными для вопроса и ответа
         // plan -> список PlanFact -> PlanFact.factQuestion -> Fact.item - > Fact.* для этого item, но нужного типа
-        fillFactBodyPlan(stPlanFact, idPlan)
+        FactDataLoader ldr = mdb.create(FactDataLoader)
+        ldr.fillFactBodyPlan(stPlanFact, idPlan)
 
 
         // --- statistic
@@ -418,34 +402,6 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         return res
     }
 
-    StoreRecord loadRecStatistic(StoreRecord recPlanRaw, Store stPlanFact) {
-        StoreRecord recStatistic = mdb.createStoreRecord("Plan.statistic.rec")
-
-        // По всем заданиям игры - сумма баллов и т.д.
-        recStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
-        recStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
-
-        // Считаем количество нескрытых и выученных фактов в плане
-        int wordCount = 0
-        int wordCountLearnedDiff = 0
-        for (StoreRecord rec : stPlanFact) {
-            if (!rec.getBoolean("isHidden")) {
-                wordCount = wordCount + 1
-                if (rec.getDouble("ratingTask") == UtCubeRating.RATING_FACT_MAX) {
-                    wordCountLearnedDiff = wordCountLearnedDiff + 1
-                }
-            }
-        }
-        //
-        recStatistic.setValue("wordCount", wordCount)
-        recStatistic.setValue("wordCountLearnedDiff", wordCountLearnedDiff)
-        // Максимальный балл берем на основе количества нескрытых фактов в плане
-        recStatistic.setValue("ratingMax", wordCount * UtCubeRating.RATING_FACT_MAX)
-
-
-        //
-        return recStatistic
-    }
 
     @DaoMethod
     DataBox getPlanStatistic(long idPlan, XDate dbeg, XDate dend) {
@@ -500,464 +456,52 @@ public class ServerImpl extends RgmMdbUtils implements Server {
     }
 
 
-    @DaoMethod
-    Store findItems(String text, long idPlan) {
-        // --- Слова
-        Map<String, Set> textItems = new LinkedHashMap<>()
-        textItems.put(text, null)
+    protected StoreRecord loadActiveGameRec() {
+        long idUsr = getCurrentUsrId()
+        Store stGames = mdb.loadQuery(sqlActiveGames(), [usr: idUsr])
 
-        // --- Поиск слов среди введенного
-        Store stItem = collectItems(textItems, null)
+        //
+        if (stGames.size() == 0) {
+            return null
+        }
 
-        // --- Заполнение свойств найденных слов
-        Store stFact = makeFactList(stItem, idPlan)
+        //
+        StoreRecord recGame = stGames.get(0)
 
-        // ---
-        return stFact
+        //
+        return recGame
     }
 
-    @DaoMethod
-    DataBox findStill(String imgBase64, long idPlan) {
-        // Разберем картинку
-        Ocr ocr = mdb.create(Ocr)
-        Store stParsedText = ocr.parseStillMarkup(imgBase64)
+    protected StoreRecord loadRecStatistic(StoreRecord recPlanRaw, Store stPlanFact) {
+        StoreRecord recStatistic = mdb.createStoreRecord("Plan.statistic.rec")
 
+        // По всем заданиям игры - сумма баллов и т.д.
+        recStatistic.setValue("ratingTask", recPlanRaw.getValue("ratingTask"))
+        recStatistic.setValue("ratingQuickness", recPlanRaw.getValue("ratingQuickness"))
 
-        // --- Раскладываем результаты OCR на части
-
-        // Слова и их позиции
-        Map<String, Set> textItems = new LinkedHashMap<>()
-        // Позиции слов (общий список)
-        List textPositions = new ArrayList<>()
-        // Раскладываем
-        splitOcrResult(stParsedText, textItems, textPositions)
-
-
-        // --- Поиск слов среди введенного
-        Map<String, Set> textItemsFiltered = new HashMap<>()
-        Store stItem = collectItems(textItems, textItemsFiltered)
-
-
-        // --- Заполнение свойств найденных слов
-        Store stFact = makeFactList(stItem, idPlan)
-
-
-        // --- Позиции
-        List wordList = textItemsFiltered.keySet().toList()
-        Map<Object, List<StoreRecord>> mapItems = StoreUtils.collectGroupBy_records(stItem, "value")
-        //
-        Store stItemPositions = mdb.createStore("Tesseract.items")
-        for (String word : wordList) {
-            List recs = mapItems.get(word)
-            long item = 0
-            if (recs != null) {
-                item = recs.get(0).getLong("id")
-            }
-            StoreRecord rec = stItemPositions.add()
-            rec.setValue("item", item)
-            rec.setValue("itemValue", word)
-            rec.setValue("positions", textItemsFiltered.get(word))
-        }
-
-
-        // ---
-        DataBox res = new DataBox()
-        res.put("facts", stFact)
-        res.put("positions", stItemPositions)
-        return res
-    }
-
-
-    Store collectItems(Map<String, Set> textItemsRaw, Map<String, Set> textItemsFiltered) {
-        // --- Обработка найденного: фильтрация и чистка
-        Map<String, Set> textItems = filterTextItems(textItemsRaw, (word, item) -> {
-            return Item_list.filterAndSplitWord(word)
-        })
-
-
-        // --- Обработка найденного: стоп-слова
-
-        // Получаем из кэша стоп-слова
-        WordCacheService wordService = mdb.getModel().bean(WordCacheService)
-        StoreIndex idxOcrStopWords = wordService.getIdxOcrStopWords()
-
-        // Фильтруем по стоп-словам
-        textItems = filterTextItems(textItems, (word, item) -> {
-            List res = new ArrayList()
-            if (idxOcrStopWords.get(word.toLowerCase()) == null) {
-                res.add(word)
-            }
-            return res
-        })
-
-
-        // --- Поиск по точному совпадению
-
-        // Ищем Items по точному совпадению с textItems
-        List<String> wordList = textItems.keySet().toList()
-        Item_list itemsList = mdb.create(Item_list)
-        Store stItem = itemsList.findText(wordList)
-
-
-        // --- Поиск с перобразованем словоформ
-
-        // Проверим, какие слова не нашлись по непосредственному написанию
-        StoreIndex idxItems = stItem.getIndex("value")
-        Map<String, Set> textItemsNotFound = new LinkedHashMap<>()
-        //
-        for (String word : wordList) {
-            if (idxItems.get(word) == null) {
-                textItemsNotFound.put(word, textItems.get(word))
-            }
-        }
-
-        // Если часть слов не нашлось - выполняем преобразование словоформ и делаем вторую попытку
-        Map<String, Set> textItemsTranformed = filterTextItems(textItemsNotFound, (word, item) -> {
-            return Item_list.transformWord(word)
-        })
-
-        if (textItemsTranformed.size() != 0) {
-            List textListTranformed = textItemsTranformed.keySet().toList()
-
-            // Ищем Items по преобразованным text
-            Store stItemTransformed = itemsList.findText(textListTranformed)
-
-            // Обновляем наши списки
-            stItemTransformed.copyTo(stItem)
-            //
-            textItems.putAll(textItemsTranformed)
-        }
-
-
-        // --- Поиск по фрагменту
-
-        // Если искали одно слово и нашили мало - то поищем ещё и по фрагменту
-        if (wordList.size() == 1 && stItem.size() <= itemsList.MAX_COUNT_FOUND) {
-            // Ищем Items по фрагменту
-            Set itemsFound = stItem.getUniqueValues("value")
-            String word = wordList.get(0)
-            Store stItemWord = itemsList.findWord(word)
-
-            // Обновляем наши списки
-            for (StoreRecord recItemWord : stItemWord) {
-                String value = recItemWord.getString("value")
-                if (!itemsFound.contains(value)) {
-                    stItem.add(recItemWord)
-                    itemsFound.add(value)
+        // Считаем количество нескрытых и выученных фактов в плане
+        int wordCount = 0
+        int wordCountLearnedDiff = 0
+        for (StoreRecord rec : stPlanFact) {
+            if (!rec.getBoolean("isHidden")) {
+                wordCount = wordCount + 1
+                if (rec.getDouble("ratingTask") == UtCubeRating.RATING_FACT_MAX) {
+                    wordCountLearnedDiff = wordCountLearnedDiff + 1
                 }
             }
         }
-
-
-        // ---
-        if (textItemsFiltered != null) {
-            textItemsFiltered.putAll(textItems)
-        }
         //
-        return stItem
-    }
+        recStatistic.setValue("wordCount", wordCount)
+        recStatistic.setValue("wordCountLearnedDiff", wordCountLearnedDiff)
+        // Максимальный балл берем на основе количества нескрытых фактов в плане
+        recStatistic.setValue("ratingMax", wordCount * UtCubeRating.RATING_FACT_MAX)
 
-    Store makeFactList(Store stItem, long idPlan) {
-        // --- Превратим список Item в список пар фактов (сгенерим комбинации)
-        Store stFact = loadFactList(stItem, idPlan)
-
-        // --- Дополним факты в плане "богатыми" данными для вопроса и ответа
-        fillFactBody(stFact)
-
-        // --- Обеспечим порядок, как в исходном тексте
-        Store stFactOrderd = makeOrdered(stItem, stFact)
 
         //
-        return stFactOrderd
+        return recStatistic
     }
 
-
-    interface IWordAnalyzer {
-        Collection<String> analyzeText(String text, Set item)
-    }
-
-    /**
-     * Обрабатывает каждый элемент из textItems с помощью обработчика wordAnalyzer.
-     *
-     * @param textItems список вхождений текстов, где ключ - текст, а значения - набор мест расположения текста на изображении
-     * @param wordAnalyzer
-     *
-     * @return Новый список, может быть больше или меньше исходного
-     */
-    Map<String, Set> filterTextItems(Map<String, Set<Map>> textItems, IWordAnalyzer wordAnalyzer) {
-        Map<String, Set> textItemsRes = new LinkedHashMap<>()
-
-        for (String itemText : textItems.keySet()) {
-            Set textItemPositions = textItems.get(itemText)
-            List wordsFiltered = wordAnalyzer.analyzeText(itemText, textItemPositions)
-            for (String wordFiltered : wordsFiltered) {
-                Set textItemRes = textItemsRes.get(wordFiltered)
-                if (textItemRes == null) {
-                    textItemRes = new HashSet()
-                    textItemsRes.put(wordFiltered, textItemRes)
-                }
-
-                // В случае, если из одного слова в itemText получилось несколько слов в wordsFiltered -
-                // также разделим исходный общий большой прямоугольник положения текста
-                // на несколько меньших, для каждого нового wordFiltered, пропорционально длине нового слова.
-                Set<Map> textItemPositionsSplitted = splitTextItemSinglePosition(textItemPositions, wordsFiltered, wordFiltered)
-                textItemRes.addAll(textItemPositionsSplitted)
-            }
-        }
-
-        return textItemsRes
-    }
-
-
-    Set<Map> splitTextItemSinglePosition(Set<Map> textItemPositions, List<String> words, String thisWord) {
-        Set<Map> res = new HashSet<>()
-
-        //
-        int wordsCarsCount = 0
-        for (String word : words) {
-            wordsCarsCount = wordsCarsCount + word.size()
-        }
-        //
-        int wordCharPos = 0
-        for (String word : words) {
-            if (thisWord.equals(word)) {
-                break
-            }
-            wordCharPos = wordCharPos + word.size()
-        }
-        //
-        int wordCarsCount = thisWord.size()
-
-        //
-        for (Map textItemSinglePosition : textItemPositions) {
-            int topPx = textItemSinglePosition.get("top")
-            int leftPx = textItemSinglePosition.get("left")
-            int heightPx = textItemSinglePosition.get("height")
-            int widthPx = textItemSinglePosition.get("width")
-            //
-            double pxByChar = widthPx / wordsCarsCount
-            leftPx = leftPx + (pxByChar * wordCharPos)
-            widthPx = (pxByChar * wordCarsCount)
-            //
-            Map textItemSinglePositionNew = new HashMap(textItemSinglePosition)
-            textItemSinglePositionNew.put("top", topPx)
-            textItemSinglePositionNew.put("left", leftPx)
-            textItemSinglePositionNew.put("height", heightPx)
-            textItemSinglePositionNew.put("width", widthPx)
-            res.add(textItemSinglePositionNew)
-        }
-
-        return res
-    }
-
-    void splitText(String text, Map<String, Set> textItems) {
-        text = text.trim()
-/*
-        Collection<String> words1 = Item_list. filterAndSplitWord(word)
-
-        Collection textItems = text.split(" ")
-*/
-
-        textItems.put(text, null)
-    }
-
-    /**
-     *
-     * @param stText данные от Tesseract
-     * @param textItems разобранные слова, ключ: слово, значение: список позиций, где встретился
-     * @param textItemsPosition отдельно спискок позиций
-     */
-    void splitOcrResult(Store stText, Map<String, Set> textItems, List textItemsPosition) {
-        for (int i = 0; i < stText.size(); i++) {
-            StoreRecord rec = stText.get(i)
-
-            //
-            int conf = rec.getInt("conf")
-
-            //
-            String text = rec.getString("text")
-            text = text.trim()
-
-            //
-            if (conf == 0 || text.length() == 0) {
-                continue
-            }
-
-
-            // Слияние по переносам
-            Map textPositionNext = null
-            if (i < stText.size() - 2) {
-                StoreRecord recNext = stText.get(i + 2)
-                int line_num = rec.getInt("line_num")
-                int line_numNext = recNext.getInt("line_num")
-                String textNext = recNext.getString("text")
-                textNext = textNext.trim()
-                //
-                if (text.endsWith("-") && (line_numNext - line_num) == 1) {
-                    text = text.substring(0, text.length() - 1) + textNext
-
-                    textPositionNext = [
-                            text  : text,
-                            left  : recNext.getInt("left"),
-                            top   : recNext.getInt("top"),
-                            width : recNext.getInt("width"),
-                            height: recNext.getInt("height"),
-                    ]
-
-                    //
-                    i = i + 2
-                }
-            }
-
-            // Формируем позицию
-            if (textPositionNext != null) {
-                textItemsPosition.add(textPositionNext)
-            }
-
-            //
-            Map textPosition = [
-                    text  : text,
-                    left  : rec.getInt("left"),
-                    top   : rec.getInt("top"),
-                    width : rec.getInt("width"),
-                    height: rec.getInt("height"),
-            ]
-            textItemsPosition.add(textPosition)
-
-            //
-            Set textItemPositions = textItems.get(text)
-            if (textItemPositions == null) {
-                textItemPositions = new HashSet()
-                textItems.put(text, textItemPositions)
-            }
-            textItemPositions.add(textPosition)
-            //
-            if (textPositionNext != null) {
-                textItemPositions.add(textPositionNext)
-            }
-        }
-    }
-
-    Store makeOrdered(Store stItem, Store stFact) {
-        Store stFactRes = mdb.createStore("PlanFact.list")
-
-        //
-        Map<Object, List<StoreRecord>> factsByItems = StoreUtils.collectGroupBy_records(stFact, ["item"])
-        for (StoreRecord recItem : stItem) {
-            String item = recItem.getString("id")
-            List<StoreRecord> lstItemFacts = factsByItems.get(item)
-            if (lstItemFacts != null) {
-                for (StoreRecord recFact : lstItemFacts) {
-                    stFactRes.add(recFact)
-                }
-            }
-        }
-
-        //
-        return stFactRes
-    }
-
-
-    Store loadFactList(Store stItem, long idPlan) {
-        Store stPlanFact = mdb.createStore("PlanFact.list")
-
-        // Соберем отдельно item, отдельно конкретные факты
-        Set itemIds = new HashSet()
-        Set factIds = new HashSet()
-        for (StoreRecord recItem : stItem) {
-            if (recItem.getLong("fact") == 0) {
-                itemIds.add(recItem.getLong("id"))
-            } else {
-                factIds.add(recItem.getLong("fact"))
-            }
-        }
-
-        // Поиск Item: формируем пары фактов spelling -> translate, т.е. все варианты перевода (для списка itemIds).
-        // Список с информацией пользователя, наличие/отсутствие в указанном плане, статистикой.
-        long idUsr = getContextOrCurrentUsrId()
-        mdb.loadQuery(stPlanFact, sqlPlanFactStatistic_Items(itemIds), [usr: idUsr, plan: idPlan])
-
-        // Поиск Fact
-        mdb.loadQuery(stPlanFact, sqlPlanFactStatistic_Facts(factIds), [usr: idUsr, plan: idPlan])
-
-        //
-        return stPlanFact
-    }
-
-
-    String sqlFactData_Items(Set items, long dataType) {
-        String itemsStr = "0"
-        if (items.size() > 0) {
-            itemsStr = items.join(",")
-        }
-
-        return """ 
--- Значения фактов типа dataType, по списку сущностей
-select 
-    Item.id item,
-    Fact.id fact,
-    Fact.dataType dataType,
-    Fact.value value
-
-from    
-    Item
-    -- Факт типа dataType
-    join Fact on (
-        Item.id = Fact.item and
-        Fact.dataType = ${dataType}
-    )
-    
-where
-    Item.id in (${itemsStr})    
-"""
-    }
-
-
-    String sqlFactData_Facts(Set factIds, String factFieldKeyName) {
-        String factsStr = "0"
-        if (factIds.size() > 0) {
-            factsStr = factIds.join(",")
-        }
-        if (factFieldKeyName == null) {
-            factFieldKeyName = "fact"
-        }
-
-        return """ 
--- Значения фактов, по списку фактов
-select 
-    Fact.item item,
-    Fact.id as ${factFieldKeyName},
-    Fact.dataType dataType,
-    Fact.value value
-
-from    
-    Fact
-    
-where
-    Fact.id in (${factsStr})    
-"""
-    }
-
-
-    DataBox loadAndPrepareGame_Short(long idGame, long idUsr) {
-        DataBox res = new DataBox()
-
-        // Данные по игре
-        StoreRecord recGame = mdb.createStoreRecord("Game.server")
-        mdb.loadQueryRecord(recGame, sqlGameStatistic(), [game: idGame, usr: idUsr])
-        res.put("game", recGame)
-
-        // Задания игры
-        Store stGameTasksResult = mdb.createStore("GameTask")
-        mdb.loadQuery(stGameTasksResult, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
-        res.put("tasksResult", stGameTasksResult)
-
-        //
-        return res
-    }
-
-
-    DataBox loadAndPrepareGame(long idGame, long idUsr) {
+    protected DataBox loadAndPrepareGame(long idGame, long idUsr) {
         DataBox res = new DataBox()
 
         //
@@ -975,13 +519,14 @@ where
         mdb.loadQuery(stGameTasks, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
 
         // Дополним ФАКТЫ игры "богатыми" данными вопроса и ответа
-        fillFactBodyPlan(stGameTasks, idPlan)
+        FactDataLoader ldr = mdb.create(FactDataLoader)
+        ldr.fillFactBodyPlan(stGameTasks, idPlan)
 
         // Дополним ЗАДАНИЯ игры "богатыми" данными вопроса и ответа.
         // Разница между ФАКТАМИ игры и ЗАДАНИЯМИ игры заключается в том, что факты игры
         // берутся из фактов плана (таблица PlanFact), а задания игры берутся из реально
         // заданных вопросов (таблица GameTask и связанные с ней через Task записи в TaskQuestion и TaskOption).
-        fillFactBodyGame(stGameTasks, idGame, idUsr)
+        ldr.fillFactBodyGame(stGameTasks, idGame, idUsr)
 
 
         // Дополним факты игры статистикой
@@ -999,119 +544,22 @@ where
         return res
     }
 
+    protected DataBox loadAndPrepareGame_Short(long idGame, long idUsr) {
+        DataBox res = new DataBox()
 
-    String sqlFactData_PlanItem() {
-        return """
-select 
-    PlanFact.factQuestion, 
-    PlanFact.factAnswer, 
-    
-    Fact.item,
-    Fact.dataType,
-    Fact.value
+        // Данные по игре
+        StoreRecord recGame = mdb.createStoreRecord("Game.server")
+        mdb.loadQueryRecord(recGame, sqlGameStatistic(), [game: idGame, usr: idUsr])
+        res.put("game", recGame)
 
-from 
-    PlanFact
-    -- Факт, который привязан к PlanFact.factQuestion
-    join Fact PlanFact_Fact on (
-        PlanFact.factQuestion = PlanFact_Fact.id
-    )
-    -- Факты нужных типов для Fact.item
-    join Fact on (
-        PlanFact_Fact.item = Fact.item and
-        Fact.dataType in (${RgmDbConst.DataType_word_spelling + "," + RgmDbConst.DataType_word_sound})
-    )
+        // Задания игры
+        Store stGameTasksResult = mdb.createStore("GameTask")
+        mdb.loadQuery(stGameTasksResult, sqlGameTasksStatistic(), [game: idGame, usr: idUsr])
+        res.put("tasksResult", stGameTasksResult)
 
-where
-    PlanFact.plan = :plan 
-"""
+        //
+        return res
     }
-
-    String sqlFactData_PlanQuestion() {
-        return """
-select 
-    PlanFact.factQuestion, 
-    PlanFact.factAnswer, 
-    
-    Fact.item,
-    Fact.dataType,
-    Fact.value
-
-from 
-    PlanFact
-    -- Факт, который привязан к PlanFact.factQuestion
-    join Fact on (
-        PlanFact.factQuestion = Fact.id
-    )
-
-where
-    PlanFact.plan = :plan 
-"""
-    }
-
-
-    String sqlFactData_PlanAnswer() {
-        return """
-select 
-    PlanFact.factQuestion, 
-    PlanFact.factAnswer, 
-    
-    Fact.dataType,
-    Fact.value
-
-from 
-    PlanFact
-    -- Факт, который привязан к PlanFact.factAnswer
-    join Fact on (
-        PlanFact.factAnswer = Fact.id
-    )
-
-where
-    PlanFact.plan = :plan 
-"""
-    }
-
-
-    String sqlFactData_GameTaskQuestion() {
-        return """
-select 
-    GameTask.*,
-    TaskQuestion.dataType,
-    TaskQuestion.value
-
-from 
-    GameTask
-    join TaskQuestion on (
-        TaskQuestion.task = GameTask.task
-    )
-
-where
-    GameTask.usr = :usr and 
-    GameTask.game = :game 
-"""
-    }
-
-
-    String sqlFactData_GameTaskAnswer() {
-        return """
-select 
-    GameTask.*,
-    TaskOption.dataType,
-    TaskOption.value
-
-from 
-    GameTask
-    join TaskOption on (
-        TaskOption.task = GameTask.task and 
-        TaskOption.isTrue = 1 
-    )
-
-where
-    GameTask.usr = :usr and 
-    GameTask.game = :game 
-"""
-    }
-
 
     protected DataBox loadAndPrepareGameTask(long idGame, StoreRecord recGameTask) {
         DataBox res = new DataBox()
@@ -1169,10 +617,12 @@ where
         resTask.setValue("dataType", recTask.getLong("dataTypeQuestion"))
 
         // Делаем плоскую запись на основе значений задания и их типам
+        FactDataLoader ldr = mdb.create(FactDataLoader)
+
         // Превращаем списки stTaskQuestion и stTaskOption в пару плоских записей (см. Task.fields)
         Store stTaskQuestion = task.get("taskQuestion")
         for (StoreRecord recTaskQuestion : stTaskQuestion) {
-            convertFactToFlatRecord(recTaskQuestion, resTask)
+            ldr.convertFactToFlatRecord(recTaskQuestion, resTask)
         }
 
         // Варианты ответа
@@ -1181,7 +631,7 @@ where
             StoreRecord recTaskOption = resTaskOption.add()
             recTaskOption.setValue("id", rec.getValue("id"))
             recTaskOption.setValue("isTrue", rec.getValue("isTrue"))
-            convertFactToFlatRecord(rec, recTaskOption)
+            ldr.convertFactToFlatRecord(rec, recTaskOption)
         }
 
 
@@ -1194,125 +644,6 @@ where
         //
         return res
     }
-
-    /**
-     * Дополняет факты "богатыми" данными вопроса и ответа (звук, перевод и т.п.),
-     * т.е. заполним поля question и answer.
-     *
-     * Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
-     */
-    void fillFactBody(Store stTasks) {
-        // Дополним факты в плане "богатыми" данными для вопроса и ответа
-        Set itemIds = stTasks.getUniqueValues("item")
-        Set factQuestionIds = stTasks.getUniqueValues("factQuestion")
-        Set factAnswerIds = stTasks.getUniqueValues("factAnswer")
-
-        // Факты каждого типа для списка itemIds
-        Store stFactData_question = mdb.loadQuery(sqlFactData_Facts(factQuestionIds, "factQuestion"))
-        Store stFactData_answer = mdb.loadQuery(sqlFactData_Facts(factAnswerIds, "factAnswer"))
-        //Store stFactData_spelling = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.DataType_word_spelling))
-        Store stFactData_sound = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.DataType_word_sound))
-
-        // Размажем
-        convertFactsToFlatRecord(stFactData_question, ["factQuestion"], stTasks, "question")
-        convertFactsToFlatRecord(stFactData_answer, ["factAnswer"], stTasks, "answer")
-        //convertFactsToFlatRecord(stFactData_spelling, ["item"], stTasks, "question")
-        convertFactsToFlatRecord(stFactData_sound, ["item"], stTasks, "question")
-    }
-
-    /**
-     * Дополняет факты "богатыми" данными вопроса и ответа (звук, перевод и т.п.),
-     * т.е. заполним поля question и answer.
-     *
-     * Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
-     */
-    void fillFactBodyPlan(Store stTasks, long idPlan) {
-        // Факты вопроса и ответа
-        Store stFactData_Question = mdb.loadQuery(sqlFactData_PlanQuestion(), [plan: idPlan])
-        Store stFactData_Answer = mdb.loadQuery(sqlFactData_PlanAnswer(), [plan: idPlan])
-
-        // Размажем факты вопроса и ответа
-        convertFactsToFlatRecord(stFactData_Question, ["factQuestion"], stTasks, "question")
-        convertFactsToFlatRecord(stFactData_Answer, ["factAnswer"], stTasks, "answer")
-
-        // Дополнительные факты Item
-        Store stFactData_Item = mdb.loadQuery(sqlFactData_PlanItem(), [plan: idPlan])
-        convertFactsToFlatRecord(stFactData_Item, ["factQuestion"], stTasks, "question")
-    }
-
-    void fillFactBodyGame(Store stTasks, long idGame, long idUsr) {
-        // Данные вопроса и ответа
-        Store sqlFactData_Question = mdb.loadQuery(sqlFactData_GameTaskQuestion(), [game: idGame, usr: idUsr])
-        Store sqlFactData_Answer = mdb.loadQuery(sqlFactData_GameTaskAnswer(), [game: idGame, usr: idUsr])
-
-        // Размажем
-        convertFactsToFlatRecord(sqlFactData_Question, ["task"], stTasks, "taskQuestion")
-        convertFactsToFlatRecord(sqlFactData_Answer, ["task"], stTasks, "taskAnswer")
-    }
-
-
-    Map<Long, String> dataTypeFieldNames = [
-            (RgmDbConst.DataType_word_spelling) : "valueSpelling",
-            (RgmDbConst.DataType_word_translate): "valueTranslate",
-            (RgmDbConst.DataType_word_sound)    : "valueSound",
-            (RgmDbConst.DataType_word_picture)  : "valuePicture",
-    ]
-
-    /**
-     * Запись типа Fact раскладываем в "плоскую" запись.
-     * Берем пару полей recFact.dataType+recFact.value и заполняем
-     * соответствующее поле (valueSound, valueTranslate, valueSpelling или valuePicture),
-     * в зависимости от recFact.dataType.
-     */
-    void convertFactToFlatRecord(StoreRecord recFact, StoreRecord recTask) {
-        long sourceDatatype = recFact.getLong("dataType")
-        String destFieldName = dataTypeFieldNames.get(sourceDatatype)
-        if (UtCnv.isEmpty(destFieldName)) {
-            return
-        }
-
-        // Если поле уже заполнено - не заполняем
-        if (!recTask.isValueNull(destFieldName)) {
-            return
-        }
-
-        // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
-        if (sourceDatatype == RgmDbConst.DataType_word_spelling && !recTask.isValueNull("valueTranslate")) {
-            return
-        }
-
-        // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
-        if (sourceDatatype == RgmDbConst.DataType_word_translate && !recTask.isValueNull("valueSpelling")) {
-            return
-        }
-
-        //
-        recTask.setValue(destFieldName, recFact.getValue("value"))
-    }
-
-    void convertFactsToFlatRecord(Store stFactData, Collection<String> keyFields, Store stDest, String fieldDest) {
-        Map<Object, List<StoreRecord>> mapFacts = StoreUtils.collectGroupBy_records(stFactData, keyFields)
-
-        //
-        for (StoreRecord recDest : stDest) {
-            String key = StoreUtils.concatenateFields(recDest, keyFields)
-
-            //
-            StoreRecord recTaskQuestion = mdb.createStoreRecord("Task.fields")
-            recTaskQuestion.setValues(recDest.getValue(fieldDest))
-
-            //
-            List<StoreRecord> lstFact = mapFacts.get(key)
-            for (StoreRecord recFact : lstFact) {
-                convertFactToFlatRecord(recFact, recTaskQuestion)
-            }
-
-            //
-            recDest.setValue(fieldDest, recTaskQuestion.getValues())
-        }
-
-    }
-
 
     protected StoreRecord choiceGameTask(long idGame) {
         long idUsr = getCurrentUsrId()
@@ -1370,7 +701,6 @@ where
         return rec
     }
 
-
     protected StoreRecord getGameLastTask(long idGame) {
         long idUsr = getCurrentUsrId()
 
@@ -1392,7 +722,7 @@ where
     }
 
 
-    String sqlPlanFact() {
+    private String sqlPlanFact() {
         return """ 
 -- Все пары фактов в плане
 select 
@@ -1426,7 +756,7 @@ where
 """
     }
 
-    String sqlPlanTask() {
+    private String sqlPlanTask() {
         return """ 
 -- Подбор всех заданий для каждой пары фактов в плане
 select 
@@ -1457,8 +787,7 @@ where
 """
     }
 
-
-    String sqlPlanFactsStatistic() {
+    private String sqlPlanFactsStatistic() {
         return """ 
 -- Пары фактов в плане
 select 
@@ -1492,158 +821,6 @@ from
     
 where
     PlanFact.plan = :plan    
-"""
-    }
-
-
-    String sqlPlanFactStatistic_Items(Collection items) {
-        String itemsStr = "0"
-        if (items.size() > 0) {
-            itemsStr = items.join(",")
-        }
-
-        return """ 
--- Формируем пары фактов spelling -> translate, т.е. все варианты перевода, для сущностей по списку
-select 
-    Item.id item,
-    
-    Fact_Spelling.id factQuestion,
-    Fact_Spelling.dataType dataTypeSpelling,
-    Fact_Spelling.value valueSpelling,
-    
-    Fact_Translate.id factAnswer, 
-    Fact_Translate.dataType dataTypeTranslate,
-    Fact_Translate.value valueTranslate,
-    
-    UsrFact.isHidden,
-    UsrFact.isKnownGood,
-    UsrFact.isKnownBad,
-    (case when PlanFact.id is null then 0 else 1 end) isInPlan,
-    
-    coalesce(Cube_UsrFact.ratingTask, 0) ratingTask,
-    coalesce(Cube_UsrFact.ratingQuickness, 0) ratingQuickness
-
-from    
-    Item
-    -- Факт типа DataType_word_spelling
-    join Fact Fact_Spelling on (
-        Item.id = Fact_Spelling.item and
-        Fact_Spelling.dataType = ${RgmDbConst.DataType_word_spelling}
-    )
-    -- Факт типа DataType_word_translate 
-    join Fact Fact_Translate on (
-        Item.id = Fact_Translate.item and
-        Fact_Translate.dataType = ${RgmDbConst.DataType_word_translate}
-    )
-    -- Информация о наличии пары фактов в указанном плане
-    left join PlanFact on (
-        PlanFact.plan = :plan and
-        PlanFact.factQuestion = Fact_Spelling.id and 
-        PlanFact.factAnswer = Fact_Translate.id 
-    )
-    -- Информация пользователя о паре фактов
-    left join UsrFact on (
-        UsrFact.usr = :usr and
-        UsrFact.factQuestion = Fact_Spelling.id and 
-        UsrFact.factAnswer = Fact_Translate.id 
-    )
-    -- Статистическая информация о паре фактов
-    left join Cube_UsrFact on (
-        Cube_UsrFact.usr = :usr and 
-        Cube_UsrFact.factQuestion = Fact_Spelling.id and 
-        Cube_UsrFact.factAnswer = Fact_Translate.id
-    )
-    
-where
-    Item.id in (${itemsStr})   
-
-order by
-    Item.id,
-    Fact_Spelling.id,    
-    Fact_Translate.id    
-"""
-    }
-
-    String sqlPlanFactStatistic_Facts(Collection facts) {
-        String factsStr = "0"
-        if (facts.size() > 0) {
-            factsStr = facts.join(",")
-        }
-
-        return """ 
--- Формируем пары фактов spelling -> translate, т.е. все варианты перевода, для сущностей по списку
-select 
-    Item.id item,
-    
-    Fact_Spelling.id factQuestion,
-    Fact_Spelling.dataType dataTypeSpelling,
-    Fact_Spelling.value valueSpelling,
-    
-    Fact_Translate.id factAnswer, 
-    Fact_Translate.dataType dataTypeTranslate,
-    Fact_Translate.value valueTranslate,
-    
-    UsrFact.isHidden,
-    UsrFact.isKnownGood,
-    UsrFact.isKnownBad,
-    (case when PlanFact.id is null then 0 else 1 end) isInPlan,
-    
-    coalesce(Cube_UsrFact.ratingTask, 0) ratingTask,
-    coalesce(Cube_UsrFact.ratingQuickness, 0) ratingQuickness
-
-from    
-    Item
-    -- Факт типа DataType_word_spelling
-    join Fact Fact_Spelling on (
-        Item.id = Fact_Spelling.item and
-        Fact_Spelling.dataType = ${RgmDbConst.DataType_word_spelling}
-    )
-    -- Факт типа DataType_word_translate 
-    join Fact Fact_Translate on (
-        Item.id = Fact_Translate.item and
-        Fact_Translate.dataType = ${RgmDbConst.DataType_word_translate}
-    )
-    -- Информация о наличии пары фактов в указанном плане
-    left join PlanFact on (
-        PlanFact.plan = :plan and
-        PlanFact.factQuestion = Fact_Spelling.id and 
-        PlanFact.factAnswer = Fact_Translate.id 
-    )
-    -- Информация пользователя о паре фактов
-    left join UsrFact on (
-        UsrFact.usr = :usr and
-        UsrFact.factQuestion = Fact_Spelling.id and 
-        UsrFact.factAnswer = Fact_Translate.id 
-    )
-    -- Статистическая информация о паре фактов
-    left join Cube_UsrFact on (
-        Cube_UsrFact.usr = :usr and 
-        Cube_UsrFact.factQuestion = Fact_Spelling.id and 
-        Cube_UsrFact.factAnswer = Fact_Translate.id
-    )
-    
-where
-    Fact_Translate.id in (${factsStr})   
-
-order by
-    Item.id,
-    Fact_Spelling.id,    
-    Fact_Translate.id    
-"""
-    }
-
-
-    private String sqlUsrGameStatistic() {
-        return """
-select 
-    Cube_UsrGame.*
-
-from
-    Cube_UsrGame
-    
-where
-    Cube_UsrGame.usr = :usr and
-    Cube_UsrGame.game = :game
 """
     }
 
@@ -1688,7 +865,6 @@ order by
 """
     }
 
-
     private String sqlChoiceTask() {
         return """
 select
@@ -1718,7 +894,6 @@ where
 """
     }
 
-
     private String sqlGetTask() {
         return """
 select
@@ -1737,7 +912,6 @@ order by
 """
     }
 
-
     private String sqlGameTask() {
         return """
 select 
@@ -1750,7 +924,6 @@ where
 """
     }
 
-
     private String sqlTask() {
         return """
 select 
@@ -1762,8 +935,7 @@ where
 """
     }
 
-
-    String sqlOtherTask() {
+    private String sqlOtherTask() {
         """
 select 
     GameTask.*
@@ -1778,7 +950,6 @@ where
     Task.factAnswer = :factAnswer
 """
     }
-
 
     private String sqlLastGame() {
         return """
@@ -1795,7 +966,6 @@ order by
 limit 1
 """
     }
-
 
     private String sqlActiveGames() {
         return """

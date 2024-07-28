@@ -565,7 +565,7 @@ export default {
             //
             let resApi
             try {
-                resApi = await daoApi.loadStore('m/Game/findStill', [dataImage, this.planId])
+                resApi = await daoApi.loadStore('m/Item/findStill', [dataImage, this.planId])
             } finally {
                 // Чтобы после ошибки кнопки снова появились
                 this.searchDone = true

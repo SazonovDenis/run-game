@@ -21,6 +21,14 @@
 
             </item>
 
+
+            <item name="m/Item">
+
+               <item name="i" method="*"
+                      class="run.game.dao.backstage.Item_list"/>
+
+            </item>
+
         </holder>
     </dao>
 

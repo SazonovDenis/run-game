@@ -115,7 +115,7 @@ export default {
 
             //
             if (this.filterTextShouldLoad) {
-                let resApi = await daoApi.loadStore("m/Game/findItems", [filterTextNow, this.planId], {
+                let resApi = await daoApi.loadStore("m/Item/findItems", [filterTextNow, this.planId], {
                     waitShow: false,
                     onRequestState: (requestState) => {
                         if (requestState === "start") {

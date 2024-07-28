@@ -56,8 +56,8 @@ class Statistic_list extends RgmMdbUtils {
 
         // Дополним факты в плане "богатыми" данными для вопроса и ответа
         Store st = res.get("items")
-        ServerImpl serverImpl = mdb.create(ServerImpl)
-        serverImpl.fillFactBody(st)
+        FactDataLoader ldr = mdb.create(FactDataLoader)
+        ldr.fillFactBody(st)
 
         //
         return res

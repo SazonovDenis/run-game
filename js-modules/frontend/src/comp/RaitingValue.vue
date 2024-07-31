@@ -74,8 +74,6 @@ export default {
                 })
             }
 
-            console.info(this.item, res)
-
             return res
         },
     },

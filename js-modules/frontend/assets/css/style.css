@@ -147,5 +147,17 @@
 }
 
 
+/* Help */
 
+.help-text {
+  font-size: 1.3em;
+}
 
+.help-text img {
+  vertical-align: middle;
+  background-color: rgba(97, 97, 97, 0.2);
+  padding: 0.1em;
+  border-radius: 0.2em;
+  width: 20px;
+  height: 20px;
+}

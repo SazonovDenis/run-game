@@ -704,9 +704,16 @@ export default {
     methods: {
 
         getHelpKey() {
-            if (this.frameMode === "addByText") {
+            if (!this.plan) {
+                if (this.itemsAdd.length === 0) {
+                    return "help.mainPage.createPlan"
+                }
+
+                return "help.mainPage.createPlanNext"
+                
+            } else  if (this.frameMode === "addByText") {
                 if (this.itemsLoaded.length === 0) {
-                    return ["help.mainPage", "help.mainPage.found"]
+                    return "help.mainPage"
                 }
 
                 return "help.mainPage.found"
@@ -715,7 +722,7 @@ export default {
                 return "help.mainPage.editPlan"
 
             } else if (this.frameMode === "addByPhoto") {
-                return "help.mainPage.addByPhoto"
+                return ["help.mainPage.addByPhoto", "help.mainPage.addByPhoto.return"]
 
             } else {
                 return null

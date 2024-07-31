@@ -1,11 +1,20 @@
 <template>
 
-    <MenuContainer :title="plan.planText"
-                   :frameReturn="frameReturn"
-                   :frameReturnProps="frameReturnProps"
+    <MenuContainer
+        :title="plan.planText"
+        :frameReturn="frameReturn"
+        :frameReturnProps="frameReturnProps"
+        :helpKey="getHelpKey()"
     >
 
         <div v-if="dataLoaded">
+
+            <!-- -->
+
+            <HelpPanel :helpKey="getHelpKey()"/>
+
+            <!-- -->
+
 
             <div class="justify-center row q-pt-sm">
 
@@ -132,7 +141,6 @@
                     />
 
 
-
                     <q-btn
                         v-if="plan.isOwner === true"
                         rounded no-caps class="q-py-xs q-px-md"
@@ -176,6 +184,7 @@ import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import StatisticRating from "./comp/StatisticRating"
 import RgmInputText from "./comp/RgmInputText"
 import TaskList from "./comp/TaskList"
+import HelpPanel from "./comp/HelpPanel"
 import gameplay from "./gameplay"
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
@@ -194,7 +203,8 @@ export default {
     },
 
     components: {
-        MenuContainer, RgmInputText, StatisticWordsLearned, StatisticRating, TaskList
+        MenuContainer, RgmInputText, StatisticWordsLearned, StatisticRating, TaskList,
+        HelpPanel,
     },
 
     data() {
@@ -237,6 +247,10 @@ export default {
     },
 
     methods: {
+
+        getHelpKey() {
+            return ["help.plan.game", "help.plan.edit"]
+        },
 
         compareFunction(v1, v2) {
             if (!v1.factQuestion) {

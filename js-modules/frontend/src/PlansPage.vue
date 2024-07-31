@@ -4,7 +4,15 @@
         tabMenuName="PlansPage"
         :title="getTitle()"
         :frameReturn="getFrameReturn()"
+        :helpKey="getHelpKey()"
     >
+
+        <!-- -->
+
+        <HelpPanel :helpKey="getHelpKey()"/>
+
+        <!-- -->
+
 
         <PlansFilterBar
             class="q-my-sm"
@@ -73,16 +81,17 @@ import {apx} from './vendor'
 import {daoApi} from "./dao"
 import auth from "./auth"
 import gameplay from "./gameplay"
+import dbConst from "./dao/dbConst"
 import PlansFilterBar from "./comp/PlansFilterBar"
 import MenuContainer from "./comp/MenuContainer"
 import TasksStatistic from "./comp/TasksStatistic"
 import PlanItem from "./comp/PlanItem"
-import dbConst from "./dao/dbConst"
+import HelpPanel from "./comp/HelpPanel"
 
 export default {
 
     components: {
-        MenuContainer, PlanItem, PlansFilterBar, TasksStatistic
+        MenuContainer, PlanItem, PlansFilterBar, TasksStatistic, HelpPanel,
     },
 
     props: {
@@ -128,6 +137,10 @@ export default {
     computed: {},
 
     methods: {
+
+        getHelpKey() {
+            return ["help.plans", "help.plans.default"]
+        },
 
         // Не допускает одновременного наличия двух языков: при ВКЛЮЧЕНИИ одного языка,
         // остальные сбрасываются; при ВЫКЛЮЧЕНИИ одного остальные не трогаются.

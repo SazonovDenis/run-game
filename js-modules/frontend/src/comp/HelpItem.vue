@@ -9,8 +9,8 @@
                @click="closeClick"
         />
 
-        <div class="q-pa-sm help-text">
-            <div v-html="text"></div>
+        <div class="q-pa-sm">
+            <div class="help-text" v-html="text"></div>
         </div>
     </div>
 </template>
@@ -74,7 +74,7 @@ export default {
     color: #4e4e4e;
     background-color: #fff2c8;
     border-radius: 0.5em;
-    border: 2px solid #fff2c8;
+    border: 1px solid #fff2c8;
     width: 30rem;
     max-width: 60rem;
     flex-grow: 1;
@@ -83,12 +83,9 @@ export default {
 .help-btn-close {
     background-color: #fff2c8;
     position: absolute;
-    right: -0.5rem;
-    top: -0.5rem;
+    right: -0.3rem;
+    top: -0.3rem;
 }
 
-.help-text {
-    font-size: 1.3em;
-}
 
 </style>

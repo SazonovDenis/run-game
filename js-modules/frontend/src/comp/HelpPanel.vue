@@ -1,7 +1,7 @@
 <template>
-    <div class="help-panel-container row" v-if="helpKey">
+    <div class="help-panel-container q-mx-sm q-mt-sm row" v-if="helpKey">
         <template v-for="helpKey in helpKeys">
-            <HelpItem :helpKey="helpKey" class="q-ma-sm"/>
+            <HelpItem :helpKey="helpKey" class="q-mb-sm"/>
         </template>
     </div>
 </template>

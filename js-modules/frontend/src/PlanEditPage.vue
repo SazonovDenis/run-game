@@ -4,12 +4,20 @@
         tabMenuName="PlanEditPage"
         :frameReturn="getFrameReturn"
         :frameReturnProps="frameReturnProps"
-        :showFooter="true">
+        :showFooter="true"
+        :helpKey="getHelpKey()"
+    >
 
 
         <!-- frameMode: editPlan -->
 
         <div v-if="frameMode==='editPlan'">
+
+            <!-- -->
+
+            <HelpPanel :helpKey="getHelpKey()"/>
+
+            <!-- -->
 
             <q-input class="q-mb-sm"
                      dense outlined
@@ -176,6 +184,14 @@
 
             </div>
 
+
+            <!-- -->
+
+            <HelpPanel :helpKey="getHelpKey()"/>
+
+            <!-- -->
+
+
             <TaskList
                 v-if="itemsShouldLoad"
                 :showEdit="true"
@@ -216,6 +232,14 @@
                 </template>
 
             </TextInputPhoto>
+
+
+            <!-- -->
+
+            <HelpPanel :helpKey="getHelpKey()"/>
+
+            <!-- -->
+
 
             <div class="btn-top-container btn-container-on-top row">
 
@@ -433,6 +457,7 @@ import TaskList from "./comp/TaskList"
 import TextInputPhoto from "./comp/TextInputPhoto"
 import TextInputText from "./comp/TextInputText"
 import TaskListFilterBar from "./comp/TaskListFilterBar"
+import HelpPanel from "./comp/HelpPanel"
 import {apx} from "./vendor"
 import utils from "./utils"
 import ctx from "./gameplayCtx"
@@ -441,7 +466,8 @@ import ctx from "./gameplayCtx"
 export default {
 
     components: {
-        MenuContainer, TaskListFilterBar, TextInputPhoto, TextInputText, TaskList
+        MenuContainer, TaskListFilterBar, TextInputPhoto, TextInputText, TaskList,
+        HelpPanel
     },
 
     props: {
@@ -676,6 +702,26 @@ export default {
     },
 
     methods: {
+
+        getHelpKey() {
+            if (this.frameMode === "addByText") {
+                if (this.itemsLoaded.length === 0) {
+                    return ["help.mainPage", "help.mainPage.found"]
+                }
+
+                return "help.mainPage.found"
+
+            } else if (this.frameMode === "editPlan") {
+                return "help.mainPage.editPlan"
+
+            } else if (this.frameMode === "addByPhoto") {
+                return "help.mainPage.addByPhoto"
+
+            } else {
+                return null
+            }
+
+        },
 
         isModeView() {
             return this.frameMode.startsWith("viewItems")

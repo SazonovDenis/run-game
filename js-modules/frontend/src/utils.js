@@ -201,6 +201,27 @@ export default {
         }
     },
 
+    // Чтобы внести единообразие:
+    // показывать только явно запрошенную помощь
+    // или всю явно не скрытую.
+    isHelpItemHidden(helpState, helpValueKey) {
+        if (true) {
+            // Показывать только явно запрошенную помощь
+            if (helpState[helpValueKey] !== true) {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            // Показывать всю явно не скрытую
+            if (helpState[helpValueKey] === false) {
+                return true
+            } else {
+                return false
+            }
+        }
+    },
+
     periodOptions: [
         {label: 'Сегодня', value: 'day'},
         {label: 'Неделя', value: 'week'},

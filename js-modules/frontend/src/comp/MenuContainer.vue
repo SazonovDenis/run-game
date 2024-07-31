@@ -63,9 +63,12 @@
                         class="q-gutter-x-md bg-primary text-white"
                     >
 
-                        <q-tab name="PlanEditPage" label="Слова" @click="onMainPage()"/>
-                        <q-tab name="PlansPage" label="Уровни" @click="onPlans()"/>
-                        <q-tab name="StatisticPage" label="Результаты" @click="onStatistic()"/>
+                        <q-tab name="PlanEditPage" label="Слова"
+                               @click="onMainPage()"/>
+                        <q-tab name="PlansPage" label="Уровни"
+                               @click="onPlans()"/>
+                        <q-tab name="StatisticPage" label="Результаты"
+                               @click="onStatistic()"/>
 
 
                     </q-tabs>
@@ -80,6 +83,14 @@
 
                 </slot>
                 <!-- -->
+
+
+                <template v-if="helpAvailableButHidden()">
+                    <q-icon
+                        size="sm" class="q-pr-sm"
+                        name="help"
+                        @click="helpClick()"/>
+                </template>
 
 
             </q-toolbar>
@@ -317,6 +328,9 @@ export default {
 
         showFooter: false,
         footerMode: "",
+
+        //
+        helpKey: null,
     },
 
     created() {
@@ -382,6 +396,42 @@ export default {
 
 
     methods: {
+
+        helpAvailableButHidden() {
+            if (!this.helpKey) {
+                return false
+            }
+
+            let helpKeysArr = this.getHelpKeysArr()
+            for (let helpKey of helpKeysArr) {
+                if (utils.isHelpItemHidden(this.globalState.helpState, helpKey)) {
+                    return true
+                }
+            }
+
+            return false
+        },
+
+        helpClick() {
+            if (!this.helpKey) {
+                return
+            }
+
+            let helpKeysArr = this.getHelpKeysArr()
+            for (let helpKey of helpKeysArr) {
+                this.globalState.helpState[helpKey] = true
+            }
+        },
+
+        getHelpKeysArr() {
+            let helpKeysArr = []
+            if (typeof (this.helpKey) === "string") {
+                helpKeysArr.push(this.helpKey)
+            } else {
+                helpKeysArr = this.helpKey
+            }
+            return helpKeysArr
+        },
 
         menuAlerts() {
             let userInfo = auth.getUserInfo()

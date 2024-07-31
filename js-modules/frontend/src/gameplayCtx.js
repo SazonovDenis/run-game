@@ -84,7 +84,10 @@ export default {
                     blow: {
                         stillCount: 9,
                     }
-                }
+                },
+
+                // Показанные или скрытые пункты меню
+                helpState: {},
 
             })
 

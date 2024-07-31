@@ -207,16 +207,6 @@
             >
 
                 <template v-slot:toolbar>
-                    <!--
-                                        <q-btn
-                                            v-if="itemsLoaded.length > 0"
-                                            no-caps
-                                            class="q-ma-sm"
-                                            icon="quasar.stepper.done"
-                                            label="Выбрать все"
-                                            @click="selectAll()"
-                                        />
-                    -->
 
                     <q-toggle
                         v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
@@ -334,22 +324,6 @@
             />
 
         </div>
-
-
-<!--
-        <q-page-sticky
-            class="btn-container-on-top"
-            position="bottom-right"
-            :offset="[10, 10]">
-
-            <div class="row q-gutter-x-sm"
-                 style="_border: solid 1px green; align-items: end;">
-
-
-            </div>
-
-        </q-page-sticky>
--->
 
 
         <template v-slot:footer>

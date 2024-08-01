@@ -413,7 +413,7 @@ export default {
     },
 
     async api_updUsrSettings(settings) {
-        let res = await daoApi.invoke("m/Usr/updSettings", [settings])
+        let res = await daoApi.invoke("m/Usr/updSettings", [settings], {waitShow: false})
 
         //
         return res

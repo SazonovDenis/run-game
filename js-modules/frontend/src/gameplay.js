@@ -6,6 +6,7 @@ import {daoApi} from "./dao"
 
 import auth from "./auth"
 import appConst from "./dao/appConst"
+import gameplayCtx from "./gameplayCtx"
 
 export default {
 
@@ -504,21 +505,11 @@ export default {
         userInfo.linksDependent = data.linksDependent
         userInfo.settings = data.settings
 
+        // Заберем userInfo.settings в глобальную кучу
+        gameplayCtx.applyUserInfoSetting()
+
         //
         this.clearContextUserInfo()
-    },
-
-    setContextUserInfo(data) {
-        let contextUser = {}
-        contextUser.id = data.id
-        contextUser.login = data.login
-        contextUser.text = data.text
-        contextUser.guest = data.guest
-        contextUser.color = data.color
-        contextUser.planDefault = data.planDefault
-        //
-        let userInfo = auth.getUserInfo()
-        userInfo.contextUser = contextUser
     },
 
     /**
@@ -538,8 +529,24 @@ export default {
         userInfo.linksDependent = []
         userInfo.settings = null
 
+        // Заберем userInfo.settings в глобальную кучу
+        gameplayCtx.applyUserInfoSetting()
+
         //
         this.clearContextUserInfo()
+    },
+
+    setContextUserInfo(data) {
+        let contextUser = {}
+        contextUser.id = data.id
+        contextUser.login = data.login
+        contextUser.text = data.text
+        contextUser.guest = data.guest
+        contextUser.color = data.color
+        contextUser.planDefault = data.planDefault
+        //
+        let userInfo = auth.getUserInfo()
+        userInfo.contextUser = contextUser
     },
 
     clearContextUserInfo() {

@@ -144,11 +144,22 @@ export default {
         },
 
         'settings.favourite': function() {
-            console.info("watch.settings.favourite")
+            // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+            if (this.settingsPreventWatch) {
+                return
+            }
+
+            //
             this.loadPlans()
         },
 
         "settings.sortField": function(value, old) {
+            // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+            if (this.settingsPreventWatch) {
+                return
+            }
+
+            //
             this.plans.sort(this.compareFunction)
         }
 

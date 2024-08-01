@@ -1,7 +1,7 @@
 import {reactive} from 'vue'
-import auth from "./auth"
 
 import {initQiasarInstance} from './quasar-instance'
+import auth from "run-game-frontend/src/auth"
 
 
 export default {
@@ -20,22 +20,7 @@ export default {
             const quasar = initQiasarInstance()
             Jc.cfg.is = quasar.platform.is
 
-            //
-            let helpState = {}
-            let filterSettings = {}
-            let userInfo = auth.getUserInfo()
-            if (userInfo.settings) {
-                helpState = userInfo.settings.helpState
-                filterSettings = userInfo.settings.filterSettings
-            }
-            if (!helpState) {
-                helpState = {}
-            }
-            if (!filterSettings) {
-                filterSettings = {}
-            }
-
-            //
+            // Создаем глобальный контекст (общую кучу данных)
             this.globalState = reactive({
                 // Состояние раунда: иноформация о раунде
                 game: {
@@ -100,13 +85,46 @@ export default {
                 },
 
                 // Показанные или скрытые пункты помощи
-                helpState: helpState,
+                helpState: {},
 
                 // Конфигурация разных фильтров
-                filterSettings: filterSettings,
+                filterSettings: {},
             })
 
+
+            // Заберем userInfo.settings в глобальную кучу
+            this.applyUserInfoSetting()
+
+
+            //
             return this.globalState
+        }
+    },
+
+
+    applyUserInfoSetting: function() {
+        if (!this.globalState) {
+            console.warn("this.globalState is null")
+            return
+        }
+
+        //
+        let userInfo = auth.getUserInfo()
+        let userInfoSettings = userInfo.settings
+        if (!userInfoSettings) {
+            userInfoSettings = {}
+        }
+
+        //
+        this.globalState.helpState = userInfoSettings.helpState
+        this.globalState.filterSettings = userInfoSettings.filterSettings
+
+        //
+        if (!this.globalState.helpState) {
+            this.globalState.helpState = {}
+        }
+        if (!this.globalState.filterSettings) {
+            this.globalState.filterSettings = {}
         }
     }
 

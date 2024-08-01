@@ -5,7 +5,9 @@ import icons from 'all/icons'
 
 import Home from './HomePage'
 
-export function run() {
+import gameplay from "./gameplay"
+
+export async function run() {
     apx.jcBase.applyTheme(theme)
     apx.icons.registerIcons(icons)
 
@@ -36,4 +38,18 @@ export function run() {
         vueApp.mount(apx.jcBase.dom.getAppElement())
     })
 
+
+    // Загрузим данные пользователя сами, не полагаясь на данные
+    // из gsp-страницы - они там устаревшие, т.к. берутся из СЕССИИ сервера.
+    // На сервере СЕССИЯ обновляется только после логина, а при обновлении страницы - нет.
+    // К примеру: обновление данных userInfo.settings.helpState методом
+    // run.game.dao.auth.Usr_upd.updSettings обновляет только данные в БД,
+    // но не обновляет данные в СЕССИИ сервера, таким образом, если изменить
+    // settings.helpState, а потом перезагрузить страницу мы поллучим старое состояние.
+    try {
+        let userInfo = await gameplay.api_getCurrentUser()
+        gameplay.setAuthUserInfo(userInfo)
+    } catch(e) {
+        console.warn(e)
+    }
 }

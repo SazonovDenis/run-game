@@ -17,10 +17,10 @@
         <PlansFilterBar
             class="q-my-sm"
             v-model:filterText="filterText"
-            v-model:sortField="sortField"
-            v-model:tags="filterTags"
-            v-model:favourite="favourite"
-            @update:tags="toggleKazXorEng()"
+            v-model:sortField="settings.sortField"
+            v-model:tags="settings.filterTags"
+            v-model:favourite="settings.favourite"
+            :onTagsChange="toggleKazXorEng"
         />
 
 
@@ -81,6 +81,7 @@ import {apx} from './vendor'
 import {daoApi} from "./dao"
 import auth from "./auth"
 import gameplay from "./gameplay"
+import ctx from "./gameplayCtx"
 import dbConst from "./dao/dbConst"
 import PlansFilterBar from "./comp/PlansFilterBar"
 import MenuContainer from "./comp/MenuContainer"
@@ -113,22 +114,41 @@ export default {
         return {
             plans: [],
 
-            viewPlanType: "common",
+            //viewPlanType: "common",
 
             filterText: "",
-            sortField: "ratingAsc",
-            filterTags: {},
-            favourite: false,
+
+            settings: {
+                sortField: "ratingAsc",
+                filterTags: {},
+                favourite: false,
+            }
         }
     },
 
     watch: {
 
-        favourite: function() {
+        settings: {
+            handler() {
+                // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+                if (this.settingsPreventWatch) {
+                    this.settingsPreventWatch = false
+                    return
+                }
+
+                //
+                ctx.globalState.filterSettings.plans = this.settings
+                ctx.eventBus.emit("change:settings")
+            },
+            deep: true
+        },
+
+        'settings.favourite': function() {
+            console.info("watch.settings.favourite")
             this.loadPlans()
         },
 
-        sortField: function(value, old) {
+        "settings.sortField": function(value, old) {
             this.plans.sort(this.compareFunction)
         }
 
@@ -144,11 +164,11 @@ export default {
 
         // Не допускает одновременного наличия двух языков: при ВКЛЮЧЕНИИ одного языка,
         // остальные сбрасываются; при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
-        toggleKazXorEng() {
-            if (this.filterTags.tagLastClicked === "kaz") {
-                delete this.filterTags["eng"]
-            } else if (this.filterTags.tagLastClicked === "eng") {
-                delete this.filterTags["kaz"]
+        toggleKazXorEng(filterTags) {
+            if (filterTags.tagLastClicked === "kaz") {
+                delete filterTags["eng"]
+            } else if (filterTags.tagLastClicked === "eng") {
+                delete filterTags["kaz"]
             }
         },
 
@@ -211,7 +231,7 @@ export default {
                 return -1
 
 
-            } else if (this.sortField === "ratingAsc") {
+            } else if (this.settings.sortField === "ratingAsc") {
                 if (v1.ratingTask > v2.ratingTask) {
                     return 1
                 } else if (v1.ratingTask < v2.ratingTask) {
@@ -227,7 +247,7 @@ export default {
                     }
                 }
 
-            } else if (this.sortField === "ratingDesc") {
+            } else if (this.settings.sortField === "ratingDesc") {
                 if (v1.ratingTask < v2.ratingTask) {
                     return 1
                 } else if (v1.ratingTask > v2.ratingTask) {
@@ -267,8 +287,8 @@ export default {
             // Фильтр по тэгам не задан
             // В filterTags всегда есть флаг tagLastClicked, поэтому для определения
             // пустоты количество сравниваем с 1, а не с 0
-            let filterTagsCount = Object.keys(this.filterTags).length
-            if (!this.filterTags || filterTagsCount <= 1) {
+            let filterTagsCount = Object.keys(this.settings.filterTags).length
+            if (!this.settings.filterTags || filterTagsCount <= 1) {
                 return true
             }
 
@@ -281,7 +301,7 @@ export default {
 
 
             // Значение тэга, выставленное в фильтре, должно совпадать со значением тэга у плана
-            let filterTag_sound = this.filterTags["word-sound"]
+            let filterTag_sound = this.settings.filterTags["word-sound"]
             if (filterTag_sound === true) {
                 let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
                 let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
@@ -304,14 +324,14 @@ export default {
                 return false
             }
             //
-            let filterTag_eng = this.filterTags["eng"]
+            let filterTag_eng = this.settings.filterTags["eng"]
             if (filterTag_eng) {
                 if (planTag_translate_direction.indexOf("eng") === -1) {
                     return false
                 }
             }
             //
-            let filterTag_kaz = this.filterTags["kaz"]
+            let filterTag_kaz = this.settings.filterTags["kaz"]
             if (filterTag_kaz) {
                 if (planTag_translate_direction.indexOf("kaz") === -1) {
                     return false
@@ -362,7 +382,7 @@ export default {
         },
 
         async loadPlans() {
-            if (this.favourite) {
+            if (this.settings.favourite) {
                 this.plans = await gameplay.api_getPlansAttached()
             } else {
                 this.plans = await gameplay.api_getPlansAvailable()
@@ -379,12 +399,19 @@ export default {
 
             //
             this.plans.sort(this.compareFunction)
-            console.info(this.plans)
         },
 
     },
 
     async mounted() {
+        let settings = ctx.globalState.filterSettings.plans
+        if (settings) {
+            this.settings = settings
+            // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+            this.settingsPreventWatch = true
+        }
+
+        //
         await this.loadPlans()
     },
 

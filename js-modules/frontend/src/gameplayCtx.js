@@ -1,5 +1,8 @@
 import {reactive} from 'vue'
-import {useQuasar} from 'quasar'
+import auth from "./auth"
+
+import {initQiasarInstance} from './quasar-instance'
+
 
 export default {
 
@@ -14,8 +17,23 @@ export default {
             return this.globalState
         } else {
             //
-            let quasar = useQuasar()
+            const quasar = initQiasarInstance()
             Jc.cfg.is = quasar.platform.is
+
+            //
+            let helpState = {}
+            let filterSettings = {}
+            let userInfo = auth.getUserInfo()
+            if (userInfo.settings) {
+                helpState = userInfo.settings.helpState
+                filterSettings = userInfo.settings.filterSettings
+            }
+            if (!helpState) {
+                helpState = {}
+            }
+            if (!filterSettings) {
+                filterSettings = {}
+            }
 
             //
             this.globalState = reactive({
@@ -81,9 +99,11 @@ export default {
                     }
                 },
 
-                // Показанные или скрытые пункты меню
-                helpState: {},
+                // Показанные или скрытые пункты помощи
+                helpState: helpState,
 
+                // Конфигурация разных фильтров
+                filterSettings: filterSettings,
             })
 
             return this.globalState

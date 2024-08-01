@@ -60,6 +60,7 @@ export default {
         },
         closeClick() {
             this.helpState[this.helpValueKey] = false
+            ctx.eventBus.emit("change:settings")
         },
     },
 

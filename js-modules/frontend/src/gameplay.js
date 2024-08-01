@@ -30,6 +30,7 @@ export default {
         ctx.eventBus.on("dragend", this.on_dragend)
         ctx.eventBus.on("change:goal.value", this.onChange_goalValue)
         ctx.eventBus.on("showHint", this.onShowHint)
+        ctx.eventBus.on("change:settings", this.onChange_Settings)
         //
         ctx.eventBus.on("animation-stop", this.onAnimationStop)
         //
@@ -49,6 +50,7 @@ export default {
         ctx.eventBus.off("dragend", this.on_dragend)
         ctx.eventBus.off("change:goal.value", this.onChange_goalValue)
         ctx.eventBus.off("showHint", this.onShowHint)
+        ctx.eventBus.off("change:settings", this.onChange_Settings)
         //
         ctx.eventBus.off("animation-stop", this.onAnimationStop)
         //
@@ -409,6 +411,13 @@ export default {
         return res
     },
 
+    async api_updUsrSettings(settings) {
+        let res = await daoApi.invoke("m/Usr/updSettings", [settings])
+
+        //
+        return res
+    },
+
     async api_login(login, password) {
         let res = await apx.ajax.request({
             url: "auth/login",
@@ -493,6 +502,7 @@ export default {
         userInfo.planDefault = data.planDefault
         userInfo.linksToWait = data.linksToWait
         userInfo.linksDependent = data.linksDependent
+        userInfo.settings = data.settings
 
         //
         this.clearContextUserInfo()
@@ -526,6 +536,7 @@ export default {
         userInfo.planDefault = null
         userInfo.linksToWait = []
         userInfo.linksDependent = []
+        userInfo.settings = null
 
         //
         this.clearContextUserInfo()
@@ -681,10 +692,18 @@ export default {
         return ctx.globalState.dataState.goal.valueDone >= ctx.globalState.dataState.goal.valueGoal
     },
 
-    onChange_goalValue(v) {
+    onChange_goalValue() {
         if (ctx.gameplay.goalDone()) {
             ctx.gameplay.loadNextTask()
         }
+    },
+
+    onChange_Settings() {
+        let settings = {
+            helpState: ctx.globalState.helpState,
+            filterSettings: ctx.globalState.filterSettings,
+        }
+        ctx.gameplay.api_updUsrSettings(settings)
     },
 
     onShowHint(doShowHint) {

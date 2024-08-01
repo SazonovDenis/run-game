@@ -16,6 +16,7 @@ public class Usr_upd extends RgmMdbUtils {
     Rnd rnd = new RndImpl()
 
     public static final String msg_user_exists = "Пользователь уже зарегистрирован"
+    public static final String msg_user_not_exists = "Пользователь не зарегистрирован"
     public static final String msg_is_required_text = "Указание имени обязательно"
     public static final String msg_is_required_login = "Указание логина обязательно"
 
@@ -43,7 +44,7 @@ public class Usr_upd extends RgmMdbUtils {
     public StoreRecord ins(Map params) {
         // --- Проверки
 
-        // Нет такого пользователя?
+        // Уже есть такой пользователь?
         String login = params.get("login")
         StoreRecord rec = loadByLogin(login)
         //
@@ -126,7 +127,7 @@ from
         StoreRecord rec = loadByLogin(login)
         //
         if (rec != null && rec.getLong("id") != idUsr) {
-            mdb.validateErrors.addError(msg_user_exists)
+            mdb.validateErrors.addError(msg_user_not_exists)
         }
 
         // Обязательные поля
@@ -163,9 +164,21 @@ from
         return loadRec(idUsr)
     }
 
+    @DaoMethod
+    public void updSettings(Map settings) {
+        //
+        long idUsr = getCurrentUsrId()
+
+        // Настройки в BLOB
+        String valueSettings = UtJson.toJson(settings)
+
+        // Запись
+        mdb.updateRec("Usr", [id: idUsr, settings: valueSettings])
+    }
+
     StoreRecord loadRec(long idUsr) {
         StoreRecord rec = mdb.loadQueryRecord(
-                "select id, login, text from Usr where id = :id",
+                "select id, login, text, settings from Usr where id = :id",
                 ["id": idUsr],
                 false
         )
@@ -196,6 +209,10 @@ from
         // Зависимые пользователи
         Store stLinksDependent = link_list.loadLinksDependent(idUsr)
         userInfo.put("linksDependent", DataUtils.storeToList(stLinksDependent))
+
+        // Извлекаем настройки из BLOB
+        Map settings = UtJson.fromJson(new String(rec.getValue("settings"), "utf-8"))
+        userInfo.put("settings", settings)
 
         //
         return userInfo

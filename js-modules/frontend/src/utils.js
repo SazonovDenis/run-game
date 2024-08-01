@@ -205,7 +205,11 @@ export default {
     // показывать только явно запрошенную помощь
     // или всю явно не скрытую.
     isHelpItemHidden(helpState, helpValueKey) {
-        if (true) {
+        if (!helpState) {
+            return false
+        }
+
+        if (false) {
             // Показывать только явно запрошенную помощь
             if (helpState[helpValueKey] !== true) {
                 return true

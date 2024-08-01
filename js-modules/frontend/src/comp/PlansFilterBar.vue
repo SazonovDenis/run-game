@@ -13,7 +13,7 @@
 
         <RgmInputText
             v-show="showSearch"
-            v-model="input_filterText"
+            :value="filterText"
             @update:modelValue="updateParent('filterText', $event)"
             @blur="elFilterText_blur"
             ref="elFilterText"
@@ -38,8 +38,8 @@
             text-color="black"
             no-caps split
             align="left"
-            :icon="sortFieldIcon[input_sortField]"
-            :label="sortFieldText[input_sortField]"
+            :icon="sortFieldIcon[sortField]"
+            :label="sortFieldText[sortField]"
         >
             <q-list class="q-pa-sm">
 
@@ -63,9 +63,9 @@
 
             <q-btn
                 class="_q-my-sm"
-                @click="toggleValueFavourite()"
-                :color="this.input_favourite !== true ? 'green-9' : 'green'"
-                :outline="this.input_favourite !== true"
+                @click="toggleFavourite()"
+                :color="this.favourite !== true ? 'green-9' : 'green'"
+                :outline="this.favourite !== true"
                 icon="star"
             />
 
@@ -105,28 +105,24 @@ import RgmInputText from "./RgmInputText"
 
 export default {
 
-    name: "TaskListFilterBar",
+    name: "PlansFilterBar",
 
     components: {
         RgmInputText,
     },
 
     props: {
-        //showFullFilter: Boolean,
-
-        filterText: String,
-        sortField: String,
-        tags: Object,
-        favourite: Boolean,
+        filterText: {type: String, default: ""},
+        sortField: {type: String, default: ""},
+        tags: {type: Object, default: {}},
+        favourite: {type: Boolean, default: false},
+        onTagsChange: {type: Function, default: null},
     },
 
     data() {
         return {
-            input_filterText: this.filterText || "",
-            input_sortField: this.sortField || "",
-            input_tags: this.tags || {},
-            input_favourite: this.favourite || false,
-
+            /*
+            todo: заменить, когда появится смысл сортировать
             sortFieldIsDropdown: false,
             sortFieldText: {
                 ratingDesc: "Легкие",
@@ -136,6 +132,7 @@ export default {
                 ratingDesc: "quasar.arrow.up",
                 ratingAsc: "quasar.arrow.down",
             },
+            */
 
             showSearch: false,
         }
@@ -144,7 +141,7 @@ export default {
     methods: {
 
         elFilterText_blur() {
-            if (!this.input_filterText) {
+            if (!this.filterText) {
                 this.showSearch = false
             }
         },
@@ -157,14 +154,18 @@ export default {
         },
 
         getOutline(lang) {
-            return !this.input_tags[lang]
+            if (!this.tags) {
+                return false
+            }
+            //
+            return !this.tags[lang]
         },
 
         getOutline_WordSound() {
             let tag = "word-sound"
-            if (this.input_tags[tag] === false) {
+            if (this.tags[tag] === false) {
                 return false
-            } else if (this.input_tags[tag] === true) {
+            } else if (this.tags[tag] === true) {
                 return false
             } else {
                 return true
@@ -173,9 +174,9 @@ export default {
 
         getIcon_WordSound() {
             let tag = "word-sound"
-            if (this.input_tags[tag] === false) {
+            if (this.tags[tag] === false) {
                 return "headphones-cross"
-            } else if (this.input_tags[tag] === true) {
+            } else if (this.tags[tag] === true) {
                 return "headphones"
             } else {
                 return "headphones"
@@ -183,48 +184,60 @@ export default {
         },
 
         toggleTag_TrueFalseNull(tag) {
-            if (this.input_tags[tag] === false) {
-                delete this.input_tags[tag]
-            } else if (this.input_tags[tag] === true) {
-                this.input_tags[tag] = false
+            //
+            let tags = this.tags
+            //
+            if (tags[tag] === false) {
+                delete tags[tag]
+            } else if (tags[tag] === true) {
+                tags[tag] = false
             } else {
-                this.input_tags[tag] = true
+                tags[tag] = true
             }
             //
-            this.input_tags.tagLastClicked = tag
+            tags.tagLastClicked = tag
             //
-            this.updateParent('tags', this.input_tags)
+            this.updateParent("tags", tags)
         },
 
         toggleTag_TrueNull(tag) {
-            if (this.input_tags[tag] === true) {
-                delete this.input_tags[tag]
+            let tags = this.tags
+            //
+            if (tags[tag] === true) {
+                delete tags[tag]
             } else {
-                this.input_tags[tag] = true
+                tags[tag] = true
             }
             //
-            this.input_tags.tagLastClicked = tag
+            tags.tagLastClicked = tag
+
+            // Позволяет родительскому компоненту доработать напильником значения,
+            // во исполнение его бизнес-логики
+            if (this.onTagsChange) {
+                this.onTagsChange(tags)
+            }
+
             //
-            this.updateParent('tags', this.input_tags)
+            this.updateParent("tags", tags)
         },
 
-        toggleValueFavourite() {
-            if (this.input_favourite === true) {
-                this.input_favourite = false
+        toggleFavourite() {
+            let favourite = this.favourite
+            if (favourite === true) {
+                favourite = false
             } else {
-                this.input_favourite = true
+                favourite = true
             }
             //
-            this.updateParent("favourite", this.input_favourite)
-        },
-
-        updateParent(valueModelName, value) {
-            this.$emit('update:' + valueModelName, value)
+            this.updateParent("favourite", favourite)
         },
 
         setSortField(value) {
-            this.input_sortField = value
-            this.updateParent('sortField', value)
+            this.updateParent("sortField", value)
+        },
+
+        updateParent(valueModelName, value) {
+            this.$emit("update:" + valueModelName, value)
         },
 
     },

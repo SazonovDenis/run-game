@@ -10,6 +10,8 @@
         <field name="login" parent="string" size="50" title="Идентификатор (логин)"/>
         <field name="password" parent="string" size="50" title="Пароль (md5-hash)"/>
         <field name="text" parent="string" size="200" title="Имя пользователя"/>
+
+        <field name="settings" parent="blob" title="Настройки пользователя"/>
     </domain>
 
 

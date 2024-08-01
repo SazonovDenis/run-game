@@ -103,6 +103,7 @@ export default {
         this.userInfo.guest = userInfo.guest
         this.userInfo.color = userInfo.color
         this.userInfo.planDefault = userInfo.planDefault
+        this.userInfo.settings = userInfo.settings
 
         //
         this.dataLoaded = true

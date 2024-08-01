@@ -421,6 +421,7 @@ export default {
             for (let helpKey of helpKeysArr) {
                 this.globalState.helpState[helpKey] = true
             }
+            ctx.eventBus.emit("change:settings")
         },
 
         getHelpKeysArr() {

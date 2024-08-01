@@ -132,7 +132,6 @@ export default {
 
         /*
         updateParentModel(event) {
-            console.info(event)
             this.$emit('update:valueSecond', this.inputSecond);
             this.$emit('update:value3', this.input3);
             this.$emit('update:valueFour', this.inputFour);

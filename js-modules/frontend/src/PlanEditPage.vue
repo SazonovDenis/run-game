@@ -1115,9 +1115,6 @@ export default {
          * После сохранения taskItem будет в плане и не скрыт
          */
         itemAdd(taskItem) {
-            //console.info("itemAdd", taskItem)
-
-            //
             if (this.itemIsHidden(taskItem)) {
                 this.itemHideDel(taskItem)
             }
@@ -1160,9 +1157,6 @@ export default {
          * После сохранения taskItem не будет в плане
          */
         itemDel(taskItem) {
-            //console.info("itemDel", taskItem)
-
-            //
             let posItemsExt = utils.itemPosInItems(taskItem, this.itemsExternal)
             let posItemsAdd = utils.itemPosInItems(taskItem, this.itemsAdd)
             let posItemsDel = utils.itemPosInItems(taskItem, this.itemsDel)

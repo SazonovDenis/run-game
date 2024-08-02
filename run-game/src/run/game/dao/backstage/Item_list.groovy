@@ -824,7 +824,11 @@ class Item_list extends RgmMdbUtils {
     protected static Collection<String> splitWord(String word) {
         Collection<String> words
 
-        words = word.split("[^a-zA-Z0-9']")
+        // Вместо регулярки "разделитель - любой, кроме явно указанные символы" (регулярка начинается с домика: [^...)
+        // лучше юзать регулярку "разделитель - явно указанные символы"  (регулярка без домика: [...).
+        // Это так, потому что тогда не придется явно перечислять все символы всех поддерживаемых языков.
+        // Вместо: words = word.split("[^a-zA-Z0-9']") юзаем: words = word.split("[ -/\\,.]")
+        words = word.split("[ -/\\\\,.\n\r]")
         if (words.size() > 1) {
             return words
         }

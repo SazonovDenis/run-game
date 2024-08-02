@@ -103,8 +103,6 @@ export default {
 
 
     applyUserInfoSetting: function() {
-        console.info("applyUserInfoSetting")
-
         if (!this.globalState) {
             console.warn("this.globalState is null")
             return
@@ -128,9 +126,6 @@ export default {
         if (!this.globalState.viewSettings) {
             this.globalState.viewSettings = {}
         }
-
-        console.info("applyUserInfoSetting - ok")
-
     }
 
 }

@@ -1,5 +1,6 @@
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
+import dbConst from "run-game-frontend/src/dao/dbConst"
 
 export default {
 
@@ -267,6 +268,34 @@ export default {
         week: "неделю",
         month: "месяц",
         month3: "три месяца",
+    },
+
+    // Названия для ссылок ОТ пользователя
+    // для одной записи
+    dictLinkTypeFromRec: {
+        [dbConst.LinkType_friend]: "Ваш друг",
+        [dbConst.LinkType_parent]: "Ваш родитель",
+        [dbConst.LinkType_child]: "Ваш ребенок",
+        [dbConst.LinkType_teacher]: "Ваш учитель",
+        [dbConst.LinkType_student]: "Ваш ученик",
+        [dbConst.LinkType_blocked]: "Заблокирован",
+    },
+    // Названия для ссылок ОТ пользователя
+    dictLinkTypeFrom: {
+        [dbConst.LinkType_friend]: "Ваши друзья",
+        [dbConst.LinkType_parent]: "Ваши родители",
+        [dbConst.LinkType_child]: "Ваши дети",
+        [dbConst.LinkType_teacher]: "Ваши учителя",
+        [dbConst.LinkType_student]: "Ваши ученики",
+        [dbConst.LinkType_blocked]: "Заблокированные",
+    },
+    // Названия для ссылок К пользователю
+    dictLinkTypeTo: {
+        [dbConst.LinkType_friend]: "Ваши друзья",
+        [dbConst.LinkType_parent]: "Ваши дети",
+        [dbConst.LinkType_child]: "Ваши родители",
+        [dbConst.LinkType_teacher]: "Ваши ученики",
+        [dbConst.LinkType_student]: "Ваши учителя",
     },
 
     getPeriodText(value) {

@@ -6,10 +6,11 @@ let stringDat = {
     "help.mainPage.editPlan": "Если вы знаете слово, нажмите 'Знаю' &ndash; оно не будет появляться в играх",
     "help.mainPage.addByPhoto": "Наведите камеру на страницу с текстом и нажмите круглую кнопку спуска.",
     "help.mainPage.addByPhoto.return": "Чтобы вернуться в поиск по словам нажмите <img src='/run/game/web/img/help/keyboard.svg'>.",
-    "help.mainPage.createPlan": "Сейчас вы создаете новый план.<div class='help-br'>&nbsp;</div>Выполните поиск слов и добавьте их в план.",
+    "help.mainPage.createPlan": "Сейчас вы создаете новый уровнь.<div class='help-br'>&nbsp;</div>Выполните поиск слов и добавьте их в уровень.",
     "help.mainPage.createPlanNext": "Когда добавите нужные слова, нажмите кнопку 'Далее'.",
     "help.plans": "Это список доступных вам уровней.<div class='help-br'>&nbsp;</div>Чтобы играть уровень нажмите на него и нажмите кнопку 'Играть'.",
     "help.plans.default": "Слова, которые вы добавили при поиске, находятся в уровне 'Мои слова'.",
+    "help.planUsrPlan": "Чтобы у пользователя в избранных появился этот уровень нажмите <img src='/jc/run/game/web/img/help/star.svg'>.",
 }
 
 export default stringDat

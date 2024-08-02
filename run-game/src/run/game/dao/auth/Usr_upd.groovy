@@ -112,6 +112,8 @@ from
         UsrPlan.plan = PlanTag_access_default.plan and
         PlanTag_access_default.tag = $RgmDbConst.Tag_plan_access_default
     ) 
+where
+    UsrPlan.isOwner = 1
 """
         long planDefault = mdb.loadQueryRecord(sql, [usr: idUsr, isDefault: true]).getLong("plan");
         return planDefault

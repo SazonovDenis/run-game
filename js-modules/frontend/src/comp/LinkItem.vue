@@ -17,7 +17,7 @@
 
             <q-avatar
                 v-else-if="usr.confirmState === ConfirmState_accepted"
-                icon="star"
+                icon="user"
                 color="grey-2"
                 text-color="yellow-8">
             </q-avatar>
@@ -35,25 +35,33 @@
 
             <q-item-label>
                 {{ usr.text }}
+                <div class="text-caption text-grey-9"
+                     v-if="usr.confirmState === ConfirmState_accepted">
+                    {{ getDictLinkTypeFromRec(usr) }}
+                </div>
             </q-item-label>
 
-            <q-item-label
-                caption
-                v-if="usr.confirmState && usr.confirmState !== ConfirmState_accepted">
+            <q-item-label>
 
-                <template v-if="usr.usrFrom !== userId">
-                    Просит добавления в {{ dictLinkTypeTo[usr.linkType] }}
-                </template>
+                <div class="text-caption text-grey-9"
+                     v-if="usr.confirmState && usr.confirmState !== ConfirmState_accepted">
 
-                <template
-                    v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_waiting">
-                    Вы ждете добавления в {{ dictLinkTypeFrom[usr.linkType] }}
-                </template>
+                    <template v-if="usr.usrFrom !== userId">
+                        Просит добавления в {{ getDictLinkTypeTo(usr) }}
+                    </template>
 
-                <template
-                    v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_refused">
-                    Отказал в добавлении в {{ dictLinkTypeFrom[usr.linkType] }}
-                </template>
+                    <template
+                        v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_waiting">
+                        Вы ждете добавления в {{ getDictLinkTypeFrom(usr) }}
+                    </template>
+
+                    <template
+                        v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_refused">
+                        Отказал в добавлении в {{ getDictLinkTypeFrom(usr) }}
+                    </template>
+
+                </div>
+
             </q-item-label>
 
         </q-item-section>
@@ -111,6 +119,7 @@
                         dropdown-icon=""
                         color="primary"
                         label="Добавить..."
+                        @click.stop
                     >
                         <q-menu>
 
@@ -243,6 +252,7 @@ import auth from "../auth"
 import ctx from "../gameplayCtx"
 import gameplay from "../gameplay"
 import dbConst from "../dao/dbConst"
+import utils from "../utils"
 
 export default {
 
@@ -261,25 +271,7 @@ export default {
     },
 
     data() {
-        return {
-            // Названия для ссылок ОТ пользователя
-            dictLinkTypeFrom: {
-                [dbConst.LinkType_friend]: "Ваши друзья",
-                [dbConst.LinkType_parent]: "Ваши родители",
-                [dbConst.LinkType_child]: "Ваши дети",
-                [dbConst.LinkType_teacher]: "Ваши учителя",
-                [dbConst.LinkType_student]: "Ваши ученики",
-                [dbConst.LinkType_blocked]: "Заблокированные",
-            },
-            // Названия для ссылок К пользователю
-            dictLinkTypeTo: {
-                [dbConst.LinkType_friend]: "Ваши друзья",
-                [dbConst.LinkType_parent]: "Ваши дети",
-                [dbConst.LinkType_child]: "Ваши родители",
-                [dbConst.LinkType_teacher]: "Ваши ученики",
-                [dbConst.LinkType_student]: "Ваши учителя",
-            },
-        }
+        return {}
     },
 
     watch: {},
@@ -292,6 +284,16 @@ export default {
     },
 
     methods: {
+
+        getDictLinkTypeFromRec(usr) {
+            return utils.dictLinkTypeFromRec[usr.linkType]
+        },
+        getDictLinkTypeFrom(usr) {
+            return utils.dictLinkTypeFrom[usr.linkType]
+        },
+        getDictLinkTypeTo(usr) {
+            return utils.dictLinkTypeTo[usr.linkType]
+        },
 
         async onUsrClick(usr) {
             if (usr.linkType === dbConst.LinkType_child || usr.linkType === dbConst.LinkType_student) {

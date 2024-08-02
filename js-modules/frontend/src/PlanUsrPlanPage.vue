@@ -3,9 +3,18 @@
         title="Поделиться уровнем"
         :frameReturn="frameReturn"
         :frameReturnProps="frameReturnProps"
+        :helpKey="getHelpKey()"
     >
 
-        <div class="rgm-state-text">
+
+        <!-- -->
+
+        <HelpPanel class="q-mt-xs q-mb-none" :helpKey="getHelpKey()"/>
+
+        <!-- -->
+
+
+        <div class="rgm-state-text q-my-md">
             Уровень: {{ plan.planText }}
         </div>
 
@@ -21,7 +30,7 @@
                     <q-item-section top avatar>
 
                         <q-avatar
-                            icon="star"
+                            icon="user"
                             color="grey-2"
                             text-color="yellow-8">
                         </q-avatar>
@@ -32,7 +41,12 @@
                     <q-item-section>
 
                         <q-item-label>
-                            {{ item.text }}
+                            <div>
+                                {{ item.text }}
+                            </div>
+                            <div class="text-caption text-grey-9">
+                                {{ getDictLinkTypeFromRec(item) }}
+                            </div>
                         </q-item-label>
 
                     </q-item-section>
@@ -71,7 +85,7 @@
 
         <div v-else
              class="q-pt-md rgm-state-text">
-            Список пуст
+            У вас нет пользователей, с которыми можно поделиться
         </div>
 
 
@@ -83,14 +97,16 @@
 
 
 import {daoApi} from "./dao"
+import utils from "./utils"
 import MenuContainer from "./comp/MenuContainer"
+import HelpPanel from "./comp/HelpPanel"
 
 export default {
 
     name: "PlanUsrPlanPage",
 
     components: {
-        MenuContainer,
+        MenuContainer, HelpPanel,
     },
 
     props: {
@@ -108,12 +124,16 @@ export default {
 
     methods: {
 
+        getHelpKey() {
+            return ["help.planUsrPlan"]
+        },
+
         async onUsrClick(item) {
             if (!item.isAllowed) {
-                await daoApi.invoke("m/Plan/addUsrPlanUsr", [this.plan.id, item.usrFrom], {waitShow: false})
+                await daoApi.invoke("m/Plan/addUsrPlanUsr", [this.plan.id, item.usrTo], {waitShow: false})
                 item.isAllowed = true
             } else {
-                await daoApi.invoke("m/Plan/delUsrPlanUsr", [this.plan.id, item.usrFrom], {waitShow: false})
+                await daoApi.invoke("m/Plan/delUsrPlanUsr", [this.plan.id, item.usrTo], {waitShow: false})
                 item.isAllowed = false
             }
         },
@@ -124,6 +144,10 @@ export default {
             } else {
                 return "green-9"
             }
+        },
+
+        getDictLinkTypeFromRec(usr) {
+            return utils.dictLinkTypeFromRec[usr.linkType]
         },
 
         async doLoad() {

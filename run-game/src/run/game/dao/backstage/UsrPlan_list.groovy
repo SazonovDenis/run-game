@@ -26,8 +26,9 @@ class UsrPlan_list extends RgmMdbUtils {
 
     String sql() {
         return """
+-- Исходящие подтвержденные связи
 select 
-    --Usr.id, 
+    Usr.id, 
     Usr.login, 
     Usr.text, 
     Link.usrFrom, 
@@ -39,12 +40,13 @@ select
 from
     Link 
     join Usr on (
-        Link.usrFrom = Usr.id and 
-        Link.usrTo = :usr and 
+        Link.usrTo = Usr.id and 
+        Link.usrFrom = :usr and 
         Link.confirmState = $RgmDbConst.ConfirmState_accepted and
         Link.dbeg <= :dt and 
         Link.dend > :dt
     )
+    -- Подключен ли план к связи
     left join UsrPlan on (
         UsrPlan.usr = Usr.id and
         UsrPlan.plan = :plan 

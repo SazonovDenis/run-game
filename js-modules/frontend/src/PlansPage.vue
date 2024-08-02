@@ -311,19 +311,25 @@ export default {
             }
 
 
-            // Значение тэга, выставленное в фильтре, должно совпадать со значением тэга у плана
+            // Если в фильтре значение тэга === true или строка, то значение тэга тэга
+            // у плана должно совпадать со значением, выставленым в фильтре.
+            //
+            // Если в фильтре значение тэга === false, то значение тэга тэга у плана
+            // должно быть false или отсутствовать.
+
+            //
+            let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
+            let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
             let filterTag_sound = this.settings.filterTags["word-sound"]
+            //
             if (filterTag_sound === true) {
-                let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
-                let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
                 if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
                     return false
                 }
             }
+            //
             if (filterTag_sound === false) {
-                let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
-                let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
-                if (planTag_question_datatype === "word-sound" || planTag_answer_datatype === "word-sound") {
+                if (planTag_question_datatype && (planTag_question_datatype === "word-sound" || planTag_answer_datatype === "word-sound")) {
                     return false
                 }
             }
@@ -331,22 +337,15 @@ export default {
 
             //
             let planTag_translate_direction = planTags[dbConst.TagType_word_translate_direction]
-            if (!planTag_translate_direction) {
+            //
+            let filterTag_eng = this.settings.filterTags["eng"]
+            if (filterTag_eng && (!planTag_translate_direction || planTag_translate_direction.indexOf("eng") === -1)) {
                 return false
             }
             //
-            let filterTag_eng = this.settings.filterTags["eng"]
-            if (filterTag_eng) {
-                if (planTag_translate_direction.indexOf("eng") === -1) {
-                    return false
-                }
-            }
-            //
             let filterTag_kaz = this.settings.filterTags["kaz"]
-            if (filterTag_kaz) {
-                if (planTag_translate_direction.indexOf("kaz") === -1) {
-                    return false
-                }
+            if (filterTag_kaz && (!planTag_translate_direction || planTag_translate_direction.indexOf("kaz") === -1)) {
+                return false
             }
 
 

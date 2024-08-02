@@ -2,7 +2,7 @@ let stringDat = {
     "help.mainPage": "Поиск в словаре работает не только по тексту, но также по изображению из галереи <img src='/run/game/web/img/help/picture.svg'> или с камеры <span><img src='/run/game/web/img/help/camera.svg'><br><br>Можно вставить длинный текст &ndash; будут найдены все слова из него.",
     "help.mainPage.found": "Найденные слова можно добавить для дальнейшего изучения или указать как известные &ndash; они не будут появляться в играх.",
     "help.plan.game": "Чтобы сыграть уровень, нажмите кнопку 'Играть уровень'",
-    "help.plan.edit": "Можно скрыть слова, которые вы уже знаете &ndash; они не будут появляться в играх. Для этого нажмите редактировать <img src='/run/game/web/img/help/edit.svg'>",
+    "help.plan.edit": "Можно скрыть слова, которые вы уже знаете &ndash; они не будут появляться в играх. Для этого нажмите <img src='/run/game/web/img/help/edit.svg'>",
     "help.mainPage.editPlan": "Если вы знаете слово, нажмите 'Знаю' &ndash; оно не будет появляться в играх",
     "help.mainPage.addByPhoto": "Наведите камеру на страницу с текстом и нажмите круглую кнопку спуска.",
     "help.mainPage.addByPhoto.return": "Чтобы вернуться в поиск по словам нажмите <img src='/run/game/web/img/help/keyboard.svg'>.",

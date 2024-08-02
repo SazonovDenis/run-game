@@ -708,7 +708,7 @@ export default {
     onChange_Settings() {
         let settings = {
             helpState: ctx.globalState.helpState,
-            filterSettings: ctx.globalState.filterSettings,
+            viewSettings: ctx.globalState.viewSettings,
         }
         ctx.gameplay.api_updUsrSettings(settings)
     },

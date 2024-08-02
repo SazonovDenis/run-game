@@ -88,7 +88,7 @@ export default {
                 helpState: {},
 
                 // Конфигурация разных фильтров
-                filterSettings: {},
+                viewSettings: {},
             })
 
 
@@ -103,6 +103,8 @@ export default {
 
 
     applyUserInfoSetting: function() {
+        console.info("applyUserInfoSetting")
+
         if (!this.globalState) {
             console.warn("this.globalState is null")
             return
@@ -117,15 +119,18 @@ export default {
 
         //
         this.globalState.helpState = userInfoSettings.helpState
-        this.globalState.filterSettings = userInfoSettings.filterSettings
+        this.globalState.viewSettings = userInfoSettings.viewSettings
 
         //
         if (!this.globalState.helpState) {
             this.globalState.helpState = {}
         }
-        if (!this.globalState.filterSettings) {
-            this.globalState.filterSettings = {}
+        if (!this.globalState.viewSettings) {
+            this.globalState.viewSettings = {}
         }
+
+        console.info("applyUserInfoSetting - ok")
+
     }
 
 }

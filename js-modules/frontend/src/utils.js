@@ -1,4 +1,5 @@
 import {apx} from "./vendor"
+import ctx from "./gameplayCtx"
 
 export default {
 
@@ -201,10 +202,38 @@ export default {
         }
     },
 
+    getHelpKeysArr(helpKey) {
+        let helpKeysArr = []
+        if (typeof (helpKey) === "string") {
+            helpKeysArr.push(helpKey)
+        } else {
+            helpKeysArr = helpKey
+        }
+        return helpKeysArr
+    },
+
+    helpItemVisibleCount(helpKey) {
+        if (!helpKey) {
+            return 0
+        }
+
+        let res = 0
+        let helpKeysArr = this.getHelpKeysArr(helpKey)
+        for (let helpKey of helpKeysArr) {
+            if (!this.isHelpItemHidden(helpKey)) {
+                res = res + 1
+            }
+        }
+
+        return res
+    },
+
+
     // Чтобы внести единообразие:
     // показывать только явно запрошенную помощь
     // или всю явно не скрытую.
-    isHelpItemHidden(helpState, helpValueKey) {
+    isHelpItemHidden(helpValueKey) {
+        let helpState = ctx.getGlobalState().helpState
         if (!helpState) {
             return false
         }

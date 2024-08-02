@@ -11,7 +11,7 @@
 
             <!-- -->
 
-            <HelpPanel :helpKey="getHelpKey()"/>
+            <HelpPanel class="q-mt-xs q-mb-none" :helpKey="getHelpKey()"/>
 
             <!-- -->
 

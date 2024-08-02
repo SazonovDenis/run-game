@@ -404,9 +404,9 @@ export default {
                 return false
             }
 
-            let helpKeysArr = this.getHelpKeysArr()
+            let helpKeysArr = utils.getHelpKeysArr(this.helpKey)
             for (let helpKey of helpKeysArr) {
-                if (utils.isHelpItemHidden(this.globalState.helpState, helpKey)) {
+                if (utils.isHelpItemHidden(helpKey)) {
                     return true
                 }
             }
@@ -419,21 +419,11 @@ export default {
                 return
             }
 
-            let helpKeysArr = this.getHelpKeysArr()
+            let helpKeysArr = utils.getHelpKeysArr(this.helpKey)
             for (let helpKey of helpKeysArr) {
                 this.globalState.helpState[helpKey] = true
             }
             ctx.eventBus.emit("change:settings")
-        },
-
-        getHelpKeysArr() {
-            let helpKeysArr = []
-            if (typeof (this.helpKey) === "string") {
-                helpKeysArr.push(this.helpKey)
-            } else {
-                helpKeysArr = this.helpKey
-            }
-            return helpKeysArr
         },
 
         menuAlerts() {

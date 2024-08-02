@@ -1,7 +1,8 @@
 <template>
-    <div class="help-panel-container q-mx-sm q-mt-sm row" v-if="helpKey">
+    <div v-if="visibleCount > 0"
+         class="help-panel-container q-mx-xs row">
         <template v-for="helpKey in helpKeys">
-            <HelpItem :helpKey="helpKey" _class="q-mb-sm"/>
+            <HelpItem :helpKey="helpKey"/>
         </template>
     </div>
 </template>
@@ -9,6 +10,7 @@
 <script>
 
 import HelpItem from "./HelpItem"
+import utils from "../utils"
 
 export default {
 
@@ -23,12 +25,16 @@ export default {
     computed: {
 
         helpKeys() {
-            if (typeof (this.helpKey) === "string") {
-                return [this.helpKey]
-            } else {
-                return this.helpKey
+            let helpKeysArr = utils.getHelpKeysArr(this.helpKey)
+            if (helpKeysArr.length === 0) {
+                return null
             }
+            return helpKeysArr
         },
+
+        visibleCount() {
+            return utils.helpItemVisibleCount(this.helpKey)
+        }
 
     },
 

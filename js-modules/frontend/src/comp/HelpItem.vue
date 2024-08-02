@@ -3,6 +3,11 @@
          v-if="doShow()"
          @click="closeClick"
     >
+
+        <div class="q-px-sm q-pt-md q-pb-lg">
+            <div class="help-text bg-yellow-2" v-html="text"></div>
+        </div>
+
         <q-btn flat no-caps
                size="md"
                label="Принято"
@@ -10,9 +15,6 @@
                @click="closeClick"
         />
 
-        <div class="q-px-sm q-py-md">
-            <div class="help-text bg-yellow-2" v-html="text"></div>
-        </div>
     </div>
 </template>
 
@@ -31,10 +33,7 @@ export default {
     },
 
     data() {
-        return {
-            // Обернули helpState в свою data
-            helpState: ctx.getGlobalState().helpState,
-        }
+        return {}
     },
 
     computed: {
@@ -50,17 +49,22 @@ export default {
     },
 
     methods: {
+
         doShow() {
-            if (utils.isHelpItemHidden(this.helpState, this.helpValueKey)) {
-                return false
-            }
             if (!this.text) {
                 return false
             }
+
+            if (utils.isHelpItemHidden(this.helpValueKey)) {
+                return false
+            }
+
             return true
         },
+
         closeClick() {
-            this.helpState[this.helpValueKey] = false
+            let globalHelpState = ctx.getGlobalState().helpState
+            globalHelpState[this.helpValueKey] = false
             ctx.eventBus.emit("change:settings")
         },
     },
@@ -76,6 +80,12 @@ export default {
     width: 30rem;
     max-width: 60rem;
     flex-grow: 1;
+
+    border-bottom: 2px solid rgba(214, 188, 74, 0.3);
+}
+
+.help-item:last-child {
+    border-bottom: none;
 }
 
 .help-btn-close {

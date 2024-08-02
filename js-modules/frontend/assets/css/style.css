@@ -149,6 +149,10 @@
 
 /* Help */
 
+.help-br {
+  line-height: 0.3;
+}
+
 .help-text {
   font-size: 1.3em;
 }

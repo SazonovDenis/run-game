@@ -15,7 +15,7 @@
 
             <!-- -->
 
-            <HelpPanel :helpKey="getHelpKey()"/>
+            <HelpPanel class="q-mt-xs q-mb-xs" :helpKey="getHelpKey()"/>
 
             <!-- -->
 
@@ -187,7 +187,7 @@
 
             <!-- -->
 
-            <HelpPanel :helpKey="getHelpKey()"/>
+            <HelpPanel class="q-mt-none q-mb-xs" :helpKey="getHelpKey()"/>
 
             <!-- -->
 
@@ -710,8 +710,8 @@ export default {
                 }
 
                 return "help.mainPage.createPlanNext"
-                
-            } else  if (this.frameMode === "addByText") {
+
+            } else if (this.frameMode === "addByText") {
                 if (this.itemsLoaded.length === 0) {
                     return "help.mainPage"
                 }

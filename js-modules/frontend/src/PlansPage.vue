@@ -9,7 +9,7 @@
 
         <!-- -->
 
-        <HelpPanel :helpKey="getHelpKey()"/>
+        <HelpPanel class="q-mt-xs q-mb-none" :helpKey="getHelpKey()"/>
 
         <!-- -->
 
@@ -17,9 +17,9 @@
         <PlansFilterBar
             class="q-my-sm"
             v-model:filterText="filterText"
-            v-model:sortField="settings.sortField"
-            v-model:tags="settings.filterTags"
-            v-model:favourite="settings.favourite"
+            v-model:sortField="viewSettings.sortField"
+            v-model:tags="viewSettings.filterTags"
+            v-model:favourite="viewSettings.favourite"
             :onTagsChange="toggleKazXorEng"
         />
 
@@ -114,11 +114,9 @@ export default {
         return {
             plans: [],
 
-            //viewPlanType: "common",
-
             filterText: "",
 
-            settings: {
+            viewSettings: {
                 sortField: "ratingAsc",
                 filterTags: {},
                 favourite: false,
@@ -128,7 +126,7 @@ export default {
 
     watch: {
 
-        settings: {
+        viewSettings: {
             handler() {
                 // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
                 if (this.settingsPreventWatch) {
@@ -137,7 +135,8 @@ export default {
                 }
 
                 //
-                ctx.globalState.filterSettings.plans = this.settings
+                let globalViewSettings = ctx.getGlobalState().viewSettings
+                globalViewSettings.plans = this.viewSettings
                 ctx.eventBus.emit("change:settings")
             },
             deep: true
@@ -242,7 +241,7 @@ export default {
                 return -1
 
 
-            } else if (this.settings.sortField === "ratingAsc") {
+            } else if (this.viewSettings.sortField === "ratingAsc") {
                 if (v1.ratingTask > v2.ratingTask) {
                     return 1
                 } else if (v1.ratingTask < v2.ratingTask) {
@@ -258,7 +257,7 @@ export default {
                     }
                 }
 
-            } else if (this.settings.sortField === "ratingDesc") {
+            } else if (this.viewSettings.sortField === "ratingDesc") {
                 if (v1.ratingTask < v2.ratingTask) {
                     return 1
                 } else if (v1.ratingTask > v2.ratingTask) {
@@ -298,8 +297,8 @@ export default {
             // Фильтр по тэгам не задан
             // В filterTags всегда есть флаг tagLastClicked, поэтому для определения
             // пустоты количество сравниваем с 1, а не с 0
-            let filterTagsCount = Object.keys(this.settings.filterTags).length
-            if (!this.settings.filterTags || filterTagsCount <= 1) {
+            let filterTagsCount = Object.keys(this.viewSettings.filterTags).length
+            if (!this.viewSettings.filterTags || filterTagsCount <= 1) {
                 return true
             }
 
@@ -320,7 +319,7 @@ export default {
             //
             let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
             let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
-            let filterTag_sound = this.settings.filterTags["word-sound"]
+            let filterTag_sound = this.viewSettings.filterTags["word-sound"]
             //
             if (filterTag_sound === true) {
                 if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
@@ -338,12 +337,12 @@ export default {
             //
             let planTag_translate_direction = planTags[dbConst.TagType_word_translate_direction]
             //
-            let filterTag_eng = this.settings.filterTags["eng"]
+            let filterTag_eng = this.viewSettings.filterTags["eng"]
             if (filterTag_eng && (!planTag_translate_direction || planTag_translate_direction.indexOf("eng") === -1)) {
                 return false
             }
             //
-            let filterTag_kaz = this.settings.filterTags["kaz"]
+            let filterTag_kaz = this.viewSettings.filterTags["kaz"]
             if (filterTag_kaz && (!planTag_translate_direction || planTag_translate_direction.indexOf("kaz") === -1)) {
                 return false
             }
@@ -392,7 +391,7 @@ export default {
         },
 
         async loadPlans() {
-            if (this.settings.favourite) {
+            if (this.viewSettings.favourite) {
                 this.plans = await gameplay.api_getPlansAttached()
             } else {
                 this.plans = await gameplay.api_getPlansAvailable()
@@ -414,9 +413,9 @@ export default {
     },
 
     async mounted() {
-        let settings = ctx.globalState.filterSettings.plans
-        if (settings) {
-            this.settings = settings
+        let globalViewSettings = ctx.getGlobalState().viewSettings
+        if (globalViewSettings.plans) {
+            this.viewSettings = globalViewSettings.plans
             // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
             this.settingsPreventWatch = true
         }

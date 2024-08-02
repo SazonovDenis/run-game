@@ -10,7 +10,7 @@ let stringDat = {
     "help.mainPage.createPlanNext": "Когда добавите нужные слова, нажмите кнопку 'Далее'.",
     "help.plans": "Это список доступных вам уровней.<div class='help-br'>&nbsp;</div>Чтобы играть уровень нажмите на него и нажмите кнопку 'Играть'.",
     "help.plans.default": "Слова, которые вы добавили при поиске, находятся в уровне 'Мои слова'.",
-    "help.planUsrPlan": "Чтобы у пользователя в избранных появился этот уровень нажмите <img src='/jc/run/game/web/img/help/star.svg'>.",
+    "help.planUsrPlan": "Чтобы у пользователя в избранных появился этот уровень нажмите <img src='/run/game/web/img/help/star.svg'>.",
 }
 
 export default stringDat

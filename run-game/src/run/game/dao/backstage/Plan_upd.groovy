@@ -212,7 +212,7 @@ class Plan_upd extends RgmMdbUtils {
     @DaoMethod
     void addUsrPlanUsr(long idPlan, long idUsr) {
         validateUsrLink(idUsr)
-        validateUsrPlanMy(idPlan)
+        validateUsrPlanMyPlan(idPlan)
 
         //
         StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
@@ -237,7 +237,7 @@ class Plan_upd extends RgmMdbUtils {
     @DaoMethod
     void delUsrPlanUsr(long idPlan, long idUsr) {
         validateUsrLink(idUsr)
-        validateUsrPlanMy(idPlan)
+        validateUsrPlanMyPlan(idPlan)
 
         //
         StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
@@ -393,11 +393,11 @@ group by
      * Проверяем, что мы имеем право добавлять план кому-нибудь.
      * Право есть, если мы - автор плана
      */
-    void validateUsrPlanMy(long idPlan) {
+    void validateUsrPlanMyPlan(long idPlan) {
         Plan_list list = mdb.create(Plan_list)
         StoreRecord rec = list.getPlan(idPlan)
         //
-        if (!rec.getBoolean("isOwner")) {
+        if (!rec.getBoolean("isOwner") && !rec.getBoolean("isPublic")) {
             throw new XError("Вы не имеете права делиться этим уровнем")
         }
     }

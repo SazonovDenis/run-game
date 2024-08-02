@@ -285,6 +285,9 @@ class Server_Test extends RgmBase_Test {
      */
     void checkOrFillPlan(idPlan) {
         ServerImpl srv = mdb.create(ServerImpl)
+        Item_list lst = mdb.create(Item_list)
+
+        //
         DataBox plan = srv.getPlanTasks(idPlan)
         Store stPlanFacts = plan.get("tasks")
 
@@ -293,12 +296,12 @@ class Server_Test extends RgmBase_Test {
             Plan_upd upd = mdb.create(Plan_upd)
 
             //
-            Store stFact1 = srv.findItems("cre", idPlan)
+            Store stFact1 = lst.findItems("cre", idPlan)
             mdb.outTable(stFact1)
             upd.addFact(idPlan, DataUtils.storeToList(stFact1))
 
             //
-            Store stFact2 = srv.findItems("fru", idPlan)
+            Store stFact2 = lst.findItems("fru", idPlan)
             mdb.outTable(stFact2)
             upd.addFact(idPlan, DataUtils.storeToList(stFact2))
         }
@@ -307,8 +310,8 @@ class Server_Test extends RgmBase_Test {
 
     @Test
     void test_Find_ora() {
-        ServerImpl srv = mdb.create(ServerImpl)
-        Store stFact = srv.findItems("ora", 0)
+        Item_list lst = mdb.create(Item_list)
+        Store stFact = lst.findItems("ora", 0)
         mdb.outTable(stFact)
     }
 

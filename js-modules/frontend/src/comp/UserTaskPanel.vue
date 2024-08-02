@@ -41,7 +41,7 @@
 
             </div>
 
-            <div v-if="isEnvDev">
+            <div v-if="isDev">
 
                 <br>
                 <q-separator/>
@@ -106,7 +106,7 @@ export default {
 
     computed: {
 
-        isEnvDev() {
+        isDev() {
             return jcBase.cfg.envDev
         },
 

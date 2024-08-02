@@ -14,39 +14,44 @@
                 <div class="message-no-data">Нет данных об игре</div>
             </div>
 
-            <div class="justify-center row q-mt-md">
+            
+            <template v-if="localState.game">
+
+                <div class="justify-center row q-mt-md">
 
 
-                <!-- -->
+                    <!-- -->
 
-                <div class="result-words">
+                    <div class="result-words">
 
-                    <div class="row">
+                        <div class="row">
 
-                        <StatisticWordsLearned :statistic="localState.statistic"/>
+                            <StatisticWordsLearned :statistic="localState.statistic"/>
 
-                        <StatisticWordsRepeated :statistic="localState.statistic"/>
+                            <StatisticWordsRepeated :statistic="localState.statistic"/>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- -->
+
+                    <div class="result-words">
+
+                        <div class="row q-mt-md">
+
+                            <StatisticRatingDiff
+                                class="q-mx-md q-my-sm q-mb-md"
+                                :statistic="localState.statistic"/>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-
-                <!-- -->
-
-                <div class="result-words">
-
-                    <div class="row q-mt-md">
-
-                        <StatisticRatingDiff
-                            class="q-mx-md q-my-sm q-mb-md"
-                            :statistic="localState.statistic"/>
-
-                    </div>
-
-                </div>
-
-            </div>
+            </template>
 
 
             <template v-if="localState.game">
@@ -54,14 +59,16 @@
                 <div class="row">
 
                     <div class="q-ma-sm" v-if="!localState.game.done">
-                        <jc-btn kind="primary" label="Продолжить игру"
+                        <jc-btn kind="primary"
+                                label="Продолжить игру"
                                 style="min-width: 12em;"
                                 @click="continueActiveGame()">
                         </jc-btn>
                     </div>
 
                     <div class="q-ma-sm" v-if="!localState.game.done">
-                        <jc-btn kind="secondary" label="Выйти из игры"
+                        <jc-btn kind="secondary"
+                                label="Выйти из игры"
                                 style="min-width: 12em;"
                                 @click="closeActiveGame()">
                         </jc-btn>
@@ -69,20 +76,25 @@
 
                     <div class="q-ma-sm"
                          v-if="localState.game.plan && localState.game.done">
-                        <jc-btn kind="secondary" label="Играть уровень еще раз"
-                                style="min-width: 12em;"
-                                @click="startNewGame()">
-                        </jc-btn>
-                    </div>
-
-                    <div class="q-ma-sm"
-                         v-if="localState.game.plan && localState.game.done">
-                        <jc-btn kind="secondary" label="Редактировать уровень"
+                        <jc-btn kind="secondary"
+                                label="Состав уровня"
                                 style="min-width: 12em;"
                                 @click="planTaskStatistic(localState.game.plan)">
                         </jc-btn>
                     </div>
 
+                    <q-space/>
+
+                    <div class="q-ma-sm"
+                         v-if="localState.game.plan && localState.game.done">
+                        <jc-btn kind="primary"
+                                label="Играть уровень"
+                                style="min-width: 12em;"
+                                @click="startNewGame()">
+                        </jc-btn>
+                    </div>
+
+<!--
                     <div class="q-ma-sm"
                          v-if="localState.game.plan && !localState.game.done">
                         <jc-btn kind="secondary" label="Играть другой уровень"
@@ -105,6 +117,7 @@
                                 @click="onSelectPlan()">
                         </jc-btn>
                     </div>
+-->
 
                 </div>
 

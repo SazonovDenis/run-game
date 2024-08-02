@@ -64,12 +64,6 @@
 
 
             <div class="row q-my-lg">
-                <jc-btn class="q-ma-sm"
-                        kind="primary"
-                        label="Играть уровень"
-                        style="min-width: 10em;"
-                        @click="gameStart()">
-                </jc-btn>
 
                 <jc-btn class="q-ma-sm"
                         kind="secondary"
@@ -77,6 +71,16 @@
                         style="min-width: 12em;"
                         @click="onPlanView()">
                 </jc-btn>
+
+                <q-space/>
+
+                <jc-btn class="q-ma-sm"
+                        kind="primary"
+                        label="Играть уровень"
+                        style="min-width: 10em;"
+                        @click="gameStart()">
+                </jc-btn>
+
             </div>
 
 
@@ -85,7 +89,6 @@
                 <DateRangeInput
                     ref="dateRangeInput"
                     v-model="params.period"
-                    :__hiddenValues="['day']"
                     @update:modelValue="on_params_period"
                 />
 
@@ -126,6 +129,7 @@ export default {
     props: {
         planId: null,
         period: {type: String, default: "week"},
+
         frameReturn: null,
         frameReturnProps: null,
 

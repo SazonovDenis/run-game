@@ -169,10 +169,6 @@
                                  @click="onGameStatistic()">Последняя игра
                             </div>
 
-                            <div class="q-item__label q-item__label--header"
-                                 @click="onPlans()">Уровни
-                            </div>
-
 
                             <div class="q-mt-md q-item__label q-item__label--header"
                                  @click="onUser()">Данные игрока
@@ -210,14 +206,6 @@
                                  @click="onAbout()">Об игре
                             </div>
 
-                            <!--
-                                                        <q-separator/>
-
-
-                                                        <div class="q-mt-md q-item__label q-item__label&#45;&#45;header"
-                                                             @click="onStatistic()">Статистика
-                                                        </div>
-                            -->
 
                         </div>
                     </div>
@@ -269,9 +257,14 @@
                                     <img v-bind:src="avatar">
                                 </div>
                             </div>
-                            <div class="text-weight-bold">{{ userInfo.text }}
+
+                            <div class="text-weight-bold">
+                                {{ userInfo.text }}
                             </div>
-                            <div>{{ userInfo.id }}</div>
+
+                            <div>{{ userInfo.login }}</div>
+
+                            <div v-if="isDev">id: {{ userInfo.id }}</div>
                         </div>
                     </div>
                 </div>
@@ -302,7 +295,7 @@
 <script>
 
 import ctx from "../gameplayCtx"
-import {apx} from "../vendor"
+import {apx, jcBase} from "../vendor"
 import auth from "../auth"
 import gameplay from "../gameplay"
 import utils from "../utils"
@@ -356,6 +349,9 @@ export default {
 
 
     computed: {
+        isDev() {
+            return jcBase.cfg.envDev
+        },
         getFooterDisplay() {
             if (this.showFooter) {
                 return "block"

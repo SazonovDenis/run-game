@@ -30,7 +30,7 @@
                     <q-item-section top avatar>
 
                         <q-avatar
-                            icon="user"
+                            icon="usr-link"
                             color="grey-2"
                             text-color="yellow-8">
                         </q-avatar>

@@ -17,7 +17,7 @@
 
             <q-avatar
                 v-else-if="usr.confirmState === ConfirmState_accepted"
-                icon="user"
+                icon="usr-link"
                 color="grey-2"
                 text-color="yellow-8">
             </q-avatar>

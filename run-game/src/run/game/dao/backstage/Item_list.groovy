@@ -824,8 +824,7 @@ class Item_list extends RgmMdbUtils {
     protected static Collection<String> splitWord(String word) {
         Collection<String> words
 
-        //words = word.split("[^a-zA-Z0-9']")
-        words = word.split("[ -/\\\\,.]")
+        words = word.split("[^a-zA-Z0-9']")
         if (words.size() > 1) {
             return words
         }

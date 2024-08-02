@@ -155,7 +155,8 @@ select
     Link.linkType, 
     Link.confirmState
 from
-    Link join Usr on (
+    Link 
+    join Usr on (
         Link.usrTo = Usr.id and 
         Link.usrFrom = :usr and 
         Link.confirmState <> $RgmDbConst.ConfirmState_cancelled and
@@ -178,7 +179,8 @@ select
     Link.linkType, 
     Link.confirmState
 from
-    Link join Usr on (
+    Link 
+    join Usr on (
         Link.usrFrom = Usr.id and 
         Link.usrTo = :usr and 
         Link.confirmState = $RgmDbConst.ConfirmState_waiting and
@@ -202,7 +204,8 @@ select
     Link.linkType, 
     Link.confirmState
 from
-    Link join Usr on (Link.usrFrom = Usr.id)
+    Link 
+    join Usr on (Link.usrFrom = Usr.id)
 where
     Link.usrTo = :usr and 
     Link.confirmState = $RgmDbConst.ConfirmState_waiting and
@@ -225,7 +228,8 @@ select
     Link.linkType, 
     Link.confirmState
 from
-    Link join Usr on (Link.usrFrom = Usr.id)
+    Link 
+    join Usr on (Link.usrFrom = Usr.id)
 where
     Link.usrFrom = :usr and
     Link.confirmState = $RgmDbConst.ConfirmState_accepted and

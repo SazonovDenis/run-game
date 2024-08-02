@@ -199,7 +199,7 @@
                             </div>
 
 
-                            <q-separator/>
+                            <q-separator class="q-mt-md"/>
 
 
                             <div class="q-mt-md q-item__label q-item__label--header"

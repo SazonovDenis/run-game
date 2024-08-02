@@ -142,7 +142,7 @@ export default {
             deep: true
         },
 
-        'settings.favourite': function() {
+        'viewSettings.favourite': function() {
             // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
             if (this.settingsPreventWatch) {
                 return
@@ -152,7 +152,7 @@ export default {
             this.loadPlans()
         },
 
-        "settings.sortField": function(value, old) {
+        "viewSettings.sortField": function(value, old) {
             // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
             if (this.settingsPreventWatch) {
                 return

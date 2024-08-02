@@ -25,19 +25,30 @@
             </div>
 
             <div class="row">
-                <jc-btn class="q-ma-sm"
-                        kind="primary"
-                        label="Играть уровень"
-                        style="min-width: 10em;"
-                        @click="gameStart()">
-                </jc-btn>
 
                 <jc-btn class="q-ma-sm"
                         kind="secondary"
                         label="Статистика"
-                        style="min-width: 12em;"
+                        style="min-width: 8em;"
                         @click="onPlanStatistic()">
                 </jc-btn>
+
+                <jc-btn class="q-ma-sm"
+                        kind="secondary"
+                        label="Поделиться"
+                        style="min-width: 8em;"
+                        @click="onPlanUsrPlan()">
+                </jc-btn>
+
+                <q-space/>
+
+                <jc-btn class="q-ma-sm"
+                        kind="primary"
+                        label="Играть уровень"
+                        style="min-width: 12em;"
+                        @click="gameStart()">
+                </jc-btn>
+
             </div>
 
 
@@ -197,6 +208,7 @@ export default {
 
     props: {
         planId: null,
+
         frameReturn: null,
         frameReturnProps: null,
 
@@ -369,6 +381,21 @@ export default {
                 frame: '/planStatistic',
                 props: {
                     planId: this.planId,
+                    frameReturn: "/plan",
+                    frameReturnProps: {
+                        planId: this.planId,
+                        frameReturn: this.frameReturn,
+                        frameReturnProps: this.frameReturnProps,
+                    }
+                }
+            })
+        },
+
+        async onPlanUsrPlan() {
+            apx.showFrame({
+                frame: '/planUsrPlan',
+                props: {
+                    plan: this.plan,
                     frameReturn: "/plan",
                     frameReturnProps: {
                         planId: this.planId,

@@ -50,4 +50,14 @@
     </domain>
 
 
+    <!-- UsrPlan_list -->
+
+    <domain name="PlanUsrPlan.list" parent="Link.list">
+
+        <field name="isAllowed" parent="boolean"/>
+
+    </domain>
+
+
+
 </root>

@@ -22,6 +22,7 @@ export async function run() {
         {path: '/link', frame: import('./LinkPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
+        {path: '/planUsrPlan', frame: import('./PlanUsrPlanPage')},
         {path: '/plans', frame: import('./PlansPage')},
         {path: '/statistic', frame: import('./StatisticPage')},
         {path: '/planStatistic', frame: import('./PlanStatisticPage')},

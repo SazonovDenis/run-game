@@ -10,6 +10,8 @@
                       class="run.game.dao.backstage.Plan_list"/>
                 <item name="i" method="*"
                       class="run.game.dao.backstage.Plan_upd"/>
+               <item name="i" method="*"
+                      class="run.game.dao.backstage.UsrPlan_list"/>
 
             </item>
             

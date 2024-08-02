@@ -7,6 +7,7 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.dao.auth.*
+import run.game.dao.link.*
 
 class Plan_upd extends RgmMdbUtils {
 
@@ -125,23 +126,107 @@ class Plan_upd extends RgmMdbUtils {
 
 
     /**
-     * Добавить план к списку планов пользователя.
+     * Добавить план к списку планов текущего пользователя.
      */
     @DaoMethod
     void addUsrPlan(long idPlan) {
         long idUsr = getContextOrCurrentUsrId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+        StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
 
         //
-        if (rec != null && rec.getBoolean("isAllowed")) {
-            throw new XError("План уже добавлен к списку планов пользователя")
+        if (recUsrPlan != null && recUsrPlan.getBoolean("isAllowed")) {
+            throw new XError("Уровень уже добавлен к списку уровней пользователя")
         }
 
         //
-        if (rec == null) {
+        if (recUsrPlan == null) {
             mdb.insertRec("UsrPlan", [plan: idPlan, usr: idUsr, isAllowed: true])
         } else {
-            mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isAllowed: true])
+            mdb.updateRec("UsrPlan", [id: recUsrPlan.getLong("id"), isAllowed: true])
+        }
+    }
+
+
+    /**
+     * Исключить план из списка планов текущего пользователя.
+     */
+    @DaoMethod
+    void delUsrPlan(long idPlan) {
+        long idUsr = getContextOrCurrentUsrId()
+        StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        //
+        if (recUsrPlan == null || !recUsrPlan.getBoolean("isAllowed")) {
+            throw new XError("Уровень не был добавлен к списку уровней пользователя")
+        }
+
+        //
+        validatePlanDel(idPlan)
+
+        //
+        mdb.updateRec("UsrPlan", [id: recUsrPlan.getLong("id"), isAllowed: false])
+    }
+
+
+    /**
+     * Скрыть план из списка планов текущего пользователя.
+     */
+    @DaoMethod
+    void hideUsrPlan(long idPlan) {
+        long idUsr = getContextOrCurrentUsrId()
+        StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        //
+        if (recUsrPlan == null || (!recUsrPlan.getBoolean("isAllowed") && !recUsrPlan.getBoolean("isOwner"))) {
+            throw new XError("Уровень не был добавлен к списку уровней пользователя")
+        }
+
+        //
+        validatePlanDel(idPlan)
+
+        //
+        mdb.updateRec("UsrPlan", [id: recUsrPlan.getLong("id"), isHidden: true])
+    }
+
+
+    /**
+     * Вернуть скрытый план из списка планов текущего пользователя.
+     */
+    @DaoMethod
+    void unhideUsrPlan(long idPlan) {
+        long idUsr = getContextOrCurrentUsrId()
+        StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        if (recUsrPlan == null || (!recUsrPlan.getBoolean("isAllowed") && !recUsrPlan.getBoolean("isOwner"))) {
+            throw new XError("Уровень не был добавлен к списку уровней пользователя")
+        }
+
+        //
+        mdb.updateRec("UsrPlan", [id: recUsrPlan.getLong("id"), isHidden: false])
+    }
+
+
+    /**
+     * Добавить план к списку планов пользователя.
+     */
+    @DaoMethod
+    void addUsrPlanUsr(long idPlan, long idUsr) {
+        validateUsrLink(idUsr)
+        validateUsrPlanMy(idPlan)
+
+        //
+        StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        //
+        if (recUsrPlan != null && recUsrPlan.getBoolean("isAllowed")) {
+            throw new XError("Уровень уже добавлен к списку уровней пользователя")
+        }
+
+        //
+        if (recUsrPlan == null) {
+            mdb.insertRec("UsrPlan", [plan: idPlan, usr: idUsr, isAllowed: true])
+        } else {
+            mdb.updateRec("UsrPlan", [id: recUsrPlan.getLong("id"), isAllowed: true])
         }
     }
 
@@ -150,58 +235,20 @@ class Plan_upd extends RgmMdbUtils {
      * Исключить план из списка планов пользователя.
      */
     @DaoMethod
-    void delUsrPlan(long idPlan) {
-        long idUsr = getContextOrCurrentUsrId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+    void delUsrPlanUsr(long idPlan, long idUsr) {
+        validateUsrLink(idUsr)
+        validateUsrPlanMy(idPlan)
 
         //
-        if (rec == null || !rec.getBoolean("isAllowed")) {
-            throw new XError("План не был добавлен к списку планов пользователя")
+        StoreRecord recUsrPlan = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
+
+        //
+        if (recUsrPlan == null || !recUsrPlan.getBoolean("isAllowed")) {
+            throw new XError("Уровень не был добавлен к списку уровней пользователя")
         }
 
         //
-        validatePlanDel(idPlan)
-
-        //
-        mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isAllowed: false])
-    }
-
-
-    /**
-     * Скрыть план из списка планов пользователя.
-     */
-    @DaoMethod
-    void hideUsrPlan(long idPlan) {
-        long idUsr = getContextOrCurrentUsrId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
-
-        //
-        if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isOwner"))) {
-            throw new XError("План не был добавлен к списку планов пользователя")
-        }
-
-        //
-        validatePlanDel(idPlan)
-
-        //
-        mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isHidden: true])
-    }
-
-
-    /**
-     * Вернуть скрытый план из списка планов пользователя.
-     */
-    @DaoMethod
-    void unhideUsrPlan(long idPlan) {
-        long idUsr = getContextOrCurrentUsrId()
-        StoreRecord rec = mdb.loadQueryRecord(sqlUsrPlan(), [usr: idUsr, plan: idPlan], false)
-
-        if (rec == null || (!rec.getBoolean("isAllowed") && !rec.getBoolean("isOwner"))) {
-            throw new XError("План не был добавлен к списку планов пользователя")
-        }
-
-        //
-        mdb.updateRec("UsrPlan", [id: rec.getLong("id"), isHidden: false])
+        mdb.updateRec("UsrPlan", [id: recUsrPlan.getLong("id"), isAllowed: false])
     }
 
 
@@ -309,7 +356,7 @@ group by
         StoreRecord rec = list.getPlan(idPlan)
         //
         if (!rec.getBoolean("isOwner")) {
-            throw new XError("Пользователь не имеет права редактировать план")
+            throw new XError("Вы не имеете права редактировать уровень")
         }
     }
 
@@ -319,7 +366,39 @@ group by
         long planDefault = upd.loadPlanDefault(idUsr)
         //
         if (idPlan == planDefault) {
-            throw new XError("Невозможно удалить план по умолчанию")
+            throw new XError("Невозможно удалить уровень по умолчанию")
+        }
+    }
+
+    /**
+     * Проверяем, что мы имеем право добавлять планы для пользователя idUsrLink.
+     * Право есть, если это наш ученик.
+     */
+    void validateUsrLink(long idUsrLink) {
+        long idUsr = getCurrentUsrId()
+        Link_list list = mdb.create(Link_list)
+        StoreRecord rec = list.loadLinkDependent(idUsr, idUsrLink)
+        //
+        if (rec == null ||
+                (rec.getLong("LinkType") != RgmDbConst.LinkType_myChild &&
+                        rec.getLong("LinkType") != RgmDbConst.LinkType_myStudent
+                ) ||
+                rec.getLong("confirmState") != RgmDbConst.ConfirmState_accepted
+        ) {
+            throw new XError("Вы не имеете права добавлять уровень этому пользователю")
+        }
+    }
+
+    /**
+     * Проверяем, что мы имеем право добавлять план кому-нибудь.
+     * Право есть, если мы - автор плана
+     */
+    void validateUsrPlanMy(long idPlan) {
+        Plan_list list = mdb.create(Plan_list)
+        StoreRecord rec = list.getPlan(idPlan)
+        //
+        if (!rec.getBoolean("isOwner")) {
+            throw new XError("Вы не имеете права делиться этим уровнем")
         }
     }
 

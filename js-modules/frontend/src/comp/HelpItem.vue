@@ -1,16 +1,17 @@
 <template>
-    <div class="help-container"
+    <div class="help-item bg-yellow-2 text-grey-9"
          v-if="doShow()"
          @click="closeClick"
     >
-        <q-btn icon="close" bordered round dense
-               text-color="black"
-               class="help-btn-close"
+        <q-btn flat no-caps
+               size="md"
+               label="Принято"
+               class="help-btn-close text-grey-9"
                @click="closeClick"
         />
 
-        <div class="q-pa-sm">
-            <div class="help-text" v-html="text"></div>
+        <div class="q-px-sm q-py-md">
+            <div class="help-text bg-yellow-2" v-html="text"></div>
         </div>
     </div>
 </template>
@@ -70,22 +71,20 @@ export default {
 
 <style scoped>
 
-.help-container {
+.help-item {
     position: relative;
-    color: #4e4e4e;
-    background-color: #fff2c8;
-    border-radius: 0.5em;
-    border: 1px solid #fff2c8;
     width: 30rem;
     max-width: 60rem;
     flex-grow: 1;
 }
 
 .help-btn-close {
-    background-color: #fff2c8;
+    font-size: 1.3em;
+    background-color: rgba(214, 188, 74, 0.3);
+
     position: absolute;
-    right: -0.3rem;
-    top: -0.3rem;
+    right: 0rem;
+    bottom: 0rem;
 }
 
 

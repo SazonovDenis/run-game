@@ -87,7 +87,9 @@
 
                 <template v-if="helpAvailableButHidden()">
                     <q-icon
-                        size="sm" class="q-pr-sm"
+                        size="sm"
+                        class="q-pr-sm"
+                        color="yellow-2"
                         name="help"
                         @click="helpClick()"/>
                 </template>

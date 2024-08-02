@@ -1,7 +1,7 @@
 <template>
     <div class="help-panel-container q-mx-sm q-mt-sm row" v-if="helpKey">
         <template v-for="helpKey in helpKeys">
-            <HelpItem :helpKey="helpKey" class="q-mb-sm"/>
+            <HelpItem :helpKey="helpKey" _class="q-mb-sm"/>
         </template>
     </div>
 </template>
@@ -39,6 +39,9 @@ export default {
 <style scoped>
 
 .help-panel-container {
+    border-radius: 0.3em;
+    border: solid 1px #FFFFFF01;
+    overflow: hidden;
 }
 
 </style>

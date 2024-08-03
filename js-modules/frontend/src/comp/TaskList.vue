@@ -1,6 +1,6 @@
 <template>
 
-    <q-list v-if="tasks.length > 0">
+    <q-list v-if="tasks.length > 0" class="task-list">
 
         <template v-for="(taskItem, index) in tasks">
 
@@ -154,6 +154,11 @@ export default {
 </script>
 
 <style scoped>
+
+.task-list {
+    max-width: 50rem;
+    margin: auto;
+}
 
 .slide-label {
     font-size: 110%;

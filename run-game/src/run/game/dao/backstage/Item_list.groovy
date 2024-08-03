@@ -774,6 +774,7 @@ class Item_list extends RgmMdbUtils {
         word = word.replace("(", "")
         word = word.replace(")", "")
         word = word.replace("!", "")
+        word = word.replace("?", "")
 
         //
         if ((UtWord.isAlphasEng(word) || UtWord.isAlphasKaz(word)) && word.length() > 1) {
@@ -828,7 +829,7 @@ class Item_list extends RgmMdbUtils {
         // лучше юзать регулярку "разделитель - явно указанные символы"  (регулярка без домика: [...).
         // Это так, потому что тогда не придется явно перечислять все символы всех поддерживаемых языков.
         // Вместо: words = word.split("[^a-zA-Z0-9']") юзаем: words = word.split("[ -/\\,.]")
-        words = word.split("[ -/\\\\,.\n\r]")
+        words = word.split("[ -/\\\\,.:;\n\r)(!?\\[\\]]")
         if (words.size() > 1) {
             return words
         }

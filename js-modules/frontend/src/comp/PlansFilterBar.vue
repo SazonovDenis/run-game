@@ -62,7 +62,6 @@
         <div class="row q-mr-sm q-gutter-x-xs">
 
             <q-btn
-                class="_q-my-sm"
                 @click="toggleFavourite()"
                 :color="this.favourite !== true ? 'green-9' : 'green'"
                 :outline="this.favourite !== true"
@@ -72,14 +71,12 @@
             <q-separator vertical/>
 
             <q-btn
-                class="_q-my-sm"
                 @click="toggleTag_TrueNull('kaz')"
                 color="primary"
                 :outline="getOutline('kaz')"
                 label="Каз"
             />
             <q-btn
-                class="_q-my-sm"
                 @click="toggleTag_TrueNull('eng')"
                 color="primary"
                 :outline="getOutline('eng')"
@@ -87,7 +84,6 @@
             />
 
             <q-btn
-                class="_q-my-sm"
                 @click="toggleTag_TrueFalseNull('word-sound')" color="orange-10"
                 :outline="getOutline_WordSound()"
                 :icon="getIcon_WordSound()"

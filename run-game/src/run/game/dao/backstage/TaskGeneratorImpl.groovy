@@ -9,7 +9,6 @@ import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
 import run.game.model.service.*
-import run.game.testdata.fixture.*
 
 public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
@@ -136,7 +135,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем stTaskOption: готовим правильный и неправильные ответы
 
         // Выбираем неправильные ответы (и их порядок)
-        Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
+        Store stAnswer = list.loadItemFactsByDataType(idItem, dataTypeAnswer)
         StoreIndex idxAnswer = stAnswer.getIndex("factValue")
         //
         int n = 0
@@ -194,7 +193,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем дополнительную информацию
         if (dataTypeQuestion != RgmDbConst.DataType_word_sound) {
             // Загружаем факты "звук"
-            Store stFact = list.loadFactsByDataType(idItem, RgmDbConst.DataType_word_sound)
+            Store stFact = list.loadItemFactsByDataType(idItem, RgmDbConst.DataType_word_sound)
             // Выбираем факт "звук"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
@@ -207,7 +206,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         }
         if (dataTypeQuestion != RgmDbConst.DataType_word_spelling) {
             // Загружаем факты "написание"
-            Store stFact = list.loadFactsByDataType(idItem, RgmDbConst.DataType_word_spelling)
+            Store stFact = list.loadItemFactsByDataType(idItem, RgmDbConst.DataType_word_spelling)
             // Выбираем факт "написание"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
@@ -324,7 +323,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем stTaskOption: готовим правильный и неправильные ответы
 
         // Выбираем неправильные ответы (и их порядок)
-        Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
+        Store stAnswer = list.loadItemFactsByDataType(idItem, dataTypeAnswer)
         StoreIndex idxAnswer = stAnswer.getIndex("factValue")
         //
         int n = 0
@@ -382,7 +381,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем дополнительную информацию
         if (dataTypeQuestion != RgmDbConst.DataType_word_sound) {
             // Загружаем факты "звук"
-            Store stFact = list.loadFactsByDataType(idItem, RgmDbConst.DataType_word_sound)
+            Store stFact = list.loadItemFactsByDataType(idItem, RgmDbConst.DataType_word_sound)
             // Выбираем факт "звук"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
@@ -395,7 +394,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         }
         if (dataTypeQuestion != RgmDbConst.DataType_word_spelling) {
             // Загружаем факты "написание"
-            Store stFact = list.loadFactsByDataType(idItem, RgmDbConst.DataType_word_spelling)
+            Store stFact = list.loadItemFactsByDataType(idItem, RgmDbConst.DataType_word_spelling)
             // Выбираем факт "написание"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
@@ -483,7 +482,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         for (long idItem : idItems) {
             // Загружаем список фактов для "ответа"
             Fact_list list = mdb.create(Fact_list)
-            Store stAnswer = list.loadFactsByDataType(idItem, dataTypeAnswer)
+            Store stAnswer = list.loadItemFactsByDataType(idItem, dataTypeAnswer)
 
             // Каждое значение факта указанного типа будет вариантом выбора
             for (StoreRecord recAnswer : stAnswer) {

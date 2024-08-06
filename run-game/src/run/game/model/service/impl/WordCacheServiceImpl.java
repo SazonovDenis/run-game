@@ -68,8 +68,8 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     private void loadData() throws Exception {
         // Получаем spelling для всех слов из БД
         Fact_list list = mdb.create(Fact_list.class);
-        stFactSpelling = list.loadFactsByDataType(RgmDbConst.DataType_word_spelling);
-        stFactTranslate = list.loadFactsByDataType(RgmDbConst.DataType_word_translate);
+        stFactSpelling = list.loadFactsByDataTypeWithTags(RgmDbConst.DataType_word_spelling, Arrays.asList(RgmDbConst.TagType_word_lang));
+        stFactTranslate = list.loadFactsByDataTypeWithTags(RgmDbConst.DataType_word_translate, Arrays.asList(RgmDbConst.TagType_word_translate_direction));
 
         //
         Store stFact = mdb.createStore("Fact.list");

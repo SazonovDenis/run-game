@@ -87,8 +87,8 @@ class PlanCreator extends RgmMdbUtils  {
 
         // Загружаем список фактов для "вопроса" и "ответа"
         Fact_list list = mdb.create(Fact_list)
-        Store stQuestionLoaded = list.loadFactsByDataType(item, dataTypeQuestion)
-        Store stAnswer = list.loadFactsByDataType(item, dataTypeAnswer)
+        Store stQuestionLoaded = list.loadItemFactsByDataType(item, dataTypeQuestion)
+        Store stAnswer = list.loadItemFactsByDataType(item, dataTypeAnswer)
 
         //
         if (stQuestionLoaded.size() == 0) {

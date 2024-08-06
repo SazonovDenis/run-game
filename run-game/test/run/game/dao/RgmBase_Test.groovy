@@ -101,8 +101,12 @@ class RgmBase_Test extends Apx_Test {
     }
 
     void printFacts(Store st) {
+        printFacts(st, Integer.MAX_VALUE)
+    }
+
+    void printFacts(Store st, int limit) {
         mdb.resolveDicts(st)
-        utils.outTable(st)
+        utils.outTable(st, limit)
     }
 
     void printTaskOneLine_loaded(DataBox task) {

@@ -1,5 +1,6 @@
 package run.game.dao.backstage
 
+import jandcode.commons.UtFile
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
@@ -7,103 +8,57 @@ import run.game.dao.*
 class Item_list_Test extends RgmBase_Test {
 
 
-    String itemText_0 = "warm"
-    String itemText_1 = "синий"
-    Collection<String> itemsText = ["синий", "warm", "up"]
+    String word_0 = "warm"
+    String word_1 = "синий"
+    String word_text = "синий warm up"
 
 
-    /**
-     * Найдем сущности по фрагменту написания или перевода
-     */
     @Test
-    void findBySpelling() {
-        Item_list itemsList = mdb.create(Item_list)
-        Store stItem
+    void findItems() {
+        Store stFact
+        Item_list lst = mdb.create(Item_list)
 
 
         //
-        stItem = itemsList.findWord(itemText_0)
+        stFact = lst.findItems(word_0, 0, [:])
 
         println()
-        println("findBySpelling: '" + itemText_0 + "'")
-        mdb.outTable(stItem)
+        println("findItems: '" + word_0 + "'")
+        mdb.outTable(stFact)
 
 
         //
-        stItem = itemsList.findWord(itemText_1)
+        stFact = lst.findItems(word_1, 0, [:])
 
         println()
-        println("findBySpelling: '" + itemText_1 + "'")
-        mdb.outTable(stItem)
+        println("findItems: '" + word_1 + "'")
+        mdb.outTable(stFact)
+
+
+        //
+        stFact = lst.findItems(word_text, 0, [:])
+
+        println()
+        println("findItems: '" + word_text + "'")
+        mdb.outTable(stFact)
     }
 
-
     /**
-     * Найдем сущности по точному совпадению
+     * Найдем из файла
      */
     @Test
-    void loadBySpelling() {
-        Item_list itemsList = mdb.create(Item_list)
-        Store stItem
+    void findItems_fromFile() {
+        String fileName = "test/run/game/dao/backstage/Item_find_Test.txt"
 
+        // Грузим слова из файла
+        String text = UtFile.loadString(fileName)
 
-        //
-        stItem = itemsList.findText([itemText_0])
-
-        println()
-        println("loadBySpelling: '" + itemText_0 + "'")
-        mdb.outTable(stItem)
-
-
-        //
-        stItem = itemsList.findText([itemText_1])
+        // Поиск слов среди введенного
+        Item_list lst = mdb.create(Item_list)
+        Store stItem = lst.findItems(text, 0, [:])
 
         println()
-        println("loadBySpelling: '" + itemText_1 + "'")
-        mdb.outTable(stItem)
-
-
-        //
-        stItem = itemsList.findText(itemsText)
-
-        println()
-        println("loadBySpelling: '" + itemsText + "'")
-        mdb.outTable(stItem)
-    }
-
-
-    /**
-     * Прочитаем сущности из файла
-     */
-    @Test
-    void readFromFile() {
-        Item_list itemsList = mdb.create(Item_list)
-
-        //
-        String fileName = "test/run/game/dao/backstage/Item_list_Test.txt"
-        Collection<String> itemsText = itemsList.readTextFromFile(fileName)
-
-        println()
-        println("loadBySpelling, file: '" + fileName + "'")
-        for (String itemText : itemsText) {
-            println(itemText)
-        }
-    }
-
-
-    /**
-     * Найдем сущности из файла
-     */
-    @Test
-    void loadBySpelling_FromFile() {
-        Item_list itemsList = mdb.create(Item_list)
-
-        //
-        String fileName = "test/run/game/dao/backstage/Item_list_Test.txt"
-        Store stItem = itemsList.findTextFromFile(fileName)
-
-        println()
-        println("loadBySpelling, file: '" + fileName + "'")
+        println("findTextExact, file: '" + fileName + "'")
         mdb.outTable(stItem)
     }
 

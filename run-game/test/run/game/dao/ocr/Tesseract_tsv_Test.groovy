@@ -9,6 +9,7 @@ import jandcode.core.store.*
 import org.apache.commons.io.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
+import run.game.dao.backstage.Item_list
 import run.game.dao.game.*
 
 class Tesseract_tsv_Test extends RgmBase_Test {
@@ -30,7 +31,7 @@ class Tesseract_tsv_Test extends RgmBase_Test {
     }
 
     @Test
-    void t_11_00_srv_findStill() {
+    void t_11_00_lst_findStill() {
         //inFileName = "test/run/game/dao/ocr/11-00.jpg"
         //inFileName = "test/run/game/dao/ocr/orange.jpg"
         inFileName = "test/run/game/dao/ocr/rgm13528344128969128628.png"
@@ -40,8 +41,8 @@ class Tesseract_tsv_Test extends RgmBase_Test {
         String imgBase64 = UtString.encodeBase64(imgData)
 
         //
-        ServerImpl srv = mdb.create(ServerImpl)
-        DataBox res = srv.findStill(imgBase64, 0)
+        Item_list lst = mdb.create(Item_list)
+        DataBox res = lst.findStill(imgBase64, 0, [:])
         Store stFact = res.get("facts")
         Store positions = res.get("positions")
 

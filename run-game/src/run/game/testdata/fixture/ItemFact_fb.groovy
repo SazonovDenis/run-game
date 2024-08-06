@@ -6,6 +6,7 @@ import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
 import org.apache.commons.io.filefilter.*
 import org.slf4j.*
+import run.game.dao.backstage.UtWord
 import run.game.util.*
 
 /**
@@ -219,13 +220,16 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         key = idItem + "_word-spelling_" + word_1
                         if (!tagValueSet.contains(key)) {
                             tagValueSet.add(key)
-                            //
+                            // Добавляем Fact
                             genIdFact = genIdFact + 1
                             StoreRecord recFact = stFact.add()
                             recFact.setValue("id", genIdFact)
                             recFact.setValue("item", idItem)
                             recFact.setValue("dataType", getDataType("word-spelling"))
                             recFact.setValue("value", word_1)
+                            // Добавляем FactTag:word-lang
+                            String wordLang = wordLang_1
+                            addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
                         }
 
                         // Добавляем Fact:word-transcribtion

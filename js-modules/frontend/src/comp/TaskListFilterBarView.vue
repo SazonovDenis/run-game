@@ -9,25 +9,26 @@
             <q-btn
                 @click="toggleTag_TrueNull('kaz')"
                 color="primary"
-                :outline="getOutline('kaz')"
+                :outline="getOutline_tag('kaz')"
                 label="Каз"
             />
             <q-btn
                 @click="toggleTag_TrueNull('eng')"
                 color="primary"
-                :outline="getOutline('eng')"
+                :outline="getOutline_tag('eng')"
                 label="Анг"
-            />
+            />                                          
 
             <q-btn
-                v-if="button_showHidden_show"
-                @click="toggleShowHidden()"
-                :color="showHidden !== true ? 'indigo-8' : 'indigo-2'"
-                :outline="showHidden !== true"
+                :disabled="!button_showHidden_show"
+                class="rgm-disable-hard"
+                :color="getColor_showHidden()"
+                :outline="getOutline_showHidden()"
                 text-color="indigo-10"
                 unelevated no-caps
                 icon="quasar.chip.selected"
                 label="Знаю"
+                @click="toggleShowHidden()"
             >
                 <q-badge rounded floating color="indigo-8"
                          v-if="button_showHidden_show && showHidden !== true"
@@ -71,7 +72,7 @@ export default {
 
     methods: {
 
-        getOutline(lang) {
+        getOutline_tag(lang) {
             if (!this.tags) {
                 return false
             }
@@ -79,25 +80,18 @@ export default {
             return !this.tags[lang]
         },
 
-        getOutline_WordSound() {
-            let tag = "word-sound"
-            if (this.tags[tag] === false) {
-                return false
-            } else if (this.tags[tag] === true) {
-                return false
-            } else {
+        getOutline_showHidden() {
+            if (!this.button_showHidden_show) {
                 return true
             }
+            return this.showHidden !== true
         },
 
-        getIcon_WordSound() {
-            let tag = "word-sound"
-            if (this.tags[tag] === false) {
-                return "headphones-cross"
-            } else if (this.tags[tag] === true) {
-                return "headphones"
+        getColor_showHidden() {
+            if (this.showHidden !== true) {
+                return "indigo-8"
             } else {
-                return "headphones"
+                return "indigo-2"
             }
         },
 

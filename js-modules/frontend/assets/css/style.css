@@ -50,7 +50,13 @@
   width: 100%;
 }
 
+/* Перекрытие стиля стандартного disable, состояние прорисовывается более явно */
+.rgm-disable-hard[disabled] {
+  filter: grayscale(.3) !important;
+  opacity: 0.4 !important;
+}
 
+/* */
 .justify-center {
   justify-content: center;
 }

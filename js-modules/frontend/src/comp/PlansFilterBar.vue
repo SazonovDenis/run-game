@@ -71,14 +71,14 @@
             <q-btn
                 @click="toggleTag_TrueNull('kaz')"
                 color="primary"
-                :outline="getOutline('kaz')"
+                :outline="getOutline_tag('kaz')"
                 label="Каз"
             />
 
             <q-btn
                 @click="toggleTag_TrueNull('eng')"
                 color="primary"
-                :outline="getOutline('eng')"
+                :outline="getOutline_tag('eng')"
                 label="Анг"
             />
 
@@ -149,7 +149,7 @@ export default {
             }
         },
 
-        getOutline(lang) {
+        getOutline_tag(lang) {
             if (!this.tags) {
                 return false
             }

@@ -156,7 +156,7 @@ class Item_find extends BaseMdbUtils {
                     // Фильтр по тэгам
                     boolean wasTagComparationTrue = true
                     Map factTag = rec.getValue("factTag")
-                    if (factTag != null && tags.size() != 0) {
+                    if (factTag != null && tags != null && tags.size() != 0) {
                         wasTagComparationTrue = false
                         for (Map.Entry entry : tags.entrySet()) {
                             long tagKey = entry.getKey()
@@ -202,14 +202,18 @@ class Item_find extends BaseMdbUtils {
         // ---
         // Поиск
 
+        Collection tagsValues = null
+        if (tags != null) {
+            tagsValues = tags.values()
+        }
 
         // Поиск по атрибуту word_spelling
-        Store stFactSpelling = list.findFactsByValueDataTypeByTags(word, RgmDbConst.DataType_word_spelling, tags.values())
+        Store stFactSpelling = list.findFactsByValueDataTypeByTags(word, RgmDbConst.DataType_word_spelling, tagsValues)
         stFactSpelling.sort("itemValue")
 
 
         // Поиск по атрибуту word_translate
-        Store stFactTranslate = list.findFactsByValueDataTypeByTags(word, RgmDbConst.DataType_word_translate, tags.values())
+        Store stFactTranslate = list.findFactsByValueDataTypeByTags(word, RgmDbConst.DataType_word_translate, tagsValues)
         stFactTranslate.sort("factValue")
 
 

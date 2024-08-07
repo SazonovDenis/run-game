@@ -22,7 +22,8 @@ class Item_list extends RgmMdbUtils {
 
         // --- Поиск слов среди введенного
         Item_find finder = mdb.create(Item_find)
-        Store stItem = finder.collectItems(textItems, tags, null)
+        Map tagsToFind = prepareParamsTags(tags)
+        Store stItem = finder.collectItems(textItems, tagsToFind, null)
 
         // --- Заполнение свойств найденных слов
         Store stFact = makeFactList(stItem, idPlan)
@@ -52,7 +53,8 @@ class Item_list extends RgmMdbUtils {
         // --- Поиск слов среди введенного
         Map<String, Set> textItemsFiltered = new HashMap<>()
         Item_find finder = mdb.create(Item_find)
-        Store stItem = finder.collectItems(textItems, tags, textItemsFiltered)
+        Map tagsToFind = prepareParamsTags(tags)
+        Store stItem = finder.collectItems(textItems, tagsToFind, textItemsFiltered)
 
 
         // --- Заполнение свойств найденных слов
@@ -86,6 +88,29 @@ class Item_list extends RgmMdbUtils {
 
 
     // region Внутренние методы
+
+
+    private Map prepareParamsTags(Map tags) {
+        if (tags.size() == 0) {
+            return null
+        } else if (tags.get("kaz") != null) {
+            tags = [
+                    (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_kaz,
+                    (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_kaz_rus,
+            ]
+            return tags
+        } else if (tags.get("eng") != null) {
+            tags = [
+                    (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_eng,
+                    (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_eng_rus,
+            ]
+            return tags
+        } else {
+            return null
+        }
+
+    }
+
 
     /**
      *

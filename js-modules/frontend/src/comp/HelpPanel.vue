@@ -1,6 +1,6 @@
 <template>
     <div v-if="visibleCount > 0"
-         class="help-panel-container q-mx-xs row">
+         class="help-panel-container row q-gutter-x-sm">
         <template v-for="helpKey in helpKeys">
             <HelpItem :helpKey="helpKey"/>
         </template>

@@ -113,11 +113,18 @@ class UtWord {
         word = word.replace(":", "")
         word = word.replace("/", "")
         word = word.replace("-", "")
+        word = word.replace("+", "")
         word = word.replace("_", "")
         word = word.replace("(", "")
         word = word.replace(")", "")
+        word = word.replace("[", "")
+        word = word.replace("]", "")
+        word = word.replace("{", "")
+        word = word.replace("}", "")
         word = word.replace("!", "")
         word = word.replace("?", "")
+        word = word.replace("`", "")
+        word = word.replace("'", "")
 
         //
         if (word.length() == 0)

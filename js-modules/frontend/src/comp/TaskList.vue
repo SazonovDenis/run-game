@@ -4,8 +4,11 @@
 
         <template v-for="(taskItem, index) in tasks">
 
-            <q-slide-item @left="onLeft($event, taskItem)"
-                          @right="onRight($event, taskItem)">
+            <q-slide-item
+                v-if="isItemShown(taskItem)"
+                @left="onLeft($event, taskItem)"
+                @right="onRight($event, taskItem)"
+            >
 
                 <template v-slot:left
                           v-if="actionLeftSlide && actionLeftSlide.hidden !== true">

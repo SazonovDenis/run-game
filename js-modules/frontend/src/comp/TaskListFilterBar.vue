@@ -2,16 +2,6 @@
 
     <div class="row q-mb-sm">
 
-        <!--
-                <div>
-                    <input type="text" v-model="input1" @input="$emit('update:value1', input1)">
-                    <input type="text" v-model="inputSecond" @input="updateParentModel">
-                    <input type="text" v-model="input3" @input="updateParentModel">
-                    <input type="text" v-model="inputFour" @input="updateParentModel($event)">
-                    <input type="text" v-model="inputFilterText" @input="updateParent('filterText', $event.target.value)">
-                </div>
-        -->
-
         <RgmInputText
             v-model="inputFilterText"
             @update:modelValue="updateParent('filterText', $event)"
@@ -76,6 +66,10 @@
 
 import RgmInputText from "./RgmInputText"
 
+/**
+ * Панель фильтрации по тексту с сортировкой.
+ * Полезна при редактировании плана.
+ */
 export default {
 
     name: "TaskListFilterBar",
@@ -90,23 +84,10 @@ export default {
         sortField: null,
         showHidden: false,
         hiddenCount: 0,
-
-        /*
-                value1: String,
-                valueSecond: String,
-                value3: String,
-                valueFour: String,
-        */
     },
+
     data() {
         return {
-            /*
-                        input1: this.value1,
-                        inputSecond: this.valueSecond,
-                        input3: this.value3,
-                        inputFour: this.valueFour,
-            */
-
             inputFilterText: this.filterText || "",
             inputSortField: this.sortField || "",
             inputShowHidden: this.showHidden || false,
@@ -130,14 +111,6 @@ export default {
 
     methods: {
 
-        /*
-        updateParentModel(event) {
-            this.$emit('update:valueSecond', this.inputSecond);
-            this.$emit('update:value3', this.input3);
-            this.$emit('update:valueFour', this.inputFour);
-        },
-        */
-
         updateParent(valueModelName, value) {
             this.$emit('update:' + valueModelName, value)
         },
@@ -151,6 +124,7 @@ export default {
 
 
 }
+
 </script>
 
 

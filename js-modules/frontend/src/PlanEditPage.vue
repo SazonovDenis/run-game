@@ -9,6 +9,14 @@
     >
 
 
+        <input style="display: none;"
+               type="file"
+               accept="image/*"
+               ref="fileInput"
+               @change="onFileChoose"
+        >
+
+
         <!-- frameMode: editPlan -->
 
         <div v-if="frameMode==='editPlan'">
@@ -29,16 +37,16 @@
 
             <TaskListFilterBar
                 v-model:filterText="filterText"
-                v-model:sortField="sortField"
-                v-model:showHidden="showHidden"
-                v-model:hiddenCount="hiddenCount"
+                v-model:sortField="viewSettings.sortField"
+                v-model:showHidden="viewSettings.showHidden"
+                v-model:hiddenCount="viewSettings.hiddenCount"
             />
 
 
             <div>
 
                 <TaskList
-                    v-if="(!showHidden && visibleCount > 0) || (showHidden && hiddenCount > 0)"
+                    v-if="(!viewSettings.showHidden && visibleCount > 0) || (viewSettings.showHidden && hiddenCount > 0)"
                     :showLastItemPadding="true"
                     :showEdit="true"
                     :tasks="itemsExternal"
@@ -69,98 +77,43 @@
 
         <div v-show="canEditItemList() && frameMode==='addByText'">
 
-            <div class="row">
+            <div class="row" style="justify-content: end;">
 
                 <TextInputText
-                    style="flex-grow: 2"
                     ref="textInputText"
                     :planId="planId"
                     :items="itemsLoaded"
                     :isToolbarUsed="this.hiddenCountLoaded > 0"
+
+                    :filterTags="viewSettings.filterTags"
+
                     @itemsChange="itemsOnChange"
                     @itemsLoading="itemsOnLoading"
                     @paste="onTextInputPaste"
-                >
-
-                    <template v-slot:toolbar>
-                        <q-toggle
-                            v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
-                            v-model="showHiddenLoaded"
-                            :label="'Известные (' + this.hiddenCountLoaded + ')'"/>
-                    </template>
-
-                    <template v-slot:append>
-
-                        <!--
-                                            <q-btn icon="image"
-                                                   rounded
-                                                   color="secondary"
-                                                   _class="q-my-xnone q-mx-none"
-                                                   size="1.3rem"
-                                                   @click="clickImageBtn"/>
-                        -->
+                />
 
 
-                        <!--
-                        <q-icon v-if="!hasClipboardImage" name="folder-open"
-                                @click="clickFileChoose"/>
-                        -->
-
-                    </template>
-
-                </TextInputText>
+                <!-- -->
 
 
-                <input style="display: none;"
-                       type="file"
-                       accept="image/*"
-                       ref="fileInput"
-                       @change="onFileChoose"
-                >
+                <template v-if="this.itemsShouldLoad">
+                    <TaskListFilterBarView
+                        class="q-my-sm"
+                        v-model:tags="viewSettings.filterTags"
+                        v-model:showHidden="viewSettings.showHidden"
+                        :button_showHidden_show="this.hiddenCountLoaded > 0"
+                        :button_showHidden_text="'+' + this.hiddenCountLoaded"
+                        :onTagsChange="toggleKazXorEng"
+                    />
+                </template>
 
 
-                <!--
-                                ^c перекладывание контролов переключения фото/клавиатура и
-                                редактор/добавление
-                -->
+                <!-- -->
 
-                <!--
-                                <q-icon class="q-my-sm q-mx-xs q-pa-sm"
-                                        name="folder-open"
-                                        size="2rem"
-                                        style="background-color: silver; border-radius: 20.5rem;"
-                                        @click="clickFileChoose"/>
-                -->
 
                 <template v-if="!isModeView()">
 
                     <div>
-
-                        <!--
-                                                <q-btn
-                                                    v-if="canEditItemList() && this.frameMode !== 'addByText'"
-                                                    rounded
-                                                    color="yellow-10"
-                                                    class="q-my-xnone q-mx-xs"
-                                                    align="left"
-                                                    size="1.3rem"
-                                                    icon="keyboard"
-                                                    @click="this.setFrameMode('addByText')"
-                                                />
-                        -->
-
-
-                        <!--
-                                                <q-btn
-                                                    v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
-                                                    round dense
-                                                    color="yellow-8"
-                                                    class="q-ma-sm"
-                                                    size="1.2rem"
-                                                    icon="camera"
-                                                    @click="this.setFrameMode('addByPhoto')"
-                                                />
-                        -->
 
                         <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
                                 name="picture"
@@ -181,13 +134,14 @@
 
                 </template>
 
-
             </div>
 
 
             <!-- -->
 
+
             <HelpPanel class="q-mt-none q-mb-xs" :helpKey="getHelpKey()"/>
+
 
             <!-- -->
 
@@ -197,7 +151,7 @@
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
-                :filter="filterLoaded"
+                :filter="filter"
                 :actionLeftSlide="actionHide"
                 :messageNoItems="itemsIsLoading ? '' : 'Слова не найдены'"
             >
@@ -220,23 +174,14 @@
                 @itemsChange="itemsOnChange"
                 @itemClick="itemOnClick"
                 @fileChoose="clickFileChoose"
-            >
-
-                <template v-slot:toolbar>
-
-                    <q-toggle
-                        v-if="this.hideHiddenMode && this.hiddenCountLoaded > 0"
-                        v-model="showHiddenLoaded"
-                        :label="'Скрытые (' + this.hiddenCountLoaded + ')'"/>
-
-                </template>
-
-            </TextInputPhoto>
+            />
 
 
             <!-- -->
 
+
             <HelpPanel :helpKey="getHelpKey()"/>
+
 
             <!-- -->
 
@@ -452,22 +397,24 @@
 <script>
 
 import {daoApi} from "./dao"
-import MenuContainer from "./comp/MenuContainer"
-import TaskList from "./comp/TaskList"
-import TextInputPhoto from "./comp/TextInputPhoto"
-import TextInputText from "./comp/TextInputText"
-import TaskListFilterBar from "./comp/TaskListFilterBar"
-import HelpPanel from "./comp/HelpPanel"
 import {apx} from "./vendor"
 import utils from "./utils"
 import ctx from "./gameplayCtx"
+import dbConst from "./dao/dbConst"
+import MenuContainer from "./comp/MenuContainer"
+import HelpPanel from "./comp/HelpPanel"
+import TextInputPhoto from "./comp/TextInputPhoto"
+import TextInputText from "./comp/TextInputText"
+import TaskListFilterBar from "./comp/TaskListFilterBar"
+import TaskListFilterBarView from "./comp/TaskListFilterBarView"
+import TaskList from "./comp/TaskList"
 
 
 export default {
 
     components: {
-        MenuContainer, TaskListFilterBar, TextInputPhoto, TextInputText, TaskList,
-        HelpPanel
+        MenuContainer, HelpPanel, TaskListFilterBar, TaskListFilterBarView,
+        TextInputPhoto, TextInputText, TaskList,
     },
 
     props: {
@@ -552,9 +499,12 @@ export default {
             hiddenCountLoaded: 0,
 
             filterText: "",
-            sortField: "ratingAsc",
-            showHidden: false,
-            showHiddenLoaded: false,
+            viewSettings: {
+                sortField: "ratingAsc",
+                filterTags: {},
+                showHidden: false,
+                //showHiddenLoaded: false,
+            },
 
             actionHide: actionHide,
             actionDelete: actionDelete,
@@ -704,6 +654,93 @@ export default {
 
     methods: {
 
+        // Не допускает одновременного наличия двух языков: при ВКЛЮЧЕНИИ одного языка,
+        // остальные сбрасываются; при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
+        toggleKazXorEng(filterTags) {
+            if (filterTags.tagLastClicked === "kaz") {
+                delete filterTags["eng"]
+            } else if (filterTags.tagLastClicked === "eng") {
+                delete filterTags["kaz"]
+            }
+
+            ////////////////////////////
+            ////////////////////////////
+            ////////////////////////////
+            ////////////////////////////
+            // todo передалать по человечески: ищем сами, а не поручаем textInputText
+            ////////////////////////////
+            ////////////////////////////
+            ////////////////////////////
+            this.$refs.textInputText.load(this.$refs.textInputText.filterText)
+        },
+
+        filter(item) {
+            return this.machTags(item) && this.filterLoaded(item)
+        },
+
+        //^c + фильтра в результат поиска с учетом уже имеющегося фильтра
+
+        machTags(item) {
+            // Фильтр по тэгам не задан
+            // В filterTags всегда есть флаг tagLastClicked, поэтому для определения
+            // пустоты количество сравниваем с 1, а не с 0
+            let filterTagsCount = Object.keys(this.viewSettings.filterTags).length
+            if (!this.viewSettings.filterTags || filterTagsCount <= 1) {
+                return true
+            }
+
+
+            // Чтобы не было ошибок, если у плана нет тэгов
+            let planTags = item.tags
+            if (!planTags) {
+                planTags = []
+            }
+
+
+            // Если в фильтре значение тэга === true или строка, то значение тэга тэга
+            // у плана должно совпадать со значением, выставленым в фильтре.
+            //
+            // Если в фильтре значение тэга === false, то значение тэга тэга у плана
+            // должно быть false или отсутствовать.
+
+            //
+            let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
+            let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
+            let filterTag_sound = this.viewSettings.filterTags["word-sound"]
+            //
+            if (filterTag_sound === true) {
+                if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
+                    return false
+                }
+            }
+            //
+            if (filterTag_sound === false) {
+                if (planTag_question_datatype && (planTag_question_datatype === "word-sound" || planTag_answer_datatype === "word-sound")) {
+                    return false
+                }
+            }
+
+
+            /*
+                        //
+                        let planTag_translate_direction = planTags[dbConst.TagType_word_translate_direction]
+                        //
+                        let filterTag_eng = this.viewSettings.filterTags["eng"]
+                        if (filterTag_eng && (!planTag_translate_direction || planTag_translate_direction.indexOf("eng") === -1)) {
+                            return false
+                        }
+                        //
+                        let filterTag_kaz = this.viewSettings.filterTags["kaz"]
+                        if (filterTag_kaz && (!planTag_translate_direction || planTag_translate_direction.indexOf("kaz") === -1)) {
+                            return false
+                        }
+            */
+
+
+            //
+            return true
+        },
+
         getHelpKey() {
             if (!this.plan) {
                 if (this.itemsAdd.length === 0) {
@@ -755,15 +792,17 @@ export default {
             return this.doEditItemList && (!this.plan || this.plan.isOwner === true)
         },
 
-        selectAll() {
-            let itemsAdd = []
-            for (let taskItem of this.itemsLoaded) {
-                if ((taskItem.isHidden && this.showHiddenLoaded) || (!taskItem.isHidden && !this.showHiddenLoaded)) {
-                    itemsAdd.push(taskItem)
-                }
-            }
-            this.itemsAddItems(itemsAdd)
-        },
+        /*
+                selectAll() {
+                    let itemsAdd = []
+                    for (let taskItem of this.itemsLoaded) {
+                        if ((taskItem.isHidden && this.viewSettings.showHiddenLoaded) || (!taskItem.isHidden && !this.viewSettings.showHiddenLoaded)) {
+                            itemsAdd.push(taskItem)
+                        }
+                    }
+                    this.itemsAddItems(itemsAdd)
+                },
+        */
 
         calcHiddenCountExternal() {
             this.hiddenCount = 0
@@ -793,11 +832,34 @@ export default {
         checkShowHiddenMode() {
             // Если скрытых нет, то выключаем режим "показать скрытые"
             if (this.hiddenCount === 0) {
-                this.showHidden = false
+                //this.viewSettings.showHidden = false
             }
+
+            /*
+                        if (this.hiddenCountLoaded === 0) {
+                            this.viewSettings.showHiddenLoaded = false
+                        }
+            */
+
+
+            ////////////////////////
+            ////////////////////////
+            ////////////////////////
+            ////////////////////////
+            ////////////////////////
             if (this.hiddenCountLoaded === 0) {
-                this.showHiddenLoaded = false
+                //this.viewSettings.showHidden = false
+            } else {
+                let searchWords = this.$refs.textInputText.filterText.split(" ")
+                if ((this.itemsLoaded.length - this.hiddenCountLoaded) <= 2) {
+                    this.viewSettings.showHidden = true
+                } else if (searchWords.length <= 2) {
+                    this.viewSettings.showHidden = true
+                } else {
+                    this.viewSettings.showHidden = false
+                }
             }
+
         },
 
         checkViewMode() {
@@ -844,28 +906,32 @@ export default {
             this.checkShowHiddenMode()
         },
 
-        filterLoaded(taskItem) {
-            if (!this.hideHiddenMode) {
-                return true
-            }
+        filterLoaded(item) {
+            /*
+                        if (!this.hideHiddenMode) {
+                            return true
+                        }
+            */
 
-            if (taskItem.isHidden && !this.showHiddenLoaded) {
+            if (!this.viewSettings.showHidden && item.isHidden) {
                 return false
             }
 
-            if (!taskItem.isHidden && this.showHiddenLoaded) {
-                return false
-            }
+            /*
+                        if (!item.isHidden && this.viewSettings.showHidden) {
+                            return false
+                        }
+            */
 
             return true
         },
 
         filterExt(taskItem) {
-            if (taskItem.isHidden && !this.showHidden) {
+            if (taskItem.isHidden && !this.viewSettings.showHidden) {
                 return false
             }
 
-            if (!taskItem.isHidden && this.showHidden) {
+            if (!taskItem.isHidden && this.viewSettings.showHidden) {
                 return false
             }
 
@@ -994,7 +1060,7 @@ export default {
 
         itemHideMenuColor(taskItem) {
             if (taskItem.isHidden) {
-                return "indigo-1"
+                return "indigo-2"
             } else {
                 return "white"
             }

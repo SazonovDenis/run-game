@@ -1,28 +1,22 @@
 <template>
 
-    <div class="row q-ma-sm">
+    <RgmInputText
+        :type="getTypeInput()"
+        :class="'q-ma-sm rgm-item-grow ' + getClassInput()"
+        :loading="filterTextLoading"
+        placeholder="Поиск в словаре"
 
-        <RgmInputText
-            :type="getTypeInput()"
-            :class="getClassInput()"
-            :loading="filterTextLoading"
-            placeholder="Поиск в словаре"
+        v-model="filterText"
 
-            v-model="filterText"
+        ref="filterText"
+    >
 
-            ref="filterText"
-        >
+        <!-- Если родительский компонент захочет поставить что-то в конец -->
+        <template v-slot:append>
+            <slot name="append"/>
+        </template>
 
-            <!-- Если родительский компонент захочет поставить что-то в конец -->
-            <template v-slot:append>
-                <slot name="append"/>
-            </template>
-
-        </RgmInputText>
-
-        <slot name="toolbar"></slot>
-
-    </div>
+    </RgmInputText>
 
 </template>
 
@@ -42,6 +36,7 @@ export default {
         planId: null,
         items: {type: Array, default: []},
         isToolbarUsed: {type: Boolean},
+        filterTags: {}
     },
 
     data() {
@@ -56,6 +51,14 @@ export default {
         filterTextShouldLoad() {
             return this.filterText && this.filterText.length >= 2
         }
+
+    },
+
+    watch: {
+
+        async filterText(filterTextNow, filterTextPrior) {
+            this.load(filterTextNow)
+        },
 
     },
 
@@ -94,28 +97,13 @@ export default {
             this.$refs.filterText?.focus()
         },
 
-    },
-
-    async mounted() {
-        ctx.eventBus.on('itemsCleared', this.onItemsCleared)
-
-        //
-        this.doFocus()
-    },
-
-    unmounted() {
-        ctx.eventBus.off('itemsCleared', this.onItemsCleared)
-    },
-
-    watch: {
-
-        async filterText(filterTextNow, filterTextPrior) {
+        async load(filterTextNow) {
             // Новый поиск
             let items = []
 
             //
             if (this.filterTextShouldLoad) {
-                let resApi = await daoApi.loadStore("m/Item/findItems", [filterTextNow, this.planId], {
+                let resApi = await daoApi.loadStore("m/Item/findItems", [filterTextNow, this.planId, this.filterTags], {
                     waitShow: false,
                     onRequestState: (requestState) => {
                         if (requestState === "start") {
@@ -136,7 +124,7 @@ export default {
                 // Это важно, если пользователь печатает чаще, чем приходит ответ от сервера,
                 // (параметр debounce меньше, чем время ответа сервера).
                 // Тогда сюда приходят УСТАРЕВШИЕ результаты, которые надо отбросить в надежде на то,
-                // что ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
+                // что продолжающийся ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
                 if (filterTextNow !== this.filterText) {
                     return
                 }
@@ -150,8 +138,19 @@ export default {
 
             // Уведомим родителя
             this.$emit("itemsChange", this.filterTextShouldLoad)
-        },
+        }
 
+    },
+
+    async mounted() {
+        ctx.eventBus.on('itemsCleared', this.onItemsCleared)
+
+        //
+        this.doFocus()
+    },
+
+    unmounted() {
+        ctx.eventBus.off('itemsCleared', this.onItemsCleared)
     },
 
 }
@@ -161,11 +160,9 @@ export default {
 <style scoped>
 
 .input-wide {
-    width: 100%;
 }
 
 .input-narrow {
-    max-width: 12em;
 }
 
 </style>

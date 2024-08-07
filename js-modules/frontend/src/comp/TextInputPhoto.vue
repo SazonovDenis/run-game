@@ -144,7 +144,7 @@
 
 <script>
 
-import {apx} from "../vendor"
+import {jcBase} from "../vendor"
 import {daoApi} from "../dao"
 import ctx from "../gameplayCtx"
 import {TouchZoom} from "../TouchZoom"
@@ -210,7 +210,7 @@ export default {
     computed: {
 
         isDev() {
-            return apx.jcBase.cfg.envDev
+            return jcBase.cfg.envDev
         },
 
     },
@@ -565,7 +565,7 @@ export default {
             //
             let resApi
             try {
-                resApi = await daoApi.loadStore('m/Item/findStill', [dataImage, this.planId])
+                resApi = await daoApi.loadStore('m/Item/findStill', [dataImage, this.planId, {}])
             } finally {
                 // Чтобы после ошибки кнопки снова появились
                 this.searchDone = true

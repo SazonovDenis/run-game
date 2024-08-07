@@ -27,6 +27,13 @@
 }
 
 
+/* Элемент, расширяющийся среди своих соседей */
+.rgm-item-grow {
+  flex-grow: 10;
+  width: 5rem;
+}
+
+
 /* Можно самому устроить scroll-area */
 .scroll-area {
   position: absolute;
@@ -35,7 +42,6 @@
   _border: dotted red 1px;
   overflow: scroll;
 }
-
 
 /* Фикс для q-scroll-area, без него получается нулевой размер */
 .q-scroll-area {

@@ -3,7 +3,7 @@
     <div class="row filter-bar">
 
         <q-btn
-            v-show="!showSearch"
+            v-show="!expandFilterText"
             @click="elFilterText_show()" color="primary"
 
             class="q-mx-sm filter-bar-btn-search"
@@ -12,14 +12,13 @@
         />
 
         <RgmInputText
-            v-show="showSearch"
+            v-show="expandFilterText"
             :value="filterText"
             @update:modelValue="updateParent('filterText', $event)"
             @blur="elFilterText_blur"
             ref="elFilterText"
 
-            class="q-mx-sm"
-            style="max-width: 10em; flex-grow: 10;"
+            class="q-mx-sm rgm-item-grow"
             placeholder="Название"
         />
 
@@ -57,7 +56,7 @@
         </q-btn-dropdown>
         -->
 
-        <q-space/>
+        <q-space v-if="!expandFilterText"/>
 
         <div class="row q-mr-sm q-gutter-x-xs">
 
@@ -68,7 +67,6 @@
                 icon="star"
             />
 
-            <q-separator vertical/>
 
             <q-btn
                 @click="toggleTag_TrueNull('kaz')"
@@ -76,12 +74,14 @@
                 :outline="getOutline('kaz')"
                 label="Каз"
             />
+
             <q-btn
                 @click="toggleTag_TrueNull('eng')"
                 color="primary"
                 :outline="getOutline('eng')"
                 label="Анг"
             />
+
 
             <q-btn
                 @click="toggleTag_TrueFalseNull('word-sound')" color="orange-10"
@@ -130,7 +130,7 @@ export default {
             },
             */
 
-            showSearch: false,
+            expandFilterText: false,
         }
     },
 
@@ -138,12 +138,12 @@ export default {
 
         elFilterText_blur() {
             if (!this.filterText) {
-                this.showSearch = false
+                this.expandFilterText = false
             }
         },
         async elFilterText_show() {
-            this.showSearch = !this.showSearch
-            if (this.showSearch) {
+            this.expandFilterText = !this.expandFilterText
+            if (this.expandFilterText) {
                 await this.$nextTick()
                 this.$refs.elFilterText.focus()
             }

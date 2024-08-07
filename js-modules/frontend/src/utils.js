@@ -270,6 +270,45 @@ export default {
         month3: "три месяца",
     },
 
+    Langs_text: {
+        "rus": "Рус",
+        "eng": "Анг",
+        "kaz": "Каз",
+    },
+
+    Langs_color: {
+        "eng": "pink-2",
+        "kaz": "deep-purple-2",
+        "rus": "blue-grey-2",
+    },
+
+    Langs_color_dark: {
+        "eng": "pink-6",
+        "kaz": "deep-purple-6",
+        "rus": "blue-grey-6",
+    },
+
+    Tags_text: {
+        [dbConst.Tag_eng]: "Анг",
+        [dbConst.Tag_kaz]: "Каз",
+        [dbConst.Tag_rus]: "Рус",
+        [dbConst.Tag_eng_rus]: "Анг",
+        [dbConst.Tag_rus_eng]: "Анг",
+        [dbConst.Tag_kaz_rus]: "Каз",
+        [dbConst.Tag_rus_kaz]: "Каз",
+    },
+
+    Tags_color: {
+        [dbConst.Tag_eng]: "pink-2",
+        [dbConst.Tag_kaz]: "deep-purple-2",
+        [dbConst.Tag_rus]: "blue-grey-2",
+        [dbConst.Tag_eng_rus]: "pink-2",
+        [dbConst.Tag_rus_eng]: "pink-2",
+        [dbConst.Tag_kaz_rus]: "deep-purple-2",
+        [dbConst.Tag_rus_kaz]: "deep-purple-2",
+    },
+
+
     // Названия для ссылок ОТ пользователя
     // для одной записи
     dictLinkTypeFromRec: {

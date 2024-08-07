@@ -134,7 +134,6 @@ class Item_find_Test extends RgmBase_Test {
 
 
         //
-        //
         tags = [
                 (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_eng,
                 (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_eng_rus,

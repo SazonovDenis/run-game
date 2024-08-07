@@ -89,6 +89,9 @@
 
         <!-- Рейтинг факта -->
         <include name="Statistic.base"/>
+
+        <!-- Тэги факта -->
+        <field name="tag" parent="object"/>
     </domain>
 
 

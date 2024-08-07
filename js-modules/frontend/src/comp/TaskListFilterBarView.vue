@@ -8,16 +8,17 @@
 
             <q-btn
                 @click="toggleTag_TrueNull('kaz')"
-                color="primary"
+                :color="utils.Langs_color_dark['kaz']"
                 :outline="getOutline_tag('kaz')"
                 label="Каз"
             />
+
             <q-btn
                 @click="toggleTag_TrueNull('eng')"
-                color="primary"
+                :color="utils.Langs_color_dark['eng']"
                 :outline="getOutline_tag('eng')"
                 label="Анг"
-            />                                          
+            />
 
             <q-btn
                 :disabled="!button_showHidden_show"
@@ -46,6 +47,8 @@
 <script>
 
 
+import utils from "../utils"
+
 /**
  * Панель фильтрации по языкам и по известности
  * Полезна при поиске слов.
@@ -62,6 +65,10 @@ export default {
         onTagsChange: {type: Function, default: null},
         button_showHidden_show: {type: Boolean, default: false},
         button_showHidden_text: {type: String, default: null},
+    },
+
+    setup() {
+        return {utils}
     },
 
     data() {

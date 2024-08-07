@@ -70,14 +70,14 @@
 
             <q-btn
                 @click="toggleTag_TrueNull('kaz')"
-                color="primary"
+                :color="utils.Langs_color_dark['kaz']"
                 :outline="getOutline_tag('kaz')"
                 label="Каз"
             />
 
             <q-btn
                 @click="toggleTag_TrueNull('eng')"
-                color="primary"
+                :color="utils.Langs_color_dark['eng']"
                 :outline="getOutline_tag('eng')"
                 label="Анг"
             />
@@ -98,6 +98,7 @@
 <script>
 
 import RgmInputText from "./RgmInputText"
+import utils from "../utils"
 
 export default {
 
@@ -113,6 +114,10 @@ export default {
         tags: {type: Object, default: {}},
         favourite: {type: Boolean, default: false},
         onTagsChange: {type: Function, default: null},
+    },
+
+    setup() {
+        return {utils}
     },
 
     data() {

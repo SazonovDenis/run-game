@@ -5,15 +5,30 @@
         clickable v-ripple
     >
 
-        <q-item-section top avatar v-if="showAnswerResult">
+        <q-item-section v-if="showAnswerResult"
+                        top avatar>
             <TaskAnswerResult :item="item"/>
+        </q-item-section>
+
+
+        <q-item-section top avatar class="tag-position-hack">
+
+            <q-badge
+                v-if="item.tag"
+                class="q-mx-none"
+                text-color="black"
+                :color="getTagColor()"
+            >
+                {{ getTagText() }}
+            </q-badge>
+
         </q-item-section>
 
 
         <q-item-section>
 
-            <q-item-label overline
-                          :class="'question' + getItemClass(item)"
+            <q-item-label _overline
+                          :class="'row question' + getItemClass(item)"
                           v-if="isFactFirstAnswer(item, index)">
 
                 <TaskValue v-if="showTaskData"
@@ -27,15 +42,32 @@
             </q-item-label>
 
 
-            <q-item-label class="answer">
+            <q-item-label class="row">
 
-                <TaskValue v-if="showTaskData"
-                           :task="item.taskAnswer"
-                           :doShowText="true"/>
 
-                <TaskValue v-else
-                           :task="item.answer"
-                           :doShowText="true"/>
+                <!--
+                                <span class="tag-arrow">&rarr;</span>
+
+                                <q-badge
+                                    class="q-mr-xs"
+                                    text-color="black"
+                                    color="grey-3">
+                                    Рус
+                                </q-badge>
+                -->
+
+
+                <TaskValue
+                    class="answer"
+                    v-if="showTaskData"
+                    :task="item.taskAnswer"
+                    :doShowText="true"/>
+
+                <TaskValue
+                    class="answer"
+                    v-else
+                    :task="item.answer"
+                    :doShowText="true"/>
 
             </q-item-label>
 
@@ -78,14 +110,6 @@
                     </template>
 
                 </template>
-
-
-                <!--
-                <q-btn flat dense round
-                       icon="more-h"
-                       size="1.0em"
-                />
-                -->
 
             </div>
 
@@ -151,6 +175,7 @@
 <script>
 
 import utils from "../utils"
+import dbConst from "../dao/dbConst"
 import TaskValue from "./TaskValue"
 import TaskAnswerResult from "./TaskAnswerResult"
 import RaitingValue from "./RaitingValue"
@@ -191,10 +216,58 @@ export default {
         index: 0,
     },
 
+    setup() {
+        return {utils}
+    },
+
     methods: {
 
         ratingText(rating) {
             return utils.ratingText(rating)
+        },
+
+        getTagText() {
+            let text = ""
+
+            if (!this.item.tag) {
+                return ""
+            }
+
+            text = this.item.tag[dbConst.TagType_word_lang]
+            text = utils.Tags_text[text]
+            if (text) {
+                return text
+            }
+
+            text = this.item.tag[dbConst.TagType_word_translate_direction]
+            text = utils.Tags_text[text]
+            if (text) {
+                return text
+            }
+
+            return "?"
+        },
+
+        getTagColor() {
+            let color = ""
+
+            if (!this.item.tag) {
+                return ""
+            }
+
+            color = this.item.tag[dbConst.TagType_word_lang]
+            color = utils.Tags_color[color]
+            if (color) {
+                return color
+            }
+
+            color = this.item.tag[dbConst.TagType_word_translate_direction]
+            color = utils.Tags_color[color]
+            if (color) {
+                return color
+            }
+
+            return "?"
         },
 
         getItemClass(item) {
@@ -332,6 +405,12 @@ export default {
 
 .item-in-plan {
     _color: rgba(50, 100, 50, .9);
+}
+
+.tag-position-hack {
+    padding-right: 0 !important;
+    right: 0.5rem;
+    position: relative;
 }
 
 </style>

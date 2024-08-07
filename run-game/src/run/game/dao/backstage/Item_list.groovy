@@ -1,6 +1,6 @@
 package run.game.dao.backstage
 
-import jandcode.commons.*
+
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
@@ -240,7 +240,8 @@ class Item_list extends RgmMdbUtils {
             List<StoreRecord> lstItemFacts = factsByItems.get(item)
             if (lstItemFacts != null) {
                 for (StoreRecord recFact : lstItemFacts) {
-                    stFactRes.add(recFact)
+                    StoreRecord recFactRes = stFactRes.add(recFact)
+                    recFactRes.setValue("tag", recItem.getValue("tag"))
                 }
             }
         }
@@ -251,35 +252,6 @@ class Item_list extends RgmMdbUtils {
 
 
     // endregion
-
-    /**
-     * Ищем Item или Fact по фрагменту написания,
-     * среди наших словарных слов
-     *
-     * @param itemText фрагмент для поиска
-     * @return Store структуры "Item.find"
-     */
-/*
-    Store find(String text) {
-        text = text.toLowerCase().trim()
-
-        if (text.length() == 0) {
-            throw new XError("Строка для поиска не указана")
-        }
-
-        // Текст с разделителями?
-        Collection<String> lst = UtWord.filterAndSplitWord(text)
-
-        //
-        if (lst.size() > 1) {
-            // Ищем сразу много слов по полному написанию
-            return findText(lst)
-        } else {
-            // Ищем одно слово по слову или фрагменту
-            return findWord(text)
-        }
-    }
-*/
 
 
     // region sql

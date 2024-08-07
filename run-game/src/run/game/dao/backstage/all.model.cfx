@@ -19,7 +19,7 @@
 
         <field name="fact" parent="Fact/ref"/>
 
-        <field name="itemTag" parent="object"/>
+        <field name="tag" parent="object"/>
 
     </domain>
 
@@ -42,7 +42,7 @@
         <field name="factDataType" parent="Fact/dataType"/>
         <field name="factValue" parent="Fact/value"/>
 
-        <field name="factTag" parent="object"/>
+        <field name="tag" parent="object"/>
 
         <field name="item" parent="Item/id"/>
         <field name="itemValue" parent="Item/value"/>

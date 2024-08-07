@@ -32,4 +32,14 @@ export default {
     TagType_plan_question_datatype: 1011,    // Тип вопросов в плане
     TagType_plan_answer_datatype: 1012,      // Тип ответов в плане
 
+    Tag_eng: 100,
+    Tag_rus: 101,
+    Tag_kaz: 102,
+    Tag_eng_rus: 200,
+    Tag_rus_eng: 201,
+    Tag_rus_kaz: 202,
+    Tag_kaz_rus: 203,
+    Tag_eng_eng: 204,
+
+
 }

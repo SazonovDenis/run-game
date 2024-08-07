@@ -127,7 +127,7 @@ class Item_find extends BaseMdbUtils {
      * @param text список слов (очищенный)
      * @return Найденные слова: store со списком Item
      */
-    Store findTextExact(Collection<String> text, Map tags) {
+    Store findTextExact(Collection<String> text, Map tagsParam) {
         Store stItem = mdb.createStore("Item.find")
 
         // Формируем пары из продряд идущих слов.
@@ -143,25 +143,26 @@ class Item_find extends BaseMdbUtils {
         // Отберем среди text те слова, котрые есть в наших словарях
         Set<Long> setItems = new HashSet<>()
         for (String itemText : text) {
-            List<StoreRecord> recs = idxFacts.get(itemText)
-            if (recs != null) {
-                for (StoreRecord rec : recs) {
-                    long item = rec.getLong("item")
+            List<StoreRecord> recsFact = idxFacts.get(itemText)
+            if (recsFact != null) {
+                for (StoreRecord recFact : recsFact) {
+                    long itemId = recFact.getLong("item")
+                    long factId = recFact.getLong("id")
 
                     // Повторы не нужны
-                    if (setItems.contains(item)) {
+                    if (setItems.contains(itemId)) {
                         continue
                     }
 
                     // Фильтр по тэгам
                     boolean wasTagComparationTrue = true
-                    Map factTag = rec.getValue("factTag")
-                    if (factTag != null && tags != null && tags.size() != 0) {
+                    Map factTags = recFact.getValue("tag")
+                    if (factTags != null && tagsParam != null && tagsParam.size() != 0) {
                         wasTagComparationTrue = false
-                        for (Map.Entry entry : tags.entrySet()) {
+                        for (Map.Entry entry : tagsParam.entrySet()) {
                             long tagKey = entry.getKey()
                             long tagValue = entry.getValue()
-                            if (tagValue.equals(factTag.get(tagKey))) {
+                            if (tagValue.equals(factTags.get(tagKey))) {
                                 wasTagComparationTrue = true
                                 break
                             }
@@ -172,8 +173,12 @@ class Item_find extends BaseMdbUtils {
                     }
 
                     //
-                    stItem.add([id: item, value: rec.getValue("itemValue")])
-                    setItems.add(item)
+                    stItem.add([
+                            id   : itemId,
+                            value: recFact.getValue("itemValue"),
+                            tag  : factTags
+                    ])
+                    setItems.add(itemId)
                 }
             }
         }
@@ -228,6 +233,7 @@ class Item_find extends BaseMdbUtils {
         for (StoreRecord rec : stFactSpelling) {
             long itemId = rec.getLong("item")
             String value = rec.getString("itemValue")
+            Object factTags = rec.getValue("tag")
 
             // Сейчас - только слова НАЧИНАЮЩИЕСЯ на фрагмент
             if (!value.startsWith(word)) {
@@ -246,7 +252,11 @@ class Item_find extends BaseMdbUtils {
             count++
 
             //
-            stItem.add([id: itemId, value: value])
+            stItem.add([
+                    id   : itemId,
+                    value: value,
+                    tag  : factTags,
+            ])
             setItemsFound.add(itemId)
         }
 
@@ -257,6 +267,7 @@ class Item_find extends BaseMdbUtils {
             long item = rec.getLong("item")
             String factValue = rec.getString("factValue")
             String value = rec.getString("itemValue")
+            Object factTags = rec.getValue("tag")
 
             // Сейчас - только слова НАЧИНАЮЩИЕСЯ на фрагмент
             if (!factValue.startsWith(word)) {
@@ -275,7 +286,12 @@ class Item_find extends BaseMdbUtils {
             count++
 
             //
-            stItem.add([id: item, value: value, fact: rec.getValue("id")])
+            stItem.add([
+                    id   : item,
+                    value: value,
+                    fact : rec.getValue("id"),
+                    tag  : factTags,
+            ])
             setItemsFound.add(item)
         }
 
@@ -287,6 +303,7 @@ class Item_find extends BaseMdbUtils {
         for (StoreRecord rec : stFactSpelling) {
             long item = rec.getLong("item")
             String value = rec.getString("itemValue")
+            Object factTags = rec.getValue("tag")
 
             // Сейчас - только слова СОДЕРЖАЩИЕ фрагмент
             if (value.startsWith(word)) {
@@ -305,7 +322,11 @@ class Item_find extends BaseMdbUtils {
             count++
 
             //
-            stItem.add([id: item, value: rec.getValue("itemValue")])
+            stItem.add([
+                    id   : item,
+                    value: rec.getValue("itemValue"),
+                    tag  : factTags,
+            ])
             setItemsFound.add(item)
         }
 
@@ -316,6 +337,7 @@ class Item_find extends BaseMdbUtils {
             long item = rec.getLong("item")
             String factValue = rec.getString("factValue")
             String value = rec.getString("itemValue")
+            Object factTags = rec.getValue("tag")
 
             // Сейчас - только слова СОДЕРЖАЩИЕ фрагмент
             if (factValue.startsWith(word)) {
@@ -334,7 +356,12 @@ class Item_find extends BaseMdbUtils {
             count++
 
             //
-            stItem.add([id: item, value: value, fact: rec.getValue("id")])
+            stItem.add([
+                    id   : item,
+                    value: value,
+                    fact : rec.getValue("id"),
+                    tag  : factTags,
+            ])
             setItemsFound.add(item)
         }
 

@@ -678,8 +678,6 @@ export default {
             return this.machTags(item) && this.filterLoaded(item)
         },
 
-        //^c + фильтра в результат поиска с учетом уже имеющегося фильтра
-
         machTags(item) {
             // Фильтр по тэгам не задан
             // В filterTags всегда есть флаг tagLastClicked, поэтому для определения

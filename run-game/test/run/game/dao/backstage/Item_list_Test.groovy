@@ -1,6 +1,6 @@
 package run.game.dao.backstage
 
-import jandcode.commons.UtFile
+import jandcode.commons.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
@@ -40,6 +40,46 @@ class Item_list_Test extends RgmBase_Test {
 
         println()
         println("findItems: '" + word_text + "'")
+        mdb.outTable(stFact)
+    }
+
+    @Test
+    void findItems_tag() {
+        Map tags = [kaz: true]
+        findItems_internal(tags)
+
+        println()
+        tags = [eng: true]
+        findItems_internal(tags)
+    }
+
+
+    void findItems_internal(Map tags) {
+        Store stFact
+        Item_list lst = mdb.create(Item_list)
+
+
+        //
+        stFact = lst.findItems(word_0, 0, tags)
+
+        println()
+        println("findItems: '" + word_0 + "', tags: " + tags)
+        mdb.outTable(stFact)
+
+
+        //
+        stFact = lst.findItems(word_1, 0, tags)
+
+        println()
+        println("findItems: '" + word_1 + "', tags: " + tags)
+        mdb.outTable(stFact)
+
+
+        //
+        stFact = lst.findItems(word_text, 0, tags)
+
+        println()
+        println("findItems: '" + word_text + "', tags: " + tags)
         mdb.outTable(stFact)
     }
 

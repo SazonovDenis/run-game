@@ -3,6 +3,7 @@ package run.game.dao.backstage
 import jandcode.commons.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
+import run.game.dao.*
 
 class Fact_list extends BaseMdbUtils {
 
@@ -14,12 +15,12 @@ class Fact_list extends BaseMdbUtils {
 
     public Store loadFactsByDataTypeWithTags(long dataType, Collection tagTypes) {
         Store st = mdb.createStore("Fact.list")
-        Store st1 = mdb.loadQuery(sqlFactByDataType(tagTypes), [dataType: dataType])
-        for (StoreRecord rec : st1) {
+        Store stLoaded = mdb.loadQuery(sqlFactByDataType(tagTypes), [dataType: dataType])
+        for (StoreRecord rec : stLoaded) {
             Long tagType = rec.getLong("tagType")
-            Long tag = rec.getLong("tag")
+            Long tagValue = rec.getLong("tagValue")
             StoreRecord recNew = st.add(rec.getValues())
-            recNew.setValue("factTag", [(tagType): tag])
+            recNew.setValue("tag", [(tagType): tagValue])
         }
         return st
     }
@@ -44,7 +45,14 @@ class Fact_list extends BaseMdbUtils {
 
     public Store findFactsByValueDataType(String value, long dataType) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlFactsByValueDataTypeLike(), [value: "%" + value + "%", dataType: dataType])
+        Collection tagTypes = Arrays.asList(RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction)
+        Store stLoaded = mdb.loadQuery(sqlFactsByValueDataTypeLike(tagTypes), [value: "%" + value + "%", dataType: dataType])
+        for (StoreRecord rec : stLoaded) {
+            Long tagType = rec.getLong("tagType")
+            Long tagValue = rec.getLong("tagValue")
+            StoreRecord recNew = st.add(rec.getValues())
+            recNew.setValue("tag", [(tagType): tagValue])
+        }
         return st
     }
 
@@ -54,7 +62,14 @@ class Fact_list extends BaseMdbUtils {
         }
 
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlFactsByValueDataTypeLikeByTags(tags), [value: "%" + value + "%", dataType: dataType])
+        Store stLoaded = mdb.loadQuery(sqlFactsByValueDataTypeLikeByTags(tags), [value: "%" + value + "%", dataType: dataType])
+        for (StoreRecord rec : stLoaded) {
+            Long tagType = rec.getLong("tagType")
+            Long tagValue = rec.getLong("tagValue")
+            StoreRecord recNew = st.add(rec.getValues())
+            recNew.setValue("tag", [(tagType): tagValue])
+        }
+
         return st
     }
 
@@ -152,8 +167,8 @@ select
     Fact.dataType factDataType,
     Fact.value factValue,
     
-    FactTag.tag,
-    Tag.tagType 
+    Tag.tagType, 
+    FactTag.tag tagValue
 
 from
     Item
@@ -251,7 +266,9 @@ order by
 """
     }
 
-    String sqlFactsByValueDataTypeLike() {
+    String sqlFactsByValueDataTypeLike(Collection tagTypes) {
+        String tagTypesStr = UtString.join(tagTypes, ",")
+
         return """
 select
     Item.id item,
@@ -260,11 +277,21 @@ select
     Fact.id,
     Fact.id fact,
     Fact.dataType factDataType,
-    Fact.value factValue
+    Fact.value factValue,
+        
+    Tag.tagType, 
+    FactTag.tag tagValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
+    left join FactTag on (
+        FactTag.fact = Fact.id
+    )
+    left join Tag on (
+        FactTag.tag = Tag.id and
+        Tag.tagType in (${tagTypesStr})
+    )
 
 where
     Fact.value like :value and
@@ -286,7 +313,10 @@ select
     Fact.id,
     Fact.id fact,
     Fact.dataType factDataType,
-    Fact.value factValue
+    Fact.value factValue,
+                   
+    Tag.tagType, 
+    FactTag.tag tagValue
 
 from
     Item
@@ -294,6 +324,9 @@ from
     join FactTag on (
         FactTag.fact = Fact.id and
         FactTag.tag in (${tagsStr})
+    )
+    join Tag on (
+        FactTag.tag = Tag.id
     )
 
 where

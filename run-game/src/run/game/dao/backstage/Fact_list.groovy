@@ -16,12 +16,7 @@ class Fact_list extends BaseMdbUtils {
     public Store loadFactsByDataTypeWithTags(long dataType, Collection tagTypes) {
         Store st = mdb.createStore("Fact.list")
         Store stLoaded = mdb.loadQuery(sqlFactByDataType(tagTypes), [dataType: dataType])
-        for (StoreRecord rec : stLoaded) {
-            Long tagType = rec.getLong("tagType")
-            Long tagValue = rec.getLong("tagValue")
-            StoreRecord recNew = st.add(rec.getValues())
-            recNew.setValue("tag", [(tagType): tagValue])
-        }
+        fillTag(stLoaded, st)
         return st
     }
 
@@ -47,12 +42,7 @@ class Fact_list extends BaseMdbUtils {
         Store st = mdb.createStore("Fact.list")
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction)
         Store stLoaded = mdb.loadQuery(sqlFactsByValueDataTypeLike(tagTypes), [value: "%" + value + "%", dataType: dataType])
-        for (StoreRecord rec : stLoaded) {
-            Long tagType = rec.getLong("tagType")
-            Long tagValue = rec.getLong("tagValue")
-            StoreRecord recNew = st.add(rec.getValues())
-            recNew.setValue("tag", [(tagType): tagValue])
-        }
+        fillTag(stLoaded, st)
         return st
     }
 
@@ -63,12 +53,7 @@ class Fact_list extends BaseMdbUtils {
 
         Store st = mdb.createStore("Fact.list")
         Store stLoaded = mdb.loadQuery(sqlFactsByValueDataTypeLikeByTags(tags), [value: "%" + value + "%", dataType: dataType])
-        for (StoreRecord rec : stLoaded) {
-            Long tagType = rec.getLong("tagType")
-            Long tagValue = rec.getLong("tagValue")
-            StoreRecord recNew = st.add(rec.getValues())
-            recNew.setValue("tag", [(tagType): tagValue])
-        }
+        fillTag(stLoaded, st)
 
         return st
     }
@@ -91,10 +76,31 @@ class Fact_list extends BaseMdbUtils {
         return rec
     }
 
+    StoreRecord loadFactWithTags(long idFact, Collection tagTypes) {
+        StoreRecord rec = mdb.createStoreRecord("Fact.list")
+        StoreRecord recLoaded = mdb.loadQueryRecord(sqlFactWithTags(tagTypes), [id: idFact])
+        //
+        rec.setValues(recLoaded)
+        Long tagType = recLoaded.getLong("tagType")
+        Long tagValue = recLoaded.getLong("tagValue")
+        rec.setValue("tag", [(tagType): tagValue])
+        //
+        return rec
+    }
+
     StoreRecord loadItem(long idItem) {
         StoreRecord rec = mdb.createStoreRecord("Item")
         mdb.loadQueryRecord(rec, sqlItem(), [id: idItem])
         return rec
+    }
+
+    void fillTag(Store stLoaded, Store st) {
+        for (StoreRecord recLoaded : stLoaded) {
+            StoreRecord recNew = st.add(recLoaded.getValues())
+            Long tagType = recLoaded.getLong("tagType")
+            Long tagValue = recLoaded.getLong("tagValue")
+            recNew.setValue("tag", [(tagType): tagValue])
+        }
     }
 
     String sqlFact() {
@@ -110,6 +116,40 @@ select
 from
     Item
     join Fact on (Fact.item = Item.id)
+
+where
+    Fact.id = :id
+
+order by
+    Fact.id
+"""
+    }
+
+    String sqlFactWithTags(Collection tagTypes) {
+        String tagTypesStr = UtString.join(tagTypes, ",")
+
+        return """
+select
+    Item.id item,
+    Item.value itemValue,
+    
+    Fact.id,
+    Fact.dataType factDataType,
+    Fact.value factValue,
+    
+    Tag.tagType, 
+    FactTag.tag tagValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+    left join FactTag on (
+        FactTag.fact = Fact.id
+    )
+    left join Tag on (
+        FactTag.tag = Tag.id and
+        Tag.tagType in (${tagTypesStr})
+    )
 
 where
     Fact.id = :id

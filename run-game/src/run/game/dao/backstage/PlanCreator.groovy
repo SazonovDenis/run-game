@@ -195,7 +195,7 @@ class PlanCreator extends RgmMdbUtils  {
         //
         Plan_upd planUpd = mdb.create(Plan_upd)
         //
-        long planId = planUpd.insInternal(recPlan.getValues(), DataUtils.storeToList(stPlanFact), DataUtils.storeToList(stPlanTag), null)
+        long planId = planUpd.insPlanInternal(recPlan.getValues(), DataUtils.storeToList(stPlanFact), DataUtils.storeToList(stPlanTag), null)
 
         //
         return planId

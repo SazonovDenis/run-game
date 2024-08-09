@@ -1,6 +1,7 @@
 package run.game.dao.game
 
 import jandcode.commons.datetime.*
+import jandcode.commons.error.*
 import jandcode.commons.rnd.*
 import jandcode.commons.rnd.impl.*
 import jandcode.core.dao.*
@@ -198,6 +199,15 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         for (StoreRecord recTask : stPlanTask) {
             long factQuestion = recTask.getLong("factQuestion")
             long factAnswer = recTask.getLong("factAnswer")
+            long task = recTask.getLong("task")
+
+            //
+            if (task == 0) {
+                mdb.outTable(recTask)
+                throw new XError("Не найдено задание для фактов, factQuestion: " + factQuestion + ", factAnswer: " + factAnswer + ", plan: " + idPlan)
+            }
+
+            //
             String key = factQuestion + "_" + factAnswer
 
             // Отбираем задания только среди выбранных фактов
@@ -222,7 +232,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
             mdb.insertRec("GameTask", [
                     game: idGame,
                     usr : idUsr,
-                    task: recTask.getLong("task"),
+                    task: task,
             ])
 
             // Набрали заданий на игру сколько нужно?

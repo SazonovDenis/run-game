@@ -24,6 +24,7 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
 
     //
     private Map<Object, List<StoreRecord>> idxFacts;
+    private Store stFact;
     private Store stFactSpelling;
     private Store stFactTranslate;
     private StoreIndex idxOcrStopWords;
@@ -44,6 +45,11 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     @Override
     public Map<Object, List<StoreRecord>> getIdxFacts() {
         return idxFacts;
+    }
+
+    @Override
+    public Store getStFact() {
+        return stFact;
     }
 
     @Override
@@ -72,7 +78,7 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
         stFactTranslate = list.loadFactsByDataTypeWithTags(RgmDbConst.DataType_word_translate, Arrays.asList(RgmDbConst.TagType_word_translate_direction));
 
         //
-        Store stFact = mdb.createStore("Fact.list");
+        stFact = mdb.createStore("Fact.list");
         stFactSpelling.copyTo(stFact);
         stFactTranslate.copyTo(stFact);
         idxFacts = StoreUtils.collectGroupBy_records(stFact, "factValue");

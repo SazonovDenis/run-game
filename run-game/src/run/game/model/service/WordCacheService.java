@@ -15,6 +15,9 @@ public interface WordCacheService extends Comp {
      */
     Map<Object, List<StoreRecord>> getIdxFacts();
 
+
+    Store getStFact();
+
     Store getStFactSpelling();
 
     Store getStFactTranslate();

@@ -293,25 +293,39 @@ class Server_Test extends RgmBase_Test {
 
         //
         if (stPlanFacts.size() == 0) {
-            Plan_upd upd = mdb.create(Plan_upd)
+            mdb.startTran()
+            try {
+                Plan_upd upd = mdb.create(Plan_upd)
 
-            //
-            Store stFact1 = lst.findItems("cre", idPlan)
-            mdb.outTable(stFact1)
-            upd.addFact(idPlan, DataUtils.storeToList(stFact1))
+                //
+                Store stFact1 = lst.findItems("сыр", idPlan, [kaz: true])
+                mdb.outTable(stFact1)
+                upd.addFact(idPlan, DataUtils.storeToList(stFact1))
 
-            //
-            Store stFact2 = lst.findItems("fru", idPlan)
-            mdb.outTable(stFact2)
-            upd.addFact(idPlan, DataUtils.storeToList(stFact2))
+                //
+                stFact1 = lst.findItems("cre", idPlan, [:])
+                mdb.outTable(stFact1)
+                upd.addFact(idPlan, DataUtils.storeToList(stFact1))
+
+                //
+                Store stFact2 = lst.findItems("fru", idPlan, [:])
+                mdb.outTable(stFact2)
+                upd.addFact(idPlan, DataUtils.storeToList(stFact2))
+
+                //
+                mdb.commit()
+
+            } catch (Exception e) {
+                mdb.rollback()
+                throw e
+            }
         }
-
     }
 
     @Test
     void test_Find_ora() {
         Item_list lst = mdb.create(Item_list)
-        Store stFact = lst.findItems("ora", 0)
+        Store stFact = lst.findItems("ora", 0, [:])
         mdb.outTable(stFact)
     }
 

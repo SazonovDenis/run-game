@@ -29,7 +29,7 @@ class Plan_upd extends RgmMdbUtils {
         Map usrPlan = [usr: idUsr, isOwner: true]
 
         // Добавляем план в БД
-        long idPlan = insInternal(plan, planFact, planTag, usrPlan)
+        long idPlan = insPlanInternal(plan, planFact, planTag, usrPlan)
 
         //
         return idPlan
@@ -252,7 +252,7 @@ class Plan_upd extends RgmMdbUtils {
     }
 
 
-    long insInternal(Map plan, List<Map> planFact, List<Map> planTag, Map usrPlan) {
+    long insPlanInternal(Map plan, List<Map> planFact, List<Map> planTag, Map usrPlan) {
         // Plan
         StoreRecord recPlan = mdb.createStoreRecord("Plan", plan)
         long idPlan = mdb.insertRec("Plan", recPlan)

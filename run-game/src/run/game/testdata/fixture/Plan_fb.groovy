@@ -30,11 +30,20 @@ class Plan_fb extends BaseFixtureBuilder {
             println(planText + " [" + planName + "]")
 
             // -- Plan
-            long planId = planCreator.factsCombinations_to_Plan(planText, fileNameFactsCombinations)
+            mdb.startTran()
+            try {
+                long planId = planCreator.factsCombinations_to_Plan(planText, fileNameFactsCombinations)
 
-            // -- PlanTag
-            for (String planTag : planTags.split(",")) {
-                mdb.insertRec("PlanTag", [plan: planId, tag: planTag])
+                // -- PlanTag
+                for (String planTag : planTags.split(",")) {
+                    mdb.insertRec("PlanTag", [plan: planId, tag: planTag])
+                }
+
+                mdb.commit()
+
+            } catch (Exception e) {
+                mdb.rollback()
+                throw e
             }
 
         }

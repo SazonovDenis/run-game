@@ -88,7 +88,7 @@ public class Usr_upd extends RgmMdbUtils {
 
         // План "Мои слова"
         Plan_upd planUpd = mdb.create(Plan_upd)
-        planUpd.insInternal(
+        planUpd.insPlanInternal(
                 [text: "Мои слова", isPublic: false],
                 [],
                 [[tag: RgmDbConst.Tag_plan_access_default]],

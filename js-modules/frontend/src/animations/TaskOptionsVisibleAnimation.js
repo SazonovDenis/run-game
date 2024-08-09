@@ -6,7 +6,7 @@ class TaskOptionsVisibleAnimation extends AnimationBase {
     name = "TaskOptionsVisibleAnimation"
 
     MAX_ShowTaskOptions = 1500
-    MAX_TaskOptionVisible = 300
+    MAX_TaskOptionVisible = 10
 
     valShowTaskOptions = 0
     valTaskOptionVisible = 0

@@ -59,7 +59,7 @@ export default {
             //
             if (ctx.globalState.game.done) {
                 apx.showFrame({
-                    frame: '/gameStatistic', props: {prop1: 1}
+                    frame: '/gameStatistic',
                 })
             }
         },

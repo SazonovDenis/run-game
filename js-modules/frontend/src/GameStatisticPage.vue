@@ -242,7 +242,7 @@ export default {
             await gameplay.gameStart(this.localState.game.plan)
 
             apx.showFrame({
-                frame: '/game', props: {prop1: 1}
+                frame: '/game',
             })
         },
     },

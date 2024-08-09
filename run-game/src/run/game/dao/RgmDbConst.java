@@ -15,6 +15,7 @@ public class RgmDbConst {
     public static long Tag_word_translate_direction_rus_eng = 201;
     public static long Tag_word_translate_direction_rus_kaz = 202;
     public static long Tag_word_translate_direction_kaz_rus = 203;
+
     public static long Tag_plan_access_default = 300;              // План по умолчанию
 
     public static long TagType_word_lang = 1001;                // Язык слова

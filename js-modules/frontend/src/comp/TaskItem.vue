@@ -11,20 +11,6 @@
         </q-item-section>
 
 
-        <q-item-section top avatar class="tag-position-hack">
-
-            <q-badge
-                v-if="item.tag"
-                class="q-mx-none"
-                text-color="black"
-                :color="getTagColor()"
-            >
-                {{ getTagText() }}
-            </q-badge>
-
-        </q-item-section>
-
-
         <q-item-section>
 
             <q-item-label _overline
@@ -43,18 +29,6 @@
 
 
             <q-item-label class="row">
-
-
-                <!--
-                                <span class="tag-arrow">&rarr;</span>
-
-                                <q-badge
-                                    class="q-mr-xs"
-                                    text-color="black"
-                                    color="grey-3">
-                                    Рус
-                                </q-badge>
-                -->
 
 
                 <TaskValue
@@ -175,7 +149,6 @@
 <script>
 
 import utils from "../utils"
-import dbConst from "../dao/dbConst"
 import TaskValue from "./TaskValue"
 import TaskAnswerResult from "./TaskAnswerResult"
 import RaitingValue from "./RaitingValue"
@@ -226,50 +199,6 @@ export default {
             return utils.ratingText(rating)
         },
 
-        getTagText() {
-            let text = ""
-
-            if (!this.item.tag) {
-                return ""
-            }
-
-            text = this.item.tag[dbConst.TagType_word_lang]
-            text = utils.Tags_text[text]
-            if (text) {
-                return text
-            }
-
-            text = this.item.tag[dbConst.TagType_word_translate_direction]
-            text = utils.Tags_text[text]
-            if (text) {
-                return text
-            }
-
-            return "?"
-        },
-
-        getTagColor() {
-            let color = ""
-
-            if (!this.item.tag) {
-                return ""
-            }
-
-            color = this.item.tag[dbConst.TagType_word_lang]
-            color = utils.Tags_color[color]
-            if (color) {
-                return color
-            }
-
-            color = this.item.tag[dbConst.TagType_word_translate_direction]
-            color = utils.Tags_color[color]
-            if (color) {
-                return color
-            }
-
-            return "?"
-        },
-
         getItemClass(item) {
             if (!item) {
                 return ""
@@ -277,7 +206,7 @@ export default {
 
             let classStr = ""
             if (item.isHidden) {
-                classStr = classStr + " item-is-hidden"
+                //classStr = classStr + " item-is-hidden"
 
             } else if (item.isInPlan) {
                 //classStr = classStr + " item-in-plan"
@@ -407,10 +336,5 @@ export default {
     _color: rgba(50, 100, 50, .9);
 }
 
-.tag-position-hack {
-    padding-right: 0 !important;
-    right: 0.5rem;
-    position: relative;
-}
 
 </style>

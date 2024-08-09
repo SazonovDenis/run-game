@@ -7,22 +7,24 @@
         <div class="row q-mx-sm q-gutter-x-xs">
 
             <q-btn
+                no-caps
                 @click="toggleTag_TrueNull('kaz')"
                 :color="utils.Langs_color_dark['kaz']"
                 :outline="getOutline_tag('kaz')"
-                label="Каз"
+                :label="utils.Langs_text['kaz']"
             />
 
             <q-btn
+                no-caps
                 @click="toggleTag_TrueNull('eng')"
                 :color="utils.Langs_color_dark['eng']"
                 :outline="getOutline_tag('eng')"
-                label="Анг"
+                :label="utils.Langs_text['eng']"
             />
 
             <q-btn
                 :disabled="!button_showHidden_show"
-                class="rgm-disable-hard"
+                class="rgm-style"
                 :color="getColor_showHidden()"
                 :outline="getOutline_showHidden()"
                 text-color="indigo-10"
@@ -62,7 +64,9 @@ export default {
     props: {
         tags: {type: Object, default: {}},
         showHidden: {type: Boolean, default: false},
+
         onTagsChange: {type: Function, default: null},
+
         button_showHidden_show: {type: Boolean, default: false},
         button_showHidden_text: {type: String, default: null},
     },
@@ -114,8 +118,6 @@ export default {
                 tags[tag] = true
             }
             //
-            tags.tagLastClicked = tag
-            //
             this.updateParent("tags", tags)
         },
 
@@ -127,13 +129,11 @@ export default {
             } else {
                 tags[tag] = true
             }
-            //
-            tags.tagLastClicked = tag
 
             // Позволяет родительскому компоненту доработать напильником значения,
             // во исполнение его бизнес-логики
             if (this.onTagsChange) {
-                this.onTagsChange(tags)
+                this.onTagsChange(tags, tag)
             }
 
             //

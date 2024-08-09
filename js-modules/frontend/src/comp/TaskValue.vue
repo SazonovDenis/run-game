@@ -12,16 +12,6 @@
                     {{ task.valueTranslate }}
                 </div>
 
-<!--
-                <q-badge
-                    style="font-size: 0.5rem"
-                    class="q-ml-xs"
-                    text-color="white"
-                    color="primary">
-                    Анг
-                </q-badge>
--->
-
                 <div class="task-sound q-ml-xs">
                     <template v-if="soundPlaying">
                         <q-icon name="speaker-on" class="q-pb-xs" color="orange-10"
@@ -68,7 +58,7 @@
 <script>
 
 import utils from '../utils'
-import dbConst from "run-game-frontend/src/dao/dbConst"
+import dbConst from "../dao/dbConst"
 
 
 /**

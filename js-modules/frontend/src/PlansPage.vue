@@ -61,7 +61,7 @@
 
             <q-btn
                 round no-caps class="q-py-none q-px-md"
-                color="purple-4"
+                color="positive"
                 icon="gallery-add"
                 _label="Создать свой уровень"
                 size="1.2em"
@@ -172,12 +172,13 @@ export default {
             return ["help.plans", "help.plans.default"]
         },
 
-        // Не допускает одновременного наличия двух языков: при ВКЛЮЧЕНИИ одного языка,
-        // остальные сбрасываются; при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
-        toggleKazXorEng(filterTags) {
-            if (filterTags.tagLastClicked === "kaz") {
+        // Не допускает одновременного наличия двух языков:
+        // при ВКЛЮЧЕНИИ одного языка, остальные сбрасываются;
+        // при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
+        toggleKazXorEng(filterTags, tagLastClicked) {
+            if (tagLastClicked === "kaz") {
                 delete filterTags["eng"]
-            } else if (filterTags.tagLastClicked === "eng") {
+            } else if (tagLastClicked === "eng") {
                 delete filterTags["kaz"]
             }
         },
@@ -295,10 +296,8 @@ export default {
 
         machTags(plan) {
             // Фильтр по тэгам не задан
-            // В filterTags всегда есть флаг tagLastClicked, поэтому для определения
-            // пустоты количество сравниваем с 1, а не с 0
             let filterTagsCount = Object.keys(this.viewSettings.filterTags).length
-            if (!this.viewSettings.filterTags || filterTagsCount <= 1) {
+            if (!this.viewSettings.filterTags || filterTagsCount === 0) {
                 return true
             }
 
@@ -413,6 +412,7 @@ export default {
     },
 
     async mounted() {
+        // Настройки фильрации
         let globalViewSettings = ctx.getGlobalState().viewSettings
         if (globalViewSettings.plans) {
             this.viewSettings = globalViewSettings.plans
@@ -420,7 +420,7 @@ export default {
             this.settingsPreventWatch = true
         }
 
-        //
+        // Список
         await this.loadPlans()
     },
 

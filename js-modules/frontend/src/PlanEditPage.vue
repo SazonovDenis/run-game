@@ -8,6 +8,7 @@
         :helpKey="getHelpKey()"
     >
 
+        <!-- -->
 
         <input style="display: none;"
                type="file"
@@ -16,16 +17,16 @@
                @change="onFileChoose"
         >
 
+        <!-- -->
+
+        <HelpPanel class="q-mt-none q-mb-xs" :helpKey="getHelpKey()"/>
+
+        <!-- -->
+
 
         <!-- frameMode: editPlan -->
 
         <div v-if="frameMode==='editPlan'">
-
-            <!-- -->
-
-            <HelpPanel class="q-mt-xs q-mb-xs" :helpKey="getHelpKey()"/>
-
-            <!-- -->
 
             <q-input class="q-mb-sm"
                      dense outlined
@@ -92,9 +93,7 @@
                     @paste="onTextInputPaste"
                 />
 
-
                 <!-- -->
-
 
                 <template v-if="this.itemsShouldLoad">
                     <TaskListFilterBarView
@@ -107,9 +106,7 @@
                     />
                 </template>
 
-
                 <!-- -->
-
 
                 <template v-if="!isModeView()">
 
@@ -140,7 +137,14 @@
             <!-- -->
 
 
-            <HelpPanel class="q-mt-none q-mb-xs" :helpKey="getHelpKey()"/>
+            <template
+                v-if="foundButHidden()">
+
+                <div class="q-pa-md rgm-state-text">
+                    Все найденные слова вы знаете, поэтому они скрыты
+                </div>
+
+            </template>
 
 
             <!-- -->
@@ -163,30 +167,10 @@
 
         <!-- frameMode: addByPhoto -->
 
-        <div v-show="canEditItemList() && frameMode==='addByPhoto'">
+        <div v-show="canEditItemList() && frameMode==='addByPhoto'"
+             class="btn-container">
 
-            <TextInputPhoto
-                ref="textInputPhoto"
-                :planId="planId"
-                :items="itemsLoaded"
-                :image="imageLoaded"
-                :itemsMenu="itemsMenu_modeAddFact"
-                @itemsChange="itemsOnChange"
-                @itemClick="itemOnClick"
-                @fileChoose="clickFileChoose"
-            />
-
-
-            <!-- -->
-
-
-            <HelpPanel :helpKey="getHelpKey()"/>
-
-
-            <!-- -->
-
-
-            <div class="btn-top-container btn-container-on-top row">
+            <div class="btn-container-top-right btn-container-on-top row">
 
                 <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
                         name="picture"
@@ -204,7 +188,25 @@
 
             </div>
 
+
+            <!-- -->
+
+
+            <TextInputPhoto
+                ref="textInputPhoto"
+                :planId="planId"
+                :items="itemsLoaded"
+                :image="imageLoaded"
+                :itemsMenu="itemsMenu_modeAddFact"
+                @itemsChange="itemsOnChange"
+                @itemClick="itemOnClick"
+                @fileChoose="clickFileChoose"
+            />
+
         </div>
+
+
+        <!-- frameMode: другие -->
 
 
         <div v-if="frameMode==='viewItemsLoaded'">
@@ -267,13 +269,13 @@
 
         </div>
 
-        <div class="btn-bottom-container btn-container-on-top row">
+        <div class="btn-container-bottom-right btn-container-on-top row">
 
             <q-btn
                 v-if="canEditPlan() && this.frameMode !== 'editPlan'"
                 round no-caps
                 _label="Редактировать"
-                color="purple-4"
+                color="accent"
                 class="q-py-none q-px-md btn-set-frame-mode"
                 icon="edit"
                 size="1.2em"
@@ -503,7 +505,6 @@ export default {
                 sortField: "ratingAsc",
                 filterTags: {},
                 showHidden: false,
-                //showHiddenLoaded: false,
             },
 
             actionHide: actionHide,
@@ -577,7 +578,25 @@ export default {
     watch: {
         sortField: function(value, old) {
             this.itemsExternal.sort(this.compareFunction)
-        }
+        },
+
+        viewSettings: {
+            handler() {
+                // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+                if (this.settingsPreventWatch) {
+                    this.settingsPreventWatch = false
+                    return
+                }
+
+                //
+                let globalViewSettings = ctx.getGlobalState().viewSettings
+                globalViewSettings.findItems = this.viewSettings
+                ctx.eventBus.emit("change:settings")
+            },
+            deep: true
+        },
+
+
     },
 
 
@@ -654,12 +673,19 @@ export default {
 
     methods: {
 
-        // Не допускает одновременного наличия двух языков: при ВКЛЮЧЕНИИ одного языка,
-        // остальные сбрасываются; при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
-        toggleKazXorEng(filterTags) {
-            if (filterTags.tagLastClicked === "kaz") {
+        foundButHidden() {
+            return !this.viewSettings.showHidden &&
+                this.itemsLoaded.length > 0 &&
+                this.itemsLoaded.length === this.hiddenCountLoaded
+        },
+
+        // Не допускает одновременного наличия двух языков:
+        // при ВКЛЮЧЕНИИ одного языка, остальные сбрасываются;
+        // при ВЫКЛЮЧЕНИИ одного остальные не трогаются.
+        toggleKazXorEng(filterTags, tagLastClicked) {
+            if (tagLastClicked === "kaz") {
                 delete filterTags["eng"]
-            } else if (filterTags.tagLastClicked === "eng") {
+            } else if (tagLastClicked === "eng") {
                 delete filterTags["kaz"]
             }
 
@@ -668,6 +694,11 @@ export default {
             ////////////////////////////
             ////////////////////////////
             // todo передалать по человечески: ищем сами, а не поручаем textInputText
+            ////////////////////////////
+            ////////////////////////////
+            ////////////////////////////
+            ////////////////////////////
+            ////////////////////////////
             ////////////////////////////
             ////////////////////////////
             ////////////////////////////
@@ -680,10 +711,8 @@ export default {
 
         machTags(item) {
             // Фильтр по тэгам не задан
-            // В filterTags всегда есть флаг tagLastClicked, поэтому для определения
-            // пустоты количество сравниваем с 1, а не с 0
             let filterTagsCount = Object.keys(this.viewSettings.filterTags).length
-            if (!this.viewSettings.filterTags || filterTagsCount <= 1) {
+            if (!this.viewSettings.filterTags || filterTagsCount === 0) {
                 return true
             }
 
@@ -750,6 +779,10 @@ export default {
             } else if (this.frameMode === "addByText") {
                 if (this.itemsLoaded.length === 0) {
                     return "help.mainPage"
+                }
+
+                if (this.foundButHidden()) {
+                    return "help.mainPage.foundHidden"
                 }
 
                 return "help.mainPage.found"
@@ -829,35 +862,9 @@ export default {
 
         checkShowHiddenMode() {
             // Если скрытых нет, то выключаем режим "показать скрытые"
-            if (this.hiddenCount === 0) {
-                //this.viewSettings.showHidden = false
-            }
-
-            /*
-                        if (this.hiddenCountLoaded === 0) {
-                            this.viewSettings.showHiddenLoaded = false
-                        }
-            */
-
-
-            ////////////////////////
-            ////////////////////////
-            ////////////////////////
-            ////////////////////////
-            ////////////////////////
-            if (this.hiddenCountLoaded === 0) {
-                //this.viewSettings.showHidden = false
-            } else {
-                let searchWords = this.$refs.textInputText.filterText.split(" ")
-                if ((this.itemsLoaded.length - this.hiddenCountLoaded) <= 2) {
-                    this.viewSettings.showHidden = true
-                } else if (searchWords.length <= 2) {
-                    this.viewSettings.showHidden = true
-                } else {
-                    this.viewSettings.showHidden = false
-                }
-            }
-
+            //if (this.hiddenCount === 0) {
+            //    this.viewSettings.showHidden = false
+            //}
         },
 
         checkViewMode() {
@@ -905,21 +912,9 @@ export default {
         },
 
         filterLoaded(item) {
-            /*
-                        if (!this.hideHiddenMode) {
-                            return true
-                        }
-            */
-
             if (!this.viewSettings.showHidden && item.isHidden) {
                 return false
             }
-
-            /*
-                        if (!item.isHidden && this.viewSettings.showHidden) {
-                            return false
-                        }
-            */
 
             return true
         },
@@ -1771,6 +1766,15 @@ export default {
 
         // Удобнее держать отдельную переменную this.hiddenCount
         this.calcHiddenCountExternal()
+
+
+        // Настройки фильрации
+        let globalViewSettings = ctx.getGlobalState().viewSettings
+        if (globalViewSettings.findItems) {
+            this.viewSettings = globalViewSettings.findItems
+            // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+            this.settingsPreventWatch = true
+        }
     },
 
 
@@ -1786,9 +1790,19 @@ export default {
     margin-bottom: auto;
 }
 
-.btn-top-container {
-    right: 0rem;
-    top: 3.1rem;
+.btn-container {
+    position: relative;
+}
+
+.btn-container-top-right {
+    right: 0;
+    top: 0;
+    position: absolute;
+}
+
+.btn-container-bottom-right {
+    right: 0.5rem;
+    bottom: 0.5rem;
     position: fixed;
 }
 
@@ -1800,12 +1814,6 @@ export default {
 .btn-keyboard {
     background-color: #fbc02d;
     border-radius: 20.5rem;
-}
-
-.btn-bottom-container {
-    right: 0.5rem;
-    bottom: 0.5rem;
-    position: fixed;
 }
 
 .btn-set-frame-mode {

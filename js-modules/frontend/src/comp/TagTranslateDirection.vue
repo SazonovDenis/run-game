@@ -81,7 +81,7 @@ export default {
         },
         backgroundColor(lang) {
             if (lang === appConst.settings.mainLanguage) {
-                return "grey-3"
+                return utils.Langs_color.mainLanguage
             } else {
                 return utils.Langs_color[lang]
             }

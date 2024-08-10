@@ -38,7 +38,7 @@
 
             <TaskListFilterBar
                 class="q-my-sm"
-                ed-hidden ed-sort ed-filter
+                ed-hidden _ed-sort ed-filter
                 v-model:filterText="filterText"
                 v-model:sortField="viewSettings.sortField"
                 v-model:showHidden="viewSettings.showHidden"

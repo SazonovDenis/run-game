@@ -55,7 +55,7 @@
             <TaskListFilterBar
                 v-if="visibleCount > 0"
                 class="q-my-sm"
-                ed-hidden ed-sort ed-filter
+                ed-hidden _ed-sort ed-filter
                 v-model:showHidden="showHidden"
                 v-model:hiddenCount="hiddenCount"
                 v-model:filterText="filterText"

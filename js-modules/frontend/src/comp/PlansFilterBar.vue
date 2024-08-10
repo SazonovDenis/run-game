@@ -3,7 +3,7 @@
     <div class="row filter-bar">
 
         <q-btn
-            v-show="!expandFilterText"
+            v-show="!filterTextIsExpanded"
             @click="elFilterText_show()" color="primary"
 
             class="q-mx-sm filter-bar-btn-search"
@@ -12,7 +12,7 @@
         />
 
         <RgmInputText
-            v-show="expandFilterText"
+            v-show="filterTextIsExpanded"
             :value="filterText"
             @update:modelValue="updateParent('filterText', $event)"
             @blur="elFilterText_blur"
@@ -22,41 +22,7 @@
             placeholder="Название"
         />
 
-
-        <!--
-        todo: заменить на более компактный, когда появится смысл сортировать
-        (сейчас планов не так много)
-        <q-btn-dropdown
-            v-if="showFullFilter"
-            @click="sortFieldIsDropdown=true"
-            v-model="sortFieldIsDropdown"
-
-            class="q-mr-sm"
-            style="width: 10em;"
-            color="grey-2"
-            text-color="black"
-            no-caps split
-            align="left"
-            :icon="sortFieldIcon[sortField]"
-            :label="sortFieldText[sortField]"
-        >
-            <q-list class="q-pa-sm">
-
-                <q-item class="q-py-md" clickable v-close-popup
-                        @click="setSortField('ratingDesc')">
-                    Легкие
-                </q-item>
-
-                <q-item class="q-py-md" clickable v-close-popup
-                        @click="setSortField('ratingAsc')">
-                    Сложные
-                </q-item>
-
-            </q-list>
-        </q-btn-dropdown>
-        -->
-
-        <q-space v-if="!expandFilterText"/>
+        <q-space v-if="!filterTextIsExpanded"/>
 
         <div class="row q-mr-sm q-gutter-x-xs">
 
@@ -67,23 +33,11 @@
                 icon="star"
             />
 
-
-            <q-btn
-                no-caps
-                @click="toggleTag_TrueNull('kaz')"
-                :color="utils.Langs_color_dark['kaz']"
-                :outline="getOutline_tag('kaz')"
-                :label="utils.Langs_text['kaz']"
+            <Tags
+                :tags="tags"
+                :tagsKeys="tagsKeys"
+                :onTagsChange="onTagsChange"
             />
-
-            <q-btn
-                no-caps
-                @click="toggleTag_TrueNull('eng')"
-                :color="utils.Langs_color_dark['eng']"
-                :outline="getOutline_tag('eng')"
-                :label="utils.Langs_text['eng']"
-            />
-
 
             <q-btn
                 @click="toggleTag_TrueFalseNull('word-sound')" color="orange-10"
@@ -99,15 +53,18 @@
 
 <script>
 
-import RgmInputText from "./RgmInputText"
 import utils from "../utils"
+import RgmInputText from "./RgmInputText"
+import Tags from "./filter/Tags"
+import CbSelect from "./filter/CbSelect"
 
 export default {
 
     name: "PlansFilterBar",
 
     components: {
-        RgmInputText,
+        CbSelect,
+        RgmInputText, Tags,
     },
 
     props: {
@@ -126,20 +83,8 @@ export default {
 
     data() {
         return {
-            /*
-            todo: заменить, когда появится смысл сортировать
-            sortFieldIsDropdown: false,
-            sortFieldText: {
-                ratingDesc: "Легкие",
-                ratingAsc: "Сложные",
-            },
-            sortFieldIcon: {
-                ratingDesc: "quasar.arrow.up",
-                ratingAsc: "quasar.arrow.down",
-            },
-            */
-
-            expandFilterText: false,
+            filterTextIsExpanded: false,
+            tagsKeys: ["kaz", "eng"],
         }
     },
 
@@ -147,25 +92,18 @@ export default {
 
         elFilterText_blur() {
             if (!this.filterText) {
-                this.expandFilterText = false
+                this.filterTextIsExpanded = false
             }
         },
+
         async elFilterText_show() {
-            this.expandFilterText = !this.expandFilterText
-            if (this.expandFilterText) {
+            this.filterTextIsExpanded = !this.filterTextIsExpanded
+            if (this.filterTextIsExpanded) {
                 await this.$nextTick()
                 this.$refs.elFilterText.focus()
             }
         },
-
-        getOutline_tag(lang) {
-            if (!this.tags) {
-                return false
-            }
-            //
-            return !this.tags[lang]
-        },
-
+        
         getOutline_WordSound() {
             let tag = "word-sound"
             if (this.tags[tag] === false) {
@@ -199,25 +137,6 @@ export default {
             } else {
                 tags[tag] = true
             }
-            //
-            this.updateParent("tags", tags)
-        },
-
-        toggleTag_TrueNull(tag) {
-            let tags = this.tags
-            //
-            if (tags[tag] === true) {
-                delete tags[tag]
-            } else {
-                tags[tag] = true
-            }
-
-            // Позволяет родительскому компоненту доработать напильником значения,
-            // во исполнение его бизнес-логики
-            if (this.onTagsChange) {
-                this.onTagsChange(tags, tag)
-            }
-
             //
             this.updateParent("tags", tags)
         },

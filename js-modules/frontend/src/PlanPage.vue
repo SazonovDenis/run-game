@@ -52,52 +52,15 @@
             </div>
 
 
-            <div class="row q-my-sm bg-white"
-                 v-if="visibleCount > 0"
-            >
-
-                <RgmInputText
-                    class="q-mx-sm"
-                    style="max-width: 10em"
-                    v-model="filterText"
-                    placeholder="Поиск"
-                />
-
-                <q-btn-dropdown
-                    @click="sortFieldMenu=true"
-                    v-model="sortFieldMenu"
-                    style="width: 12em;"
-                    color="grey-2"
-                    text-color="black"
-                    no-caps
-                    split
-                    align="left"
-                    :icon="sortFieldIcon[sortField]"
-                    :label="sortFieldText[sortField]"
-                >
-                    <q-list class="q-pa-sm">
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='ratingAsc'">
-                            Сложные
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='ratingDesc'">
-                            Легкие
-                        </q-item>
-
-                        <q-item class="q-py-md" clickable v-close-popup
-                                @click="sortField='question'">
-                            По алфавиту
-                        </q-item>
-
-                    </q-list>
-
-                </q-btn-dropdown>
-
-            </div>
-
+            <TaskListFilterBar
+                v-if="visibleCount > 0"
+                class="q-my-sm"
+                ed-hidden ed-sort ed-filter
+                v-model:showHidden="showHidden"
+                v-model:hiddenCount="hiddenCount"
+                v-model:filterText="filterText"
+                v-model:sortField="sortField"
+            />
 
             <TaskList
                 v-if="visibleCount > 0"
@@ -167,18 +130,6 @@
 
             </q-page-sticky>
 
-            <!--
-
-                        <q-page-sticky
-                            position="bottom-right"
-                            :offset="[10, 10]">
-                        </q-page-sticky>
-
-                        <q-page-sticky
-                            position="bottom-right"
-                            :offset="[70, 11]">
-                        </q-page-sticky>
-            -->
 
         </div>
 
@@ -191,9 +142,9 @@
 <script>
 
 import MenuContainer from "./comp/MenuContainer"
+import TaskListFilterBar from "./comp/TaskListFilterBar"
 import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import StatisticRating from "./comp/StatisticRating"
-import RgmInputText from "./comp/RgmInputText"
 import TaskList from "./comp/TaskList"
 import HelpPanel from "./comp/HelpPanel"
 import gameplay from "./gameplay"
@@ -215,8 +166,8 @@ export default {
     },
 
     components: {
-        MenuContainer, RgmInputText, StatisticWordsLearned, StatisticRating, TaskList,
-        HelpPanel,
+        MenuContainer, TaskListFilterBar, StatisticWordsLearned, StatisticRating,
+        TaskList, HelpPanel,
     },
 
     data() {
@@ -232,6 +183,8 @@ export default {
             dataLoaded: false,
             visibleCount: 0,
             hiddenCount: 0,
+
+            showHidden: false,
 
             sortFieldMenu: false,
             sortField: "",

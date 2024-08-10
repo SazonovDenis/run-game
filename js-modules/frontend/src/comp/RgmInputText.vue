@@ -7,8 +7,7 @@
         v-model="valueInternal"
         @update:modelValue="updateParent('modelValue', $event)"
 
-        :type="type"
-        :class="getClass"
+        :type="inputType"
         :loading="loading"
         :placeholder="placeholder"
 
@@ -32,7 +31,7 @@
 
 /**
  * Имеет кнопку "очистить", с правильной реакцией фокуса.
- * Не допускает в значении null и пробелов по краям.
+ * Не допускает во введенном значении пробелов по краям и null.
  * Умеет ставить фокус.
  */
 export default {
@@ -43,8 +42,7 @@ export default {
     props: {
         modelValue: String,
 
-        type: {type: String, default: "text"},
-        class: {type: String, default: ""},
+        inputType: {type: String, default: "text"},
 
         loading: {type: Boolean, default: false},
         placeholder: {type: String, default: "Поиск"},
@@ -59,11 +57,6 @@ export default {
 
 
     computed: {
-
-        // Напрямую props.class не удается использовать, т.к. class - зарезервированное слово в js
-        getClass() {
-            return this.class
-        }
 
     },
 

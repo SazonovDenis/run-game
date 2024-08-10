@@ -1,8 +1,8 @@
 <template>
 
     <RgmInputText
-        :type="getTypeInput()"
-        :class="'q-ma-sm rgm-item-grow ' + getClassInput()"
+        :inputType="getInputType()"
+        class="q-ma-sm rgm-item-grow"
         :loading="filterTextLoading"
         placeholder="Поиск в словаре"
 
@@ -35,7 +35,6 @@ export default {
     props: {
         planId: null,
         items: {type: Array, default: []},
-        isToolbarUsed: {type: Boolean},
         filterTags: {}
     },
 
@@ -64,19 +63,11 @@ export default {
 
     methods: {
 
-        getTypeInput() {
+        getInputType() {
             if (Jc.cfg.is.desktop) {
                 return "textarea"
             } else {
                 return "text"
-            }
-        },
-
-        getClassInput() {
-            if (Jc.cfg.is.desktop || !this.isToolbarUsed) {
-                return "input-wide"
-            } else {
-                return "input-narrow"
             }
         },
 
@@ -158,11 +149,5 @@ export default {
 </script>
 
 <style scoped>
-
-.input-wide {
-}
-
-.input-narrow {
-}
 
 </style>

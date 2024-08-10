@@ -28,7 +28,7 @@
 
         <div v-if="frameMode==='editPlan'">
 
-            <q-input class="q-mb-sm"
+            <q-input class="q-ma-sm"
                      dense outlined
                      :disable="!canEditPlan()"
                      label="Название уровня"
@@ -37,10 +37,12 @@
 
 
             <TaskListFilterBar
+                class="q-my-sm"
+                ed-hidden ed-sort ed-filter
                 v-model:filterText="filterText"
                 v-model:sortField="viewSettings.sortField"
                 v-model:showHidden="viewSettings.showHidden"
-                v-model:hiddenCount="viewSettings.hiddenCount"
+                v-model:hiddenCount="hiddenCount"
             />
 
 
@@ -84,7 +86,6 @@
                     ref="textInputText"
                     :planId="planId"
                     :items="itemsLoaded"
-                    :isToolbarUsed="this.hiddenCountLoaded > 0"
 
                     :filterTags="viewSettings.filterTags"
 
@@ -96,12 +97,13 @@
                 <!-- -->
 
                 <template v-if="this.itemsShouldLoad">
-                    <TaskListFilterBarView
+
+                    <TaskListFilterBar
                         class="q-my-sm"
+                        ed-hidden ed-tags
                         v-model:tags="viewSettings.filterTags"
                         v-model:showHidden="viewSettings.showHidden"
-                        :button_showHidden_show="this.hiddenCountLoaded > 0"
-                        :button_showHidden_text="'+' + this.hiddenCountLoaded"
+                        v-model:hiddenCount="hiddenCountLoaded"
                         :onTagsChange="toggleKazXorEng"
                     />
                 </template>
@@ -408,14 +410,13 @@ import HelpPanel from "./comp/HelpPanel"
 import TextInputPhoto from "./comp/TextInputPhoto"
 import TextInputText from "./comp/TextInputText"
 import TaskListFilterBar from "./comp/TaskListFilterBar"
-import TaskListFilterBarView from "./comp/TaskListFilterBarView"
 import TaskList from "./comp/TaskList"
 
 
 export default {
 
     components: {
-        MenuContainer, HelpPanel, TaskListFilterBar, TaskListFilterBarView,
+        MenuContainer, HelpPanel, TaskListFilterBar,
         TextInputPhoto, TextInputText, TaskList,
     },
 
@@ -921,10 +922,6 @@ export default {
 
         filterExt(taskItem) {
             if (taskItem.isHidden && !this.viewSettings.showHidden) {
-                return false
-            }
-
-            if (!taskItem.isHidden && this.viewSettings.showHidden) {
                 return false
             }
 

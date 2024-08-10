@@ -1,62 +1,59 @@
 <template>
 
-    <div class="row q-mb-sm">
+    <div class="row filter-bar _q-gutter-x-sm">
 
-        <RgmInputText
-            v-model="inputFilterText"
-            @update:modelValue="updateParent('filterText', $event)"
+        <template v-if="edFilter">
 
-            class="q-mx-sm"
-            style="max-width: 8em"
-            placeholder="Поиск"
-        />
+            <q-btn
+                v-show="!filterTextIsExpanded"
+                @click="elFilterText_show()" color="primary"
+
+                class="q-mx-sm filter-bar-btn-search"
+                :outline="true"
+                icon="search"
+            />
+
+            <RgmInputText
+                class="q-mx-sm rgm-item-grow"
+                placeholder="Поиск в плане"
+
+                v-show="filterTextIsExpanded"
+                :value="filterText"
+                @update:modelValue="updateParent('filterText', $event)"
+
+                @blur="elFilterText_blur"
+                ref="elFilterText"
+            />
+
+            <q-space v-if="!filterTextIsExpanded"/>
+
+        </template>
 
 
-        <q-btn-dropdown
-            @click="sortFieldIsDropdown=true"
-            v-model="sortFieldIsDropdown"
-
+        <CbSelect
             style="width: 10em;"
-            color="grey-2"
-            text-color="black"
-            no-caps split
-            align="left"
-            :icon="sortFieldIcon[inputSortField]"
-            :label="sortFieldText[inputSortField]"
-        >
-            <q-list class="q-pa-sm">
 
-                <q-item
-                    class="q-py-md" clickable v-close-popup
-                    @click="setSortField('question')">
-                    Слово
-                </q-item>
-
-                <q-item class="q-py-md" clickable v-close-popup
-                        @click="setSortField('answer')">
-                    Перевод
-                </q-item>
-
-                <q-item class="q-py-md" clickable v-close-popup
-                        @click="setSortField('ratingDesc')">
-                    Легкие
-                </q-item>
-
-                <q-item class="q-py-md" clickable v-close-popup
-                        @click="setSortField('ratingAsc')">
-                    Сложные
-                </q-item>
-
-            </q-list>
-        </q-btn-dropdown>
-
-
-        <q-toggle
-            v-if="hiddenCount > 0"
-            :label="'Известные (' + hiddenCount + ')'"
-            v-model="inputShowHidden"
-            @update:modelValue="updateParent('showHidden', $event)"
+            v-if="edSort"
+            :options="cbValues"
+            :value="sortField"
+            @update:value="updateParent('sortField', $event)"
         />
+
+        <Tags
+            v-if="edTags"
+            :tags="tags"
+            :tagsKeys="tagsKeys"
+            :onTagsChange="onTagsChange"
+        />
+
+        <Hidden
+            class="q-mx-sm"
+            v-if="edHidden"
+            :hiddenCount="hiddenCount"
+            :showHidden="showHidden"
+            @update:showHidden="updateParent('showHidden', $event)"
+        />
+
 
     </div>
 
@@ -65,32 +62,59 @@
 <script>
 
 import RgmInputText from "./RgmInputText"
+import Tags from "./filter/Tags"
+import CbSelect from "./filter/CbSelect"
+import Hidden from "./filter/Hidden"
 
 /**
  * Панель фильтрации по тексту с сортировкой.
- * Полезна при редактировании плана.
+ * Полезна при редактировании плана и поиске слов.
  */
 export default {
 
     name: "TaskListFilterBar",
 
     components: {
-        RgmInputText
+        RgmInputText,
+        Tags, CbSelect, Hidden,
     },
 
 
     props: {
         filterText: String,
         sortField: null,
-        showHidden: false,
+
+        tags: {type: Object, default: {}},
+        showHidden: {type: Boolean, default: false},
+
+        onTagsChange: {type: Function, default: null},
+
         hiddenCount: 0,
+
+        /* Какие части панели показать */
+        edFilter: {type: Boolean, default: false},
+        edSort: {type: Boolean, default: false},
+        edHidden: {type: Boolean, default: false},
+        edTags: {type: Boolean, default: false},
+
+        emits: ["update:showHidden"]
     },
 
     data() {
         return {
             inputFilterText: this.filterText || "",
             inputSortField: this.sortField || "",
-            inputShowHidden: this.showHidden || false,
+
+            tagsKeys: ["kaz", "eng"],
+
+            cbValues: [
+                {value: "question", text: "Слово", icon: "quasar.arrow.down"},
+                {value: "answer", text: "Перевод", icon: "quasar.arrow.down"},
+                {value: "ratingDesc", text: "Легкие", icon: "quasar.arrow.up"},
+                {value: "ratingAsc", text: "Сложные", icon: "quasar.arrow.down"},
+            ],
+
+            filterTextIsExpanded: false,
 
             sortFieldIsDropdown: false,
             sortFieldText: {
@@ -111,13 +135,27 @@ export default {
 
     methods: {
 
+        elFilterText_blur() {
+            if (!this.filterText) {
+                this.filterTextIsExpanded = false
+            }
+        },
+
+        async elFilterText_show() {
+            this.filterTextIsExpanded = !this.filterTextIsExpanded
+            if (this.filterTextIsExpanded) {
+                await this.$nextTick()
+                this.$refs.elFilterText.focus()
+            }
+        },
+
         updateParent(valueModelName, value) {
-            this.$emit('update:' + valueModelName, value)
+            this.$emit("update:" + valueModelName, value)
         },
 
         setSortField(value) {
             this.inputSortField = value
-            this.updateParent('sortField', value)
+            this.updateParent("sortField", value)
         },
 
     },
@@ -129,5 +167,9 @@ export default {
 
 
 <style scoped>
+
+.filter-bar {
+    height: 3.1em;
+}
 
 </style>

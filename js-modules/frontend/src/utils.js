@@ -289,6 +289,12 @@ export default {
         rus: "blue-grey-5",
     },
 
+    Langs_color_dark_dark: {
+        eng: "deep-purple-7",
+        kaz: "deep-purple-7",
+        rus: "blue-grey-7",
+    },
+
     // Названия для ссылок ОТ пользователя
     // для одной записи
     dictLinkTypeFromRec: {

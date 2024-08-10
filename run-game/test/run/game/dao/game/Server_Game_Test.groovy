@@ -62,6 +62,15 @@ class Server_Game_Test extends Server_Test {
     }
 
     @Test
+    void testGameProcess_4() {
+        testGameProcess_PlanPublic_allOk()
+        Thread.sleep(1000)
+        testGameProcess_PlanPublic_allOk()
+        Thread.sleep(2000)
+        testGameProcess_PlanPublic_allOk()
+    }
+
+    @Test
     void testGameProcess_PlanDefault() {
         long idUsr = getCurrentUserId()
         Usr_upd upd = mdb.create(Usr_upd)
@@ -140,6 +149,31 @@ class Server_Game_Test extends Server_Test {
 
         // Игра
         doGameProcess(idPlan)
+
+        // Обновленная статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+    }
+
+
+    @Test
+    void testGameProcess_PlanPublic_allOk() {
+        // Выбирает общедоступный plan
+        Store stPlans = mdb.loadQuery("select Plan.id from Plan where Plan.isPublic = 1 order by id")
+        long idPlan = stPlans.get(0).getLong("id")
+
+        //
+        Plan_upd planUpd = mdb.create(Plan_upd)
+        try {
+            planUpd.addUsrPlan(idPlan)
+        } catch (Exception e) {
+            println(e.message)
+        }
+
+        // Статистика по уровню
+        printTaskStatisticByPlan(idPlan)
+
+        // Игра
+        doGameProcess_internal(idPlan, true, false)
 
         // Обновленная статистика по уровню
         printTaskStatisticByPlan(idPlan)

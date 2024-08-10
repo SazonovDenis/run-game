@@ -1,6 +1,18 @@
 <template>
 
-    <template v-if="item.ratingTask === ratingTaskMax">
+    <template v-if="item.isHidden">
+
+        <q-badge
+            rounded
+            class="rgm-bage q-px-sm"
+            :text-color="getRatingTextColor(3)"
+            :color="getRatingColor(3)"
+            label="Знаю"
+        />
+
+    </template>
+
+    <template v-else-if="item.ratingTask === ratingTaskMax">
 
         <q-badge
             rounded
@@ -22,11 +34,6 @@
                 :color="item.done ? 'green-8' : 'grey-4'"
                 :label="item.text ? item.text : '&nbsp;'"
             />
-
-            <!--
-                            :text-color="getRatingTextColor(item.ratingTask)"
-                            :color="getRatingColor(item.ratingTask)"
-            -->
 
         </template>
 
@@ -110,7 +117,7 @@ export default {
 
         getRatingText(rating) {
             if (rating === 3) {
-                return "выучено"
+                return "Выучено"
             } else {
                 return rating
             }

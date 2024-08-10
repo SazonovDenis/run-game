@@ -110,27 +110,6 @@
 
             </div>
 
-            <!--
-                            <template v-if="showRatingDiff">
-
-                                <q-badge
-                                    v-if="item.ratingTaskDiff > 0"
-                                    style="font-weight: bold;"
-                                    color="white"
-                                    text-color="green-9"
-                                    text-weight="bold"
-                                    :label="'+' + item.ratingTaskDiff"/>
-                                <q-badge
-                                    v-if="item.ratingTaskDiff < 0"
-                                    style="font-weight: bold;"
-                                    color="white"
-                                    text-color="red-7"
-                                    text-weight="bold"
-                                    :label="item.ratingTaskDiff"/>
-
-                            </template>
-            -->
-
 
             <div v-if="showRating">
 

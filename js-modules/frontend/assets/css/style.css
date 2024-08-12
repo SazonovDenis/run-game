@@ -47,7 +47,13 @@
 }
 
 .task-item-task-question {
-  min-width: 16em !important;
+  min-width: 18em !important;
+}
+
+@media (max-width: 600px) {
+  .task-item-task-question {
+    min-width: 16em !important;
+  }
 }
 
 @media (max-width: 320px) {

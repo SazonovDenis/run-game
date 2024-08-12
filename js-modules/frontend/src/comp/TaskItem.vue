@@ -1,7 +1,7 @@
 <template>
 
     <q-item
-        :class="getClassItemRow(item, index)"
+        :class="'task-item ' + getClassItemRow(item, index)"
         clickable v-ripple
     >
 
@@ -11,7 +11,7 @@
         </q-item-section>
 
 
-        <q-item-section>
+        <q-item-section class="task-item-task-question">
 
             <q-item-label _overline
                           :class="'row question' + getItemClass(item)"
@@ -48,7 +48,8 @@
         </q-item-section>
 
 
-        <q-item-section top side v-if="showEdit">
+        <q-item-section top side class="task-item-menu"
+                        v-if="showEdit">
 
             <div class="text-grey-8 q-gutter-xs">
 
@@ -314,6 +315,5 @@ export default {
 .item-in-plan {
     _color: rgba(50, 100, 50, .9);
 }
-
 
 </style>

@@ -5,6 +5,7 @@
         <template v-for="(taskItem, index) in tasks">
 
             <q-slide-item
+                class="task-item-container"
                 v-if="isItemShown(taskItem)"
                 @left="onLeft($event, taskItem)"
                 @right="onRight($event, taskItem)"
@@ -157,11 +158,6 @@ export default {
 </script>
 
 <style scoped>
-
-.task-list {
-    max-width: 50rem;
-    margin: auto;
-}
 
 .slide-label {
     font-size: 110%;

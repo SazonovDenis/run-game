@@ -84,7 +84,7 @@ class UtWord {
         // Это так, потому что тогда не придется явно перечислять все символы всех поддерживаемых языков.
         // Иноми словами, вместо: words = word.split("[^a-zA-Z0-9']")
         // пишем: words = word.split("[ -/\\,.]")
-        Collection<String> words = word.split("[ -/\\\\,.:;\n\r)(!?\\[\\]]")
+        Collection<String> words = word.split("[ -/\\\\,.:;\n\r)(!?\\[\\]\t]")
         if (words.size() > 1) {
             return words
         }

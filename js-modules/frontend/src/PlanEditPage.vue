@@ -1423,7 +1423,11 @@ export default {
 
 
         async clickImageBtn() {
-            // Читаем буфер обмена?
+            // Начинаем выбирать файл
+            this.clickFileChoose()
+
+            /*
+            // Читаем буфер обмена и ищем избражение
             let blob = await this.handleClipboardItems()
 
             // Есть буфер обмена?
@@ -1438,17 +1442,25 @@ export default {
                 // Начинаем выбирать файл
                 this.clickFileChoose()
             }
+            */
         },
 
         async onTextInputPaste(event) {
+            // Отдадим приоритет простому тексту.
+            // Это важно, т.к. некоторые программы копируют в буфер сразу в нескольких форматах.
+            // Например, при вставке ячееек, скопированных из LibreOffice, в буфер попадает
+            // не только чистый текст, но также и картинка и форматированный текст.
+            if (this.isDataTransferContainsText(event.clipboardData)) {
+                return
+            }
+
+            // Читаем буфер обмена и ищем избражение
             let blob = await this.handleDataTransferItems(event.clipboardData)
 
+            // Найдено избражение?
             if (blob) {
                 // Вставим изображение из буфера обмена
                 this.handleImage(blob)
-
-                // Чистим буфер, чтобы второй раз не вставлять, а могла сработать вставка из файла
-                this.clearClipboardItems()
             }
         },
 
@@ -1466,8 +1478,10 @@ export default {
         },
 
         async onFileChoose(event) {
+            // Читаем данные события и читаем файл
             let blob = await this.handleFileItems(event.target)
 
+            // Файл прочитан?
             if (blob) {
                 // Вставим изображение из файла
                 this.handleImageBase64(blob[0])
@@ -1495,11 +1509,17 @@ export default {
             this.$refs.textInputPhoto.applyImage(text)
         },
 
+        /**
+         * Очищает буфер обмена
+         */
         clearClipboardItems() {
-            // Чистим буфер обмена
             navigator.clipboard.writeText("");
         },
 
+        /**
+         * Просматривает содержимое буфера обмена
+         * @returns Изображение, если оно есть
+         */
         async handleClipboardItems() {
             let blob = null
 
@@ -1527,22 +1547,37 @@ export default {
             return blob
         },
 
-        async handleDataTransferItems(dataTransfer) {
+        async handleDataTransferItems(clipboardData) {
             let blob = null
 
             // Содержимое буфера обмена
-            const dataTransferItems = dataTransfer.items;
+            const dataTransferItems = clipboardData.items;
 
             // Ищем изображение
             for (let i = 0; i < dataTransferItems.length; i++) {
                 const dataItem = dataTransferItems[i]
-                if (dataItem.type.startsWith('image/')) {
+                if (dataItem.type.startsWith("image/")) {
                     blob = await dataItem.getAsFile();
                     break;
                 }
             }
 
             return blob
+        },
+
+        isDataTransferContainsText(clipboardData) {
+            // Содержимое буфера обмена
+            const dataTransferItems = clipboardData.items;
+
+            // Ищем простой текст
+            for (let i = 0; i < dataTransferItems.length; i++) {
+                const dataItem = dataTransferItems[i]
+                if (dataItem.type.startsWith("text/plain")) {
+                    return true;
+                }
+            }
+
+            return false
         },
 
         async handleFileItems(eventDataTarget) {
@@ -1552,8 +1587,6 @@ export default {
 
             for (const file of files) {
                 const img = await this.readFileAsDataURL(file);
-                //const imgElement = document.createElement('img');
-                //imgElement.src = img;
                 blob.push(img);
             }
 

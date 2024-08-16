@@ -130,19 +130,19 @@
 
                     <div class="q-ml-sm q-mr-xs">
 
-                        <q-icon class="q-my-sm q-mr-sm q-pa-sm btn-set-frame-mode"
-                                name="picture"
-                                size="2rem"
-                                style="background-color: #e0e0e0; border-radius: 20.5rem;"
-                                @click="clickImageBtn"
+                        <q-icon
+                            class="q-my-sm q-mr-sm q-pa-sm bg-grey-4 btn-keyboard btn-set-frame-mode"
+                            name="picture"
+                            size="2rem"
+                            @click="clickImageBtn"
                         />
 
-                        <q-icon class="q-my-sm q-pa-sm btn-set-frame-mode"
-                                v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
-                                name="camera"
-                                size="2rem"
-                                style="background-color: #fbc02d; border-radius: 20.5rem;"
-                                @click="this.setFrameMode('addByPhoto')"
+                        <q-icon
+                            class="q-my-sm q-pa-sm bg-amber-5 btn-keyboard btn-set-frame-mode"
+                            v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
+                            name="camera"
+                            size="2rem"
+                            @click="this.setFrameMode('addByPhoto')"
                         />
 
                     </div>
@@ -216,18 +216,19 @@
 
             <div class="btn-container-top-right btn-container-on-top row">
 
-                <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
-                        name="picture"
-                        size="2rem"
-                        style="background-color: #e0e0e0; border-radius: 20.5rem;"
-                        @click="clickImageBtn"
+                <q-icon
+                    class="q-my-sm q-mx-xs q-pa-sm bg-grey-4 btn-keyboard btn-set-frame-mode"
+                    name="picture"
+                    size="2rem"
+                    @click="clickImageBtn"
                 />
 
-                <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-keyboard btn-set-frame-mode"
-                        v-if="canEditItemList() && this.frameMode !== 'addByText'"
-                        name="keyboard"
-                        size="2rem"
-                        @click="this.setFrameMode('addByText')"
+                <q-icon
+                    class="q-my-sm q-mx-xs q-pa-sm bg-amber-5 btn-keyboard btn-set-frame-mode"
+                    v-if="canEditItemList() && this.frameMode !== 'addByText'"
+                    name="keyboard"
+                    size="2rem"
+                    @click="this.setFrameMode('addByText')"
                 />
 
             </div>
@@ -1903,6 +1904,12 @@ export default {
     position: absolute;
 }
 
+.btn-container-top-left {
+    letf: 0;
+    top: 0;
+    position: absolute;
+}
+
 .btn-container-bottom-right {
     right: 0.5rem;
     bottom: 0.5rem;
@@ -1915,7 +1922,6 @@ export default {
 }
 
 .btn-keyboard {
-    background-color: #fbc02d;
     border-radius: 20.5rem;
 }
 

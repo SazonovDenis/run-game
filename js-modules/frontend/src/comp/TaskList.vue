@@ -5,7 +5,7 @@
         <template v-for="(taskItem, index) in tasks">
 
             <q-slide-item
-                class="task-item-container"
+                class="task-item-container task-item-container-border"
                 v-if="isItemShown(taskItem)"
                 @left="onLeft($event, taskItem)"
                 @right="onRight($event, taskItem)"
@@ -59,10 +59,13 @@
 
         <!--
         Элемент для последнего "пустого" элемента.
-        Чтобы кнопки списка не загораживали последнюю строку
+        Чтобы кнопки редактирования списка не загораживали последнюю строку
         -->
-        <q-item v-if="showLastItemPadding">
-            <div style="height: 2em">&nbsp;</div>
+        <q-item v-if="showLastItemPadding" class="task-item-container">
+            <TaskItem
+                style="height: 3em; border-top: none;"
+                :item="{question:{},answer:{}}"
+            />
         </q-item>
 
 

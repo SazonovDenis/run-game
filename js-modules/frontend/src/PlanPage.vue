@@ -53,24 +53,30 @@
 
 
             <TaskListFilterBar
-                v-if="visibleCount > 0"
                 class="q-my-sm"
                 ed-hidden _ed-sort ed-filter
-                v-model:showHidden="showHidden"
-                v-model:hiddenCount="hiddenCount"
                 v-model:filterText="filterText"
                 v-model:sortField="sortField"
+                v-model:showHidden="showHidden"
+                :hiddenCount="hiddenCount"
+                :visibleCount="visibleCount"
             />
 
             <TaskList
-                v-if="visibleCount > 0"
+                v-if="(visibleCount > 0) || (showHidden && hiddenCount > 0)"
+                :showLastItemPadding="true"
                 :showEdit="true"
+                :showRating="true"
                 :tasks="tasks"
                 :itemsMenu="itemsMenu"
                 :filter="filter"
-                :showLastItemPadding="true"
-                :showRating="true"
             />
+
+            <div v-else-if="hiddenCount > 0"
+                 class="q-pa-md rgm-state-text">
+                Все слова в уровне вы знаете, поэтому они скрыты
+            </div>
+
             <div v-else
                  class="q-pa-md rgm-state-text">
                 В уровне нет ни одного слова
@@ -184,7 +190,7 @@ export default {
             visibleCount: 0,
             hiddenCount: 0,
 
-            showHidden: false,
+            showHidden: null,
 
             sortFieldMenu: false,
             sortField: "",
@@ -206,9 +212,23 @@ export default {
     },
 
     watch: {
-        sortField: function(value, old) {
+        sortField(value, old) {
             this.tasks.sort(this.compareFunction)
-        }
+        },
+
+        showHidden() {
+            // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+            if (this.settingsPreventWatch) {
+                this.settingsPreventWatch = false
+                return
+            }
+
+            //
+            let globalViewSettings = ctx.getGlobalState().viewSettings
+            globalViewSettings.findItems.showHidden = this.showHidden
+            ctx.eventBus.emit("change:settings")
+        },
+
     },
 
     methods: {
@@ -470,12 +490,17 @@ export default {
         //
         this.dataLoaded = true
 
-        // ---
-        //window.addEventListener('scroll', this.handleScroll);
+
+        // Настройки фильрации
+        let globalViewSettings = ctx.getGlobalState().viewSettings
+        if (globalViewSettings.findItems) {
+            this.showHidden = globalViewSettings.findItems.showHidden
+            // Это помогает не срабатывать сразу после первичной загрузки данных в mounted
+            this.settingsPreventWatch = true
+        }
     },
 
     unmounted() {
-        //window.removeEventListener('scroll', this.handleScroll);
     },
 
 }

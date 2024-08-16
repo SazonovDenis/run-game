@@ -5,6 +5,7 @@
         <template v-if="edFilter">
 
             <q-btn
+                :disabled="!((visibleCount > 0) || (showHidden && hiddenCount > 0))"
                 v-show="!filterTextIsExpanded"
                 @click="elFilterText_show()" color="primary"
 
@@ -90,6 +91,7 @@ export default {
         onTagsChange: {type: Function, default: null},
 
         hiddenCount: 0,
+        visibleCount: 0,
 
         /* Какие части панели показать */
         edFilter: {type: Boolean, default: false},

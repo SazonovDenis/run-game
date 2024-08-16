@@ -42,36 +42,31 @@
                 v-model:filterText="filterText"
                 v-model:sortField="viewSettings.sortField"
                 v-model:showHidden="viewSettings.showHidden"
-                v-model:hiddenCount="hiddenCount"
+                :hiddenCount="hiddenCount"
+                :visibleCount="visibleCount"
             />
 
+            <TaskList
+                v-if="(visibleCount > 0) || (viewSettings.showHidden && hiddenCount > 0)"
+                :showLastItemPadding="true"
+                :showEdit="true"
+                :tasks="itemsExternal"
+                :itemsMenu="itemsMenu_modeEdit"
+                :filter="filterExt"
+                :actionRightSlide="actionDelete"
+                :actionLeftSlide="actionHide"
+            />
 
-            <div>
-
-                <TaskList
-                    v-if="(!viewSettings.showHidden && visibleCount > 0) || (viewSettings.showHidden && hiddenCount > 0)"
-                    :showLastItemPadding="true"
-                    :showEdit="true"
-                    :tasks="itemsExternal"
-                    :itemsMenu="itemsMenu_modeEdit"
-                    :filter="filterExt"
-                    :actionRightSlide="actionDelete"
-                    :actionLeftSlide="actionHide"
-                >
-
-                </TaskList>
-
-                <div v-else-if="hiddenCount > 0"
-                     class="q-pa-md rgm-state-text">
-                    В уровне есть только скрытые слова
-                </div>
-
-                <div v-else
-                     class="q-pa-md rgm-state-text">
-                    В уровне нет ни одного слова
-                </div>
-
+            <div v-else-if="hiddenCount > 0"
+                 class="q-pa-md rgm-state-text">
+                Все слова в уровне вы знаете, поэтому они скрыты
             </div>
+
+            <div v-else
+                 class="q-pa-md rgm-state-text">
+                В уровне нет ни одного слова
+            </div>
+
 
         </div>
 

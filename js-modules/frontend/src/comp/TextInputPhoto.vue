@@ -822,12 +822,6 @@ export default {
     width: 2.5em;
 }
 
-/*
-.hidden {
-    display: none;
-}
-*/
-
 .state-text {
     font-size: 3em;
     text-align: center;

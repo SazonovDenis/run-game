@@ -13,8 +13,7 @@
 
         <q-item-section class="task-item-task-question">
 
-            <q-item-label _overline
-                          :class="'row question' + getItemClass(item)"
+            <q-item-label :class="'row question ' + getItemClass(item)"
                           v-if="isFactFirstAnswer(item, index)">
 
                 <TaskValue v-if="showTaskData"

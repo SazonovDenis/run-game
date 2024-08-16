@@ -46,7 +46,7 @@
             :onTagsChange="onTagsChange"
         />
 
-        <Hidden
+        <BtnHidden
             class="q-mx-sm"
             v-if="edHidden"
             :hiddenCount="hiddenCount"
@@ -64,7 +64,7 @@
 import RgmInputText from "./RgmInputText"
 import Tags from "./filter/Tags"
 import CbSelect from "./filter/CbSelect"
-import Hidden from "./filter/Hidden"
+import BtnHidden from "./filter/BtnHidden"
 
 /**
  * Панель фильтрации по тексту с сортировкой.
@@ -76,7 +76,7 @@ export default {
 
     components: {
         RgmInputText,
-        Tags, CbSelect, Hidden,
+        Tags, CbSelect, BtnHidden,
     },
 
 

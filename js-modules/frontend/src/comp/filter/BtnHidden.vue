@@ -4,7 +4,7 @@
         class="rgm-style"
         unelevated no-caps
         icon="quasar.chip.selected"
-        label="Знаю"
+        :label="showHidden ? 'Скрыть известные' : 'Показать известные'"
         :disabled="hiddenCount === 0"
         :color="getColor_showHidden()"
         :text-color="getTextColor_showHidden()"
@@ -24,7 +24,7 @@
 
 export default {
 
-    name: "Hidden",
+    name: "BtnHidden",
 
     props: {
         showHidden: {type: Boolean, default: false},

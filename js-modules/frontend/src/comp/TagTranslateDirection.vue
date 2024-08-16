@@ -3,8 +3,8 @@
     <div class="q-gutter-x-xs" v-if="tagTranslateDirection">
 
         <q-badge
-            :text-color="textColor(tagTranslateDirection.from)"
-            :color="backgroundColor(tagTranslateDirection.from)">
+            :text-color="badgeTextColor(tagTranslateDirection.from)"
+            :color="badgeBackgroundColor(tagTranslateDirection.from)">
             {{ tagTranslateDirection.fromText }}
         </q-badge>
         <q-icon v-if="tagTranslateDirection.fromAudio"
@@ -13,8 +13,8 @@
         <span class="tag-arrow">&rarr;</span>
 
         <q-badge
-            :text-color="textColor(tagTranslateDirection.to)"
-            :color="backgroundColor(tagTranslateDirection.to)">
+            :text-color="badgeTextColor(tagTranslateDirection.to)"
+            :color="badgeBackgroundColor(tagTranslateDirection.to)">
             {{ tagTranslateDirection.toText }}
         </q-badge>
         <q-icon v-if="tagTranslateDirection.toAudio"
@@ -72,18 +72,18 @@ export default {
     },
 
     methods: {
-        textColor(lang) {
+        badgeTextColor(lang) {
             if (lang === appConst.settings.mainLanguage) {
                 return "black"
             } else {
                 return "black"
             }
         },
-        backgroundColor(lang) {
+        badgeBackgroundColor(lang) {
             if (lang === appConst.settings.mainLanguage) {
-                return utils.Langs_color.mainLanguage
+                return utils.Langs_color_badge.mainLanguage
             } else {
-                return utils.Langs_color[lang]
+                return utils.Langs_color_badge[lang]
             }
         },
     },

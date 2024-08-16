@@ -6,7 +6,8 @@
 
             <q-btn
                 no-caps
-                :color="getColor(tagKey)"
+                :color="getBtnColor(tagKey)"
+                :text-color="getTextColor(tagKey)"
                 :outline="getOutline(tagKey)"
                 :label="utils.Langs_text[tagKey]"
                 @click="toggle_TrueNull(tagKey)"
@@ -39,15 +40,27 @@ export default {
 
     methods: {
 
-        getColor(lang) {
+        getBtnColor(lang) {
             if (!this.tags) {
-                return false
+                return null
             }
             //
             if (this.tags[lang]) {
-                return utils.Langs_color_dark[lang]
+                return utils.Langs_color_bth[lang]
             } else {
-                return utils.Langs_color_dark_dark[lang]
+                return utils.Langs_color_btn_outline[lang]
+            }
+        },
+
+        getTextColor(lang) {
+            if (!this.tags) {
+                return null
+            }
+            //
+            if (this.tags[lang]) {
+                return utils.Langs_color_btn_outline_dark[lang]
+            } else {
+                return utils.Langs_color_btn_outline[lang]
             }
         },
 

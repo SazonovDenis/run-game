@@ -1,6 +1,6 @@
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
-import dbConst from "run-game-frontend/src/dao/dbConst"
+import dbConst from "./dao/dbConst"
 
 export default {
 
@@ -276,23 +276,29 @@ export default {
         kaz: "Каз", // "kz",
     },
 
-    Langs_color: {
+    Langs_color_badge: {
         eng: "deep-purple-2",
         kaz: "deep-purple-2",
-        rus: "blue-grey-1",
+        rus: "blue-grey-2",
         mainLanguage: "blue-grey-1"
     },
 
-    Langs_color_dark: {
-        eng: "deep-purple-5",
-        kaz: "deep-purple-5",
-        rus: "blue-grey-5",
+    Langs_color_bth: {
+        eng: "deep-purple-2",
+        kaz: "deep-purple-2",
+        rus: "blue-grey-2",
     },
 
-    Langs_color_dark_dark: {
-        eng: "deep-purple-7",
-        kaz: "deep-purple-7",
-        rus: "blue-grey-7",
+    Langs_color_btn_outline: {
+        eng: "deep-purple-6",
+        kaz: "deep-purple-6",
+        rus: "blue-grey-6",
+    },
+
+    Langs_color_btn_outline_dark: {
+        eng: "deep-purple-9",
+        kaz: "deep-purple-9",
+        rus: "blue-grey-9",
     },
 
     // Названия для ссылок ОТ пользователя

@@ -32,14 +32,15 @@
 .task-list {
   flex-flow: wrap !important;
   display: flex !important;
-  border-left: 1px solid rgba(100, 100, 100, 0.3);
+  justify-content: center;
 }
 
 .task-item-container {
   min-width: 15rem;
-  max-width: 45rem;
+  max-width: 35rem;
   flex-grow: 1;
   border-right: 1px solid rgba(100, 100, 100, 0.3);
+  border-left: 1px solid rgba(100, 100, 100, 0.3);
 }
 
 .task-item {
@@ -52,7 +53,7 @@
 
 @media (max-width: 600px) {
   .task-item-task-question {
-    min-width: 16em !important;
+    min-width: 15em !important;
   }
 }
 

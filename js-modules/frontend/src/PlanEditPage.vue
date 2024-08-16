@@ -96,32 +96,48 @@
 
                 <!-- -->
 
-                <template v-if="this.itemsShouldLoad">
+                <template v-if="itemsShouldLoad">
 
                     <TaskListFilterBar
                         class="q-my-sm"
-                        ed-hidden ed-tags
+                        :ed-hidden="isScreenWide()"
+                        ed-tags
                         v-model:tags="viewSettings.filterTags"
                         v-model:showHidden="viewSettings.showHidden"
-                        v-model:hiddenCount="hiddenCountLoaded"
+                        :hiddenCount="hiddenCountLoaded"
                         :onTagsChange="toggleKazXorEng"
                     />
+
+                    <div
+                        class="q-my-sm"
+                        v-if="isScreenWide()">
+
+                        <BtnAddAll
+                            style="height: 3.1em;"
+                            v-if="shouldShowAddAll()"
+                            :disabled="canAddInPlanCount() === 0"
+                            :count="canAddInPlanCount()"
+                            @click="clickAddAll"
+                        />
+
+                    </div>
+
                 </template>
 
                 <!-- -->
 
                 <template v-if="!isModeView()">
 
-                    <div>
+                    <div class="q-ml-sm q-mr-xs">
 
-                        <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
+                        <q-icon class="q-my-sm q-mr-sm q-pa-sm btn-set-frame-mode"
                                 name="picture"
                                 size="2rem"
                                 style="background-color: #e0e0e0; border-radius: 20.5rem;"
                                 @click="clickImageBtn"
                         />
 
-                        <q-icon class="q-my-sm q-mx-xs q-pa-sm btn-set-frame-mode"
+                        <q-icon class="q-my-sm q-pa-sm btn-set-frame-mode"
                                 v-if="canEditItemList() && this.frameMode !== 'addByPhoto'"
                                 name="camera"
                                 size="2rem"
@@ -132,6 +148,32 @@
                     </div>
 
                 </template>
+
+            </div>
+
+
+            <!-- -->
+
+
+            <div class="row q-mb-sm" style="justify-content: end; height: 3.1em;"
+                 v-if="!isScreenWide() && (hiddenCountLoaded !== 0 || canAddInPlanCount() !== 0)">
+
+                <BtnHidden
+                    v-if="hiddenCountLoaded !== 0"
+                    class="q-mx-sm"
+                    v-model:showHidden="viewSettings.showHidden"
+                    :hiddenCount="hiddenCountLoaded"
+                />
+
+                <q-space/>
+
+                <BtnAddAll
+                    class="q-mr-sm"
+                    v-if="canAddInPlanCount() !== 0"
+                    :disabled="canAddInPlanCount() === 0"
+                    :count="canAddInPlanCount()"
+                    @click="clickAddAll"
+                />
 
             </div>
 
@@ -411,12 +453,14 @@ import TextInputPhoto from "./comp/TextInputPhoto"
 import TextInputText from "./comp/TextInputText"
 import TaskListFilterBar from "./comp/TaskListFilterBar"
 import TaskList from "./comp/TaskList"
+import BtnHidden from "./comp/filter/BtnHidden"
+import BtnAddAll from "./comp/BtnAddAll"
 
 
 export default {
 
     components: {
-        MenuContainer, HelpPanel, TaskListFilterBar,
+        MenuContainer, HelpPanel, TaskListFilterBar, BtnHidden, BtnAddAll,
         TextInputPhoto, TextInputText, TaskList,
     },
 
@@ -500,6 +544,7 @@ export default {
             visibleCount: 0,
             hiddenCount: 0,
             hiddenCountLoaded: 0,
+            notInPlanCountLoaded: 0,
 
             filterText: "",
             viewSettings: {
@@ -674,6 +719,25 @@ export default {
 
     methods: {
 
+        isScreenWide() {
+            return window.innerWidth > 700
+        },
+
+        shouldShowAddAll() {
+            // todo передалать по человечески: ищем сами, а не поручаем textInputText
+            let filterText = this.$refs.textInputText?.filterText
+
+            if ((filterText?.split(" ").length > 5) && (this.itemsLoaded.length > 5)) {
+                return true
+            }
+
+            return false
+        },
+
+        canAddInPlanCount() {
+            return this.notInPlanCountLoaded - this.hiddenCountLoaded
+        },
+
         foundButHidden() {
             return !this.viewSettings.showHidden &&
                 this.itemsLoaded.length > 0 &&
@@ -824,18 +888,6 @@ export default {
             return this.doEditItemList && (!this.plan || this.plan.isOwner === true)
         },
 
-        /*
-                selectAll() {
-                    let itemsAdd = []
-                    for (let taskItem of this.itemsLoaded) {
-                        if ((taskItem.isHidden && this.viewSettings.showHiddenLoaded) || (!taskItem.isHidden && !this.viewSettings.showHiddenLoaded)) {
-                            itemsAdd.push(taskItem)
-                        }
-                    }
-                    this.itemsAddItems(itemsAdd)
-                },
-        */
-
         calcHiddenCountExternal() {
             this.hiddenCount = 0
             for (let item of this.itemsExternal) {
@@ -857,6 +909,13 @@ export default {
             for (let item of this.itemsLoaded) {
                 if (item.isHidden) {
                     this.hiddenCountLoaded = this.hiddenCountLoaded + 1
+                }
+            }
+            //
+            this.notInPlanCountLoaded = 0
+            for (let item of this.itemsLoaded) {
+                if (!item.isInPlan) {
+                    this.notInPlanCountLoaded = this.notInPlanCountLoaded + 1
                 }
             }
         },
@@ -1108,7 +1167,11 @@ export default {
         },
 
         itemAddMenuColor(taskItem) {
-            return "grey-8"
+            if (this.itemIsInPlan(taskItem)) {
+                return "grey-8"
+            } else {
+                return "green-7"
+            }
         },
 
         itemAddMenuClick(taskItem, canItemDel = true) {
@@ -1419,6 +1482,16 @@ export default {
 
         clickItemsHideDelText() {
             this.setFrameMode("viewItemsHideDel")
+        },
+
+        clickAddAll() {
+            let itemsAdd = []
+            for (let taskItem of this.itemsLoaded) {
+                if (!taskItem.isHidden) {
+                    itemsAdd.push(taskItem)
+                }
+            }
+            this.itemsAddItems(itemsAdd)
         },
 
 

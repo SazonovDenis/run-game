@@ -80,18 +80,6 @@
                        @click="onNewPicture"
                 />
 
-                <!--
-                                <q-btn v-if="isCameraCapturing === true || searchDone === true"
-                                       rounded
-                                       class="photo-btn photo-btn-file"
-                                       color="secondary"
-                                       no-caps
-                                       icon="picture"
-                                       :label="labelChooseFile()"
-                                       @click="onChooseFile"
-                                />
-                -->
-
                 <div v-if="isCameraCapturing === false && searchDone === true"
                      class="col zoom-btn"
                 >
@@ -121,9 +109,17 @@
 
         <div v-if="searchDone" class="selected-list-container col">
 
+            <div
+                v-if="textSelected"
+                class="q-pa-md rgm-state-text"
+            >
+                Слова &laquo;{{ textSelected }}&raquo; нет в словаре
+            </div>
+
             <TaskList
+                v-else
                 :showEdit="true"
-                :tasks="itemsSelectedList"
+                :tasks="itemsListSelected"
                 :itemsMenu="itemsMenu"
                 messageNoItems="Выберите слово на фото"
             />
@@ -153,7 +149,7 @@ import TaskList from "./TaskList"
 export default {
 
     components: {
-        TaskList
+        TaskList,
     },
 
     props: {
@@ -199,7 +195,8 @@ export default {
 
             info: null,
 
-            itemsSelectedList: [],
+            itemsListSelected: [],
+            textSelected: null,
 
             itemPositions: [],
             itemsPositionsIdx: {},
@@ -327,19 +324,25 @@ export default {
         },
 
         onPictureClick() {
-            this.itemsSelectedList = []
+            this.itemsListSelected = []
+            this.textSelected = null
         },
 
         onItemPositionClick(itemPosition) {
             let itemsLst = this.findItemsList(itemPosition)
-            //console.info("onItemPosition click", itemsLst)
 
             //
-            this.itemsSelectedList = itemsLst
+            if (itemsLst.length !== 0) {
+                this.itemsListSelected = itemsLst
+                this.textSelected = null
+            } else {
+                this.itemsListSelected = []
+                this.textSelected = itemPosition.text
+            }
 
             //
-            for (let item1 of itemsLst) {
-                this.$emit("itemClick", item1)
+            for (let item of itemsLst) {
+                this.$emit("itemClick", item)
             }
 
             return false
@@ -374,28 +377,6 @@ export default {
             await this.checkCameraInit()
             //
             this.isCameraCapturing = true
-        },
-
-        labelChooseFile() {
-            if (this.searchDone) {
-                return "Новый файл"
-            } else {
-                if (Jc.cfg.is.mobile) {
-                    return "Из галереи"
-                } else {
-                    return "Из файла"
-                }
-            }
-        },
-
-        onChooseFile() {
-            this.clearData(true)
-            this.clearImage();
-            //
-            this.searchDone = false
-            this.isStillImage = false
-            //
-            this.$emit("fileChoose")
         },
 
         onItemsCleared() {
@@ -624,7 +605,8 @@ export default {
             this.items.length = 0
 
             // Очистим свои списки
-            this.itemsSelectedList = []
+            this.itemsListSelected = []
+            this.textSelected = null
             //
             this.itemPositions = []
             this.itemsPositionsIdx = {}

@@ -151,7 +151,7 @@
 
 
             <div class="row q-mb-sm" style="justify-content: end; height: 3.1em;"
-                 v-if="!isScreenWide() && (hiddenCountLoaded !== 0 || canAddInPlanCount() !== 0)">
+                 v-if="!isScreenWide() && (hiddenCountLoaded !== 0 || shouldShowAddAll())">
 
                 <BtnHidden
                     v-if="hiddenCountLoaded !== 0"
@@ -164,7 +164,7 @@
 
                 <BtnAddAll
                     class="q-mr-sm"
-                    v-if="canAddInPlanCount() !== 0"
+                    v-if="shouldShowAddAll()"
                     :disabled="canAddInPlanCount() === 0"
                     :count="canAddInPlanCount()"
                     @click="clickAddAll"

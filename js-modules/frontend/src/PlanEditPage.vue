@@ -956,10 +956,12 @@ export default {
             this.itemsShouldLoad = itemsShouldLoad
 
             // Ранее сформированные списки с разницей очищаем, ведь ищем заново
-            this.itemsAdd = []
-            this.itemsDel = []
-            this.itemsHideAdd = []
-            this.itemsHideDel = []
+            if (this.immediateSaveMode) {
+                this.itemsAdd = []
+                this.itemsDel = []
+                this.itemsHideAdd = []
+                this.itemsHideDel = []
+            }
 
             // Удобнее держать отдельную переменную this.hiddenCount
             this.calcHiddenCountLoaded()
@@ -1481,13 +1483,13 @@ export default {
         },
 
         clickAddAll() {
-            let itemsAdd = []
+            let itemsTmp = []
             for (let taskItem of this.itemsLoaded) {
                 if (!taskItem.isHidden) {
-                    itemsAdd.push(taskItem)
+                    itemsTmp.push(taskItem)
                 }
             }
-            this.itemsAddItems(itemsAdd)
+            this.itemsAddItems(itemsTmp)
         },
 
 

@@ -61,10 +61,10 @@
     0% {
       opacity: 0.1;
     }
-    20% {
+    10% {
       opacity: 1;
     }
-    80% {
+    90% {
       opacity: 1;
     }
     100% {
@@ -112,7 +112,7 @@
 
   .jc-progress-bar {
     width: 8em;
-    border: 1px silver solid;
+    border: 1px rgba(128, 0, 0, 0.6) solid;
     border-radius: 0.5rem;
     display: none;
     opacity: 0;
@@ -124,7 +124,7 @@
   .jc-progress-bar-bar {
     height: 4px;
     width: 100%;
-    background: silver;
+    background: rgba(128, 0, 0, 0.6);
     animation-name: progress-bar-bar;
     animation-delay: var(--bar-delay);
     animation-duration: calc(var(--bar-duration) / 2);

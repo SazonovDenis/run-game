@@ -1496,24 +1496,6 @@ export default {
         async clickImageBtn() {
             // Начинаем выбирать файл
             this.clickFileChoose()
-
-            /*
-            // Читаем буфер обмена и ищем избражение
-            let blob = await this.handleClipboardItems()
-
-            // Есть буфер обмена?
-            if (blob) {
-                // Берем содержимое буфера обмена
-                this.handleImage(blob)
-
-                // Чистим буфер обмена, чтобы второй раз не вставлять, а могла сработать вставка из файла
-                this.clearClipboardItems()
-
-            } else {
-                // Начинаем выбирать файл
-                this.clickFileChoose()
-            }
-            */
         },
 
         async onTextInputPaste(event) {

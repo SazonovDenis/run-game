@@ -5,139 +5,135 @@
         :frameReturn="frameReturn"
         :frameReturnProps="frameReturnProps"
         :helpKey="getHelpKey()"
+        :loaded="dataLoaded"
     >
 
-        <div v-if="dataLoaded">
+        <!-- -->
 
-            <!-- -->
+        <HelpPanel class="q-mt-xs q-mb-none" :helpKey="getHelpKey()"/>
 
-            <HelpPanel class="q-mt-xs q-mb-none" :helpKey="getHelpKey()"/>
-
-            <!-- -->
+        <!-- -->
 
 
-            <div class="justify-center row q-pt-sm">
+        <div class="justify-center row q-pt-sm">
 
-                <StatisticWordsLearned :statistic="statistic"/>
+            <StatisticWordsLearned :statistic="statistic"/>
 
-                <StatisticRating :statistic="statistic"/>
-
-            </div>
-
-            <div class="row">
-
-                <jc-btn class="q-ma-sm"
-                        kind="secondary"
-                        label="Статистика"
-                        style="min-width: 8em;"
-                        @click="onPlanStatistic()">
-                </jc-btn>
-
-                <jc-btn class="q-ma-sm"
-                        kind="secondary"
-                        label="Поделиться"
-                        style="min-width: 8em;"
-                        @click="onPlanUsrPlan()">
-                </jc-btn>
-
-                <q-space/>
-
-                <jc-btn class="q-ma-sm"
-                        kind="primary"
-                        label="Играть уровень"
-                        style="min-width: 12em;"
-                        @click="gameStart()">
-                </jc-btn>
-
-            </div>
-
-
-            <TaskListFilterBar
-                class="q-my-sm"
-                ed-hidden _ed-sort ed-filter
-                v-model:filterText="filterText"
-                v-model:sortField="sortField"
-                v-model:showHidden="showHidden"
-                :hiddenCount="hiddenCount"
-                :visibleCount="visibleCount"
-            />
-
-            <TaskList
-                v-if="(visibleCount > 0) || (showHidden && hiddenCount > 0)"
-                :showLastItemPadding="true"
-                :showEdit="true"
-                :showRating="true"
-                :tasks="tasks"
-                :itemsMenu="itemsMenu"
-                :filter="filter"
-            />
-
-            <div v-else-if="hiddenCount > 0"
-                 class="q-pa-md rgm-state-text">
-                Все слова в уровне вы знаете, поэтому они скрыты
-            </div>
-
-            <div v-else
-                 class="q-pa-md rgm-state-text">
-                В уровне нет ни одного слова
-            </div>
-
-
-            <q-page-sticky
-                position="bottom-left"
-                :offset="[10, 10]">
-                <div class="row q-gutter-x-sm"
-                     style="_border: solid 1px red; align-items: end;">
-                    <q-btn
-                        v-if="canDeletePlan()"
-                        rounded no-caps class="q-py-xs q-px-md"
-                        color="red-7"
-                        icon="del"
-                        label="Удалить уровень"
-                        size="1.2em"
-                        style="width: 15rem"
-                        @click="onPlanDelete"
-                    />
-                </div>
-
-            </q-page-sticky>
-
-            <q-page-sticky
-                position="bottom-right"
-                :offset="[10, 10]">
-
-                <div class="row q-gutter-x-sm"
-                     style="_border: solid 1px green; align-items: end;">
-
-                    <q-btn
-                        _v-if="plan.isOwner === true"
-                        round no-caps class="q-py-none q-px-md"
-                        _label="Редактировать"
-                        color="purple-4"
-                        icon="edit"
-                        size="1.2em"
-                        _style="width: 14rem"
-                        @click="onPlanEdit"
-                    />
-
-
-                    <q-btn
-                        v-if="plan.isOwner === true"
-                        rounded no-caps class="q-py-xs q-px-md"
-                        label="Добавить слова"
-                        color="green-7"
-                        icon="add"
-                        size="1.2em"
-                        style="width: 15rem"
-                        @click="onPlanAddFact"
-                    />
-
-                </div>
-
-            </q-page-sticky>
-
+            <StatisticRating :statistic="statistic"/>
 
         </div>
+
+        <div class="row">
+
+            <jc-btn class="q-ma-sm"
+                    kind="secondary"
+                    label="Статистика"
+                    style="min-width: 8em;"
+                    @click="onPlanStatistic()">
+            </jc-btn>
+
+            <jc-btn class="q-ma-sm"
+                    kind="secondary"
+                    label="Поделиться"
+                    style="min-width: 8em;"
+                    @click="onPlanUsrPlan()">
+            </jc-btn>
+
+            <q-space/>
+
+            <jc-btn class="q-ma-sm"
+                    kind="primary"
+                    label="Играть уровень"
+                    style="min-width: 12em;"
+                    @click="gameStart()">
+            </jc-btn>
+
+        </div>
+
+
+        <TaskListFilterBar
+            class="q-my-sm"
+            ed-hidden _ed-sort ed-filter
+            v-model:filterText="filterText"
+            v-model:sortField="sortField"
+            v-model:showHidden="showHidden"
+            :hiddenCount="hiddenCount"
+            :visibleCount="visibleCount"
+        />
+
+        <TaskList
+            v-if="(visibleCount > 0) || (showHidden && hiddenCount > 0)"
+            :showLastItemPadding="true"
+            :showEdit="true"
+            :showRating="true"
+            :tasks="tasks"
+            :itemsMenu="itemsMenu"
+            :filter="filter"
+        />
+
+        <div v-else-if="hiddenCount > 0"
+             class="q-pa-md rgm-state-text">
+            Все слова в уровне вы знаете, поэтому они скрыты
+        </div>
+
+        <div v-else
+             class="q-pa-md rgm-state-text">
+            В уровне нет ни одного слова
+        </div>
+
+
+        <q-page-sticky
+            position="bottom-left"
+            :offset="[10, 10]">
+            <div class="row q-gutter-x-sm"
+                 style="_border: solid 1px red; align-items: end;">
+                <q-btn
+                    v-if="canDeletePlan()"
+                    rounded no-caps class="q-py-xs q-px-md"
+                    color="red-7"
+                    icon="del"
+                    label="Удалить уровень"
+                    size="1.2em"
+                    style="width: 15rem"
+                    @click="onPlanDelete"
+                />
+            </div>
+
+        </q-page-sticky>
+
+        <q-page-sticky
+            position="bottom-right"
+            :offset="[10, 10]">
+
+            <div class="row q-gutter-x-sm"
+                 style="_border: solid 1px green; align-items: end;">
+
+                <q-btn
+                    _v-if="plan.isOwner === true"
+                    round no-caps class="q-py-none q-px-md"
+                    _label="Редактировать"
+                    color="purple-4"
+                    icon="edit"
+                    size="1.2em"
+                    _style="width: 14rem"
+                    @click="onPlanEdit"
+                />
+
+
+                <q-btn
+                    v-if="plan.isOwner === true"
+                    rounded no-caps class="q-py-xs q-px-md"
+                    label="Добавить слова"
+                    color="green-7"
+                    icon="add"
+                    size="1.2em"
+                    style="width: 15rem"
+                    @click="onPlanAddFact"
+                />
+
+            </div>
+
+        </q-page-sticky>
 
 
     </MenuContainer>

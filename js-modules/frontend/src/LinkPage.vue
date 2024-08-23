@@ -3,6 +3,7 @@
     <MenuContainer
         :title="title"
         :frameReturn="frameReturn"
+        :loaded="dataLoaded"
     >
 
         <template v-if="frameMode === 'find'">
@@ -110,10 +111,10 @@ export default {
 
     data() {
         return {
+            dataLoaded: false,
+
             usrs: [],
             usrsFind: [],
-
-            dataLoaded: false,
 
             frameMode: "list",
 
@@ -237,7 +238,6 @@ export default {
     },
 
     async mounted() {
-        this.dataLoaded = false
         this.usrs = []
 
         //

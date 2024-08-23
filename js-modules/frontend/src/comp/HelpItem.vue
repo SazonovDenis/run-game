@@ -10,7 +10,7 @@
 
         <q-btn flat no-caps
                size="md"
-               label="Принято"
+               label="Ok"
                class="help-btn-close text-grey-9"
                @click="closeClick"
         />

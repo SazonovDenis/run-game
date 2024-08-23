@@ -1,6 +1,5 @@
 <template>
 
-
     <q-layout view="hHh lpR fFf" style="user-select: none;">
 
 
@@ -121,7 +120,7 @@
 
         <!-- Содержимое -->
 
-        <q-page-container>
+        <q-page-container v-if="loaded===true">
 
             <!-- slot default -->
             <slot>
@@ -289,6 +288,7 @@
 
 
     </q-layout>
+
 </template>
 
 
@@ -308,6 +308,8 @@ export default {
     },
 
     props: {
+        loaded: {type: Boolean, default: true},
+
         // Если параметр title не передан,
         // то показываем главное меню в табах и левое меню под бутербродом.
         // Если указан, то меню не показано, а окно в режиме модального,

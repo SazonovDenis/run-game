@@ -1,15 +1,11 @@
 <template>
 
-    <div>
-
-        <PlanEditPage
-            :plan="plan"
-            :doEditPlan="false"
-            defaultMode="addByText"
-        />
-
-    </div>
-
+    <PlanEditPage
+        :plan="plan"
+        :doEditPlan="false"
+        defaultMode="addByText"
+        :loaded="dataLoaded"
+    />
 
 </template>
 
@@ -36,6 +32,8 @@ export default {
 
     data() {
         return {
+            dataLoaded: false,
+
             plan: {},
         }
     },
@@ -53,6 +51,9 @@ export default {
 
         //
         this.plan = planDefault
+
+        //
+        this.dataLoaded = true
     }
 
 }

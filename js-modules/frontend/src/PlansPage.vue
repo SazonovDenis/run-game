@@ -5,6 +5,7 @@
         :title="getTitle()"
         :frameReturn="getFrameReturn()"
         :helpKey="getHelpKey()"
+        :loaded="dataLoaded"
     >
 
         <!-- -->
@@ -112,6 +113,8 @@ export default {
 
     data() {
         return {
+            dataLoaded: false,
+
             plans: [],
 
             filterText: "",
@@ -422,6 +425,9 @@ export default {
 
         // Список
         await this.loadPlans()
+
+        //
+        this.dataLoaded = true
     },
 
 }

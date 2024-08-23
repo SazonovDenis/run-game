@@ -5,140 +5,106 @@
         :title="title"
         :frameReturn="frameReturn"
         :frameReturnProps="frameReturnProps"
+        :loaded="dataLoaded"
     >
 
-        <div v-if="dataLoaded">
+        <div v-if="!this.localState.game">
+            <LogoGame/>
+            <div class="message-no-data">Нет данных об игре</div>
+        </div>
 
-            <div v-if="!this.localState.game">
-                <LogoGame/>
-                <div class="message-no-data">Нет данных об игре</div>
+
+        <template v-if="localState.game">
+
+            <div class="justify-center row q-mt-md">
+
+
+                <!-- -->
+
+                <div class="result-words">
+
+                    <div class="row">
+
+                        <StatisticWordsLearned :statistic="localState.statistic"/>
+
+                        <StatisticWordsRepeated :statistic="localState.statistic"/>
+
+                    </div>
+
+                </div>
+
+
+                <!-- -->
+
+                <div class="result-words">
+
+                    <div class="row q-mt-md">
+
+                        <StatisticRatingDiff
+                            class="q-mx-md q-my-sm q-mb-md"
+                            :statistic="localState.statistic"/>
+
+                    </div>
+
+                </div>
+
             </div>
 
-            
-            <template v-if="localState.game">
-
-                <div class="justify-center row q-mt-md">
+        </template>
 
 
-                    <!-- -->
+        <template v-if="localState.game">
 
-                    <div class="result-words">
+            <div class="row">
 
-                        <div class="row">
-
-                            <StatisticWordsLearned :statistic="localState.statistic"/>
-
-                            <StatisticWordsRepeated :statistic="localState.statistic"/>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- -->
-
-                    <div class="result-words">
-
-                        <div class="row q-mt-md">
-
-                            <StatisticRatingDiff
-                                class="q-mx-md q-my-sm q-mb-md"
-                                :statistic="localState.statistic"/>
-
-                        </div>
-
-                    </div>
-
+                <div class="q-ma-sm" v-if="!localState.game.done">
+                    <jc-btn kind="primary"
+                            label="Продолжить игру"
+                            style="min-width: 12em;"
+                            @click="continueActiveGame()">
+                    </jc-btn>
                 </div>
 
-            </template>
-
-
-            <template v-if="localState.game">
-
-                <div class="row">
-
-                    <div class="q-ma-sm" v-if="!localState.game.done">
-                        <jc-btn kind="primary"
-                                label="Продолжить игру"
-                                style="min-width: 12em;"
-                                @click="continueActiveGame()">
-                        </jc-btn>
-                    </div>
-
-                    <div class="q-ma-sm" v-if="!localState.game.done">
-                        <jc-btn kind="secondary"
-                                label="Выйти из игры"
-                                style="min-width: 12em;"
-                                @click="closeActiveGame()">
-                        </jc-btn>
-                    </div>
-
-                    <div class="q-ma-sm"
-                         v-if="localState.game.plan && localState.game.done">
-                        <jc-btn kind="secondary"
-                                label="Состав уровня"
-                                style="min-width: 12em;"
-                                @click="planTaskStatistic(localState.game.plan)">
-                        </jc-btn>
-                    </div>
-
-                    <q-space/>
-
-                    <div class="q-ma-sm"
-                         v-if="localState.game.plan && localState.game.done">
-                        <jc-btn kind="primary"
-                                label="Играть уровень"
-                                style="min-width: 12em;"
-                                @click="startNewGame()">
-                        </jc-btn>
-                    </div>
-
-<!--
-                    <div class="q-ma-sm"
-                         v-if="localState.game.plan && !localState.game.done">
-                        <jc-btn kind="secondary" label="Играть другой уровень"
-                                style="min-width: 12em;"
-                                @click="onSelectPlan()">
-                        </jc-btn>
-                    </div>
-
-                    <div class="q-ma-sm"
-                         v-if="localState.game.plan && localState.game.done">
-                        <jc-btn kind="primary" label="Играть другой уровень"
-                                style="min-width: 12em;"
-                                @click="onSelectPlan()">
-                        </jc-btn>
-                    </div>
-
-                    <div class="q-ma-sm" v-if="!localState.game.plan">
-                        <jc-btn kind="primary" label="Выбрать уровень"
-                                style="min-width: 12em;"
-                                @click="onSelectPlan()">
-                        </jc-btn>
-                    </div>
--->
-
+                <div class="q-ma-sm" v-if="!localState.game.done">
+                    <jc-btn kind="secondary"
+                            label="Выйти из игры"
+                            style="min-width: 12em;"
+                            @click="closeActiveGame()">
+                    </jc-btn>
                 </div>
 
-            </template>
+                <div class="q-ma-sm"
+                     v-if="localState.game.plan && localState.game.done">
+                    <jc-btn kind="secondary"
+                            label="Состав уровня"
+                            style="min-width: 12em;"
+                            @click="planTaskStatistic(localState.game.plan)">
+                    </jc-btn>
+                </div>
+
+                <q-space/>
+
+                <div class="q-ma-sm"
+                     v-if="localState.game.plan && localState.game.done">
+                    <jc-btn kind="primary"
+                            label="Играть уровень"
+                            style="min-width: 12em;"
+                            @click="startNewGame()">
+                    </jc-btn>
+                </div>
+
+            </div>
+
+        </template>
 
 
-            <TaskList
-                v-if="localState.game && localState.game.done"
-                :tasks="localState.tasks"
-                :showTaskData="true"
-                :showAnswerResult="true"
-                :showRating="true"
-            />
-
-
-        </div>
-
-
-        <div v-else class="game-info">
-            <LogoGame/>
-        </div>
+        <TaskList
+            v-if="localState.game && localState.game.done"
+            :tasks="localState.tasks"
+            :showTaskData="true"
+            :showAnswerResult="true"
+            :showRating="true"
+        />
 
 
     </MenuContainer>
@@ -174,8 +140,9 @@ export default {
 
     data() {
         return {
-            localState: {},
             dataLoaded: false,
+
+            localState: {},
         }
     },
 
@@ -248,8 +215,6 @@ export default {
     },
 
     async mounted() {
-        this.dataLoaded = false
-
         if (this.gameId) {
             // Загружаем игру по id
             this.localState = await gameplay.api_getGame(this.gameId)

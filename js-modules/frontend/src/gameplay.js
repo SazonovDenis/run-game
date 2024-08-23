@@ -1,12 +1,12 @@
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
+import gameplayCtx from "./gameplayCtx"
 import animation from "./animation"
 import utilsCore from "./utils2D"
 import {daoApi} from "./dao"
 
 import auth from "./auth"
 import appConst from "./dao/appConst"
-import gameplayCtx from "./gameplayCtx"
 
 export default {
 
@@ -65,9 +65,12 @@ export default {
         let message = res?.error?.message
 
         //
-        if (message && message.includes(appConst.ERROR_CODES.USER_NOT_SET)) {
+        if (message && message.includes("#" + appConst.ERROR_CODES.USER_NOT_SET + "#")) {
             apx.showFrame({
-                frame: '/login'
+                frame: "/login",
+                props: {
+                    returnUrl: document.location.href
+                }
             })
 
             // Сами обработали ошибку

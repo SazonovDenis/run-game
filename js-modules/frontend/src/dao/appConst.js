@@ -55,7 +55,7 @@ export default {
      * Коды ошибок
      */
     ERROR_CODES: {
-        USER_NOT_SET: "USER_NOT_SET"
+        USER_NOT_SET: "RGM_USER_NOT_SET"
     },
 
 

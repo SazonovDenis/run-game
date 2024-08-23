@@ -314,6 +314,12 @@ export default {
 
     components: {LogoGame},
 
+    props: {
+        returnUrl: null,
+        returnFrame: null,
+        returnProps: null,
+    },
+
     data: function() {
         return {
             frameMode: null,
@@ -410,6 +416,21 @@ export default {
             this.execRegisterUser(this.text, this.login, this.password)
         },
 
+        redirect() {
+            if (this.returnUrl) {
+                window.location.replace(this.returnUrl)
+            } else if (this.returnFrame) {
+                apx.showFrame({
+                    frame: this.returnFrame,
+                    props: this.returnProps,
+                })
+            } else {
+                apx.showFrame({
+                    frame: "/",
+                })
+            }
+        },
+
         async execLoginAsUser(login, password) {
             if (!jcBase.cfg.envDev && Jc.cfg.is.mobile) {
                 utils.openFullscreen()
@@ -424,9 +445,7 @@ export default {
                 this.saveLocalUser(ui)
 
                 //
-                apx.showFrame({
-                    frame: '/',
-                })
+                this.redirect()
             }
         },
 
@@ -439,9 +458,7 @@ export default {
                 this.saveLocalUser(ui)
 
                 //
-                apx.showFrame({
-                    frame: '/',
-                })
+                this.redirect()
             }
         },
 

@@ -141,9 +141,9 @@ class Item_find extends BaseMdbUtils {
         // --- Поиск по фрагменту
 
         // Если искали одно слово и нашили мало - то поищем ещё и по фрагменту
-        if (textPositionsRaw.size() == 1 && stItemRes.size() <= MAX_COUNT_FOUND) {
+        if (textPositions.size() == 1 && stItemRes.size() <= MAX_COUNT_FOUND) {
             // Ищем Items по фрагменту
-            TextPosition textPositionWord = textPositionsRaw.get(0)
+            TextPosition textPositionWord = textPositions.get(0)
             String word = textPositionWord.text
             Store stItemFoundWord = findWordPart(word, tags)
 

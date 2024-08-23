@@ -18,12 +18,4 @@
 
     </domain>
 
-    <domain name="Tesseract.items">
-
-        <field name="item" parent="Item/ref"/>
-        <field name="itemValue" parent="string"/>
-        <field name="positions" parent="object"/>
-
-    </domain>
-
 </root>

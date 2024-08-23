@@ -199,8 +199,7 @@ export default {
             textSelected: null,
 
             itemPositions: [],
-            itemsPositionsIdx: {},
-            itemsPositionsIdxList: {},
+            itemsIdIdx: {},
         }
     },
 
@@ -223,37 +222,31 @@ export default {
         },
 
         getItemPositionSyle(itemPosition) {
-            let imageRealWidth = this.stillWidth
-            let imageRealHeight = this.stillHeight
-            //
-            let imageWidth = this.stillWidth
-            let imageHeight = this.stillHeight
-
-            //
-            let kWidth = this.stillVisibleWidth / imageRealWidth
-
-            //
-            let itemId = itemPosition.item
-            //let item = this.itemsPositionsIdx[itemId]
-            let itemsLst = this.itemsPositionsIdxList[itemId]
+            // ---
+            // Нахождение в списках
 
             //
             let isItem = false
             let isHidden = false
             let isInPlan = false
             //
-            if (itemsLst) {
-                for (let i = 0; i < itemsLst.length; i++) {
-                    let item = itemsLst[i]
-                    isItem = true
-                    isHidden = isHidden || item.isHidden
-                    isInPlan = isInPlan || item.isInPlan
+            let positionItems = itemPosition.items
+            if (positionItems) {
+                for (let itemId of positionItems) {
+                    let item = this.itemsIdIdx[itemId]
+                    if (item) {
+                        isItem = true
+                        // Хоть один из positionItems находится в плане (скрыт) - считаем, что вся позиция в плане (скрыта)
+                        isHidden = isHidden || item.isHidden
+                        isInPlan = isInPlan || item.isInPlan
+                    }
                 }
             }
 
+            // Окраска в зависимости от нахождения в списках
             let borderColor
             let backgroundColor
-
+            //
             if (isItem) {
                 if (isInPlan) {
                     borderColor = "rgba(20, 230, 20, 0.3)"
@@ -271,14 +264,29 @@ export default {
             }
 
 
+            // ---
+            // Расположение
+
             //
+            let position = itemPosition.position
+            //
+            let imageRealWidth = this.stillWidth
+            let kWidth = this.stillVisibleWidth / imageRealWidth
+            //
+            let left = Math.round(position.left * kWidth)
+            let top = Math.round(position.top * kWidth)
+            let width = Math.round(position.width * kWidth)
+            let height = Math.round(position.height * kWidth)
+
+
+            // ---
             let res = {
                 borderColor: borderColor,
                 backgroundColor: backgroundColor,
-                left: Math.round(itemPosition.left * kWidth) + "px",
-                top: Math.round(itemPosition.top * kWidth) + "px",
-                width: Math.round(itemPosition.width * kWidth) + "px",
-                height: Math.round(itemPosition.height * kWidth) + "px",
+                left: left + "px",
+                top: top + "px",
+                width: width + "px",
+                height: height + "px",
             }
 
             return res
@@ -329,7 +337,7 @@ export default {
         },
 
         onItemPositionClick(itemPosition) {
-            let itemsLst = this.findItemsList(itemPosition)
+            let itemsLst = this.findItemsList(itemPosition.items)
 
             //
             if (itemsLst.length !== 0) {
@@ -348,18 +356,20 @@ export default {
             return false
         },
 
-        findItemsList(itemPosition) {
-            let itemId = itemPosition.item
-            let item = this.itemsPositionsIdx[itemId]
-            let itemsLst = this.itemsPositionsIdxList[itemId]
+        findItemsList(itemIds) {
+            let items = []
 
-            //
-            if (!itemsLst) {
-                itemsLst = []
+            for (let itemId of itemIds) {
+                let item = this.itemsIdIdx[itemId]
+
+                //
+                if (item) {
+                    items.push(item)
+                }
             }
 
             //
-            return itemsLst
+            return items
         },
 
         onTakePicture() {
@@ -538,6 +548,7 @@ export default {
 
 
             //
+            this.clearData()
             await this.loadData(dataImage)
 
         },
@@ -563,36 +574,22 @@ export default {
                 this.items.push(item)
             }
 
-            // positions
-            let plainPositions = []
-            for (let item of resItemsPositions) {
-                let positions = item.positions
-                for (let itemPosition of positions) {
-                    itemPosition.item = item.item
-                    plainPositions.push(itemPosition)
-                }
-            }
-            //
+
+            // ---
+
+            // Получим список positions
             this.itemPositions.length = 0
-            for (let p of plainPositions) {
-                this.itemPositions.push(p)
+            for (let position of resItemsPositions) {
+                this.itemPositions.push(position)
             }
 
-            // Создадим индекс по item - для обработки кликов
-            this.itemsPositionsIdx = {}
-            this.itemsPositionsIdxList = {}
+            // Создадим индекс по itemId - для обработки кликов
+            this.itemsIdIdx = {}
             for (let item of this.items) {
                 let itemId = item.item
-                this.itemsPositionsIdx[itemId] = item
                 //
-                let lst = this.itemsPositionsIdxList[itemId]
-                if (!lst) {
-                    lst = []
-                    this.itemsPositionsIdxList[itemId] = lst
-                }
-                lst.push(item)
+                this.itemsIdIdx[itemId] = item
             }
-
 
             // --- Уведомим родителя
             this.$emit("itemsChange", this.searchDone)
@@ -609,8 +606,7 @@ export default {
             this.textSelected = null
             //
             this.itemPositions = []
-            this.itemsPositionsIdx = {}
-            this.itemsPositionsIdxList = {}
+            this.itemsIdIdx = {}
 
             // Уведомим родителя
             if (doEmitParent) {

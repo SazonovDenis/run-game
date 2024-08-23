@@ -1,13 +1,16 @@
 package run.game.dao.backstage
 
+import groovy.transform.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.dao.backstage.impl.*
 import run.game.model.service.*
 
 /**
  * Поиск по словам или тексту.
  */
+@TypeChecked
 class Item_find extends BaseMdbUtils {
 
 
@@ -16,138 +19,228 @@ class Item_find extends BaseMdbUtils {
 
 
     /**
-     * Выполняет поиск элементов textItemsRaw в словарях.
+     * Выполняет поиск элементов textPositionsRaw в словарях.
      * Элементы пердварительно очищаются и преобразовываются.
      *
-     * @param textItemsRaw Текстовые фрагменты. Каждый элемент ключом имеет текст,
-     * значением - набор позиций в источнике, где этот элемент встретился
+     * @param textPositionsRaw Текстовые фрагменты
      * @param tags Фильтр по тэгам, например по языку
-     * @param textItemsFiltered todo: нужен ли агрумент
-     * @return Найденные слова: store со списком Item-ов и Fact-ов.
+     * @param textPositionsRes Найденные позиции. Каждый элемент ключом имеет позицию,
+     *                         значением - набор item, которые нашлись по тексту в позиции.
+     * @return Найденные слова: store со списком Item-ов и Fact-ов. Каждый элемент ключом имеет item,
+     * значением - набор позиций в источнике, где этот item встретился
      */
-    Store collectItems(Map<String, Set> textItemsRaw, Map tags, Map<String, Set> textItemsFiltered) {
-        // --- Обработка найденного: фильтрация и чистка
-        Map<String, Set> textItems = filterTextItems(textItemsRaw, (word, item) -> {
-            return UtWord.filterAndSplitWord(word)
+    Store collectItems(List<TextPosition> textPositionsRaw, Map<Long, Long> tags, List<TextPosition> textPositionsRes) {
+        List<TextPosition> textPositions
+
+
+        // --- Обработка списка на поиск: слияние по переносам
+        textPositions = splitWordDivisions(textPositionsRaw)
+
+
+        // --- Обработка списка на поиск: фильтрация и чистка
+        textPositions = handleTextPositions(textPositions, true, (textPosition, idx) -> {
+            return UtWord.filterAndSplitWord(textPosition.text)
         })
 
 
-        // --- Обработка найденного: стоп-слова
+        // --- Обработка списка на поиск: стоп-слова
 
         // Получаем из кэша стоп-слова
         WordCacheService wordService = mdb.getModel().bean(WordCacheService)
         StoreIndex idxOcrStopWords = wordService.getIdxOcrStopWords()
 
         // Фильтруем по стоп-словам
-        textItems = filterTextItems(textItems, (word, item) -> {
+        textPositions = handleTextPositions(textPositions, true, (textPosition, idx) -> {
             List res = new ArrayList()
-            if (idxOcrStopWords.get(word.toLowerCase()) == null) {
-                res.add(word)
+            if (idxOcrStopWords.get(textPosition.text) == null) {
+                res.add(textPosition.text)
             }
             return res
         })
 
 
+        // --- Формируем результирующие списки
+
+        // Store
+        Store stItemRes = mdb.createStore("Item.find")
+
+        // List
+        if (textPositionsRes != null) {
+            // Список позиций, поступивший в первый поиск, безусловно попадет в результат
+            textPositionsRes.addAll(textPositions)
+        }
+
+
         // --- Поиск по точному совпадению
 
-        //
-        List<String> text = textItems.keySet().toList()
+        // Формируем пары из продряд идущих слов.
+        // Так можно попытаться найти словарное слово, которое состоит из нескольких слов,
+        // например: "go on", "он екі".
+        List<TextPosition> textPositionPairs = createPairs(textPositions)
+
+        // Ищем Items по точному совпадению с textPositions
+        Store stItemFound = findTextExact(textPositionPairs, tags)
 
 
-        // Ищем Items по точному совпадению с textItems
-        Store stItem = findTextExact(text, tags)
+        // --- Обновляем результирующие списки
+
+        // Store
+        // Первая порция поиска поступает в исходно пустой store, поэтому копируется полностью
+        copyToStore(stItemFound, stItemRes)
+
+        // List
+        // Первая порция поиска поступает в список позиций в том случае,
+        // если что-то нашлось сверх того, что поступило на поиск.
+        // В этой итерации свверх ранее добавленного будут ПАРЫ слов.
+        copyToList(stItemFound, textPositionPairs, textPositionsRes)
 
 
         // --- Поиск того, что не нашлось: по точному совпадению, но с перобразованем словоформ
 
         // Проверим, какие слова не нашлись по непосредственному написанию
-        StoreIndex idxItems = stItem.getIndex("value")
-        Map<String, Set> textItemsNotFound = new LinkedHashMap<>()
+        StoreIndex idxItem = stItemRes.getIndex("value")
+        List<TextPosition> textItemsNotFound = new ArrayList<>()
         //
-        for (String word : text) {
-            if (idxItems.get(word) == null) {
-                textItemsNotFound.put(word, textItems.get(word))
+        for (TextPosition textPosition : textPositions) {
+            if (idxItem.get(textPosition.text) == null) {
+                textItemsNotFound.add(textPosition)
             }
         }
 
-        // Если часть слов не нашлось -
-        // выполняем для них преобразование словоформ и делаем вторую попытку
-        Map<String, Set> textItemsTranformed = filterTextItems(textItemsNotFound, (word, item) -> {
-            return transformWord(word)
+        // Для той части слов, которые мы не смогли найти,
+        // выполняем преобразование словоформ и делаем вторую попытку
+        List<TextPosition> textItemsTranformed = handleTextPositions(textItemsNotFound, false, (textPosition, idx) -> {
+            return transformWord(textPosition.text)
         })
 
         if (textItemsTranformed.size() != 0) {
-            List textTranformed = textItemsTranformed.keySet().toList()
+            // Формируем пары из продряд идущих слов.
+            // Так можно попытаться найти словарное слово, которое состоит из нескольких слов,
+            // например: "go on", "он екі".
+            textPositionPairs = createPairs(textItemsTranformed)
 
             // Ищем Items по преобразованным словам
-            Store stItemTransformed = findTextExact(textTranformed, tags)
+            Store stItemFoundTransformed = findTextExact(textPositionPairs, tags)
 
-            // Обновляем наши списки
-            stItemTransformed.copyTo(stItem)
-            //
-            textItems.putAll(textItemsTranformed)
+
+            // --- Обновляем результирующие списки
+
+            // Store
+            // Из второй порции поиска stItemFoundTransformed в stItemRes поступают
+            // те записи, которых не было после первого поиска
+            copyToStore(stItemFoundTransformed, stItemRes)
+
+            // List
+            // Вторая порция поиска поступает в список позиций в том случае,
+            // если что-то нашлось сверх того, что поступило на поиск.
+            // В этой итерации свверх ранее добавленного будут пары ПРЕОБРАЗОВАННЫХ слов.
+            copyToList(stItemFoundTransformed, textPositionPairs, textPositionsRes)
         }
 
 
         // --- Поиск по фрагменту
 
         // Если искали одно слово и нашили мало - то поищем ещё и по фрагменту
-        if (text.size() == 1 && stItem.size() <= MAX_COUNT_FOUND) {
+        if (textPositionsRaw.size() == 1 && stItemRes.size() <= MAX_COUNT_FOUND) {
             // Ищем Items по фрагменту
-            Set itemsFound = stItem.getUniqueValues("value")
-            String word = text.get(0)
-            Store stItemWord = findWordPart(word, tags)
+            TextPosition textPositionWord = textPositionsRaw.get(0)
+            String word = textPositionWord.text
+            Store stItemFoundWord = findWordPart(word, tags)
 
-            // Обновляем наши списки
-            for (StoreRecord recItemWord : stItemWord) {
-                String value = recItemWord.getString("value")
-                if (!itemsFound.contains(value)) {
-                    stItem.add(recItemWord)
-                    itemsFound.add(value)
-                }
+
+            // --- Обновляем результирующие списки
+
+            // Store
+            copyToStore(stItemFoundWord, stItemRes)
+
+            // List
+            copyToListOnePosition(stItemFoundWord, textPositionWord, textPositionsRes)
+        }
+
+
+        // ---
+        return stItemRes
+    }
+
+
+    void copyToStore(Store stItemFound, Store stItemRes) {
+        StoreIndex idxItemRes = stItemRes.getIndex("id")
+        for (StoreRecord rec : stItemFound) {
+            if (idxItemRes.get(rec.getLong("id")) == null) {
+                stItemRes.add(rec)
             }
         }
+    }
 
-
-        // ---
-        if (textItemsFiltered != null) {
-            textItemsFiltered.putAll(textItems)
+    /**
+     * Копирует из искомых позиций textPositionsSearched в textPositionsRes те элементы,
+     * которые есть в результататах поиска stItemFound
+     *
+     * @param stItemFound Найденные записи
+     * @param textPositionsSearched Позиции, которые искали
+     * @param textPositionsRes Сюда пополняем найденные
+     */
+    void copyToList(Store stItemFound, List<TextPosition> textPositionsSearched, List<TextPosition> textPositionsRes) {
+        if (textPositionsRes == null) {
+            return
         }
 
+        //
+        StoreIndex idxItemFound = stItemFound.getIndex("value")
+        //
+        for (TextPosition textPosition : textPositionsSearched) {
+            if (idxItemFound.get(textPosition.text) != null) {
+                textPositionsRes.add(textPosition)
+            }
+        }
+    }
 
-        // ---
-        return stItem
+    /**
+     * Копирует одну искомую textPosition в textPositionsRes столько раз,
+     * сколько есть в результататах поиска stItemFound
+     */
+    void copyToListOnePosition(Store stItemFound, TextPosition textPosition, List<TextPosition> textPositionsRes) {
+        if (textPositionsRes == null) {
+            return
+        }
+
+        //
+        for (StoreRecord rec : stItemFound) {
+            String text = rec.getString("value")
+            textPositionsRes.add(new TextPosition(text, textPosition))
+        }
     }
 
 
     /**
      * Ищем СПИСОК слов, каждый по ПОЛНОМУ написанию или переводу,
      * среди наших словарных слов.
+     * Возвращаем именно item, а не fact со spelling-ом или translate-ом этого item,
+     * т.к. мы ищем именно СЛОВА (item) по написанию а не НАПИСАНИЯ слов.
      *
      * @param text список слов (очищенный)
      * @return Найденные слова: store со списком Item
      */
-    Store findTextExact(Collection<String> text, Map tagsParam) {
+    Store findTextExact(List<TextPosition> textPositions, Map<Long, Long> tagsParam) {
         Store stItem = mdb.createStore("Item.find")
 
-        // Формируем пары из продряд идущих слов.
-        // Так можно попытаться найти словарное слово, которое состоит из нескольких слов,
-        // например: "go on", "он екі".
-        Collection<String> itemsTextPairs = createPairs(text)
-        text.addAll(itemsTextPairs)
+        // Уберем повторы в textPositions - превратим их в Set
+        Set<String> setWords = new HashSet<>()
+        for (TextPosition textItem : textPositions) {
+            setWords.add(textItem.text)
+        }
 
         // Получаем из кэша spelling и translate для всех слов
         WordCacheService wordService = mdb.getModel().bean(WordCacheService)
         Map<Object, List<StoreRecord>> idxFacts = wordService.getIdxFacts()
 
-        // Отберем среди text те слова, котрые есть в наших словарях
+        // Отберем среди setWords те слова, котрые есть в наших словарях
         Set<Long> setItems = new HashSet<>()
-        for (String itemText : text) {
-            List<StoreRecord> recsFact = idxFacts.get(itemText)
+        for (String word : setWords) {
+            List<StoreRecord> recsFact = idxFacts.get(word)
             if (recsFact != null) {
                 for (StoreRecord recFact : recsFact) {
                     long itemId = recFact.getLong("item")
-                    long factId = recFact.getLong("id")
 
                     // Повторы не нужны
                     if (setItems.contains(itemId)) {
@@ -156,10 +249,10 @@ class Item_find extends BaseMdbUtils {
 
                     // Фильтр по тэгам
                     boolean wasTagComparationTrue = true
-                    Map factTags = recFact.getValue("tag")
+                    Map factTags = (Map) recFact.getValue("tag")
                     if (factTags != null && tagsParam != null && tagsParam.size() != 0) {
                         wasTagComparationTrue = false
-                        for (Map.Entry entry : tagsParam.entrySet()) {
+                        for (Map.Entry<Long, Long> entry : tagsParam.entrySet()) {
                             long tagKey = entry.getKey()
                             long tagValue = entry.getValue()
                             if (tagValue.equals(factTags.get(tagKey))) {
@@ -172,7 +265,8 @@ class Item_find extends BaseMdbUtils {
                         continue
                     }
 
-                    //
+                    // Возвращаем именно item, а не fact со spelling-ом или translate-ом этого item,
+                    // т.к. мы ищем СЛОВА (item) по написанию, а не их НАПИСАНИЯ или ПЕРЕВОДЫ (fact)
                     stItem.add([
                             id   : itemId,
                             value: recFact.getValue("itemValue"),
@@ -418,40 +512,42 @@ where
 
 
     interface IWordAnalyzer {
-        Collection<String> analyzeText(String text, Set item)
+        List<String> handleText(TextPosition textPosition, int idx)
     }
 
 
     /**
-     * Обрабатывает каждый элемент из textItems с помощью обработчика wordAnalyzer.
+     * Обрабатывает каждый элемент из textPositions с помощью обработчика wordAnalyzer.
      *
-     * @param textItems список вхождений текстов, где ключ - текст, а значения - набор мест расположения текста на изображении
-     * @param wordAnalyzer
+     * @param textPositions список вхождений текстов, где ключ - текст, а значения - набор мест расположения текста на изображении
+     * @param doSharePosition делить ли позицию, если из одного слова получилось несколько
+     * @param wordAnalyzer анализатор, сколько вернет слов - столько и добавим
      *
-     * @return Новый список, может быть больше или меньше исходного
+     * @return Новый список. Может быть больше или меньше исходного списка.
      */
-    private Map<String, Set> filterTextItems(Map<String, Set<Map>> textItems, IWordAnalyzer wordAnalyzer) {
-        Map<String, Set> textItemsRes = new LinkedHashMap<>()
+    private List<TextPosition> handleTextPositions(List<TextPosition> textPositions, boolean doSharePosition, IWordAnalyzer wordAnalyzer) {
+        List<TextPosition> textPositionsRes = new ArrayList<>()
 
-        for (String itemText : textItems.keySet()) {
-            Set textItemPositions = textItems.get(itemText)
-            List wordsFiltered = wordAnalyzer.analyzeText(itemText, textItemPositions)
-            for (String wordFiltered : wordsFiltered) {
-                Set textItemRes = textItemsRes.get(wordFiltered)
-                if (textItemRes == null) {
-                    textItemRes = new HashSet()
-                    textItemsRes.put(wordFiltered, textItemRes)
-                }
+        for (int idx = 0; idx < textPositions.size(); idx++) {
+            TextPosition textPosition = textPositions.get(idx)
+            List<String> textHandled = wordAnalyzer.handleText(textPosition, idx)
 
-                // В случае, если из одного слова в itemText получилось несколько слов в wordsFiltered -
+            if (doSharePosition && textHandled.size() > 1) {
+                // В случае, если из одного слова в textPosition получилось несколько слов в textHandled -
                 // также разделим исходный общий большой прямоугольник положения текста
-                // на несколько меньших, для каждого нового wordFiltered, пропорционально длине нового слова.
-                Set<Map> textItemPositionsSplitted = splitTextItemSinglePosition(textItemPositions, wordsFiltered, wordFiltered)
-                textItemRes.addAll(textItemPositionsSplitted)
+                // на несколько меньших, для каждого нового word, пропорционально длине нового слова.
+                List<TextPosition> textPositionsNew = splitTextItemSinglePosition(textHandled, textPosition.position)
+                textPositionsRes.addAll(textPositionsNew)
+            } else {
+                //
+                for (String word : textHandled) {
+                    TextPosition textPositionNew = new TextPosition(word, textPosition)
+                    textPositionsRes.addAll(textPositionNew)
+                }
             }
         }
 
-        return textItemsRes
+        return textPositionsRes
     }
 
 
@@ -478,9 +574,14 @@ where
 
 
         // min[ed] -> mine
+        // warm[ed] -> warm
         if (wordEng.endsWith("ed") && wordEng.length() >= 4) {
-            wordEng = wordEng.substring(0, wordEng.length() - 2)
-            return [wordEng]
+            // min[ed] -> mine
+            String wordEng_1 = wordEng.substring(0, wordEng.length() - 1)
+
+            // warm[ed] -> warm
+            String wordEng_2 = wordEng.substring(0, wordEng.length() - 2)
+            return [wordEng_1, wordEng_2]
         }
 
         // dream[ing] -> dream
@@ -493,62 +594,114 @@ where
         return null
     }
 
-
-    private Set<Map> splitTextItemSinglePosition(Set<Map> textItemPositions, List<String> words, String thisWord) {
-        Set<Map> res = new HashSet<>()
+    private List<TextPosition> splitTextItemSinglePosition(List<String> textHandled, Position positionBase) {
+        List<TextPosition> res = new ArrayList<>()
 
         //
-        int wordsCarsCount = 0
-        for (String word : words) {
-            wordsCarsCount = wordsCarsCount + word.size()
+        if (textHandled == null || textHandled.size() == 0) {
+            return res
+        }
+
+        //
+        int textHandledChars = 0
+        for (String wordHandled : textHandled) {
+            textHandledChars = textHandledChars + wordHandled.size()
         }
         //
-        int wordCharPos = 0
-        for (String word : words) {
-            if (thisWord.equals(word)) {
-                break
-            }
-            wordCharPos = wordCharPos + word.size()
-        }
-        //
-        int wordCarsCount = thisWord.size()
+        double pxByChar = positionBase.width / textHandledChars
+
 
         //
-        for (Map textItemSinglePosition : textItemPositions) {
-            int topPx = textItemSinglePosition.get("top")
-            int leftPx = textItemSinglePosition.get("left")
-            int heightPx = textItemSinglePosition.get("height")
-            int widthPx = textItemSinglePosition.get("width")
+        int textHandledCharsPos = 0
+        for (String wordHandled : textHandled) {
+            int leftPx = (int) (pxByChar * textHandledCharsPos)
+            int widthPx = (int) (pxByChar * wordHandled.length())
+
             //
-            double pxByChar = widthPx / wordsCarsCount
-            leftPx = leftPx + (pxByChar * wordCharPos)
-            widthPx = (pxByChar * wordCarsCount)
+
+            TextPosition textPosition = new TextPosition(
+                    wordHandled,
+                    new Position(
+                            positionBase.left + leftPx,
+                            positionBase.top,
+                            widthPx,
+                            positionBase.height),
+                    null,
+            )
             //
-            Map textItemSinglePositionNew = new HashMap(textItemSinglePosition)
-            textItemSinglePositionNew.put("top", topPx)
-            textItemSinglePositionNew.put("left", leftPx)
-            textItemSinglePositionNew.put("height", heightPx)
-            textItemSinglePositionNew.put("width", widthPx)
-            res.add(textItemSinglePositionNew)
+            res.add(textPosition)
+
+            //
+            textHandledCharsPos = textHandledCharsPos + wordHandled.length()
         }
 
+        //
         return res
     }
 
 
     /**
-     * Формируем пары из продряд идущих слов.
+     * Формирует пары из продряд идущих слов.
      *
      * @param text подряд идущие слова
      * @return сформированные пары
      */
-    private Collection<String> createPairs(Collection<String> text) {
-        Collection<String> res = new ArrayList<>()
+    private List<TextPosition> createPairs(List<TextPosition> textPositions) {
+        List<TextPosition> res = new ArrayList<>()
 
-        for (int i = 0; i < text.size() - 1; i++) {
-            res.add(text.get(i) + " " + text.get(i + 1))
+        // Оригинальный список
+        res.addAll(textPositions)
+
+        // Пары
+        for (int idx = 0; idx < textPositions.size() - 1; idx++) {
+            TextPosition textPosition1 = textPositions.get(idx)
+            TextPosition textPosition2 = textPositions.get(idx + 1)
+            // Текст берется из двух соседних позиций
+            String textPair = textPosition1.text + " " + textPosition2.text
+            // Прямоугольник берется от первого слова
+            TextPosition textPositionPair = new TextPosition(textPair, textPosition1)
+            //
+            res.add(textPositionPair)
         }
 
+        //
+        return res
+    }
+
+
+    /**
+     * Обнаружение переносов и формирование слитых слов
+     *
+     * @param textPositions
+     * @return
+     */
+    List<TextPosition> splitWordDivisions(List<TextPosition> textPositions) {
+        List<TextPosition> res = new ArrayList<>()
+
+        // --- Обработка списка на поиск: слияние по переносам
+        for (int idx = 0; idx < textPositions.size(); idx++) {
+            TextPosition textPosition1 = textPositions.get(idx)
+            res.add(textPosition1)
+
+            //
+            if (idx > 0) {
+                TextPosition textPosition0 = textPositions.get(idx - 1)
+
+                //
+                if (textPosition0.text.endsWith("-") && (textPosition1.pagePosition.lineNum - textPosition0.pagePosition.lineNum) == 1) {
+                    // Текст сливается из двух слов
+                    String textMerged = textPosition0.text.substring(0, textPosition0.text.length() - 1) + textPosition1.text
+                    // Прямоугольник берется от первого слова
+                    TextPosition textPositionMerged = new TextPosition(
+                            textMerged, textPosition0
+                    )
+                    //
+                    res.add(textPositionMerged)
+                }
+            }
+        }
+
+        //
         return res
     }
 

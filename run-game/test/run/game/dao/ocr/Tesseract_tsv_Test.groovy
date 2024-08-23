@@ -9,8 +9,7 @@ import jandcode.core.store.*
 import org.apache.commons.io.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
-import run.game.dao.backstage.Item_list
-import run.game.dao.game.*
+import run.game.dao.backstage.*
 
 class Tesseract_tsv_Test extends RgmBase_Test {
 
@@ -33,9 +32,12 @@ class Tesseract_tsv_Test extends RgmBase_Test {
     @Test
     void t_11_00_lst_findStill() {
         //inFileName = "test/run/game/dao/ocr/11-00.jpg"
-        //inFileName = "test/run/game/dao/ocr/orange.jpg"
-        inFileName = "test/run/game/dao/ocr/rgm13528344128969128628.png"
+        inFileName = "test/run/game/dao/ocr/orange.jpg"
+        //inFileName = "test/run/game/dao/ocr/Screenshot_20240716_125621.png"
+        //inFileName = "test/run/game/dao/ocr/sixty-four.png"
         //inFileName = "test/run/game/dao/ocr/dear-friend.jpg"
+        println()
+        println("inFileName: " + inFileName)
 
         byte[] imgData = FileUtils.readFileToByteArray(new File(inFileName))
         String imgBase64 = UtString.encodeBase64(imgData)
@@ -43,10 +45,10 @@ class Tesseract_tsv_Test extends RgmBase_Test {
         //
         Item_list lst = mdb.create(Item_list)
         DataBox res = lst.findStill(imgBase64, 0, [:])
-        Store stFact = res.get("facts")
-        Store positions = res.get("positions")
 
         //
+        Store stFact = res.get("facts")
+        Store positions = res.get("positions")
         println()
         println("stFact")
         mdb.outTable(stFact)
@@ -76,8 +78,8 @@ class Tesseract_tsv_Test extends RgmBase_Test {
     void t_11_00_ocr_parseStillMarkup() {
         //inFileName = "test/run/game/dao/ocr/11-00.jpg"
         //inFileName = "test/run/game/dao/ocr/orange.jpg"
-        inFileName = "test/run/game/dao/ocr/rgm13528344128969128628.png"
-        //inFileName = "test/run/game/dao/ocr/dear-friend.jpg"
+        //inFileName = "test/run/game/dao/ocr/seismic-bad.png"
+        inFileName = "test/run/game/dao/ocr/dear-friend.jpg"
         byte[] imgData = FileUtils.readFileToByteArray(new File(inFileName))
         String imgBase64 = UtString.encodeBase64(imgData)
 

@@ -1,29 +1,31 @@
 package run.game.dao.backstage
 
-
+import groovy.transform.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import run.game.dao.*
+import run.game.dao.backstage.impl.*
 import run.game.dao.ocr.*
 import run.game.util.*
 
 /**
  * Dao для поиска по словам, тексту или картинке.
  */
+@TypeChecked
 class Item_list extends RgmMdbUtils {
 
 
     @DaoMethod
     Store findItems(String text, long idPlan, Map tags) {
         // --- Подготовим аргументы
-        Map<String, Set> textItems = new LinkedHashMap<>()
-        textItems.put(text, null)
+        List<TextPosition> textPositions = new ArrayList<>()
+        textPositions.add(new TextPosition(text))
 
         // --- Поиск слов среди введенного
         Item_find finder = mdb.create(Item_find)
         Map tagsToFind = prepareParamsTags(tags)
-        Store stItem = finder.collectItems(textItems, tagsToFind, null)
+        Store stItem = finder.collectItems(textPositions, tagsToFind, null)
 
         // --- Заполнение свойств найденных слов
         Store stFact = makeFactList(stItem, idPlan)
@@ -40,42 +42,79 @@ class Item_list extends RgmMdbUtils {
         Store stParsedText = ocr.parseStillMarkup(imgBase64)
 
 
-        // --- Раскладываем результаты OCR на части
-
-        // Слова и их позиции
-        Map<String, Set> textItems = new LinkedHashMap<>()
-        // Позиции слов (общий список)
-        List textPositions = new ArrayList<>()
-        // Раскладываем
-        splitOcrResult(stParsedText, textItems, textPositions)
+        // --- Извлекаем из результатов OCR позиции слов (общий список)
+        List<TextPosition> textPositions = new ArrayList<>()
+        convertOcrResultToTextPositions(stParsedText, textPositions)
 
 
         // --- Поиск слов среди введенного
-        Map<String, Set> textItemsFiltered = new HashMap<>()
         Item_find finder = mdb.create(Item_find)
         Map tagsToFind = prepareParamsTags(tags)
-        Store stItem = finder.collectItems(textItems, tagsToFind, textItemsFiltered)
+        List<TextPosition> textPositionsRes = new ArrayList<>()
+        Store stItem = finder.collectItems(textPositions, tagsToFind, textPositionsRes)
 
 
         // --- Заполнение свойств найденных слов
         Store stFact = makeFactList(stItem, idPlan)
 
 
-        // --- Позиции
-        List wordList = textItemsFiltered.keySet().toList()
-        Map<Object, List<StoreRecord>> mapItems = StoreUtils.collectGroupBy_records(stItem, "value")
-        //
-        Store stItemPositions = mdb.createStore("Tesseract.items")
-        for (String word : wordList) {
-            List recs = mapItems.get(word)
-            long item = 0
-            if (recs != null) {
-                item = recs.get(0).getLong("id")
+        // --- Получим результат, где ключ - позиция
+        // Объединим позиции с одинаковым текстом, объединим одинаковые позиции
+        Map<Position, Set<TextItem>> mapPositions = new HashMap<>()
+        StoreIndex idxItem = stItem.getIndex("value")
+
+        for (TextPosition textPosition : textPositionsRes) {
+            StoreRecord recFound = idxItem.get(textPosition.text)
+
+            //
+            String text = textPosition.text
+            Long item = 0
+            if (recFound != null) {
+                item = recFound.getLong("id")
+                text = recFound.getString("value")
             }
+
+            //
+            Set<TextItem> wordPositions = mapPositions.get(textPosition.position)
+            if (wordPositions == null) {
+                wordPositions = new HashSet<>()
+                mapPositions.put(textPosition.position, wordPositions)
+            }
+
+            TextItem textItem = new TextItem(text, item)
+            wordPositions.add(textItem)
+        }
+
+
+        // Формируем store с позициями и item
+        Store stItemPositions = mdb.createStore("TextItemPosition")
+        for (Position position : mapPositions.keySet()) {
+            String text = null
+            Collection<Long> items = new HashSet<>()
+            Set<TextItem> positionTextItems = mapPositions.get(position)
+            for (TextItem textItem : positionTextItems) {
+                // Текст берем либо в первый раз, либо от элемента, где есть item
+                if (text == null || textItem.item > 0) {
+                    text = textItem.text
+                }
+                if (textItem.item > 0) {
+                    items.add(textItem.item)
+                }
+            }
+
+            //
+            Map mapPosiotion = [
+                    left  : position.left,
+                    top   : position.top,
+                    width : position.width,
+                    height: position.height,
+            ]
+
+            //
             StoreRecord rec = stItemPositions.add()
-            rec.setValue("item", item)
-            rec.setValue("itemValue", word)
-            rec.setValue("positions", textItemsFiltered.get(word))
+            rec.setValue("position", mapPosiotion)
+            rec.setValue("text", text)
+            rec.setValue("items", items)
         }
 
 
@@ -113,14 +152,14 @@ class Item_list extends RgmMdbUtils {
 
 
     /**
+     * Перобразует данные от Tesseract (в tsv формате) в список
      *
      * @param stText данные от Tesseract
-     * @param textItems разобранные слова, ключ: слово, значение: список позиций, где встретился
-     * @param textItemsPosition отдельно спискок позиций
+     * @param textPositions спискок слов их позиций
      */
-    private void splitOcrResult(Store stText, Map<String, Set> textItems, List textItemsPosition) {
-        for (int i = 0; i < stText.size(); i++) {
-            StoreRecord rec = stText.get(i)
+    private void convertOcrResultToTextPositions(Store stText, List<TextPosition> textPositions) {
+        for (int posStText = 0; posStText < stText.size(); posStText++) {
+            StoreRecord rec = stText.get(posStText)
 
             //
             int conf = rec.getInt("conf")
@@ -134,60 +173,13 @@ class Item_list extends RgmMdbUtils {
                 continue
             }
 
-
-            // Слияние по переносам
-            Map textPositionNext = null
-            if (i < stText.size() - 2) {
-                StoreRecord recNext = stText.get(i + 2)
-                int line_num = rec.getInt("line_num")
-                int line_numNext = recNext.getInt("line_num")
-                String textNext = recNext.getString("text")
-                textNext = textNext.trim()
-                //
-                if (text.endsWith("-") && (line_numNext - line_num) == 1) {
-                    text = text.substring(0, text.length() - 1) + textNext
-
-                    textPositionNext = [
-                            text  : text,
-                            left  : recNext.getInt("left"),
-                            top   : recNext.getInt("top"),
-                            width : recNext.getInt("width"),
-                            height: recNext.getInt("height"),
-                    ]
-
-                    //
-                    i = i + 2
-                }
-            }
-
-            // Формируем позицию
-            if (textPositionNext != null) {
-                textItemsPosition.add(textPositionNext)
-            }
-
             //
-            Map textPosition = [
-                    text  : text,
-                    left  : rec.getInt("left"),
-                    top   : rec.getInt("top"),
-                    width : rec.getInt("width"),
-                    height: rec.getInt("height"),
-            ]
-            textItemsPosition.add(textPosition)
-
-            //
-            Set textItemPositions = textItems.get(text)
-            if (textItemPositions == null) {
-                textItemPositions = new HashSet()
-                textItems.put(text, textItemPositions)
-            }
-            textItemPositions.add(textPosition)
-            //
-            if (textPositionNext != null) {
-                textItemPositions.add(textPositionNext)
-            }
+            TextPosition textPosition = createTextPosition(rec)
+            textPositions.add(textPosition)
         }
+
     }
+
 
     private Store makeFactList(Store stItem, long idPlan) {
         // --- Превратим список Item в список пар фактов (сгенерим комбинации)
@@ -395,5 +387,25 @@ order by
 
     // endregion
 
+
+    TextPosition createTextPosition(StoreRecord rec) {
+        PagePosition pagePosition = new PagePosition(
+                rec.getInt("par_num"),
+                rec.getInt("line_num"),
+                rec.getInt("word_num"),
+        )
+        Position position = new Position(
+                rec.getInt("left"),
+                rec.getInt("top"),
+                rec.getInt("width"),
+                rec.getInt("height"),
+        )
+        TextPosition textPosition = new TextPosition(
+                rec.getString("text"),
+                position,
+                pagePosition,
+        )
+        return textPosition
+    }
 
 }

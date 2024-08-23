@@ -24,6 +24,15 @@
     </domain>
 
 
+    <domain name="TextItemPosition">
+
+        <field name="position" parent="object"/>
+        <field name="text" parent="string"/>
+        <field name="items" parent="object"/>
+
+    </domain>
+
+
     <!-- Plan_upd -->
 
     <domain name="PlanFact.upd" parent="PlanFact">

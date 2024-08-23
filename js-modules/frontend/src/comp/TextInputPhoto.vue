@@ -721,24 +721,6 @@ export default {
 /* --- */
 
 
-.selected-list-container {
-    overflow: scroll;
-}
-
-@media (orientation: landscape) {
-    .selected-list-container {
-    }
-}
-
-@media (orientation: portrait) {
-    .selected-list-container {
-        height: calc(30vh - 4.4rem); /* чтобы не уходило ниже, чем высота экрана, за вычетом размера тулбара */
-    }
-}
-
-
-/* --- */
-
 .photo-btn {
     position: absolute;
 }

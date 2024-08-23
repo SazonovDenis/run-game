@@ -309,32 +309,18 @@
 
         </div>
 
-        <div class="btn-container-bottom-right btn-container-on-top row">
+        <q-page-sticky
+            position="bottom-right"
+            :offset="[10, 10]">
 
-            <q-btn
-                v-if="canEditPlan() && this.frameMode !== 'editPlan'"
-                round no-caps
-                _label="Редактировать"
-                color="accent"
-                class="q-py-none q-px-md btn-set-frame-mode"
-                icon="edit"
-                size="1.2em"
-                _style="width: 14rem"
-                @click="this.setFrameMode('editPlan')"
+            <BtnsEditAdd v-if="!isModeView() && isPlanExisting()"
+                         :showEdit="canEditPlan() && this.frameMode !== 'editPlan'"
+                         :showAdd="canEditPlan() && this.frameMode !== 'addByText' && this.frameMode !== 'addByPhoto'"
+                         @onPlanEdit="this.setFrameMode('editPlan')"
+                         @onPlanAddFact="this.setFrameMode('addByText')"
             />
 
-            <q-btn
-                v-if="canEditPlan() && this.frameMode !== 'addByText' && this.frameMode !== 'addByPhoto'"
-                rounded no-caps
-                color="green-7"
-                class="q-my-xnone q-mx-xs btn-set-frame-mode"
-                size="1.3rem"
-                icon="add"
-                label="Добавить слова"
-                @click="this.setFrameMode('addByText')"
-            />
-
-        </div>
+        </q-page-sticky>
 
 
         <template v-slot:footer>
@@ -396,6 +382,8 @@
 
                             </template>
 
+                            <q-space/>
+
                             <template v-if="!plan && frameMode !== 'viewItemsAdd'">
 
                                 <q-btn
@@ -419,8 +407,6 @@
                                 />
 
                             </template>
-
-                            <q-space/>
 
                         </div>
                     </div>
@@ -449,6 +435,7 @@ import TextInputPhoto from "./comp/TextInputPhoto"
 import TextInputText from "./comp/TextInputText"
 import TaskListFilterBar from "./comp/TaskListFilterBar"
 import TaskList from "./comp/TaskList"
+import BtnsEditAdd from "./comp/BtnsEditAdd"
 import BtnHidden from "./comp/filter/BtnHidden"
 import BtnAddAll from "./comp/BtnAddAll"
 
@@ -457,7 +444,7 @@ export default {
 
     components: {
         MenuContainer, HelpPanel, TaskListFilterBar, BtnHidden, BtnAddAll,
-        TextInputPhoto, TextInputText, TaskList,
+        TextInputPhoto, TextInputText, BtnsEditAdd, TaskList,
     },
 
     props: {
@@ -645,7 +632,7 @@ export default {
     computed: {
 
         planId() {
-            if (this.plan) {
+            if (this.isPlanExisting()) {
                 return this.plan.id
             } else {
                 return 0
@@ -661,7 +648,7 @@ export default {
                 } else if (this.frameMode === "viewItemsDel") {
                     return "Удаленные слова"
                 } else if (this.frameMode === "viewItemsAdd") {
-                    if (this.plan) {
+                    if (this.isPlanExisting()) {
                         return "Добавленные слова"
                     } else {
                         return "Создание уровня"
@@ -680,7 +667,7 @@ export default {
 
         getFrameReturn() {
             if (this.isModeView()) {
-                return this.returnFrameMode
+                return this.execFrameReturn
             } else {
                 return this.frameReturn
             }
@@ -688,7 +675,7 @@ export default {
 
 
         btnSaveTitle() {
-            if (this.plan) {
+            if (this.isPlanExisting()) {
                 return "Сохранить"
             } else {
                 return "Создать уровень"
@@ -864,6 +851,10 @@ export default {
             return this.frameMode.startsWith("viewItems")
         },
 
+        isMobile() {
+            return Jc.cfg.is.mobile
+        },
+
         wasChanges() {
             return (this.plan && this.plan.planText && this.planText && this.plan.planText !== this.planText) ||
                 this.itemsAdd.length > 0 ||
@@ -874,6 +865,14 @@ export default {
 
         canEditPlan() {
             return this.doEditPlan && (!this.plan || this.plan.isOwner === true)
+        },
+
+        isPlanExisting() {
+            if (this.plan) {
+                return true
+            } else {
+                return false
+            }
         },
 
         canEditHidden() {
@@ -1660,7 +1659,7 @@ export default {
             });
         },
 
-        returnFrameMode() {
+        execFrameReturn() {
             if (this.frameModePrior) {
                 this.setFrameMode(this.frameModePrior)
                 this.frameModePrior = null
@@ -1718,7 +1717,7 @@ export default {
         },
 
         btnNextClick() {
-            this.frameMode = "viewItemsAdd"
+            this.setFrameMode("viewItemsAdd")
         },
 
         async btnSaveClick() {
@@ -1831,7 +1830,7 @@ export default {
         }
 
         //
-        if (this.plan) {
+        if (this.isPlanExisting()) {
             this.planText = this.plan.planText
         } else {
             // Еще не созданный план

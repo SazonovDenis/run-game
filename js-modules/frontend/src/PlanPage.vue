@@ -85,6 +85,7 @@
         <q-page-sticky
             position="bottom-left"
             :offset="[10, 10]">
+
             <div class="row q-gutter-x-sm"
                  style="_border: solid 1px red; align-items: end;">
                 <q-btn
@@ -101,37 +102,16 @@
 
         </q-page-sticky>
 
+
         <q-page-sticky
             position="bottom-right"
             :offset="[10, 10]">
 
-            <div class="row q-gutter-x-sm"
-                 style="_border: solid 1px green; align-items: end;">
-
-                <q-btn
-                    _v-if="plan.isOwner === true"
-                    round no-caps class="q-py-none q-px-md"
-                    _label="Редактировать"
-                    color="purple-4"
-                    icon="edit"
-                    size="1.2em"
-                    _style="width: 14rem"
-                    @click="onPlanEdit"
-                />
-
-
-                <q-btn
-                    v-if="plan.isOwner === true"
-                    rounded no-caps class="q-py-xs q-px-md"
-                    label="Добавить слова"
-                    color="green-7"
-                    icon="add"
-                    size="1.2em"
-                    style="width: 15rem"
-                    @click="onPlanAddFact"
-                />
-
-            </div>
+            <BtnsEditAdd
+                :showAdd="plan.isOwner === true"
+                @onPlanEdit="onPlanEdit"
+                @onPlanAddFact="onPlanAddFact"
+            />
 
         </q-page-sticky>
 
@@ -149,6 +129,7 @@ import StatisticWordsLearned from "./comp/StatisticWordsLearned"
 import StatisticRating from "./comp/StatisticRating"
 import TaskList from "./comp/TaskList"
 import HelpPanel from "./comp/HelpPanel"
+import BtnsEditAdd from "./comp/BtnsEditAdd"
 import gameplay from "./gameplay"
 import {apx} from "./vendor"
 import ctx from "./gameplayCtx"
@@ -169,7 +150,7 @@ export default {
 
     components: {
         MenuContainer, TaskListFilterBar, StatisticWordsLearned, StatisticRating,
-        TaskList, HelpPanel,
+        TaskList, BtnsEditAdd, HelpPanel,
     },
 
     data() {

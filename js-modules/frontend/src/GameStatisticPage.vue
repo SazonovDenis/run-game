@@ -183,7 +183,8 @@ export default {
             await gameplay.closeActiveGame()
 
             apx.showFrame({
-                frame: '/plans', props: {
+                frame: '/plans',
+                props: {
                     title: "Выбор уровня",
                     onPlanClick: this.gameStart,
                     showEdit: false,

@@ -5,6 +5,9 @@
 https://github.com/borshak/dsl-dicts
 NPM package to parsing DSL Dictionaries.
 
+https://github.com/ilius/pyglossary
+A tool for converting dictionary files aka glossaries.
+
 https://anatoly314.github.io/dsl-manual/#index.html
 Подробное описание формата
 

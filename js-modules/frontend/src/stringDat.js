@@ -5,7 +5,7 @@ let stringDat = {
     "help.plan.game": "Чтобы сыграть уровень, нажмите кнопку 'Играть уровень'",
     "help.plan.edit": "Можно скрыть слова, которые вы уже знаете &ndash; они не будут появляться в играх. Для этого нажмите <img src='/run/game/web/img/help/edit.svg'>",
     "help.mainPage.editPlan": "Если вы знаете слово, нажмите 'Знаю' &ndash; оно не будет появляться в играх",
-    "help.mainPage.addByPhoto": "Наведите камеру на страницу с текстом и нажмите круглую кнопку спуска.",
+    "help.mainPage.addByPhoto.shot": "Наведите камеру на страницу с текстом и нажмите круглую кнопку спуска <img src='/run/game/web/img/help/shot.svg'>.",
     "help.mainPage.addByPhoto.return": "Чтобы вернуться в поиск по словам нажмите <img src='/run/game/web/img/help/keyboard.svg'>.",
     "help.mainPage.createPlan": "Сейчас вы создаете новый уровнь.<div class='help-br'>&nbsp;</div>Выполните поиск слов и добавьте их в уровень.",
     "help.mainPage.createPlanNext": "Когда добавите нужные слова, нажмите кнопку 'Далее'.",

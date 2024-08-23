@@ -236,7 +236,6 @@
                 ref="textInputPhoto"
                 :planId="planId"
                 :items="itemsLoaded"
-                :image="imageLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 @itemsChange="itemsOnChange"
                 @itemClick="itemOnClick"
@@ -839,7 +838,11 @@ export default {
                 return "help.mainPage.editPlan"
 
             } else if (this.frameMode === "addByPhoto") {
-                return ["help.mainPage.addByPhoto", "help.mainPage.addByPhoto.return"]
+                if (this.isCameraCapturing()) {
+                    return ["help.mainPage.addByPhoto.shot", "help.mainPage.addByPhoto.return"]
+                } else {
+                    return ["help.mainPage.addByPhoto.return"]
+                }
 
             } else {
                 return null
@@ -1553,12 +1556,16 @@ export default {
             this.handleImageBase64(blobDataUrl)
         },
 
-        handleImageBase64(text) {
-            this.imageLoaded = text;
+        handleImageBase64(imageData) {
+            this.imageLoaded = imageData;
             this.frameMode = "addByPhoto"
 
             //
-            this.$refs.textInputPhoto.applyImage(text)
+            this.$refs.textInputPhoto.applyImage(imageData)
+        },
+
+        isCameraCapturing() {
+            return this.$refs.textInputPhoto.isCameraCapturing
         },
 
         /**

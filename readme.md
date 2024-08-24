@@ -38,8 +38,8 @@ cd data/web-grab
 В папках `data/web-grab/***/mp3` появятся скачанные mp3-файлы для каждого английского
 слова.
 
-Для казахских слов (и прочих файлов, содержищих киррилицу) выполняется копирование
-каждого файла из папки `data/web-grab/kz.sozdik.soyle.kz/mp3_grab`
+Для казахских слов (и прочих файлов, содержищих киррилицу) выполняется копирование каждого
+файла из папки `data/web-grab/kz.sozdik.soyle.kz/mp3_grab`
 в папку `data/web-grab/kz.sozdik.soyle.kz/mp3` с переименованием:
 `килилическое имя.mp3` -> `md5 hash кириллического имени.mp3`
 
@@ -159,9 +159,7 @@ local   all             postgres                                md5
 sudo systemctl restart postgresql
 ```
 
-
 ### Полезные команды с базой данных
-                                 
 
 Снятие резервной копии БД на сервере
 
@@ -170,9 +168,21 @@ pg_dump --username=postgres --clean --dbname=run_game --format=tar --file=run_ga
 ```
 
 Выполнение скрипта на сервере, например обновление версии БД
+
 ```
 psql --dbname=run_game postgres --file=/home/dvsa/projects/jc2-projects/run-game/data/verdb/001/001.sql 
 
 psql --dbname=run_game postgres --file=/home/wordstrike.me/product/verdb/002/001.sql
 ```
 
+Экспорт и импорт отдельных таблиц
+
+```
+pg_dump --username=postgres --dbname=run_game --data-only -t Usr     -f dat.Usr.sql
+pg_dump --username=postgres --dbname=run_game --data-only -t UsrLink -f dat.UsrLink.sql
+
+
+psql --username=postgres --dbname=run_game -f dat.clear.sql
+psql --username=postgres --dbname=run_game -f dat.Usr.sql
+psql --username=postgres --dbname=run_game -f dat.Link.sql
+```

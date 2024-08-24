@@ -154,7 +154,6 @@ export default {
 
     props: {
         planId: null,
-        image: null,
         items: {type: Array, default: []},
         itemsMenu: {type: Array, default: []},
     },

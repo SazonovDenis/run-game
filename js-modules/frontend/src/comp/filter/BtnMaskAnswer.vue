@@ -3,12 +3,12 @@
     <q-btn
         class="rgm-style"
         unelevated no-caps
-        icon="visibility-off"
-        :_label="maskAnswer ? 'Скрыть ответы' : 'Показать ответы'"
+        :icon="maskAnswer ? 'visibility-off' : 'visibility'"
+        :label="getLabel_maskAnswer()"
         :color="getColor_maskAnswer()"
         :text-color="getTextColor_maskAnswer()"
         :outline="getOutline_maskAnswer()"
-        @click="clickMaskAnswer()"
+        @click="toggleMaskAnswer()"
     />
 
 </template>
@@ -30,16 +30,29 @@ export default {
             return this.maskAnswer !== true
         },
 
+        getLabel_maskAnswer() {
+            if (this.isMobile()) {
+                return null
+            } else {
+                return this.maskAnswer ? 'Показать ответы' : 'Скрыть ответы'
+            }
+        },
+
+
         getColor_maskAnswer() {
             if (this.maskAnswer !== true) {
-                return "indigo-8"
+                return "lime-7"
             } else {
-                return "indigo-2"
+                return "lime-2"
             }
         },
 
         getTextColor_maskAnswer() {
-            return "indigo-10"
+            return "lime-10"
+        },
+
+        isMobile() {
+            return Jc.cfg.is.mobile
         },
 
         toggleMaskAnswer() {
@@ -51,11 +64,6 @@ export default {
             }
             //
             this.$emit("update:maskAnswer", maskAnswer)
-        },
-
-        clickMaskAnswer() {
-            this.toggleMaskAnswer()
-            this.$emit("click")
         },
 
     }

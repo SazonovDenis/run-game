@@ -53,13 +53,13 @@
 
         <TaskListFilterBar
             class="q-my-sm"
-            ed-hidden _ed-sort ed-filter ed-hide-answer
+            edHidden _edSort edFilter edMaskAnswer
             v-model:filterText="filterText"
             v-model:sortField="sortField"
             v-model:showHidden="showHidden"
+            v-model:maskAnswer="maskAnswer"
             :hiddenCount="hiddenCount"
             :visibleCount="visibleCount"
-            @clickBtnMaskAnswer="clickBtnMaskAnswer"
         />
 
         <TaskList
@@ -67,6 +67,7 @@
             :showLastItemPadding="true"
             :showEdit="true"
             :showRating="true"
+            :maskAnswer="maskAnswer"
             :tasks="tasks"
             :itemsMenu="itemsMenu"
             :filter="filter"
@@ -168,7 +169,15 @@ export default {
             visibleCount: 0,
             hiddenCount: 0,
 
+            /**
+             * Режим показа скрытых (известных) слов
+             */
             showHidden: null,
+
+            /**
+             * Режим сокрытия ответов (для тренировки)
+             */
+            maskAnswer: null,
 
             sortFieldMenu: false,
             sortField: "",
@@ -205,6 +214,10 @@ export default {
             let globalViewSettings = ctx.getGlobalState().viewSettings
             globalViewSettings.findItems.showHidden = this.showHidden
             ctx.eventBus.emit("change:settings")
+        },
+
+        maskAnswer() {
+            this.doTasksMaskAnswer(this.maskAnswer)
         },
 
     },
@@ -401,9 +414,9 @@ export default {
             })
         },
 
-        clickBtnMaskAnswer() {
+        doTasksMaskAnswer(maskAnswer) {
             for (let item of this.tasks) {
-                  item.maskAnswerResult = true
+                item.maskAnswer = maskAnswer
             }
         },
 

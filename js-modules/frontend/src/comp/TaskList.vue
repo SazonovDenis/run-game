@@ -46,7 +46,7 @@
                           :item="taskItem"
                           :showTaskData="showTaskData"
                           :showAnswerResult="showAnswerResult"
-                          :maskAnswerResult="taskItem.maskAnswerResult"
+                          :maskAnswer="maskAnswer"
                           :showRating="showRating"
                           :showEdit="showEdit"
                           :itemMenu="itemsMenu"
@@ -102,6 +102,11 @@ export default {
         showAnswerResult: false,
         showRating: false,
         showEdit: false,
+
+        /**
+         * Режим сокрытия ответов (для тренировки)
+         */
+        maskAnswer: false,
 
         showLastItemPadding: false,
 

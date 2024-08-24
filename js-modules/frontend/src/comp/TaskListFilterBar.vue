@@ -48,9 +48,8 @@
         />
 
         <BtnMaskAnswer
-            class="q-mx-sm"
             v-if="edMaskAnswer"
-            @click="clickBtnMaskAnswer"
+            :maskAnswer="maskAnswer"
             @update:maskAnswer="updateParent('maskAnswer', $event)"
         />
 
@@ -95,6 +94,7 @@ export default {
 
         tags: {type: Object, default: {}},
         showHidden: {type: Boolean, default: false},
+        maskAnswer: {type: Boolean, default: false},
 
         onTagsChange: {type: Function, default: null},
 
@@ -108,7 +108,7 @@ export default {
         edTags: {type: Boolean, default: false},
         edMaskAnswer: {type: Boolean, default: false},
 
-        emits: ["update:showHidden", "clickBtnMaskAnswer"]
+        emits: ["update:showHidden", "update:maskAnswer"]
     },
 
     data() {

@@ -19,18 +19,22 @@
 
                 <TaskValue v-if="showTaskData"
                            :task="item.taskQuestion"
-                           :doShowText="true"/>
+                           :doShowText="true"
+                           ref="taskValue"
+                />
 
                 <TaskValue v-else
                            :task="item.question"
-                           :doShowText="true"/>
+                           :doShowText="true"
+                           ref="taskValue"
+                />
 
             </q-item-label>
 
 
             <q-item-label class="row">
 
-                <template v-if="item.maskAnswerResult === true">
+                <template v-if="maskAnswer === true && item.maskAnswer">
 
                     <div class="answer">
                         * * * * * * * *
@@ -181,7 +185,10 @@ export default {
         showRating: {type: Boolean},
         showRatingDiff: {type: Boolean, default: true},
 
-        maskAnswerResult: {type: Boolean, default: true},
+        /**
+         * Режим сокрытия ответов (для тренировки)
+         */
+        maskAnswer: {type: Boolean, default: false},
 
         showEdit: {type: Boolean},
 
@@ -190,20 +197,24 @@ export default {
     },
 
     data() {
-        return {
-            //maskAnswerResult: false
-        }
+        return {}
     },
 
     methods: {
 
         itemClick() {
-            this.item.maskAnswerResult = !this.item.maskAnswerResult
-            this.playQuestion()
+            if (this.maskAnswer){
+                this.item.maskAnswer = !this.item.maskAnswer
+            }
+
+            // Приграем звук
+            if (!this.maskAnswer || !this.item.maskAnswer) {
+                this.playQuestion()
+            }
         },
 
         playQuestion() {
-            console.info("playQuestion")
+            this.$refs.taskValue.play()
         },
 
         ratingText(rating) {

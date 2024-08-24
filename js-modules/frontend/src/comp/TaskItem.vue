@@ -3,6 +3,7 @@
     <q-item
         :class="'task-item ' + getClassItemRow(item, index)"
         clickable v-ripple
+        @click="itemClick()"
     >
 
         <q-item-section v-if="showAnswerResult"
@@ -29,18 +30,28 @@
 
             <q-item-label class="row">
 
+                <template v-if="item.maskAnswerResult === true">
 
-                <TaskValue
-                    class="answer"
-                    v-if="showTaskData"
-                    :task="item.taskAnswer"
-                    :doShowText="true"/>
+                    <div class="answer">
+                        * * * * * * * *
+                    </div>
 
-                <TaskValue
-                    class="answer"
-                    v-else
-                    :task="item.answer"
-                    :doShowText="true"/>
+                </template>
+
+                <template v-else>
+
+                    <TaskValue v-if="showTaskData"
+                               class="answer"
+                               :task="item.taskAnswer"
+                               :doShowText="true"/>
+
+                    <TaskValue v-else
+                               class="answer"
+                               :task="item.answer"
+                               :doShowText="true"/>
+
+                </template>
+
 
             </q-item-label>
 
@@ -132,12 +143,20 @@ import TaskValue from "./TaskValue"
 import TaskAnswerResult from "./TaskAnswerResult"
 import RaitingValue from "./RaitingValue"
 
+
+/**
+ * Слово в списке.
+ */
 export default {
 
     name: "TaskItem",
 
     components: {
         TaskValue, TaskAnswerResult, RaitingValue,
+    },
+
+    setup() {
+        return {utils}
     },
 
     props: {
@@ -162,17 +181,30 @@ export default {
         showRating: {type: Boolean},
         showRatingDiff: {type: Boolean, default: true},
 
+        maskAnswerResult: {type: Boolean, default: true},
+
         showEdit: {type: Boolean},
 
         // todo определиться как показывать несколько вариантов ответов
         index: 0,
     },
 
-    setup() {
-        return {utils}
+    data() {
+        return {
+            //maskAnswerResult: false
+        }
     },
 
     methods: {
+
+        itemClick() {
+            this.item.maskAnswerResult = !this.item.maskAnswerResult
+            this.playQuestion()
+        },
+
+        playQuestion() {
+            console.info("playQuestion")
+        },
 
         ratingText(rating) {
             return utils.ratingText(rating)

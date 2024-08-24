@@ -53,12 +53,13 @@
 
         <TaskListFilterBar
             class="q-my-sm"
-            ed-hidden _ed-sort ed-filter
+            ed-hidden _ed-sort ed-filter ed-hide-answer
             v-model:filterText="filterText"
             v-model:sortField="sortField"
             v-model:showHidden="showHidden"
             :hiddenCount="hiddenCount"
             :visibleCount="visibleCount"
+            @clickBtnMaskAnswer="clickBtnMaskAnswer"
         />
 
         <TaskList
@@ -398,6 +399,12 @@ export default {
             apx.showFrame({
                 frame: '/plans',
             })
+        },
+
+        clickBtnMaskAnswer() {
+            for (let item of this.tasks) {
+                  item.maskAnswerResult = true
+            }
         },
 
         calcHiddenCountLoaded() {

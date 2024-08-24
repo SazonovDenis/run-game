@@ -46,6 +46,7 @@
                           :item="taskItem"
                           :showTaskData="showTaskData"
                           :showAnswerResult="showAnswerResult"
+                          :maskAnswerResult="taskItem.maskAnswerResult"
                           :showRating="showRating"
                           :showEdit="showEdit"
                           :itemMenu="itemsMenu"

@@ -47,6 +47,13 @@
             :onTagsChange="onTagsChange"
         />
 
+        <BtnMaskAnswer
+            class="q-mx-sm"
+            v-if="edMaskAnswer"
+            @click="clickBtnMaskAnswer"
+            @update:maskAnswer="updateParent('maskAnswer', $event)"
+        />
+
         <BtnHidden
             class="q-mx-sm"
             v-if="edHidden"
@@ -66,6 +73,7 @@ import RgmInputText from "./RgmInputText"
 import Tags from "./filter/Tags"
 import CbSelect from "./filter/CbSelect"
 import BtnHidden from "./filter/BtnHidden"
+import BtnMaskAnswer from "./filter/BtnMaskAnswer"
 
 /**
  * Панель фильтрации по тексту с сортировкой.
@@ -77,7 +85,7 @@ export default {
 
     components: {
         RgmInputText,
-        Tags, CbSelect, BtnHidden,
+        Tags, CbSelect, BtnHidden, BtnMaskAnswer,
     },
 
 
@@ -98,8 +106,9 @@ export default {
         edSort: {type: Boolean, default: false},
         edHidden: {type: Boolean, default: false},
         edTags: {type: Boolean, default: false},
+        edMaskAnswer: {type: Boolean, default: false},
 
-        emits: ["update:showHidden"]
+        emits: ["update:showHidden", "clickBtnMaskAnswer"]
     },
 
     data() {
@@ -149,6 +158,10 @@ export default {
                 await this.$nextTick()
                 this.$refs.elFilterText.focus()
             }
+        },
+
+        clickBtnMaskAnswer() {
+            this.$emit("clickBtnMaskAnswer")
         },
 
         updateParent(valueModelName, value) {

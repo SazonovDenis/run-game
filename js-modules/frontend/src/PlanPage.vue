@@ -10,7 +10,7 @@
 
         <!-- -->
 
-        <HelpPanel class="q-mt-xs q-mb-none" :helpKey="getHelpKey()"/>
+        <HelpPanel class="q-mt-none q-mb-none" :helpKey="getHelpKey()"/>
 
         <!-- -->
 
@@ -225,7 +225,11 @@ export default {
     methods: {
 
         getHelpKey() {
-            return ["help.plan.game", "help.plan.edit"]
+            if (this.maskAnswer){
+                return ["help.plan.maskAnswer", "help.plan.game", "help.plan.edit"]
+            } else {
+                return ["help.plan.game", "help.plan.edit"]
+            }
         },
 
         compareFunction(v1, v2) {

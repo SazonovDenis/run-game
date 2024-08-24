@@ -305,6 +305,7 @@ import {apx, jcBase} from "./vendor"
 import gameplay from "./gameplay"
 import ctx from "./gameplayCtx"
 import utils from './utils'
+import utilsCookies from './utilsCookies'
 import auth from "./auth"
 import LogoGame from "./comp/LogoGame"
 
@@ -374,10 +375,10 @@ export default {
             let res = []
 
             //
-            let list = utils.getCookiesKeys()
+            let list = utilsCookies.getCookiesKeys()
             for (let key of list) {
-                if (utils.isLocalUserCookeName(key)) {
-                    let userInfo = utils.getCookie(key, true)
+                if (utilsCookies.isLocalUserCookeName(key)) {
+                    let userInfo = utilsCookies.getCookie(key, true)
                     res.push({
                         id: userInfo.id, login: userInfo.login, text: userInfo.text
                     })
@@ -389,7 +390,7 @@ export default {
 
         saveLocalUser(ui) {
             let expires = new Date("3333-12-31")
-            utils.setCookie(utils.getLocalUserCookeName(ui.id), ui, {expires: expires})
+            utilsCookies.setCookie(utilsCookies.getLocalUserCookeName(ui.id), ui, {expires: expires})
         },
 
         clearLocalUser(user) {
@@ -401,7 +402,7 @@ export default {
                 return
             }
 
-            utils.deleteCookie(utils.getLocalUserCookeName(userId))
+            utilsCookies.deleteCookie(utilsCookies.getLocalUserCookeName(userId))
 
             //
             this.localUserList = this.getLocalUserList()

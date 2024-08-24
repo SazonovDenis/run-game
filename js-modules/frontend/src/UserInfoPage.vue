@@ -43,7 +43,7 @@ import auth from "./auth"
 import gameplay from "./gameplay"
 import MenuContainer from "./comp/MenuContainer"
 import UserInfo from "./comp/UserInfo"
-import utils from "./utils"
+import utilsCookies from "./utilsCookies"
 
 export default {
 
@@ -82,7 +82,7 @@ export default {
             //
             if (auth.isAuth()) {
                 let ui = auth.getUserInfo()
-                utils.setCookie(utils.getLocalUserCookeName(ui.id), ui)
+                utilsCookies.setCookie(utilsCookies.getLocalUserCookeName(ui.id), ui)
             }
 
             //

@@ -326,12 +326,15 @@ export default {
         [dbConst.LinkType_teacher]: "Как учителя",
         [dbConst.LinkType_student]: "Как ученика",
     },
-     dictLinkTypeFromLinkAdd_text: {
-        [dbConst.LinkType_friend]: "Для друга",
-        [dbConst.LinkType_parent]: "Для родителя",
-        [dbConst.LinkType_child]: "Для ребенка",
-        [dbConst.LinkType_teacher]: "Для учителя",
-        [dbConst.LinkType_student]: "Для ученика",
+    // Поменяны местами "Для родителя"/"Для ребенка" и т.д.
+    // Это специально, т.к. ссылка будет применятся получателем,
+    // а для получателя роли меняются ролями.
+    dictLinkTypeFromLinkAdd_text: {
+        [dbConst.LinkType_friend]: "Как друга",
+        [dbConst.LinkType_child]: "Как родителя",
+        [dbConst.LinkType_parent]: "Как ребенка",
+        [dbConst.LinkType_student]: "Как учителя",
+        [dbConst.LinkType_teacher]: "Как ученика",
     },
     // Названия для ссылок ОТ пользователя
     dictLinkTypeFrom_text: {

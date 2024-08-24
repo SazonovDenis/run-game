@@ -66,7 +66,7 @@
                        text-color="grey-10"
                        size="1.3em"
                        icon="quasar.editor.hyperlink"
-                       label="Пригласительная ссылка..."
+                       label="Пригласить по ссылке..."
                        @click.stop
                 >
                     <q-menu>

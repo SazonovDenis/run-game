@@ -83,7 +83,7 @@
 
                         icon="del"
                         color="red"
-                        @click="refuse(usr)"
+                        @click.stop="refuse(usr)"
 
                     />
 
@@ -93,7 +93,7 @@
                         no-caps dense rounded unelevated
                         icon="quasar.chip.selected"
                         color="green"
-                        @click="accept(usr)"
+                        @click.stop="accept(usr)"
 
                     />
                 </template>

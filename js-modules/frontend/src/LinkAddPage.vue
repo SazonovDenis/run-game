@@ -24,7 +24,7 @@
             <jc-btn
                 no-caps
                 kind="primary"
-                label="Запросить добавление"
+                label="Установить связь"
                 @click="addLink()"
             />
 

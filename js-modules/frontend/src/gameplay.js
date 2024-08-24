@@ -66,10 +66,22 @@ export default {
 
         //
         if (message && message.includes("#" + appConst.ERROR_CODES.USER_NOT_SET + "#")) {
+            let returnUrl = document.location.href
+            // Если мы уже на авторизации - возврата на авторизацию не нужно
+            if (returnUrl.endsWith("/login")) {
+                returnUrl = null
+            }
+            // Если мы в корне - возврата не нужно
+            let rootUrl = document.location.origin + document.location.pathname
+            if (returnUrl === rootUrl) {
+                returnUrl = null
+            }
+
+            // Переход на авторизацию
             apx.showFrame({
                 frame: "/login",
                 props: {
-                    returnUrl: document.location.href
+                    returnUrl: returnUrl
                 }
             })
 

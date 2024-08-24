@@ -9,14 +9,14 @@
         <q-item-section top avatar>
 
             <q-avatar
-                v-if="usr.linkType === LinkType_blocked"
+                v-if="usr.linkType === dbConst.LinkType_blocked"
                 icon="cancel"
                 color="grey-2"
                 text-color="grey-5">
             </q-avatar>
 
             <q-avatar
-                v-else-if="usr.confirmState === ConfirmState_accepted"
+                v-else-if="usr.confirmState === dbConst.ConfirmState_accepted"
                 icon="usr-link"
                 color="grey-2"
                 text-color="yellow-8">
@@ -36,7 +36,7 @@
             <q-item-label>
                 {{ usr.text }}
                 <div class="text-caption text-grey-9"
-                     v-if="usr.confirmState === ConfirmState_accepted">
+                     v-if="usr.confirmState === dbConst.ConfirmState_accepted">
                     {{ getDictLinkTypeFromRec(usr) }}
                 </div>
             </q-item-label>
@@ -44,20 +44,22 @@
             <q-item-label>
 
                 <div class="text-caption text-grey-9"
-                     v-if="usr.confirmState && usr.confirmState !== ConfirmState_accepted">
+                     v-if="usr.confirmState && usr.confirmState !== dbConst.ConfirmState_accepted">
 
                     <template v-if="usr.usrFrom !== userId">
                         Просит добавления в {{ getDictLinkTypeTo(usr) }}
                     </template>
 
                     <template
-                        v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_waiting">
+                        v-if="usr.usrFrom === userId && usr.confirmState === dbConst.ConfirmState_waiting">
                         Вы ждете добавления в {{ getDictLinkTypeFrom(usr) }}
                     </template>
 
                     <template
-                        v-if="usr.usrFrom === userId && usr.confirmState === ConfirmState_refused">
+                        v-if="usr.usrFrom === userId && usr.confirmState === dbConst.ConfirmState_refused">
+                        <span class="text-red-10">
                         Отказал в добавлении в {{ getDictLinkTypeFrom(usr) }}
+                        </span>
                     </template>
 
                 </div>
@@ -72,7 +74,7 @@
             <div class="text-grey-8 q-gutter-xs">
 
                 <template
-                    v-if="usr.usrFrom !== userId && usr.confirmState === ConfirmState_waiting">
+                    v-if="usr.usrFrom !== userId && usr.confirmState === dbConst.ConfirmState_waiting">
 
                     <q-btn
                         class="item-list-bitton"
@@ -97,16 +99,15 @@
                 </template>
 
                 <template
-                    v-if="usr.usrFrom === userId && (usr.confirmState === ConfirmState_waiting || usr.confirmState === ConfirmState_refused)">
+                    v-if="usr.usrFrom === userId && (usr.confirmState === dbConst.ConfirmState_waiting || usr.confirmState === dbConst.ConfirmState_refused)">
 
                     <q-btn
-                        class="item-list-bitton"
-                        label="Отменить"
                         no-caps dense rounded unelevated
-
-                        icon="del"
+                        class="item-list-bitton"
+                        :label="usr.confirmState === dbConst.ConfirmState_refused ? 'Ok' : 'Отменить'"
+                        :icon="usr.confirmState === dbConst.ConfirmState_refused ? undefined : 'del'"
                         color="blue-8"
-                        @click="cancel(usr)"
+                        @click.stop="cancel(usr)"
 
                     />
 
@@ -123,66 +124,20 @@
                     >
                         <q-menu>
 
-
                             <q-list>
-                                <q-item
-                                    clickable v-close-popup
-                                    class="q-ma-md"
-                                    @click="request_friend(usr)"
+
+                                <q-item v-for="link in utils.dictLinkTypeFromAdd"
+                                        clickable v-close-popup
+                                        class="q-ma-md"
+                                        @click="request(usr, link)"
                                 >
                                     <q-item-section>
-                                        <q-item-label>Как друга</q-item-label>
-                                    </q-item-section>
-                                </q-item>
-
-                                <q-separator class="q-ma-md"/>
-
-                                <q-item
-                                    clickable v-close-popup
-                                    class="q-ma-md"
-                                    @click="request_parent(usr)"
-                                >
-                                    <q-item-section>
-                                        <q-item-label>Как родителя
+                                        <q-item-label>
+                                            {{ utils.dictLinkTypeFromAdd_text[link] }}
                                         </q-item-label>
                                     </q-item-section>
                                 </q-item>
 
-                                <q-item
-                                    clickable v-close-popup
-                                    class="q-ma-md"
-                                    @click="request_child(usr)"
-                                >
-                                    <q-item-section>
-                                        <q-item-label>Как ребенка
-                                        </q-item-label>
-                                    </q-item-section>
-                                </q-item>
-
-
-                                <q-separator class="q-ma-md"/>
-
-                                <q-item
-                                    clickable v-close-popup
-                                    class="q-ma-md"
-                                    @click="request_student(usr)"
-                                >
-                                    <q-item-section>
-                                        <q-item-label>Как ученика
-                                        </q-item-label>
-                                    </q-item-section>
-                                </q-item>
-
-                                <q-item
-                                    clickable v-close-popup
-                                    class="q-ma-md"
-                                    @click="request_teacher(usr)"
-                                >
-                                    <q-item-section>
-                                        <q-item-label>Как учителя
-                                        </q-item-label>
-                                    </q-item-section>
-                                </q-item>
                             </q-list>
 
                         </q-menu>
@@ -199,7 +154,7 @@
                 >
                     <q-list>
                         <q-item
-                            v-if="usr.linkType && usr.linkType !== LinkType_blocked && usr.confirmState === ConfirmState_accepted"
+                            v-if="usr.linkType && usr.linkType !== dbConst.LinkType_blocked && usr.confirmState === dbConst.ConfirmState_accepted"
                             clickable v-close-popup
                             class="q-ma-md"
                             @click="usrBreakLink(usr)"
@@ -210,7 +165,7 @@
                         </q-item>
 
                         <q-item
-                            v-if="usr.linkType !== LinkType_blocked"
+                            v-if="usr.linkType !== dbConst.LinkType_blocked"
                             clickable v-close-popup
                             class="q-ma-md"
                             @click="usrBlock(usr)"
@@ -222,7 +177,7 @@
                         </q-item>
 
                         <q-item
-                            v-if="usr.linkType === LinkType_blocked"
+                            v-if="usr.linkType === dbConst.LinkType_blocked"
                             clickable v-close-popup
                             class="q-ma-md"
                             @click="usrUnblock(usr)"
@@ -260,7 +215,7 @@ export default {
 
     // mixins
     setup(props) {
-        return dbConst
+        return {dbConst, utils}
     },
 
     props: {
@@ -289,10 +244,10 @@ export default {
             return utils.dictLinkTypeFromRec[usr.linkType]
         },
         getDictLinkTypeFrom(usr) {
-            return utils.dictLinkTypeFrom[usr.linkType]
+            return utils.dictLinkTypeFrom_text[usr.linkType]
         },
         getDictLinkTypeTo(usr) {
-            return utils.dictLinkTypeTo[usr.linkType]
+            return utils.dictLinkTypeTo_text[usr.linkType]
         },
 
         async onUsrClick(usr) {

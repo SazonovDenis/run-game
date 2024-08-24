@@ -311,8 +311,30 @@ export default {
         [dbConst.LinkType_student]: "Ваш ученик",
         [dbConst.LinkType_blocked]: "Заблокирован",
     },
+    // для добавления записи
+    dictLinkTypeFromAdd: [
+        dbConst.LinkType_friend,
+        dbConst.LinkType_parent,
+        dbConst.LinkType_child,
+        dbConst.LinkType_teacher,
+        dbConst.LinkType_student,
+    ],
+    dictLinkTypeFromAdd_text: {
+        [dbConst.LinkType_friend]: "Как друга",
+        [dbConst.LinkType_parent]: "Как родителя",
+        [dbConst.LinkType_child]: "Как ребенка",
+        [dbConst.LinkType_teacher]: "Как учителя",
+        [dbConst.LinkType_student]: "Как ученика",
+    },
+     dictLinkTypeFromLinkAdd_text: {
+        [dbConst.LinkType_friend]: "Для друга",
+        [dbConst.LinkType_parent]: "Для родителя",
+        [dbConst.LinkType_child]: "Для ребенка",
+        [dbConst.LinkType_teacher]: "Для учителя",
+        [dbConst.LinkType_student]: "Для ученика",
+    },
     // Названия для ссылок ОТ пользователя
-    dictLinkTypeFrom: {
+    dictLinkTypeFrom_text: {
         [dbConst.LinkType_friend]: "Ваши друзья",
         [dbConst.LinkType_parent]: "Ваши родители",
         [dbConst.LinkType_child]: "Ваши дети",
@@ -321,7 +343,7 @@ export default {
         [dbConst.LinkType_blocked]: "Заблокированные",
     },
     // Названия для ссылок К пользователю
-    dictLinkTypeTo: {
+    dictLinkTypeTo_text: {
         [dbConst.LinkType_friend]: "Ваши друзья",
         [dbConst.LinkType_parent]: "Ваши дети",
         [dbConst.LinkType_child]: "Ваши родители",

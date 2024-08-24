@@ -171,7 +171,7 @@
                             </template>
                         </q-input>
 
-                        <div class="row justify-center q-mt-lg q-gutter-x-sm">
+                        <div class="row justify-center q-mt-lg q-gutter-sm">
                             <div>
                                 <jc-btn kind="secondary" label="Забыть игрока"
                                         v-if="!loginIsGenerated(this.login)"
@@ -258,7 +258,7 @@
 
 
                             <div
-                                class="row justify-center q-mt-lg q-gutter-x-sm">
+                                class="row justify-center q-mt-lg q-gutter-sm">
                                 <div>
                                     <jc-btn kind="secondary" label="Забыть игрока"
                                             :disable="loginIsGenerated(user.login)"

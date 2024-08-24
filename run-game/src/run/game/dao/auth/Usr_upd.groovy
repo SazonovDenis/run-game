@@ -16,7 +16,7 @@ public class Usr_upd extends RgmMdbUtils {
     Rnd rnd = new RndImpl()
 
     public static final String msg_user_exists = "Пользователь уже зарегистрирован"
-    public static final String msg_user_not_exists = "Пользователь не зарегистрирован"
+    public static final String msg_user_not_exists = "Такой пользователь не зарегистрирован"
     public static final String msg_is_required_text = "Указание имени обязательно"
     public static final String msg_is_required_login = "Указание логина обязательно"
 
@@ -38,6 +38,22 @@ public class Usr_upd extends RgmMdbUtils {
 
         //
         return loadInfo(idUsr)
+    }
+
+    @DaoMethod
+    public Map<String, Object> getUserPublicInfo(long idUsr) {
+        Map<String, Object> userInfo = new HashMap<>()
+
+        //
+        getCurrentUsrId()
+
+        //
+        StoreRecord rec = loadRec(idUsr)
+        userInfo.put("id", rec.getLong("id"))
+        userInfo.put("text", rec.getString("text"))
+
+        //
+        return userInfo
     }
 
     @DaoMethod

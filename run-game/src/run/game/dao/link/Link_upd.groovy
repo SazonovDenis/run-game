@@ -24,6 +24,11 @@ class Link_upd extends RgmMdbUtils {
         long linkType = recLink.getLong("linkType")
         XDateTime dt = XDateTime.now()
 
+        // Получатель не я сам?
+        if (usr == usrTo) {
+            throw new XError("Нельзя отправлять запросы самому себе.")
+        }
+
         // Получатель существует?
         StoreRecord recUsrLink = mdb.loadQueryRecord("select * from Usr where id = :usrTo", [usrTo: usrTo])
         if (recUsrLink == null) {

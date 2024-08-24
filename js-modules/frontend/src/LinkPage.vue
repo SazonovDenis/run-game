@@ -4,9 +4,34 @@
         :title="title"
         :frameReturn="frameReturn"
         :loaded="dataLoaded"
+        :helpKey="getHelpKey()"
     >
 
-        <template v-if="frameMode === 'find'">
+        <!-- -->
+
+        <HelpPanel class="q-mt-none q-mb-none" :helpKey="getHelpKey()"/>
+
+        <!-- -->
+
+        <template v-if="linkText">
+
+            <div class="q-pt-xl q-pb-lg link-text">
+                {{ linkText }}
+            </div>
+
+            <div class="row justify-center">
+
+                <jc-btn
+                    kind="primary"
+                    label="Копировать ссылку"
+                    @click="copyLink()">
+                </jc-btn>
+
+            </div>
+
+        </template>
+
+        <template v-else-if="frameMode === 'find'">
 
             <RgmInputText
                 class="q-ma-sm"
@@ -19,7 +44,7 @@
                 placeholder="Поиск друзей"
             />
 
-            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
+            <q-scroll-area class="q-scroll-area" style="height: calc(100% - 8rem);">
 
                 <LinkList
                     v-if="filterTextShouldLoad"
@@ -30,9 +55,49 @@
 
             </q-scroll-area>
 
+
+            <q-page-sticky position="bottom-right"
+                           :offset="[10, 10]">
+
+                <q-btn v-if="filterText === ''"
+                       rounded no-caps
+                       dropdown-icon=""
+                       color="grey-2"
+                       text-color="grey-10"
+                       size="1.3em"
+                       icon="quasar.editor.hyperlink"
+                       label="Пригласительная ссылка..."
+                       @click.stop
+                >
+                    <q-menu>
+
+                        <q-list>
+
+                            <q-item v-for="link in utils.dictLinkTypeFromAdd"
+                                    clickable v-close-popup
+                                    class="q-ma-md"
+                                    @click="makeLink(link)"
+                            >
+                                <q-item-section>
+                                    <q-item-label>{{
+                                            utils.dictLinkTypeFromLinkAdd_text[link]
+                                        }}
+                                    </q-item-label>
+                                </q-item-section>
+                            </q-item>
+
+                        </q-list>
+
+                    </q-menu>
+
+                </q-btn>
+
+
+            </q-page-sticky>
+
         </template>
 
-        <template v-if="frameMode === 'list-blocked'">
+        <template v-else-if="frameMode === 'list-blocked'">
 
             <q-scroll-area class="q-scroll-area" style="height: calc(100% - 4rem);">
 
@@ -62,7 +127,7 @@
                     messageNoItems="У вас пока нет связей"
                 />
 
-                <div class="q-ml-md q-mt-lg q-mb-xs rgm-link-soft"
+                <div class="q-ml-md q-mt-lg q-mb-xl q-mb-xs rgm-link-soft"
                      @click="setFrameMode_list_blocked">Заблокированные пользователи
                 </div>
 
@@ -71,15 +136,14 @@
 
             <q-page-sticky position="bottom-right"
                            :offset="[10, 10]">
+
                 <q-btn color="purple"
                        icon="add"
                        size="1.3em"
                        rounded no-caps
-                       class="btn-add"
                        label="Добавить друзей"
                        @click="setFrameMode_find"
-                >
-                </q-btn>
+                />
 
             </q-page-sticky>
 
@@ -92,19 +156,41 @@
 
 <script>
 
-import MenuContainer from "./comp/MenuContainer"
-import LinkList from "./comp/LinkList"
-import RgmInputText from "./comp/RgmInputText"
+import {useQuasar} from 'quasar'
 import {daoApi} from "./dao"
+import {jcBase} from "./vendor"
 import ctx from "./gameplayCtx"
 import auth from "./auth"
+import dbConst from "./dao/dbConst"
+import utils from "./utils"
+import MenuContainer from "./comp/MenuContainer"
+import RgmInputText from "./comp/RgmInputText"
+import LinkList from "./comp/LinkList"
+import HelpPanel from "./comp/HelpPanel"
 
 export default {
 
     components: {
+        useQuasar,
         MenuContainer,
-        RgmInputText,
-        LinkList,
+        RgmInputText, LinkList, HelpPanel,
+    },
+
+    setup(props) {
+        const $q = useQuasar()
+
+        return {
+            dbConst, utils,
+            showNotify(message, info) {
+                $q.notify({
+                    type: 'positive',
+                    message: message,
+                    caption: info,
+                    color: "purple"
+                })
+            }
+        }
+
     },
 
     props: {},
@@ -120,6 +206,8 @@ export default {
 
             filterText: "",
             filterTextLoading: false,
+
+            linkText: null,
         }
     },
 
@@ -159,6 +247,12 @@ export default {
     },
 
     methods: {
+
+        getHelpKey() {
+            if (this.linkText) {
+                return "help.link.linkText"
+            }
+        },
 
         async doFind(filterText) {
             // Ищем
@@ -214,16 +308,38 @@ export default {
             userInfo.linksToWait = resApi.records
         },
 
+        makeLink(linkType) {
+            let ui = auth.getUserInfo()
+            let usrId = ui.id
+            let href = "#/linkAdd?usrTo=" + usrId + "&linkType=" + linkType
+            this.linkText = document.location.origin + jcBase.url.ref(href)
+        },
+
+        async copyLink() {
+            await navigator.clipboard.writeText(this.linkText)
+            this.linkText = null
+            this.showNotify("Ссылка скопирована", "Отправьте её вашим друзьям")
+        },
+
         setFrameMode_list() {
             this.frameMode = "list"
+
+            //
+            this.linkText = null
         },
 
         setFrameMode_list_blocked() {
             this.frameMode = "list-blocked"
+
+            //
+            this.linkText = null
         },
 
         async setFrameMode_find() {
             this.frameMode = "find"
+
+            //
+            this.linkText = null
 
             //
             this.filterText = ""
@@ -246,7 +362,6 @@ export default {
         //
         this.dataLoaded = true
 
-
         //
         ctx.eventBus.on("change:link", this.onChangeLink)
     },
@@ -260,5 +375,12 @@ export default {
 </script>
 
 <style>
+
+.link-text {
+    font-size: 1.2em;
+    text-align: center;
+    color: #6c6c6c;
+    user-select: all;
+}
 
 </style>

@@ -20,6 +20,7 @@ export async function run() {
         {path: '/game', frame: import('./GamePage')},
         {path: '/user', frame: import('./UserInfoPage')},
         {path: '/link', frame: import('./LinkPage')},
+        {path: '/linkAdd', frame: import('./LinkAddPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
         {path: '/planUsrPlan', frame: import('./PlanUsrPlanPage')},

@@ -50,6 +50,7 @@
         <BtnMaskAnswer
             v-if="edMaskAnswer"
             :maskAnswer="maskAnswer"
+            :compact="filterTextIsExpanded"
             @update:maskAnswer="updateParent('maskAnswer', $event)"
         />
 

@@ -4,8 +4,8 @@
         class="rgm-style"
         unelevated no-caps
         icon="quasar.chip.selected"
-        :label="showHidden ? 'Скрыть известные' : 'Показать известные'"
         :disabled="hiddenCount === 0"
+        :label="getLabel_showHidden()"
         :color="getColor_showHidden()"
         :text-color="getTextColor_showHidden()"
         :outline="getOutline_showHidden()"
@@ -29,6 +29,7 @@ export default {
     props: {
         showHidden: {type: Boolean, default: false},
         hiddenCount: {type: Number, default: 0},
+        compact: {type: Boolean, default: false},
         emits: ["update:showHidden"]
     },
 
@@ -41,6 +42,14 @@ export default {
             return this.showHidden !== true
         },
 
+        getLabel_showHidden() {
+            if (this.compact && this.isMobile()) {
+                return null
+            } else {
+                return this.showHidden ? 'Скрыть известные' : 'Показать известные'
+            }
+        },
+
         getColor_showHidden() {
             if (this.showHidden !== true) {
                 return "indigo-8"
@@ -51,6 +60,10 @@ export default {
 
         getTextColor_showHidden() {
             return "indigo-10"
+        },
+
+        isMobile() {
+            return Jc.cfg.is.mobile
         },
 
         toggleShowHidden() {

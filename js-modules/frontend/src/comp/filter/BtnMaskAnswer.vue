@@ -21,6 +21,7 @@ export default {
 
     props: {
         maskAnswer: {type: Boolean, default: false},
+        compact: {type: Boolean, default: false},
         emits: ["update:maskAnswer", "click"],
     },
 
@@ -31,13 +32,12 @@ export default {
         },
 
         getLabel_maskAnswer() {
-            if (this.isMobile()) {
+            if (this.compact && this.isMobile()) {
                 return null
             } else {
                 return this.maskAnswer ? 'Показать ответы' : 'Скрыть ответы'
             }
         },
-
 
         getColor_maskAnswer() {
             if (this.maskAnswer !== true) {

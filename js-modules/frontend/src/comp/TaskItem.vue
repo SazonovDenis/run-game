@@ -80,7 +80,7 @@
                                :icon="itemMenuIcon(menuItem, item)"
                                :color="itemMenuColor(menuItem, item)"
                                :text-color="itemMenuTextColor(menuItem, item)"
-                               @click="itemMenuClick(menuItem, item)"
+                               @click.stop="itemMenuClick(menuItem, item)"
                         />
 
                     </template>
@@ -94,7 +94,7 @@
                                :outline="itemMenuOutline(menuItem, item)"
                                :icon="itemMenuIcon(menuItem, item)"
                                :color="itemMenuColor(menuItem, item)"
-                               @click="itemMenuClick(menuItem, item)"
+                               @click.stop="itemMenuClick(menuItem, item)"
                         />
                     </template>
 

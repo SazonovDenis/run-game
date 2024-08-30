@@ -35,7 +35,7 @@ export default {
             if (this.compact && this.isMobile()) {
                 return null
             } else {
-                return this.maskAnswer ? 'Показать ответы' : 'Скрыть ответы'
+                return this.maskAnswer ? 'Показать ответы' : 'Тенировка'
             }
         },
 

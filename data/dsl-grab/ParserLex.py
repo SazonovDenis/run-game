@@ -61,6 +61,15 @@ class ParserLex(ParserBase):
                 #
                 return
 
+            elif token == "♢":
+                self.tokenType = "tag"
+                self.token = "diamond"
+                self.flushToken()
+                #
+                self.state = self.State.WAIT_CHAR
+                #
+                return
+
         if self.state == self.State.WAIT_RIGHT_BRACKET:
             if token == "]":
                 self.flushToken()
@@ -68,6 +77,7 @@ class ParserLex(ParserBase):
                 self.state = self.State.WAIT_CHAR
                 #
                 return
+
             elif token == "/":
                 self.tokenType = "tag-close"
                 #

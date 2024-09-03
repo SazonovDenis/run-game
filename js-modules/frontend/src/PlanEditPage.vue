@@ -196,7 +196,7 @@
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filter"
                 :actionLeftSlide="actionHide"
-                :messageNoItems="itemsIsLoading ? '' : 'Слова не найдены'"
+                :messageNoItems="itemsIsLoading ? '' : taskListEmptyText"
             >
 
             </TaskList>
@@ -635,6 +635,20 @@ export default {
                 return this.plan.id
             } else {
                 return 0
+            }
+        },
+
+        taskListEmptyText() {
+            let selectedLang
+            for (let langKey of utils.Langs_keys) {
+                if (this.viewSettings.filterTags[langKey] === true) {
+                    selectedLang = utils.Langs_text_tvor[langKey]
+                }
+            }
+            if (selectedLang) {
+                return "В словаре <span class='rgm-state-text-lang'>" + selectedLang + "</span> языка слова не найдены"
+            } else {
+                return "Слова не найдены"
             }
         },
 

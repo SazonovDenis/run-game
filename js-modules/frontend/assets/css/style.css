@@ -11,6 +11,11 @@
 }
 
 
+.rgm-state-text-lang {
+  color: #814fc3;
+}
+
+
 .rgm-link {
   text-decoration: underline;
   text-decoration-style: solid;
@@ -30,8 +35,8 @@
 /* Для списка найденных слов */
 
 .selected-list-container {
-  min-height: 1rem!important;  /*hack*/
-  min-width: 1rem!important;   /*hack*/
+  min-height: 1rem !important; /*hack*/
+  min-width: 1rem !important; /*hack*/
   overflow: scroll;
 }
 

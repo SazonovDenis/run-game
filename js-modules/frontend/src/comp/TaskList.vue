@@ -75,7 +75,7 @@
 
     <div v-else
          class="q-pa-md rgm-state-text">
-        {{ messageNoItems }}
+        <span v-html="messageNoItems"/>
     </div>
 
 

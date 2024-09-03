@@ -1,7 +1,7 @@
-import json
 from enum import IntEnum
 
 from Parser import ParserBase
+from db.ItemSaver import ItemSaver
 
 
 class ParserDict(ParserBase):
@@ -20,25 +20,21 @@ class ParserDict(ParserBase):
 
     outDirName = None
 
+    itemSaver = None
+
     def __init__(self):
         self.state = self.State.WAIT_WORD
         self.token = None
         self.tokenType = None
 
+    def open(self, outDirName):
+        self.itemSaver = ItemSaver()
+        self.itemSaver.open(outDirName)
+
+    def close(self):
+        self.itemSaver.close()
+
     def printToken(self):
-        if len(self.token["translations"]) != 0:
-            fileName = self.token["text"]
-            fileName = fileName.lower()
-            fileName = fileName.replace("/", "-")
-            fileName = fileName.replace("\\", "-")
-            with open(self.outDirName + fileName + ".json", "w", encoding="utf-8") as outfile:
-                json_object = json.dumps(self.token, indent=2, ensure_ascii=False)
-                outfile.write(json_object)
-
-        print(self.token["text"])
-
-        return
-
         print("-----------")
         if self.token.get("transcription") == None:
             print(self.token["text"] + " <no transcription>")
@@ -50,6 +46,8 @@ class ParserDict(ParserBase):
             print("idioms:")
             idn = 0
             for idiom in idioms:
+                if (idiom["text"] == ""):
+                    continue
                 idn = idn + 1
                 print("  [" + str(idn) + "] " + idiom["text"])
             print("translations:")
@@ -97,7 +95,10 @@ class ParserDict(ParserBase):
 
     def flushToken(self):
         if self.token != None:
-            self.printToken()
+            self.itemSaver.printToken(self.token)
+            print(self.token["text"])
+            # self.printToken()
+
             self.clearToken()
             self.clearTags()
 
@@ -151,16 +152,20 @@ class ParserDict(ParserBase):
                 return
 
             if text == "m1" or text == "m2":
-                self.newTranslate()
-                #
-                self.state = self.State.COLLECT_TRANSLATE
+                if self.state == self.State.COLLECT_IDIOMS:
+                    self.newIdiom()
+                else:
+                    self.newTranslate()
+                    #
+                    self.state = self.State.COLLECT_TRANSLATE
                 #
                 return
 
             if text == "diamond":
-                self.newIdiom()
-                #
-                self.state = self.State.COLLECT_IDIOMS
+                if (self.currentExample == None) or (not self.currentExample["text"].strip().endswith("[см. тж.")):
+                    self.newIdiom()
+                    #
+                    self.state = self.State.COLLECT_IDIOMS
                 #
                 return
 

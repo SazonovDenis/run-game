@@ -1,12 +1,12 @@
 planName	planText	planTags
-color-base	Цвета базовые 	200
-color-base-ru-en	Цвета базовые 	201
-color-base-sound-en-ru	Цвета базовые	200,501
-color-base-sound-en-en	Цвета базовые	204,501
-color	Цвета	200
-color-sound	Цвета	204,501
-kz.numbers	Числа	203
-kz.numbers-sound	Числа	203,501
-kz.products-kz-ru	Продукты	203
-kz.products-ru-kz	Продукты	202
-kz.products-sound-kz-ru	Продукты	203,501
+color-base	Цвета базовые 	1002:eng-rus
+color-base-ru-en	Цвета базовые 	1002:rus-eng
+color-base-sound-en-ru	Цвета базовые	1002:eng-rus,1011:word-sound
+color-base-sound-en-en	Цвета базовые	1002:eng-eng,1011:word-sound
+color	Цвета	1002:eng-rus
+color-sound	Цвета	1002:eng-eng,1011:word-sound
+kz.numbers	Числа	1002:kaz-rus
+kz.numbers-sound	Числа	1002:kaz-rus,1011:word-sound
+kz.products-kz-ru	Продукты	1002:kaz-rus
+kz.products-ru-kz	Продукты	1002:rus-kaz
+kz.products-sound-kz-ru	Продукты	1002:kaz-rus,1011:word-sound

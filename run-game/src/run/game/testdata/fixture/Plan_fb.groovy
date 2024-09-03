@@ -1,5 +1,6 @@
 package run.game.testdata.fixture
 
+import jandcode.commons.*
 import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
 import run.game.dao.backstage.*
@@ -36,7 +37,9 @@ class Plan_fb extends BaseFixtureBuilder {
 
                 // -- PlanTag
                 for (String planTag : planTags.split(",")) {
-                    mdb.insertRec("PlanTag", [plan: planId, tag: planTag])
+                    long tagType = UtCnv.toLong(planTag.split(":")[0])
+                    String tagValue = planTag.split(":")[1]
+                    mdb.insertRec("PlanTag", [plan: planId, tagType: tagType, tagValue: tagValue])
                 }
 
                 mdb.commit()

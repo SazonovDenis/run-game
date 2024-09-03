@@ -6,17 +6,17 @@ import run.game.dao.*
 class UtTag {
 
 
-    public static getFactLang(Map tag) {
+    public static String getLangByTag(Map tag) {
         String valueLang
 
-        long tagValue = UtCnv.toLong(tag.get(RgmDbConst.TagType_word_lang))
-        valueLang = getFactLang(tagValue)
+        String tagValue = UtCnv.toString(tag.get(RgmDbConst.TagType_word_lang))
+        valueLang = getLangByTagValue(tagValue)
         if (valueLang != null) {
             return valueLang
         }
 
-        tagValue = UtCnv.toLong(tag.get(RgmDbConst.TagType_word_translate_direction))
-        valueLang = getFactLang(tagValue)
+        tagValue = UtCnv.toString(tag.get(RgmDbConst.TagType_word_translate_direction))
+        valueLang = getLangByTagValue(tagValue)
         if (valueLang != null) {
             return valueLang
         }
@@ -24,7 +24,7 @@ class UtTag {
         return null
     }
 
-    public static getFactLang(long tagValue) {
+    public static String getLangByTagValue(String tagValue) {
         switch (tagValue) {
             case RgmDbConst.Tag_word_lang_eng: return "eng"
             case RgmDbConst.Tag_word_lang_rus: return "rus"

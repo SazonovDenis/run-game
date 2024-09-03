@@ -13,20 +13,22 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
-    public Store loadFactsByFactTypeWithTags(long factType, Collection tagTypes) {
+    public Store loadFactsByFactTypeWithTags(long factType, Collection<Long> tagTypes) {
         Store st = mdb.createStore("Fact.list")
         Store stLoaded = mdb.loadQuery(sqlFactByFactType(tagTypes), [factType: factType])
         fillTag(stLoaded, st)
         return st
     }
 
+/*
     public Store loadFactsByFactTypeByTags(long factType, Collection tags) {
         Store st = mdb.createStore("Fact.list")
         mdb.loadQuery(st, sqlFactByFactTypeByTags(tags), [factType: factType])
         return st
     }
+*/
 
-    public Store loadFactsByValueFactType(String value, long factType) {
+    public Store loadBy_value_factType(String value, long factType) {
         Store st = mdb.createStore("Fact.list")
         mdb.loadQuery(st, sqlBy_value_factType(), [value: value, factType: factType])
         return st
@@ -38,41 +40,69 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
+    /**
+     * Ищем факты по типу и значению.
+     * <br>
+     * Результат имеет поле tag, куда подгружены значения тэгов word-lang и word-translate-direction.
+     *
+     * @param factValue
+     * @param factType
+     * @return
+     */
     public Store findBy_value_factType(String factValue, long factType) {
         Store st = mdb.createStore("Fact.list")
-        //Collection tagTypes = Arrays.asList(RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction)
+
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction)
-        Store stLoaded = mdb.loadQuery(sqlBy_value_factType__Like(tagTypes), [value: "%" + factValue + "%", factType: factType])
+        Store stLoaded = mdb.loadQuery(sqlBy_value_factType__withTags(tagTypes), [value: "%" + factValue + "%", factType: factType])
+
         fillTag(stLoaded, st)
+
         return st
     }
 
+    /**
+     * Ищем факты по типу и значению, с дополнительной фильтрацией по тэгам.
+     * Каждый тэг фильтруется по условию или, т.е. достаточно найти одно совпадение по тэгу,
+     * чтобы запись попала в результат.
+     * <br>
+     * Результат имеет поле tag, куда подгружены значения искомых тэгов.
+     *
+     * @param factType
+     * @param factValue
+     * @param tags
+     * @return
+     */
     public Store findBy_value_factType_tags(long factType, String factValue, Map<Long, String> tags) {
+        Store st = mdb.createStore("Fact.list")
+
         if (tags == null || tags.size() == 0) {
             return findBy_value_factType(factValue, factType)
         }
 
         Map params = [factType: factType, value: "%" + factValue + "%"]
-        params.putAll(sqlParams(tags))
-        Store stLoaded = mdb.loadQuery(sqlBy_value_factType_tags(tags), params)
+        params.putAll(sqlParamsByTags(tags))
+        Store stLoaded = mdb.loadQuery(sqlBy_value_factType__withTags(tags), params)
 
-        Store st = mdb.createStore("Fact.list")
         fillTag(stLoaded, st)
 
         return st
     }
 
+/*
     public Store loadFactsByTagValue(String tagValue, long tagType) {
         TagType_list tagTypeList = mdb.create(TagType_list)
         StoreRecord recTag = tagTypeList.loadTagByValue(tagValue, tagType)
         Store st = mdb.loadQuery(sqlFactsByTagValue(), [tag: recTag.getLong("id")])
         return st
     }
+*/
 
-    public Store loadFactsByTagValue(long idItem, String tagValue, String tagType) {
+/*
+    public Store loadFactsByTagValue(long idItem, String tagValue, long tagType) {
         Store st = mdb.loadQuery(sqlFactByTagValue(), [id: idItem, tagType: tagType, tagValue: tagValue])
         return st
     }
+*/
 
     StoreRecord loadFact(long idFact) {
         StoreRecord rec = mdb.createStoreRecord("Fact.list")
@@ -82,11 +112,11 @@ class Fact_list extends BaseMdbUtils {
 
     StoreRecord loadFactWithTags(long idFact, Collection tagTypes) {
         StoreRecord rec = mdb.createStoreRecord("Fact.list")
-        StoreRecord recLoaded = mdb.loadQueryRecord(sqlFactWithTags(tagTypes), [id: idFact])
+        StoreRecord recLoaded = mdb.loadQueryRecord(sql__withTags(tagTypes), [id: idFact])
         //
         rec.setValues(recLoaded)
         Long tagType = recLoaded.getLong("tagType")
-        Long tagValue = recLoaded.getLong("tagValue")
+        String tagValue = recLoaded.getString("tagValue")
         rec.setValue("tag", [(tagType): tagValue])
         //
         return rec
@@ -129,7 +159,7 @@ order by
 """
     }
 
-    String sqlFactWithTags(Collection tagTypes) {
+    String sql__withTags(Collection<Long> tagTypes) {
         String tagTypesStr = UtString.join(tagTypes, ",")
 
         return """
@@ -196,7 +226,7 @@ order by
 """
     }
 
-    String sqlFactByFactType(Collection tagTypes) {
+    String sqlFactByFactType(Collection<Long> tagTypes) {
         String tagTypesStr = UtString.join(tagTypes, ",")
 
         return """
@@ -227,6 +257,7 @@ order by
 """
     }
 
+/*
     String sqlFactByFactTypeByTags(Collection tags) {
         String tagsStr = UtString.join(tags, ",")
 
@@ -256,6 +287,7 @@ order by
     FactTag.tag
 """
     }
+*/
 
     String sqlBy_value_factType() {
         return """
@@ -304,7 +336,7 @@ order by
 """
     }
 
-    String sqlBy_value_factType__Like(Collection tagTypes) {
+    String sqlBy_value_factType__withTags(Collection<Long> tagTypes) {
         String tagTypesStr = UtString.join(tagTypes, ",")
 
         return """
@@ -337,30 +369,8 @@ order by
 """
     }
 
-    String sqlCond(Map<Long, String> tags) {
-        String cond = ""
-        for (Long tagType : tags.keySet()) {
-            if (cond.length() != 0) {
-                cond = cond + " or "
-            }
-            String tagValue = tags.get(tagType)
-            cond = cond + "(FactTag.tagType = " + tagType + " and FactTag.tagValue = :_" + tagType + ")"
-        }
-        return cond
-    }
-
-    Map sqlParams(Map<Long, String> tags) {
-        Map params = new HashMap()
-        for (Long tagType : tags.keySet()) {
-            String tagTypeStr = "_" + tagType
-            String tagValue = tags.get(tagType)
-            params.put(tagTypeStr, tagValue)
-        }
-        return params
-    }
-
-    String sqlBy_value_factType_tags(Map<Long, String> tags) {
-        String tagValuesStr = sqlCond(tags)
+    String sqlBy_value_factType__withTags(Map<Long, String> tags) {
+        String tagFilterSql = tagFilterSql(tags)
 
         return """
 select
@@ -380,7 +390,7 @@ from
     join Fact on (Fact.item = Item.id)
     join FactTag on (
         FactTag.fact = Fact.id and
-        (${tagValuesStr})
+        (${tagFilterSql})
     )
 
 where
@@ -392,6 +402,28 @@ order by
 """
     }
 
+    String tagFilterSql(Map<Long, String> tags) {
+        String cond = ""
+        for (Long tagTypeId : tags.keySet()) {
+            if (cond.length() != 0) {
+                cond = cond + " or "
+            }
+            cond = cond + "(FactTag.tagType = " + tagTypeId + " and FactTag.tagValue = :_" + tagTypeId + ")"
+        }
+        return cond
+    }
+
+    Map sqlParamsByTags(Map<Long, String> tags) {
+        Map params = new HashMap()
+        for (Long tagTypeId : tags.keySet()) {
+            String tagType = "_" + tagTypeId
+            String tagValue = tags.get(tagTypeId)
+            params.put(tagType, tagValue)
+        }
+        return params
+    }
+
+/*
     String sqlFactsByTagValue() {
         return """
 select
@@ -444,6 +476,7 @@ order by
     FactTag.tag
 """
     }
+*/
 
 
 }

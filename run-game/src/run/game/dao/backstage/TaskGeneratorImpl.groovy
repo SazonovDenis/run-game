@@ -259,7 +259,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
 
         // --- Выберем сами среди похожих слов, опираясь на таблицу WordDistance
-        String valueTrueLang = UtTag.getFactLang(valueTrueTag)
+        String valueTrueLang = UtTag.getLangByTag(valueTrueTag)
         StoreRecord recWordDistance = mdb.loadQueryRecord(
                 "select * from WordDistance where word = :word and lang = :lang",
                 [word: valueTrue, lang: valueTrueLang],
@@ -288,7 +288,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             String valueFalse = rec.getString("factValue")
 
             // Языки фактов совпадают?
-            String valueFalseLang = UtTag.getFactLang(valueFalseTag)
+            String valueFalseLang = UtTag.getLangByTag(valueFalseTag)
             if (!valueTrueLang.equals(valueFalseLang)) {
                 continue
             }

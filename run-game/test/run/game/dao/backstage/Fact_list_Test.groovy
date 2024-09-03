@@ -59,7 +59,7 @@ class Fact_list_Test extends RgmBase_Test {
         Fact_list list = mdb.create(Fact_list)
 
         //
-        Store st = list.loadFactsByTagValue(idItem1, "top-100", "word-category")
+        Store st = list.loadFactsByTagValue(idItem1, "top-100", RgmDbConst.TagType_word_category)
 
         //
         println()

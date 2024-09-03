@@ -43,7 +43,7 @@
         <Tags
             v-if="edTags"
             :tags="tags"
-            :tagsKeys="tagsKeys"
+            :tagsKeys="utils.Langs_keys"
             :onTagsChange="onTagsChange"
         />
 
@@ -69,6 +69,7 @@
 
 <script>
 
+import utils from "../utils"
 import RgmInputText from "./RgmInputText"
 import Tags from "./filter/Tags"
 import CbSelect from "./filter/CbSelect"
@@ -88,6 +89,9 @@ export default {
         Tags, CbSelect, BtnHidden, BtnMaskAnswer,
     },
 
+    setup() {
+        return {utils}
+    },
 
     props: {
         filterText: String,
@@ -116,8 +120,6 @@ export default {
         return {
             inputFilterText: this.filterText || "",
             inputSortField: this.sortField || "",
-
-            tagsKeys: ["kaz", "eng"],
 
             cbValues: [
                 {value: "question", text: "Слово", icon: "quasar.arrow.down"},

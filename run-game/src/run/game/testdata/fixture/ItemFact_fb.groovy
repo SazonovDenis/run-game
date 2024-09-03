@@ -6,7 +6,7 @@ import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
 import org.apache.commons.io.filefilter.*
 import org.slf4j.*
-import run.game.dao.backstage.UtWord
+import run.game.dao.backstage.*
 import run.game.util.*
 
 /**
@@ -15,12 +15,8 @@ import run.game.util.*
  */
 class ItemFact_fb extends BaseFixtureBuilder {
 
-    Store stTagNow
-    Store stTagNew
-    StoreIndex idxTag
     StoreIndex idxTagType
-    StoreIndex idxDataType
-    long genIdTag
+    StoreIndex idxFactType
 
     String dirBase = "data/web-grab/"
     String badCsv = "temp/bad-db.csv"
@@ -63,7 +59,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
     Map<String, StoreRecord> itemsMap = new HashMap<>()
 
     protected void onBuild() {
-        FixtureTable fxTag = fx.table("Tag")
         FixtureTable fxItem = fx.table("Item")
         FixtureTable fxFact = fx.table("Fact")
         FixtureTable fxItemTag = fx.table("ItemTag")
@@ -77,11 +72,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
         RgmCsvUtils utils = mdb.create(RgmCsvUtils)
 
         //
-        stTagNew = fxTag.getStore()
-        stTagNow = mdb.loadQuery(sqlTag())
-        idxTag = stTagNow.getIndex("key")
         idxTagType = mdb.loadQuery("select * from TagType").getIndex("code")
-        idxDataType = mdb.loadQuery("select * from DataType").getIndex("code")
+        idxFactType = mdb.loadQuery("select * from FactType").getIndex("code")
 
         //
         Store stCsvBad = mdb.createStore("dat.csv.bad")
@@ -92,7 +84,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
         //
         long genIdItem = 0
         long genIdFact = 0
-        genIdTag = mdb.loadQueryRecord(sqlTagMaxId()).getLong("maxId")
 
         //
         long idItem = 0
@@ -225,18 +216,18 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             StoreRecord recFact = stFact.add()
                             recFact.setValue("id", genIdFact)
                             recFact.setValue("item", idItem)
-                            recFact.setValue("dataType", getDataType("word-spelling"))
+                            recFact.setValue("factType", getFactType("word-spelling"))
                             recFact.setValue("value", word_1)
                             // Добавляем FactTag:word-lang
                             String wordLang = wordLang_1
                             addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
                         }
 
-                        // Добавляем Fact:word-transcribtion
-                        String transcribtion = recCsv.getString("trans")
-                        transcribtion = clearTranscribtion(transcribtion)
-                        if (!UtCnv.isEmpty(transcribtion)) {
-                            key = idItem + "_word-transcribtion_" + transcribtion
+                        // Добавляем Fact:word-transcription
+                        String transcription = recCsv.getString("trans")
+                        transcription = clearTranscription(transcription)
+                        if (!UtCnv.isEmpty(transcription)) {
+                            key = idItem + "_word-transcription_" + transcription
                             if (!tagValueSet.contains(key)) {
                                 tagValueSet.add(key)
                                 //
@@ -244,8 +235,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                 StoreRecord recFact_3 = stFact.add()
                                 recFact_3.setValue("id", genIdFact)
                                 recFact_3.setValue("item", idItem)
-                                recFact_3.setValue("dataType", getDataType("word-transcribtion"))
-                                recFact_3.setValue("value", transcribtion)
+                                recFact_3.setValue("factType", getFactType("word-transcription"))
+                                recFact_3.setValue("value", transcription)
                             }
                         }
 
@@ -261,7 +252,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                         StoreRecord recFact_1 = stFact.add()
                                         recFact_1.setValue("id", genIdFact)
                                         recFact_1.setValue("item", idItem)
-                                        recFact_1.setValue("dataType", getDataType("word-translate"))
+                                        recFact_1.setValue("factType", getFactType("word-translate"))
                                         recFact_1.setValue("value", translate)
                                         // Добавляем FactTag
                                         String direction = wordLang_1 + "-" + wordLang_2
@@ -282,7 +273,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     StoreRecord recFact_1 = stFact.add()
                                     recFact_1.setValue("id", genIdFact)
                                     recFact_1.setValue("item", idItem)
-                                    recFact_1.setValue("dataType", getDataType("word-sound"))
+                                    recFact_1.setValue("factType", getFactType("word-sound"))
                                     String soundFileValue = soundFile.substring(dirBase.length())
                                     recFact_1.setValue("value", soundFileValue)
                                     // Добавляем FactTag:word-sound-info
@@ -291,11 +282,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                         String soundSource = soundSourceArr[soundSourceArr.length - 2]
                                         soundSource = soundSource.trim().toLowerCase()
                                         //
-                                        long genIdFactTag = stFactTag.size() + 1
-                                        StoreRecord recFactTag = stFactTag.add()
-                                        recFactTag.setValue("id", genIdFactTag)
-                                        recFactTag.setValue("fact", genIdFact)
-                                        recFactTag.setValue("tag", getTagOrCreate("word-sound-info", soundSource))
+                                        addFactTag(genIdFact, "word-sound-info", soundSource, stFactTag)
                                     }
                                 }
                             }
@@ -328,27 +315,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
         println()
         println("stCsvBad.size: " + stCsvBad.size())
     }
-
-    String sqlTag() {
-        return """
-select
-    TagType.code || '_' || Tag.value as key, 
-    Tag.* 
-from 
-    Tag 
-    join TagType on Tag.tagType = TagType.id
-"""
-    }
-
-    String sqlTagMaxId() {
-        return """
-select
-    max(Tag.id) maxId 
-from 
-    Tag 
-"""
-    }
-
 
     void validateEng(String eng) {
         if (UtCnv.isEmpty(eng)) {
@@ -390,51 +356,24 @@ from
     }
 
 
-    long getDataType(String tagName) {
-        StoreRecord recDataType = idxDataType.get(tagName)
-        if (recDataType == null) {
-            throw new XError("not found dataType: " + tagName)
+    long getFactType(String tagName) {
+        StoreRecord recFactType = idxFactType.get(tagName)
+        if (recFactType == null) {
+            throw new XError("not found factType: " + tagName)
         }
-        return recDataType.getLong("id")
+        return recFactType.getLong("id")
     }
 
-
-    long getTagOrCreate(String tagType_code, String tagValue) {
-        String key = tagType_code + '_' + tagValue
-        StoreRecord recTag = this.idxTag.get(key)
+    long getTagType(String tagType_code) {
+        StoreRecord recTag = this.idxTagType.get(tagType_code)
         //
         if (recTag == null) {
-            genIdTag = genIdTag + 1
-            //
-            recTag = stTagNew.add()
-            recTag.setValue("id", genIdTag)
-            recTag.setValue("tagType", idxTagType.get(tagType_code).getLong("id"))
-            recTag.setValue("value", tagValue)
-            //
-            StoreRecord recTagNow = stTagNow.add()
-            recTagNow.setValue("id", genIdTag)
-            recTagNow.setValue("key", key)
-            recTagNow.setValue("tagType", idxTagType.get(tagType_code).getLong("id"))
-            recTagNow.setValue("value", tagValue)
-            this.idxTag = stTagNow.getIndex("key")
-
+            notFoundThing.add(tagType_code)
+            throw new XError("not found tagType: " + tagType_code)
         }
         //
         return recTag.getLong("id")
     }
-
-    long getTag(String tagType_code, String tagValue) {
-        String key = tagType_code + '_' + tagValue
-        StoreRecord recTag = this.idxTag.get(key)
-        //
-        if (recTag == null) {
-            notFoundThing.add(tagType_code + "\t" + tagValue)
-            throw new XError("not found tagType: " + tagType_code + ", value: " + tagValue)
-        }
-        //
-        return recTag.getLong("id")
-    }
-
 
     String[] getRus_arr(String dir, String rus) {
         rus = rus.trim().toLowerCase()
@@ -542,7 +481,7 @@ from
     }
 
 
-    String clearTranscribtion(String s) {
+    String clearTranscription(String s) {
         s = s.trim().toLowerCase()
 
         s = s.replace("]", "")
@@ -705,30 +644,32 @@ from
     }
 
 
-    void addItemTag(long idItem, String tagType, String tagValue, stItemTag) {
-        long tag = getTag(tagType, tagValue)
+    void addItemTag(long idItem, String tagTypeStr, String tagValue, stItemTag) {
+        long tagType = getTagType(tagTypeStr)
 
         // С обеспечением уникальности значения тэга для idItem
         String key = idItem + "_" + tagType + "_" + tagValue
         if (!tagValueSet.contains(key)) {
             tagValueSet.add(key)
             long idItemTag = stItemTag.size() + 1
-            StoreRecord recItemTag = stItemTag.add()
-            recItemTag.setValue("id", idItemTag)
-            recItemTag.setValue("item", idItem)
-            recItemTag.setValue("tag", tag)
+            StoreRecord rec = stItemTag.add()
+            rec.setValue("id", idItemTag)
+            rec.setValue("item", idItem)
+            rec.setValue("tagType", tagType)
+            rec.setValue("tagValue", tagValue)
         }
 
     }
 
-    void addFactTag(long idFact, String tagType, String tagValue, stItemTag) {
-        long tag = getTag(tagType, tagValue)
+    void addFactTag(long idFact, String tagTypeStr, String tagValue, stItemTag) {
+        long tagType = getTagType(tagTypeStr)
 
         long idItemTag = stItemTag.size() + 1
-        StoreRecord recItemTag = stItemTag.add()
-        recItemTag.setValue("id", idItemTag)
-        recItemTag.setValue("fact", idFact)
-        recItemTag.setValue("tag", tag)
+        StoreRecord rec = stItemTag.add()
+        rec.setValue("id", idItemTag)
+        rec.setValue("fact", idFact)
+        rec.setValue("tagType", tagType)
+        rec.setValue("tagValue", tagValue)
     }
 
 

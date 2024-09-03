@@ -120,8 +120,8 @@ class Task_upd extends RgmMdbUtils {
         return """
 select 
     Task.*,
-    FactQuestion.dataType dataTypeQuestion, 
-    FactAnswer.dataType dataTypeAnswer 
+    FactQuestion.factType factTypeQuestion, 
+    FactAnswer.factType factTypeAnswer 
 from 
     Task
     join Fact FactQuestion on (Task.factQuestion = FactQuestion.id)

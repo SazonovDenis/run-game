@@ -170,10 +170,24 @@ export default {
         month3: "три месяца",
     },
 
-    Langs_text: {
+    Langs_text_short: {
         eng: "Анг", // "en",
         rus: "Рус", // "ru",
         kaz: "Каз", // "kz",
+    },
+
+    Langs_keys: ["eng", "kaz"],
+
+    Langs_text: {
+        eng: "Английский",
+        rus: "Русский",
+        kaz: "Казахский",
+    },
+
+    Langs_text_tvor: {
+        eng: "английского",
+        rus: "русского",
+        kaz: "казахского",
     },
 
     Langs_color_badge: {

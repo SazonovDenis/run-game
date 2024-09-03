@@ -35,7 +35,7 @@
 
             <Tags
                 :tags="tags"
-                :tagsKeys="tagsKeys"
+                :tagsKeys=utils.Langs_keys
                 :onTagsChange="onTagsChange"
             />
 
@@ -67,6 +67,10 @@ export default {
         RgmInputText, Tags,
     },
 
+    setup() {
+        return {utils}
+    },
+
     props: {
         filterText: {type: String, default: ""},
         sortField: {type: String, default: ""},
@@ -77,14 +81,9 @@ export default {
         onTagsChange: {type: Function, default: null},
     },
 
-    setup() {
-        return {utils}
-    },
-
     data() {
         return {
             filterTextIsExpanded: false,
-            tagsKeys: ["kaz", "eng"],
         }
     },
 
@@ -103,7 +102,7 @@ export default {
                 this.$refs.elFilterText.focus()
             }
         },
-        
+
         getOutline_WordSound() {
             let tag = "word-sound"
             if (this.tags[tag] === false) {

@@ -8,7 +8,9 @@
         Теги для факта (из общего словаря тегов)
         -->
         <field name="fact" parent="Fact/ref" title="О каком факте"/>
-        <field name="tag" parent="Tag/ref"/>
+
+        <field name="tagType" parent="TagType/ref"/>
+        <field name="tagValue" parent="string" size="500" title="Значение тэга"/>
     </domain>
 
 

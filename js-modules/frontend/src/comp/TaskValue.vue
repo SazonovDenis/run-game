@@ -145,8 +145,8 @@ export default {
         canPlaySoundAuto() {
             return (
                 this.showTaskHint ||
-                this.task.dataType === dbConst.DataType_word_sound ||
-                this.task.dataType === dbConst.DataType_word_spelling
+                this.task.factType === dbConst.FactType_word_sound ||
+                this.task.factType === dbConst.FactType_word_spelling
             )
         },
 

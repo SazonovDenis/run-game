@@ -624,7 +624,7 @@ public class ServerImpl extends RgmMdbUtils implements Server {
         // Основной вопрос задания
         StoreRecord recTask = task.get("task")
         resTask.setValue("task", recTask.getLong("id"))
-        resTask.setValue("dataType", recTask.getLong("dataTypeQuestion"))
+        resTask.setValue("factType", recTask.getLong("factTypeQuestion"))
 
         // Делаем плоскую запись на основе значений задания и их типам
         FactDataLoader ldr = mdb.create(FactDataLoader)

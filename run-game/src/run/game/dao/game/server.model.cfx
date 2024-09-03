@@ -40,11 +40,11 @@
 
     <!--
     Данные задания, вопроса или ответа, "плоская" запись.
-    В зависимости от dataType заполнено соответствующее поле:
+    В зависимости от factType заполнено соответствующее поле:
     valueSound, valueTranslate, valueSpelling или valuePicture
     -->
     <domain name="Task.fields">
-        <field name="dataType" parent="long"/>
+        <field name="factType" parent="long"/>
         <field name="valueSpelling" parent="string"/>
         <field name="valueTranslate" parent="string"/>
         <field name="valueSound" parent="string"/>

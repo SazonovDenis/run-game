@@ -7,52 +7,56 @@ import run.game.dao.*
 
 class Fact_list extends BaseMdbUtils {
 
-    public Store loadItemFactsByDataType(long idItem, long dataType) {
+    public Store loadItemFactsByFactType(long idItem, long factType) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlItemFactByDataType(), [id: idItem, dataType: dataType])
+        mdb.loadQuery(st, sqlItemFactByFactType(), [id: idItem, factType: factType])
         return st
     }
 
-    public Store loadFactsByDataTypeWithTags(long dataType, Collection tagTypes) {
+    public Store loadFactsByFactTypeWithTags(long factType, Collection tagTypes) {
         Store st = mdb.createStore("Fact.list")
-        Store stLoaded = mdb.loadQuery(sqlFactByDataType(tagTypes), [dataType: dataType])
+        Store stLoaded = mdb.loadQuery(sqlFactByFactType(tagTypes), [factType: factType])
         fillTag(stLoaded, st)
         return st
     }
 
-    public Store loadFactsByDataTypeByTags(long dataType, Collection tags) {
+    public Store loadFactsByFactTypeByTags(long factType, Collection tags) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlFactByDataTypeByTags(tags), [dataType: dataType])
+        mdb.loadQuery(st, sqlFactByFactTypeByTags(tags), [factType: factType])
         return st
     }
 
-    public Store loadFactsByValueDataType(String value, long dataType) {
+    public Store loadFactsByValueFactType(String value, long factType) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlFactsByValueDataType(), [value: value, dataType: dataType])
+        mdb.loadQuery(st, sqlBy_value_factType(), [value: value, factType: factType])
         return st
     }
 
-    public Store loadFactsByValueDataType(long item, String value, long dataType) {
+    public Store loadFactsByValueFactType(long item, String value, long factType) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlItemFactsByValueDataType(), [item: item, value: value, dataType: dataType])
+        mdb.loadQuery(st, sqlBy_item_value_factType(), [item: item, value: value, factType: factType])
         return st
     }
 
-    public Store findFactsByValueDataType(String value, long dataType) {
+    public Store findBy_value_factType(String factValue, long factType) {
         Store st = mdb.createStore("Fact.list")
+        //Collection tagTypes = Arrays.asList(RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction)
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction)
-        Store stLoaded = mdb.loadQuery(sqlFactsByValueDataTypeLike(tagTypes), [value: "%" + value + "%", dataType: dataType])
+        Store stLoaded = mdb.loadQuery(sqlBy_value_factType__Like(tagTypes), [value: "%" + factValue + "%", factType: factType])
         fillTag(stLoaded, st)
         return st
     }
 
-    public Store findFactsByValueDataTypeByTags(String value, long dataType, Collection tags) {
+    public Store findBy_value_factType_tags(long factType, String factValue, Map<Long, String> tags) {
         if (tags == null || tags.size() == 0) {
-            return findFactsByValueDataType(value, dataType)
+            return findBy_value_factType(factValue, factType)
         }
 
+        Map params = [factType: factType, value: "%" + factValue + "%"]
+        params.putAll(sqlParams(tags))
+        Store stLoaded = mdb.loadQuery(sqlBy_value_factType_tags(tags), params)
+
         Store st = mdb.createStore("Fact.list")
-        Store stLoaded = mdb.loadQuery(sqlFactsByValueDataTypeLikeByTags(tags), [value: "%" + value + "%", dataType: dataType])
         fillTag(stLoaded, st)
 
         return st
@@ -98,7 +102,7 @@ class Fact_list extends BaseMdbUtils {
         for (StoreRecord recLoaded : stLoaded) {
             StoreRecord recNew = st.add(recLoaded.getValues())
             Long tagType = recLoaded.getLong("tagType")
-            Long tagValue = recLoaded.getLong("tagValue")
+            String tagValue = recLoaded.getString("tagValue")
             recNew.setValue("tag", [(tagType): tagValue])
         }
     }
@@ -110,7 +114,7 @@ select
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue
 
 from
@@ -134,21 +138,18 @@ select
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue,
     
-    Tag.tagType, 
-    FactTag.tag tagValue
+    FactTag.tagType, 
+    FactTag.tagValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
     left join FactTag on (
-        FactTag.fact = Fact.id
-    )
-    left join Tag on (
-        FactTag.tag = Tag.id and
-        Tag.tagType in (${tagTypesStr})
+        FactTag.fact = Fact.id and
+        FactTag.tagType in (${tagTypesStr})
     )
 
 where
@@ -172,14 +173,14 @@ where
 """
     }
 
-    String sqlItemFactByDataType() {
+    String sqlItemFactByFactType() {
         return """
 select
     Item.id item,
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue
 
 from
@@ -188,14 +189,14 @@ from
 
 where
     Item.id = :id and
-    Fact.dataType = :dataType
+    Fact.factType = :factType
 
 order by
     Fact.id
 """
     }
 
-    String sqlFactByDataType(Collection tagTypes) {
+    String sqlFactByFactType(Collection tagTypes) {
         String tagTypesStr = UtString.join(tagTypes, ",")
 
         return """
@@ -204,32 +205,29 @@ select
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue,
     
-    Tag.tagType, 
-    FactTag.tag tagValue
+    FactTag.tagType, 
+    FactTag.tagValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
     left join FactTag on (
-        FactTag.fact = Fact.id
-    )
-    left join Tag on (
-        FactTag.tag = Tag.id and
-        Tag.tagType in (${tagTypesStr})
+        FactTag.fact = Fact.id and
+        FactTag.tagType in (${tagTypesStr})
     )
 
 where
-    Fact.dataType = :dataType
+    Fact.factType = :factType
 
 order by
     Fact.id
 """
     }
 
-    String sqlFactByDataTypeByTags(Collection tags) {
+    String sqlFactByFactTypeByTags(Collection tags) {
         String tagsStr = UtString.join(tags, ",")
 
         return """
@@ -238,7 +236,7 @@ select
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue,
     
     FactTag.tag
@@ -253,20 +251,20 @@ from
 
 order by
     Item.id,
-    Fact.dataType,
+    Fact.factType,
     Fact.id,
     FactTag.tag
 """
     }
 
-    String sqlFactsByValueDataType() {
+    String sqlBy_value_factType() {
         return """
 select
     Item.id item,
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue
 
 from
@@ -275,21 +273,21 @@ from
 
 where
     Fact.value = :value and
-    Fact.dataType = :dataType
+    Fact.factType = :factType
 
 order by
     Fact.id
 """
     }
 
-    String sqlItemFactsByValueDataType() {
+    String sqlBy_item_value_factType() {
         return """
 select
     Item.id item,
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue
 
 from
@@ -299,14 +297,14 @@ from
 where
     Fact.item = :item and
     Fact.value = :value and
-    Fact.dataType = :dataType
+    Fact.factType = :factType
 
 order by
     Fact.id
 """
     }
 
-    String sqlFactsByValueDataTypeLike(Collection tagTypes) {
+    String sqlBy_value_factType__Like(Collection tagTypes) {
         String tagTypesStr = UtString.join(tagTypes, ",")
 
         return """
@@ -316,34 +314,53 @@ select
     
     Fact.id,
     Fact.id fact,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue,
         
-    Tag.tagType, 
-    FactTag.tag tagValue
+    FactTag.tagType, 
+    FactTag.tagValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
     left join FactTag on (
-        FactTag.fact = Fact.id
-    )
-    left join Tag on (
-        FactTag.tag = Tag.id and
-        Tag.tagType in (${tagTypesStr})
+        FactTag.fact = Fact.id and
+        FactTag.tagType in (${tagTypesStr})
     )
 
 where
     Fact.value like :value and
-    Fact.dataType = :dataType
+    Fact.factType = :factType
 
 order by
     Fact.id
 """
     }
 
-    String sqlFactsByValueDataTypeLikeByTags(Collection tags) {
-        String tagsStr = UtString.join(tags, ",")
+    String sqlCond(Map<Long, String> tags) {
+        String cond = ""
+        for (Long tagType : tags.keySet()) {
+            if (cond.length() != 0) {
+                cond = cond + " or "
+            }
+            String tagValue = tags.get(tagType)
+            cond = cond + "(FactTag.tagType = " + tagType + " and FactTag.tagValue = :_" + tagType + ")"
+        }
+        return cond
+    }
+
+    Map sqlParams(Map<Long, String> tags) {
+        Map params = new HashMap()
+        for (Long tagType : tags.keySet()) {
+            String tagTypeStr = "_" + tagType
+            String tagValue = tags.get(tagType)
+            params.put(tagTypeStr, tagValue)
+        }
+        return params
+    }
+
+    String sqlBy_value_factType_tags(Map<Long, String> tags) {
+        String tagValuesStr = sqlCond(tags)
 
         return """
 select
@@ -352,26 +369,23 @@ select
     
     Fact.id,
     Fact.id fact,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue,
                    
-    Tag.tagType, 
-    FactTag.tag tagValue
+    FactTag.tagType, 
+    FactTag.tagValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
     join FactTag on (
         FactTag.fact = Fact.id and
-        FactTag.tag in (${tagsStr})
-    )
-    join Tag on (
-        FactTag.tag = Tag.id
+        (${tagValuesStr})
     )
 
 where
     Fact.value like :value and
-    Fact.dataType = :dataType
+    Fact.factType = :factType
 
 order by
     Fact.id
@@ -385,7 +399,7 @@ select
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue
 
 from
@@ -398,7 +412,7 @@ where
 
 order by
     Item.id,
-    Fact.dataType,
+    Fact.factType,
     Fact.id,
     FactTag.tag
 """
@@ -411,7 +425,7 @@ select
     Item.value itemValue,
     
     Fact.id,
-    Fact.dataType factDataType,
+    Fact.factType factType,
     Fact.value factValue
 
 from
@@ -421,11 +435,11 @@ from
 
 where
     Item.id = :id and
-    FactTag.code = :dataType
+    FactTag.code = :factType
 
 order by
     Item.id,
-    Fact.dataType,
+    Fact.factType,
     Fact.id,
     FactTag.tag
 """

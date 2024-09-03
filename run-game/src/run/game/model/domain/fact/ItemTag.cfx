@@ -8,7 +8,9 @@
         Теги для сущности (из общего словаря тегов)
         -->
         <field name="item" parent="Item/ref" title="О какой сущности"/>
-        <field name="tag" parent="Tag/ref"/>
+
+        <field name="tagType" parent="TagType/ref"/>
+        <field name="tagValue" parent="string" size="500" title="Значение тэга"/>
     </domain>
 
 

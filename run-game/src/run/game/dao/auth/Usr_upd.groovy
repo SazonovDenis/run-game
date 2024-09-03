@@ -107,7 +107,7 @@ public class Usr_upd extends RgmMdbUtils {
         planUpd.insPlanInternal(
                 [text: "Мои слова", isPublic: false],
                 [],
-                [[tag: RgmDbConst.Tag_plan_access_default]],
+                [[tagType: RgmDbConst.TagType_plan_access, tagValue: RgmDbConst.TagValue_plan_access_default]],
                 [usr: idUsr, isOwner: true]
         )
 
@@ -126,7 +126,8 @@ from
     join PlanTag PlanTag_access_default on (
         UsrPlan.usr = :usr and
         UsrPlan.plan = PlanTag_access_default.plan and
-        PlanTag_access_default.tag = $RgmDbConst.Tag_plan_access_default
+        PlanTag_access_default.tagType = $RgmDbConst.TagType_plan_access and
+        PlanTag_access_default.tagValue = '$RgmDbConst.TagValue_plan_access_default'
     ) 
 where
     UsrPlan.isOwner = 1

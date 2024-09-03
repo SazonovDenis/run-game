@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+
+
+    <domain name="FactType" parent="tab.dict" tag.db="true"
+            title="Тип факта">
+        <ref name="default" dict="FactType"/>
+        <!--@
+        Логический тип факта: перевод, написание, звучание и т.п.
+        Логический тип определяет физический тип данных: звук, изображение, текст с/без оформления.
+        -->
+    </domain>
+
+
+</root>

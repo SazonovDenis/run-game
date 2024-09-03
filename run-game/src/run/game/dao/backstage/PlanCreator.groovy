@@ -29,7 +29,7 @@ class PlanCreator extends RgmMdbUtils  {
 
     public limitQuestion = 0
 
-    void text_to_FactsCombinations(String fileNameText, long dataTypeQuestion, long dataTypeAnswer, String fileNameFactsCombinations) {
+    void text_to_FactsCombinations(String fileNameText, long factTypeQuestion, long factTypeAnswer, String fileNameFactsCombinations) {
         // ---
         // Загрузим текст
         Item_list itemsList = mdb.create(Item_list)
@@ -58,7 +58,7 @@ class PlanCreator extends RgmMdbUtils  {
         //
         for (StoreRecord recItem : stItem) {
             long item = recItem.getLong("id")
-            Store stItemFactCombinations = generateItemFactsCombinations(item, dataTypeQuestion, dataTypeAnswer, limitQuestion, 0)
+            Store stItemFactCombinations = generateItemFactsCombinations(item, factTypeQuestion, factTypeAnswer, limitQuestion, 0)
             stItemFactCombinations.copyTo(stFactCombinations)
         }
 
@@ -75,27 +75,27 @@ class PlanCreator extends RgmMdbUtils  {
 
     /**
      * Генерит комбинации известных фактов для сущности,
-     * ограничивая выборку фактов параметрами dataType и factTag.
+     * ограничивая выборку фактов параметрами factType и factTag.
      *
      * @param item Сущность
-     * @param dataTypeQuestion
-     * @param dataTypeAnswer
+     * @param factTypeQuestion
+     * @param factTypeAnswer
      * @return Store с комбинациями фактов (factQuestion + factAnswer)
      */
-    public Store generateItemFactsCombinations(long item, long dataTypeQuestion, long dataTypeAnswer, int limitQuestion, int limitAnswer) {
+    public Store generateItemFactsCombinations(long item, long factTypeQuestion, long factTypeAnswer, int limitQuestion, int limitAnswer) {
         Store res = mdb.createStore("FactCombinations")
 
         // Загружаем список фактов для "вопроса" и "ответа"
         Fact_list list = mdb.create(Fact_list)
-        Store stQuestionLoaded = list.loadItemFactsByDataType(item, dataTypeQuestion)
-        Store stAnswer = list.loadItemFactsByDataType(item, dataTypeAnswer)
+        Store stQuestionLoaded = list.loadItemFactsByFactType(item, factTypeQuestion)
+        Store stAnswer = list.loadItemFactsByFactType(item, factTypeAnswer)
 
         //
         if (stQuestionLoaded.size() == 0) {
-            throw new XError("Не найден dataTypeQuestion: " + dataTypeQuestion + ", item: " + list.loadItem(item).getString("value"))
+            throw new XError("Не найден factTypeQuestion: " + factTypeQuestion + ", item: " + list.loadItem(item).getString("value"))
         }
         if (stAnswer.size() == 0) {
-            throw new XError("Не найден dataTypeAnswer: " + dataTypeAnswer + ", item: " + list.loadItem(item).getString("value"))
+            throw new XError("Не найден factTypeAnswer: " + factTypeAnswer + ", item: " + list.loadItem(item).getString("value"))
         }
 
         // Ограничим количество
@@ -133,8 +133,8 @@ class PlanCreator extends RgmMdbUtils  {
                         factAnswer          : recAnswer.getLong("id"),
                         factValueQuestion   : recQuestion.getString("factValue"),
                         factValueAnswer     : recAnswer.getString("factValue"),
-                        factDataTypeQuestion: recQuestion.getLong("factDataType"),
-                        factDataTypeAnswer  : recAnswer.getLong("factDataType"),
+                        factTypeQuestion: recQuestion.getLong("factType"),
+                        factTypeAnswer  : recAnswer.getLong("factType"),
                         factTagQuestion     : mapFactTagQuestion,
                         factTagAnswer       : mapFactTagAnswer,
                 ])
@@ -231,11 +231,11 @@ class PlanCreator extends RgmMdbUtils  {
         for (StoreRecord recFactCombinations : stFactCombinations) {
             String factValueQuestion = recFactCombinations.getString("factValueQuestion")
             String factValueAnswer = recFactCombinations.getString("factValueAnswer")
-            long factDataTypeQuestion = recFactCombinations.getLong("factDataTypeQuestion")
-            long factDataTypeAnswer = recFactCombinations.getLong("factDataTypeAnswer")
+            long factTypeQuestion = recFactCombinations.getLong("factTypeQuestion")
+            long factTypeAnswer = recFactCombinations.getLong("factTypeAnswer")
 
             // Ищем все item, у которых есть такое значение факта
-            Store stFactQuestion = list.loadFactsByValueDataType(factValueQuestion, factDataTypeQuestion)
+            Store stFactQuestion = list.loadFactsByValueFactType(factValueQuestion, factTypeQuestion)
 
             //
             if (stFactQuestion.size() == 0) {
@@ -253,7 +253,7 @@ class PlanCreator extends RgmMdbUtils  {
             StoreRecord recFactAnswer = null
             for (StoreRecord recFactQuestionSelected : stFactQuestion) {
                 long item = recFactQuestionSelected.getLong("item")
-                Store stFactAnswer = list.loadFactsByValueDataType(item, factValueAnswer, factDataTypeAnswer)
+                Store stFactAnswer = list.loadFactsByValueFactType(item, factValueAnswer, factTypeAnswer)
                 if (stFactAnswer.size() != 0) {
                     recFactQuestion = recFactQuestionSelected
                     recFactAnswer = stFactAnswer.get(0)

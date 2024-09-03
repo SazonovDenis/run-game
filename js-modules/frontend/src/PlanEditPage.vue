@@ -778,18 +778,18 @@ export default {
             // должно быть false или отсутствовать.
 
             //
-            let planTag_question_datatype = planTags[dbConst.TagType_plan_question_datatype]
-            let planTag_answer_datatype = planTags[dbConst.TagType_plan_answer_datatype]
+            let planTag_question_factType = planTags[dbConst.TagType_plan_question_factType]
+            let planTag_answer_factType = planTags[dbConst.TagType_plan_answer_factType]
             let filterTag_sound = this.viewSettings.filterTags["word-sound"]
             //
             if (filterTag_sound === true) {
-                if (planTag_question_datatype !== "word-sound" && planTag_answer_datatype !== "word-sound") {
+                if (planTag_question_factType !== "word-sound" && planTag_answer_factType !== "word-sound") {
                     return false
                 }
             }
             //
             if (filterTag_sound === false) {
-                if (planTag_question_datatype && (planTag_question_datatype === "word-sound" || planTag_answer_datatype === "word-sound")) {
+                if (planTag_question_factType && (planTag_question_factType === "word-sound" || planTag_answer_factType === "word-sound")) {
                     return false
                 }
             }

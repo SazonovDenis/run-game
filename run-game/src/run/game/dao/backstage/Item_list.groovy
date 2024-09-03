@@ -24,7 +24,7 @@ class Item_list extends RgmMdbUtils {
 
         // --- Поиск слов среди введенного
         Item_find finder = mdb.create(Item_find)
-        Map tagsToFind = prepareParamsTags(tags)
+        Map<Long, String> tagsToFind = prepareParamsTags(tags)
         Store stItem = finder.collectItems(textPositions, tagsToFind, null)
 
         // --- Заполнение свойств найденных слов
@@ -129,21 +129,19 @@ class Item_list extends RgmMdbUtils {
     // region Внутренние методы
 
 
-    private Map prepareParamsTags(Map tags) {
-        if (tags.size() == 0) {
+    private Map<Long, String> prepareParamsTags(Map tags) {
+        if (tags == null || tags.size() == 0) {
             return null
         } else if (tags.get("kaz") != null) {
-            tags = [
+            return [
                     (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_kaz,
                     (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_kaz_rus,
-            ]
-            return tags
+            ] as Map<Long, String>
         } else if (tags.get("eng") != null) {
-            tags = [
+            return [
                     (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_eng,
                     (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_eng_rus,
-            ]
-            return tags
+            ] as Map<Long, String>
         } else {
             return null
         }
@@ -261,11 +259,11 @@ select
     Item.id item,
     
     Fact_Spelling.id factQuestion,
-    Fact_Spelling.dataType dataTypeSpelling,
+    Fact_Spelling.factType factTypeSpelling,
     Fact_Spelling.value valueSpelling,
     
     Fact_Translate.id factAnswer, 
-    Fact_Translate.dataType dataTypeTranslate,
+    Fact_Translate.factType factTypeTranslate,
     Fact_Translate.value valueTranslate,
     
     UsrFact.isHidden,
@@ -278,15 +276,15 @@ select
 
 from    
     Item
-    -- Факт типа DataType_word_spelling
+    -- Факт типа FactType_word_spelling
     join Fact Fact_Spelling on (
         Item.id = Fact_Spelling.item and
-        Fact_Spelling.dataType = ${RgmDbConst.DataType_word_spelling}
+        Fact_Spelling.factType = ${RgmDbConst.FactType_word_spelling}
     )
-    -- Факт типа DataType_word_translate 
+    -- Факт типа FactType_word_translate 
     join Fact Fact_Translate on (
         Item.id = Fact_Translate.item and
-        Fact_Translate.dataType = ${RgmDbConst.DataType_word_translate}
+        Fact_Translate.factType = ${RgmDbConst.FactType_word_translate}
     )
     -- Информация о наличии пары фактов в указанном плане
     left join PlanFact on (
@@ -329,11 +327,11 @@ select
     Item.id item,
     
     Fact_Spelling.id factQuestion,
-    Fact_Spelling.dataType dataTypeSpelling,
+    Fact_Spelling.factType factTypeSpelling,
     Fact_Spelling.value valueSpelling,
     
     Fact_Translate.id factAnswer, 
-    Fact_Translate.dataType dataTypeTranslate,
+    Fact_Translate.factType factTypeTranslate,
     Fact_Translate.value valueTranslate,
     
     UsrFact.isHidden,
@@ -346,15 +344,15 @@ select
 
 from    
     Item
-    -- Факт типа DataType_word_spelling
+    -- Факт типа FactType_word_spelling
     join Fact Fact_Spelling on (
         Item.id = Fact_Spelling.item and
-        Fact_Spelling.dataType = ${RgmDbConst.DataType_word_spelling}
+        Fact_Spelling.factType = ${RgmDbConst.FactType_word_spelling}
     )
-    -- Факт типа DataType_word_translate 
+    -- Факт типа FactType_word_translate 
     join Fact Fact_Translate on (
         Item.id = Fact_Translate.item and
-        Fact_Translate.dataType = ${RgmDbConst.DataType_word_translate}
+        Fact_Translate.factType = ${RgmDbConst.FactType_word_translate}
     )
     -- Информация о наличии пары фактов в указанном плане
     left join PlanFact on (

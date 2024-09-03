@@ -10,8 +10,8 @@
         <field name="factValueQuestion" parent="Fact/value"/>
         <field name="factValueAnswer" parent="Fact/value"/>
 
-        <field name="factDataTypeQuestion" parent="Fact/dataType"/>
-        <field name="factDataTypeAnswer" parent="Fact/dataType"/>
+        <field name="factTypeQuestion" parent="Fact/factType"/>
+        <field name="factTypeAnswer" parent="Fact/factType"/>
 
     </domain>
 

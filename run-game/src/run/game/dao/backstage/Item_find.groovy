@@ -29,7 +29,7 @@ class Item_find extends BaseMdbUtils {
      * @return Найденные слова: store со списком Item-ов и Fact-ов. Каждый элемент ключом имеет item,
      * значением - набор позиций в источнике, где этот item встретился
      */
-    Store collectItems(List<TextPosition> textPositionsRaw, Map<Long, Long> tags, List<TextPosition> textPositionsRes) {
+    Store collectItems(List<TextPosition> textPositionsRaw, Map<Long, String> tags, List<TextPosition> textPositionsRes) {
         List<TextPosition> textPositions
 
 
@@ -221,7 +221,7 @@ class Item_find extends BaseMdbUtils {
      * @param text список слов (очищенный)
      * @return Найденные слова: store со списком Item
      */
-    Store findTextExact(List<TextPosition> textPositions, Map<Long, Long> tagsParam) {
+    Store findTextExact(List<TextPosition> textPositions, Map<Long, String> tagsParam) {
         Store stItem = mdb.createStore("Item.find")
 
         // Уберем повторы в textPositions - превратим их в Set
@@ -252,9 +252,9 @@ class Item_find extends BaseMdbUtils {
                     Map factTags = (Map) recFact.getValue("tag")
                     if (factTags != null && tagsParam != null && tagsParam.size() != 0) {
                         wasTagComparationTrue = false
-                        for (Map.Entry<Long, Long> entry : tagsParam.entrySet()) {
+                        for (Map.Entry<Long, String> entry : tagsParam.entrySet()) {
                             long tagKey = entry.getKey()
-                            long tagValue = entry.getValue()
+                            String tagValue = entry.getValue()
                             if (tagValue.equals(factTags.get(tagKey))) {
                                 wasTagComparationTrue = true
                                 break
@@ -289,7 +289,7 @@ class Item_find extends BaseMdbUtils {
      * @param word слово или его фрагмент
      * @return Найденные слова: store со списком Item
      */
-    Store findWordPart(String word, Map tags) {
+    Store findWordPart(String word, Map<Long, String> tags) {
         Store stItem = mdb.createStore("Item.find")
 
         //
@@ -301,18 +301,20 @@ class Item_find extends BaseMdbUtils {
         // ---
         // Поиск
 
-        Collection tagsValues = null
+        Map<Long, String> tagsValue_word_lang = null
+        Map<Long, String> tagsValues_word_translate_direction = null
         if (tags != null) {
-            tagsValues = tags.values()
+            tagsValue_word_lang = [(RgmDbConst.TagType_word_lang): tags.get(RgmDbConst.TagType_word_lang)]
+            tagsValues_word_translate_direction = [(RgmDbConst.TagType_word_translate_direction): tags.get(RgmDbConst.TagType_word_translate_direction)]
         }
 
         // Поиск по атрибуту word_spelling
-        Store stFactSpelling = list.findFactsByValueDataTypeByTags(word, RgmDbConst.DataType_word_spelling, tagsValues)
+        Store stFactSpelling = list.findBy_value_factType_tags(RgmDbConst.FactType_word_spelling, word, tagsValue_word_lang)
         stFactSpelling.sort("itemValue")
 
 
         // Поиск по атрибуту word_translate
-        Store stFactTranslate = list.findFactsByValueDataTypeByTags(word, RgmDbConst.DataType_word_translate, tagsValues)
+        Store stFactTranslate = list.findBy_value_factType_tags(RgmDbConst.FactType_word_translate, word, tagsValues_word_translate_direction)
         stFactTranslate.sort("factValue")
 
 
@@ -477,7 +479,7 @@ class Item_find extends BaseMdbUtils {
                 // Превратим список тэгов в Map тегов
                 Map<Long, String> mapItemTag = new HashMap<>()
                 for (StoreRecord recItemTag : lstRecItemTag) {
-                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
+                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("tagValue"))
                 }
                 recItem.setValue("itemTag", mapItemTag)
             }
@@ -496,11 +498,9 @@ class Item_find extends BaseMdbUtils {
         }
         return """
 select
-    ItemTag.item,
-    Tag.*
+    ItemTag.*
 from
     ItemTag
-    join Tag on (ItemTag.tag = Tag.id)
 where
     ItemTag.item in ( ${strIds} )
 """

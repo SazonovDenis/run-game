@@ -6,15 +6,15 @@
             title="Значения для показа вопроса">
         <!--@
         Для одного задания могут быть сформулированы несколько TaskQuestion,
-        с разными значенями dataType.
+        с разными значенями factType.
 
-        Для заданий, где у факта factQuestion dataType = "word-spelling",
-        формируется дополнительная запись на основе факта, где dataType = "word-sound"
+        Для заданий, где у факта factQuestion factType = "word-spelling",
+        формируется дополнительная запись на основе факта, где factType = "word-sound"
         (если такой факт имеется в базе).
         -->
         <field name="task" parent="Task/ref" title="На какое задание"/>
 
-        <field name="dataType" parent="DataType/ref"/>
+        <field name="factType" parent="FactType/ref"/>
         <field name="value" parent="string" size="500" title="Значение"/>
     </domain>
 

@@ -7,8 +7,8 @@
     <domain name="Task.rec" parent="Task">
         <!--@ Типы данных вопроса и ответа (Task.factQuestion и Task.factAnswer) -->
 
-        <field name="dataTypeQuestion" parent="Fact/dataType"/>
-        <field name="dataTypeAnswer" parent="Fact/dataType"/>
+        <field name="factTypeQuestion" parent="Fact/factType"/>
+        <field name="factTypeAnswer" parent="Fact/factType"/>
 
     </domain>
 
@@ -48,7 +48,7 @@
 
     <domain name="Fact.list" parent="id">
 
-        <field name="factDataType" parent="Fact/dataType"/>
+        <field name="factType" parent="Fact/factType"/>
         <field name="factValue" parent="Fact/value"/>
 
         <field name="tag" parent="object"/>

@@ -54,18 +54,18 @@ export default {
             let tagValueDirectionPair = tagValueDirection.split("-")
 
             //
-            let tagQuestionDatatype = this.tags[dbConst.TagType_plan_question_datatype]
-            let tagAnswerDatatype = this.tags[dbConst.TagType_plan_answer_datatype]
+            let tagQuestionDatatype = this.tags[dbConst.TagType_plan_question_factType]
+            let tagAnswerDatatype = this.tags[dbConst.TagType_plan_answer_factType]
 
             //
 
             //
             return {
                 from: tagValueDirectionPair[0],
-                fromText: utils.Langs_text[tagValueDirectionPair[0]],
+                fromText: utils.Langs_text_short[tagValueDirectionPair[0]],
                 fromAudio: "word-sound" === tagQuestionDatatype,
                 to: tagValueDirectionPair[1],
-                toText: utils.Langs_text[tagValueDirectionPair[1]],
+                toText: utils.Langs_text_short[tagValueDirectionPair[1]],
                 toAudio: "word-sound" === tagAnswerDatatype,
             }
         },

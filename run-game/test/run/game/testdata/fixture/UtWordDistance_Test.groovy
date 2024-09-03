@@ -78,8 +78,8 @@ class UtWordDistance_Test extends Apx_Test {
 
     @Test
     void jaroWinklerDistance() {
-        Store st_rus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate + " --limit 1000")
-        Store st_eng = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_spelling + " --limit 1000")
+        Store st_rus = mdb.loadQuery("select * from Fact where factType = " + RgmDbConst.FactType_word_translate + " --limit 1000")
+        Store st_eng = mdb.loadQuery("select * from Fact where factType = " + RgmDbConst.FactType_word_spelling + " --limit 1000")
 
         //
         println("st_rus.size: " + st_rus.size())

@@ -9,7 +9,7 @@
                 :color="getBtnColor(tagKey)"
                 :text-color="getTextColor(tagKey)"
                 :outline="getOutline(tagKey)"
-                :label="utils.Langs_text[tagKey]"
+                :label="utils.Langs_text_short[tagKey]"
                 @click="toggle_TrueNull(tagKey)"
             />
 

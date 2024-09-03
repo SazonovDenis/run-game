@@ -17,11 +17,11 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
     int OPTIONS_COUNT = 6
     int VALUES_FALSE_MAX_COUNT = 25
 
-    Map<Long, String> DataType_CODE = [
-            (RgmDbConst.DataType_word_spelling) : "word_spelling",
-            (RgmDbConst.DataType_word_translate): "word_translate",
-            (RgmDbConst.DataType_word_sound)    : "word_sound",
-            (RgmDbConst.DataType_word_picture)  : "word_picture",
+    Map<Long, String> FactType_CODE = [
+            (RgmDbConst.FactType_word_spelling) : "word_spelling",
+            (RgmDbConst.FactType_word_translate): "word_translate",
+            (RgmDbConst.FactType_word_sound)    : "word_sound",
+            (RgmDbConst.FactType_word_picture)  : "word_picture",
     ]
 
 
@@ -45,8 +45,8 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         //
         long idItem = recFactQuestion.getLong("item")
         long idItemAnswer = recFactAnswer.getLong("item")
-        long dataTypeQuestion = recFactQuestion.getLong("factDataType")
-        long dataTypeAnswer = recFactAnswer.getLong("factDataType")
+        long factTypeQuestion = recFactQuestion.getLong("factType")
+        long factTypeAnswer = recFactAnswer.getLong("factType")
         String valueTrue = recFactAnswer.getValue("factValue")
 
 
@@ -128,8 +128,8 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             throw new XError(
                     "Не удалось подобрать достаточного ({0}) количества неправильных ответов, {1} -> {2}, question: \"{3}\", answer: \"{4}\", valuesFalse: {5}",
                     OPTIONS_COUNT,
-                    DataType_CODE[dataTypeQuestion],
-                    DataType_CODE[dataTypeAnswer],
+                    FactType_CODE[factTypeQuestion],
+                    FactType_CODE[factTypeAnswer],
                     recFactQuestion.getValue("factValue"),
                     valueTrue,
                     "\"" + UtString.join(valuesFalseSet, "\", \"") + "\""
@@ -148,7 +148,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем stTaskOption: готовим правильный и неправильные ответы
 
         // Выбираем неправильные ответы (и их порядок)
-        Store stAnswer = list.loadItemFactsByDataType(idItem, dataTypeAnswer)
+        Store stAnswer = list.loadItemFactsByFactType(idItem, factTypeAnswer)
         StoreIndex idxAnswer = stAnswer.getIndex("factValue")
         //
         int n = 0
@@ -179,14 +179,14 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
             if (i == trueValuePos) {
                 // Правильный ответ
                 recOption.setValue("isTrue", true)
-                recOption.setValue("dataType", recFactAnswer.getValue("factDataType"))
+                recOption.setValue("factType", recFactAnswer.getValue("factType"))
                 recOption.setValue("value", valueTrue)
             } else {
                 // Неправильные варианты
                 int falseOptionIndex = falseOntionsIndexes[i]
                 String valueFalse = valuesFalseArr[falseOptionIndex]
                 //
-                recOption.setValue("dataType", recFactAnswer.getValue("factDataType"))
+                recOption.setValue("factType", recFactAnswer.getValue("factType"))
                 recOption.setValue("value", valueFalse)
             }
         }
@@ -199,33 +199,33 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
         // Формируем основной вопрос
         StoreRecord recTaskQuestion = stTaskQuestion.add()
-        recTaskQuestion.setValue("dataType", recFactQuestion.getValue("factDataType"))
+        recTaskQuestion.setValue("factType", recFactQuestion.getValue("factType"))
         recTaskQuestion.setValue("value", recFactQuestion.getValue("factValue"))
 
 
         // Формируем дополнительную информацию
-        if (dataTypeQuestion != RgmDbConst.DataType_word_sound) {
+        if (factTypeQuestion != RgmDbConst.FactType_word_sound) {
             // Загружаем факты "звук"
-            Store stFact = list.loadItemFactsByDataType(idItem, RgmDbConst.DataType_word_sound)
+            Store stFact = list.loadItemFactsByFactType(idItem, RgmDbConst.FactType_word_sound)
             // Выбираем факт "звук"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
                 StoreRecord recFact = stFact.get(idx)
                 recTaskQuestion = stTaskQuestion.add()
-                recTaskQuestion.setValue("dataType", recFact.getValue("factDataType"))
+                recTaskQuestion.setValue("factType", recFact.getValue("factType"))
                 recTaskQuestion.setValue("value", recFact.getValue("factValue"))
 
             }
         }
-        if (dataTypeQuestion != RgmDbConst.DataType_word_spelling) {
+        if (factTypeQuestion != RgmDbConst.FactType_word_spelling) {
             // Загружаем факты "написание"
-            Store stFact = list.loadItemFactsByDataType(idItem, RgmDbConst.DataType_word_spelling)
+            Store stFact = list.loadItemFactsByFactType(idItem, RgmDbConst.FactType_word_spelling)
             // Выбираем факт "написание"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
                 StoreRecord recFact = stFact.get(idx)
                 recTaskQuestion = stTaskQuestion.add()
-                recTaskQuestion.setValue("dataType", recFact.getValue("factDataType"))
+                recTaskQuestion.setValue("factType", recFact.getValue("factType"))
                 recTaskQuestion.setValue("value", recFact.getValue("factValue"))
             }
         }

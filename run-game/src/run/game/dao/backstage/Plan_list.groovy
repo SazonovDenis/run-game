@@ -115,7 +115,7 @@ class Plan_list extends RgmMdbUtils {
                 // Превратим список тэгов в Map тегов
                 Map<Long, String> mapItemTag = new HashMap<>()
                 for (StoreRecord recItemTag : lstRecItemTag) {
-                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("value"))
+                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("tagValue"))
                 }
                 rec.setValue("tags", mapItemTag)
             }
@@ -131,11 +131,9 @@ class Plan_list extends RgmMdbUtils {
         }
         return """
 select 
-    ${tagTableName}.${refName}, 
-    Tag.* 
+    ${tagTableName}.* 
 from
     ${tagTableName} 
-    join Tag on (${tagTableName}.tag = Tag.id) 
 where
     ${tagTableName}.${refName} in (${strIds})
 """
@@ -196,7 +194,8 @@ from
     )
     left join PlanTag PlanTag_access_default on (
         UsrPlan.plan = PlanTag_access_default.plan and
-        PlanTag_access_default.tag = $RgmDbConst.Tag_plan_access_default
+        PlanTag_access_default.tagType = $RgmDbConst.TagType_plan_access and
+        PlanTag_access_default.tagValue = '$RgmDbConst.TagValue_plan_access_default'
     ) 
 )
 

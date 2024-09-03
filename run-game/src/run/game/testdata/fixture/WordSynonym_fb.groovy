@@ -24,7 +24,7 @@ class WordSynonym_fb extends BaseFixtureBuilder {
         logger.logStepStart()
 
         //
-        Store stWordRus = mdb.loadQuery("select * from Fact where dataType = " + RgmDbConst.DataType_word_translate)
+        Store stWordRus = mdb.loadQuery("select * from Fact where factType = " + RgmDbConst.FactType_word_translate)
         StoreIndex idxWordRus = stWordRus.getIndex("value")
 
 

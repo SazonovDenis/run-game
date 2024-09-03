@@ -11,7 +11,7 @@
           handler="run.game.model.dict.DictHandlerLoadable"/>
 
     <!-- словари -->
-    <dict name="DataType" parent="dict.base"/>
+    <dict name="FactType" parent="dict.base"/>
     <dict name="LinkType" parent="dict.base"/>
     <dict name="ConfirmState" parent="dict.base"/>
 

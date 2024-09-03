@@ -87,7 +87,7 @@ class RgmBase_Test extends Apx_Test {
         if (!task.containsKey("taskQuestion")) {
             printTaskOneLine_choiced(task)
         } else {
-            if (task.get("task").findField("dataTypeQuestion")) {
+            if (task.get("task").findField("factTypeQuestion")) {
                 printTaskOneLine_loaded(task)
             } else {
                 printTaskOneLine_created(task)
@@ -110,24 +110,24 @@ class RgmBase_Test extends Apx_Test {
     }
 
     void printTaskOneLine_loaded(DataBox task) {
-        String strTaskDataType = task.get("task").getValue("dataTypeQuestion") + " -> " + task.get("task").getValue("dataTypeAnswer")
+        String strTaskFactType = task.get("task").getValue("factTypeQuestion") + " -> " + task.get("task").getValue("factTypeAnswer")
         String strTaskQuestion = task.get("taskQuestion").getUniqueValues("value").join(" | ")
         String strTaskOption = task.get("taskOption").getUniqueValues("value").join(" | ")
-        println(strTaskDataType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
+        println(strTaskFactType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
     }
 
     void printTaskOneLine_choiced(DataBox task) {
-        String strTaskDataType = task.get("task").getValue("dataTypeQuestion") + " -> " + task.get("task").getValue("dataTypeAnswer")
+        String strTaskFactType = task.get("task").getValue("factTypeQuestion") + " -> " + task.get("task").getValue("factTypeAnswer")
         String strTaskQuestion = task.get("task").getValue("text") + " | " + task.get("task").getValue("sound")
         String strTaskOption = task.get("taskOption").getUniqueValues("text").join(" | ")
-        println(strTaskDataType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
+        println(strTaskFactType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
     }
 
     void printTaskOneLine_created(DataBox task) {
-        String strTaskDataType = task.get("taskQuestion").get(0).getValue("dataType") + " -> " + task.get("taskOption").get(0).getValue("dataType")
+        String strTaskFactType = task.get("taskQuestion").get(0).getValue("factType") + " -> " + task.get("taskOption").get(0).getValue("factType")
         String strTaskQuestion = task.get("taskQuestion").getUniqueValues("value").join(" | ")
         String strTaskOption = task.get("taskOption").getUniqueValues("value").join(" | ")
-        println(strTaskDataType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
+        println(strTaskFactType + ", Q: " + strTaskQuestion + ", A: " + strTaskOption)
     }
 
 

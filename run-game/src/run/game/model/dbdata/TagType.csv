@@ -8,5 +8,5 @@ id,text,code
 1007,Топ ххх слов,top-list
 1008,Звук для слова,word-sound-info
 1010,Уровень доступа к плану,plan-access
-1011,Тип вопросов в плане,plan-question-datatype
-1012,Тип ответов в плане,plan-answer-datatype
+1011,Тип вопросов в плане,plan-question-facttype
+1012,Тип ответов в плане,plan-answer-facttype

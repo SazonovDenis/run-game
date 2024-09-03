@@ -9,7 +9,7 @@
         -->
         <field name="item" parent="Item/ref" title="О какой сущности"/>
 
-        <field name="dataType" parent="DataType/ref"/>
+        <field name="factType" parent="FactType/ref"/>
         <field name="value" parent="string" size="500" title="Содержание факта"/>
     </domain>
 

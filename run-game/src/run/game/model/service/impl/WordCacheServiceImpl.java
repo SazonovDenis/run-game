@@ -74,8 +74,8 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     private void loadData() throws Exception {
         // Получаем spelling для всех слов из БД
         Fact_list list = mdb.create(Fact_list.class);
-        stFactSpelling = list.loadFactsByDataTypeWithTags(RgmDbConst.DataType_word_spelling, Arrays.asList(RgmDbConst.TagType_word_lang));
-        stFactTranslate = list.loadFactsByDataTypeWithTags(RgmDbConst.DataType_word_translate, Arrays.asList(RgmDbConst.TagType_word_translate_direction));
+        stFactSpelling = list.loadFactsByFactTypeWithTags(RgmDbConst.FactType_word_spelling, Arrays.asList(RgmDbConst.TagType_word_lang));
+        stFactTranslate = list.loadFactsByFactTypeWithTags(RgmDbConst.FactType_word_translate, Arrays.asList(RgmDbConst.TagType_word_translate_direction));
 
         //
         stFact = mdb.createStore("Fact.list");

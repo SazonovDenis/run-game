@@ -10,11 +10,11 @@ import run.game.util.*
 class FactDataLoader extends RgmMdbUtils {
 
 
-    static Map<Long, String> dataTypeFieldNames = [
-            (RgmDbConst.DataType_word_spelling) : "valueSpelling",
-            (RgmDbConst.DataType_word_translate): "valueTranslate",
-            (RgmDbConst.DataType_word_sound)    : "valueSound",
-            (RgmDbConst.DataType_word_picture)  : "valuePicture",
+    static Map<Long, String> factTypeFieldNames = [
+            (RgmDbConst.FactType_word_spelling) : "valueSpelling",
+            (RgmDbConst.FactType_word_translate): "valueTranslate",
+            (RgmDbConst.FactType_word_sound)    : "valueSound",
+            (RgmDbConst.FactType_word_picture)  : "valuePicture",
     ]
 
 
@@ -35,7 +35,7 @@ class FactDataLoader extends RgmMdbUtils {
         // Факты каждого типа для списка itemIds
         Store stFactData_question = mdb.loadQuery(sqlFactData_Facts(factQuestionIds, "factQuestion"))
         Store stFactData_answer = mdb.loadQuery(sqlFactData_Facts(factAnswerIds, "factAnswer"))
-        Store stFactData_sound = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.DataType_word_sound))
+        Store stFactData_sound = mdb.loadQuery(sqlFactData_Items(itemIds, RgmDbConst.FactType_word_sound))
 
         // Размажем
         convertFactsToFlatRecord(stFactData_question, ["factQuestion"], stTasks, "question")
@@ -77,14 +77,14 @@ class FactDataLoader extends RgmMdbUtils {
     // region convertToFlatRecord Запись типа Fact раскладываем в "плоскую" запись
     /**
      * Запись типа Fact раскладываем в "плоскую" запись.
-     * Берем пару полей recFact.dataType+recFact.value и заполняем
+     * Берем пару полей recFact.factType+recFact.value и заполняем
      * соответствующее поле (valueSound, valueTranslate, valueSpelling или valuePicture),
-     * в зависимости от recFact.dataType.
+     * в зависимости от recFact.factType.
      */
 
     void convertFactToFlatRecord(StoreRecord recFact, StoreRecord recTask) {
-        long sourceDatatype = recFact.getLong("dataType")
-        String destFieldName = dataTypeFieldNames.get(sourceDatatype)
+        long sourceDatatype = recFact.getLong("factType")
+        String destFieldName = factTypeFieldNames.get(sourceDatatype)
         if (UtCnv.isEmpty(destFieldName)) {
             return
         }
@@ -95,12 +95,12 @@ class FactDataLoader extends RgmMdbUtils {
         }
 
         // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
-        if (sourceDatatype == RgmDbConst.DataType_word_spelling && !recTask.isValueNull("valueTranslate")) {
+        if (sourceDatatype == RgmDbConst.FactType_word_spelling && !recTask.isValueNull("valueTranslate")) {
             return
         }
 
         // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
-        if (sourceDatatype == RgmDbConst.DataType_word_translate && !recTask.isValueNull("valueSpelling")) {
+        if (sourceDatatype == RgmDbConst.FactType_word_translate && !recTask.isValueNull("valueSpelling")) {
             return
         }
 
@@ -142,7 +142,7 @@ select
     PlanFact.factAnswer, 
     
     Fact.item,
-    Fact.dataType,
+    Fact.factType,
     Fact.value
 
 from 
@@ -154,7 +154,7 @@ from
     -- Факты нужных типов для Fact.item
     join Fact on (
         PlanFact_Fact.item = Fact.item and
-        Fact.dataType in (${RgmDbConst.DataType_word_spelling + "," + RgmDbConst.DataType_word_sound})
+        Fact.factType in (${RgmDbConst.FactType_word_spelling + "," + RgmDbConst.FactType_word_sound})
     )
 
 where
@@ -162,26 +162,26 @@ where
 """
     }
 
-    String sqlFactData_Items(Set items, long dataType) {
+    String sqlFactData_Items(Set items, long factType) {
         String itemsStr = "0"
         if (items.size() > 0) {
             itemsStr = items.join(",")
         }
 
         return """ 
--- Значения фактов типа dataType, по списку сущностей
+-- Значения фактов типа factType, по списку сущностей
 select 
     Item.id item,
     Fact.id fact,
-    Fact.dataType dataType,
+    Fact.factType factType,
     Fact.value value
 
 from    
     Item
-    -- Факт типа dataType
+    -- Факт типа factType
     join Fact on (
         Item.id = Fact.item and
-        Fact.dataType = ${dataType}
+        Fact.factType = ${factType}
     )
     
 where
@@ -203,7 +203,7 @@ where
 select 
     Fact.item item,
     Fact.id as ${factFieldKeyName},
-    Fact.dataType dataType,
+    Fact.factType factType,
     Fact.value value
 
 from    
@@ -218,7 +218,7 @@ where
         return """
 select 
     GameTask.*,
-    TaskQuestion.dataType,
+    TaskQuestion.factType,
     TaskQuestion.value
 
 from 
@@ -237,7 +237,7 @@ where
         return """
 select 
     GameTask.*,
-    TaskOption.dataType,
+    TaskOption.factType,
     TaskOption.value
 
 from 
@@ -260,7 +260,7 @@ select
     PlanFact.factAnswer, 
     
     Fact.item,
-    Fact.dataType,
+    Fact.factType,
     Fact.value
 
 from 
@@ -281,7 +281,7 @@ select
     PlanFact.factQuestion, 
     PlanFact.factAnswer, 
     
-    Fact.dataType,
+    Fact.factType,
     Fact.value
 
 from 

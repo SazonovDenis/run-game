@@ -115,7 +115,7 @@ export default {
                 this.dataState.taskSoundLoaded ||
                 !this.gameTask ||
                 !this.gameTask.task ||
-                this.gameTask.task.dataType !== dbConst.DataType_word_sound
+                this.gameTask.task.factType !== dbConst.FactType_word_sound
             )
         },
 

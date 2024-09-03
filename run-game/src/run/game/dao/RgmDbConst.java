@@ -2,21 +2,21 @@ package run.game.dao;
 
 public class RgmDbConst {
 
-    public static long DataType_word_spelling = 1001;
-    public static long DataType_word_translate = 1002;
-    public static long DataType_word_sound = 1003;
-    public static long DataType_word_picture = 1004;
+    public static long FactType_word_spelling = 1001;
+    public static long FactType_word_translate = 1002;
+    public static long FactType_word_sound = 1003;
+    public static long FactType_word_picture = 1004;
 
-    public static long Tag_word_lang_eng = 100;
-    public static long Tag_word_lang_rus = 101;
-    public static long Tag_word_lang_kaz = 102;
+    public static String Tag_word_lang_eng = "eng"; //100;
+    public static String Tag_word_lang_rus = "rus"; //101;
+    public static String Tag_word_lang_kaz = "kaz"; //102;
 
-    public static long Tag_word_translate_direction_eng_rus = 200;
-    public static long Tag_word_translate_direction_rus_eng = 201;
-    public static long Tag_word_translate_direction_rus_kaz = 202;
-    public static long Tag_word_translate_direction_kaz_rus = 203;
+    public static String Tag_word_translate_direction_eng_rus = "eng-rus"; // 200;
+    public static String Tag_word_translate_direction_rus_eng = "rus-eng"; // 201;
+    public static String Tag_word_translate_direction_rus_kaz = "rus-kaz"; // 202;
+    public static String Tag_word_translate_direction_kaz_rus = "kaz-rus"; // 203;
 
-    public static long Tag_plan_access_default = 300;              // План по умолчанию
+    public static String TagValue_plan_access_default = "default";         // План по умолчанию
 
     public static long TagType_word_lang = 1001;                // Язык слова
     public static long TagType_word_translate_direction = 1002; // Направление перевода слова

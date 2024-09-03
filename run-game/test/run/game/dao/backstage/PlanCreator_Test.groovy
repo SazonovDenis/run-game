@@ -7,17 +7,17 @@ import run.game.dao.*
 class PlanCreator_Test extends RgmBase_Test {
 
 
-    def planDefsViaDataType = [
-            //[planTextEng: "color-base", dataTypeQuestion: RgmDbConst.DataType_word_spelling, dataTypeAnswer: RgmDbConst.DataType_word_translate],
-            //[planTextEng: "color-base-sound-en-ru", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
-            //[planTextEng: "color-base-sound-en-en", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_spelling, combinationLimit: 5],
-            //[planTextEng: "color", dataTypeQuestion: RgmDbConst.DataType_word_spelling, dataTypeAnswer: RgmDbConst.DataType_word_translate],
-            //[planTextEng: "color-sound", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
+    def planDefsViaFactType = [
+            //[planTextEng: "color-base", factTypeQuestion: RgmDbConst.FactType_word_spelling, factTypeAnswer: RgmDbConst.FactType_word_translate],
+            //[planTextEng: "color-base-sound-en-ru", factTypeQuestion: RgmDbConst.FactType_word_sound, factTypeAnswer: RgmDbConst.FactType_word_translate, combinationLimit: 5],
+            //[planTextEng: "color-base-sound-en-en", factTypeQuestion: RgmDbConst.FactType_word_sound, factTypeAnswer: RgmDbConst.FactType_word_spelling, combinationLimit: 5],
+            //[planTextEng: "color", factTypeQuestion: RgmDbConst.FactType_word_spelling, factTypeAnswer: RgmDbConst.FactType_word_translate],
+            //[planTextEng: "color-sound", factTypeQuestion: RgmDbConst.FactType_word_sound, factTypeAnswer: RgmDbConst.FactType_word_translate, combinationLimit: 5],
 
-            [planTextEng: "kz.products", dataTypeQuestion: RgmDbConst.DataType_word_spelling, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
-            [planTextEng: "kz.products-sound", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
-            [planTextEng: "kz.numbers", dataTypeQuestion: RgmDbConst.DataType_word_spelling, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
-            [planTextEng: "kz.numbers-sound", dataTypeQuestion: RgmDbConst.DataType_word_sound, dataTypeAnswer: RgmDbConst.DataType_word_translate, combinationLimit: 5],
+            [planTextEng: "kz.products", factTypeQuestion: RgmDbConst.FactType_word_spelling, factTypeAnswer: RgmDbConst.FactType_word_translate, combinationLimit: 5],
+            [planTextEng: "kz.products-sound", factTypeQuestion: RgmDbConst.FactType_word_sound, factTypeAnswer: RgmDbConst.FactType_word_translate, combinationLimit: 5],
+            [planTextEng: "kz.numbers", factTypeQuestion: RgmDbConst.FactType_word_spelling, factTypeAnswer: RgmDbConst.FactType_word_translate, combinationLimit: 5],
+            [planTextEng: "kz.numbers-sound", factTypeQuestion: RgmDbConst.FactType_word_sound, factTypeAnswer: RgmDbConst.FactType_word_translate, combinationLimit: 5],
     ]
 
     def planDefsViaFile = [
@@ -42,8 +42,8 @@ class PlanCreator_Test extends RgmBase_Test {
         PlanCreator planCreator = mdb.create(PlanCreator)
         planCreator.text_to_FactsCombinations(
                 fileName,
-                RgmDbConst.DataType_word_spelling,
-                RgmDbConst.DataType_word_translate,
+                RgmDbConst.FactType_word_spelling,
+                RgmDbConst.FactType_word_translate,
                 fileNameFactsCombinations
         )
     }
@@ -53,18 +53,18 @@ class PlanCreator_Test extends RgmBase_Test {
         PlanCreator planCreator = mdb.create(PlanCreator)
 
         //
-        for (Map planDef : planDefsViaDataType) {
+        for (Map planDef : planDefsViaFactType) {
             String fileName = "res:run/game/testdata/csv/plan/" + planDef.get("planTextEng") + ".txt"
             String fileNameFactsCombinations = "temp/" + planDef.get("planTextEng") + ".csv"
-            long dataTypeQuestion = planDef.get("dataTypeQuestion")
-            long dataTypeAnswer = planDef.get("dataTypeAnswer")
+            long factTypeQuestion = planDef.get("factTypeQuestion")
+            long factTypeAnswer = planDef.get("factTypeAnswer")
             int combinationLimit = planDef.getOrDefault("combinationLimit", 0)
             planCreator.limitQuestion = combinationLimit
             //
             try {
                 println()
                 println("fileName: " + fileName + "")
-                planCreator.text_to_FactsCombinations(fileName, dataTypeQuestion, dataTypeAnswer, fileNameFactsCombinations)
+                planCreator.text_to_FactsCombinations(fileName, factTypeQuestion, factTypeAnswer, fileNameFactsCombinations)
             } catch (Exception e) {
                 println(e.message)
                 //e.printStackTrace()

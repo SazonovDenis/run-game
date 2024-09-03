@@ -75,7 +75,7 @@ export default {
                 (this.task.valueSpelling != null || this.task.valueTranslate != null) &&
                 (
                     this.state.showTaskHint ||
-                    this.task.dataType !== dbConst.DataType_word_sound
+                    this.task.factType !== dbConst.FactType_word_sound
                 )
             )
         },

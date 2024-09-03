@@ -1,12 +1,12 @@
 export default {
 
-    DataType_word_spelling: 1001,
-    DataType_word_translate: 1002,
-    DataType_word_sound: 1003,
+    FactType_word_spelling: 1001,
+    FactType_word_translate: 1002,
+    FactType_word_sound: 1003,
 
-    DataType_CODE_word_spelling: "word-spelling",
-    DataType_CODE_word_translate: "word-translate",
-    DataType_CODE_word_sound: "word-sound",
+    FactType_CODE_word_spelling: "word-spelling",
+    FactType_CODE_word_translate: "word-translate",
+    FactType_CODE_word_sound: "word-sound",
 
     LinkType_friend: 1001,
     LinkType_parent: 1002,
@@ -29,8 +29,8 @@ export default {
     TagType_top_list: 1007,                  // Топ ххх слов
     TagType_word_sound_info: 1008,           // Звук для слова
     TagType_plan_access: 1010,               // Уровень доступа к плану
-    TagType_plan_question_datatype: 1011,    // Тип вопросов в плане
-    TagType_plan_answer_datatype: 1012,      // Тип ответов в плане
+    TagType_plan_question_factType: 1011,    // Тип вопросов в плане
+    TagType_plan_answer_factType: 1012,      // Тип ответов в плане
 
     Tag_eng: 100,
     Tag_rus: 101,

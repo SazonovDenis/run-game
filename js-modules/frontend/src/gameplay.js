@@ -67,13 +67,24 @@ export default {
         //
         if (message && message.includes("#" + appConst.ERROR_CODES.USER_NOT_SET + "#")) {
             let returnUrl = document.location.href
+
+            // При обновлении страницы может произойти вызов более одной функции dao,
+            // из-за чего в returnUrl накопится "возврат на возврат". В таком случае
+            // берем самую последнюю часть строки (эта url появилась после самого первого вызова dao)
+            if (returnUrl.includes("returnUrl=")) {
+                let returnUrlArr = returnUrl.split("returnUrl=")
+                returnUrl = returnUrlArr[returnUrlArr.length - 1]
+                returnUrl = decodeURIComponent(returnUrl)
+            }
+
             // Если мы уже на авторизации - возврата на авторизацию не нужно
             if (returnUrl.endsWith("/login")) {
                 returnUrl = null
             }
+
             // Если мы в корне - возврата не нужно
             let rootUrl = document.location.origin + document.location.pathname
-            if (returnUrl === rootUrl) {
+            if (returnUrl === rootUrl || returnUrl === rootUrl + "#/") {
                 returnUrl = null
             }
 

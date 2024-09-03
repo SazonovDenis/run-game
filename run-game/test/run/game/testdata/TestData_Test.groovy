@@ -34,6 +34,14 @@ class TestData_Test extends Apx_Test {
     }
 
     @Test
+    public void fill_ItemFactTags() throws Exception {
+        ItemFactTags_fb fb = new ItemFactTags_fb()
+        fb.dirBase = "../" + fb.dirBase
+        Fixture fx = fb.build(model)
+        utils.outTableList(fx.stores, 10)
+    }
+
+    @Test
     public void fill_Palan() throws Exception {
         Plan_fb fb = new Plan_fb()
         Fixture fx = fb.build(model)

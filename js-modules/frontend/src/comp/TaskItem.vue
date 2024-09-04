@@ -258,9 +258,8 @@ export default {
                     return menuItem.icon
                 }
             } else {
-                return null
+                return undefined
             }
-
         },
 
         itemMenuColor(menuItem, item) {

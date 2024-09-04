@@ -1117,7 +1117,7 @@ export default {
             if (taskItem.isHidden) {
                 return "quasar.chip.selected"
             } else {
-                return null
+                return undefined
             }
         },
 

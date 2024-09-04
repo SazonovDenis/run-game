@@ -1,7 +1,6 @@
 from enum import IntEnum
 
 from Parser import ParserBase
-from db.ItemSaver import ItemSaver
 
 
 class ParserDict(ParserBase):
@@ -13,129 +12,175 @@ class ParserDict(ParserBase):
         COLLECT_TRANSLATE = 5
         COLLECT_IDIOMS = 6
 
-    tags = {}
-    currentTags = None
     currentTranslation = None
     currentExample = None
 
-    outDirName = None
+    currentString = ""
+    currentStringRaw = ""
 
-    itemSaver = None
+    modePometa = False
+    currentPometas = []
 
     def __init__(self):
         self.state = self.State.WAIT_WORD
         self.token = None
         self.tokenType = None
 
-    def open(self, outDirName):
-        self.itemSaver = ItemSaver()
-        self.itemSaver.open(outDirName)
+    def cleanupText(self, text):
+        text = text.strip()
 
-    def close(self):
-        self.itemSaver.close()
+        cleanSymbols = " 1234567890.)"
+        while len(text) > 0:
+            if cleanSymbols.find(text[0:1]) != -1:
+                text = text[1:]
+            else:
+                break
 
-    def printToken(self):
-        print("-----------")
-        if self.token.get("transcription") == None:
-            print(self.token["text"] + " <no transcription>")
-        else:
-            print(self.token["text"] + " " + self.token["transcription"])
+        return text
 
-        idioms = self.token["idioms"]
-        if len(idioms) != 0:
-            print("idioms:")
-            idn = 0
-            for idiom in idioms:
-                if (idiom["text"] == ""):
-                    continue
-                idn = idn + 1
-                print("  [" + str(idn) + "] " + idiom["text"])
-            print("translations:")
+    def cleanupData(self, token):
+        translations = token["translations"]
+        translationsLen = len(translations)
+        for translation_idx in range(translationsLen - 1, -1, -1):
+            translation = translations[translation_idx]
+            examples = translation["examples"]
 
-        tn = 0
-        for translation in self.token["translations"]:
-            if (translation["text"] == ""):
+            #
+            translation_text = translation["text"]
+
+            translation_text = self.cleanupText(translation_text)
+            if (translation_text == "" and len(examples) == 0):
+                translations.pop(translation_idx)
                 continue
 
-            tn = tn + 1
+            translation["text"] = translation_text
 
-            print("  [" + str(tn) + "] " + translation["text"])
-
-            translationTagsKeys = translation["tags"].keys()
-            if len(translationTagsKeys) != 0:
-                print("      ", end="")
-                for tag in translationTagsKeys:
-                    print("*" + tag + "* ", end="")
-                print("")
-
-            examples = translation["examples"]
-            if len(examples) != 0:
-                # print("  examples:")
-                en = 0
-                for example in translation["examples"]:
-                    en = en + 1
-                    print("      s[" + str(en) + "] " + example["text"])
-        print("===========")
-        print("")
+            #
+            for example in examples:
+                example_text = example["text"].strip()
+                example["text"] = example_text
 
     def clearToken(self):
         self.token = None
         self.tokenType = None
         self.currentTranslations = None
 
-    def clearTags(self):
-        self.tags = {}
-
-    def newToken(self):
-        self.token = {}
-        self.tokenType = "item"
-        self.token["translations"] = []
-        self.token["idioms"] = []
-        self.currentTranslations = None
-
     def flushToken(self):
         if self.token != None:
-            self.itemSaver.printToken(self.token)
-            print(self.token["text"])
-            # self.printToken()
-
+            self.cleanupData(self.token)
+            #
+            self.onToken(self.token, self.tokenType)
+            #
             self.clearToken()
-            self.clearTags()
 
-    def newExample(self):
-        self.currentExample = {}
-        self.currentExample["text"] = ""
-        self.currentTranslation["examples"].append(self.currentExample)
+    def createToken(self, text):
+        self.token = {}
+        self.tokenType = "item"
+        self.token["text"] = self.cleanupText(text)
+        self.token["idioms"] = []
+        self.token["translations"] = []
+        self.currentTranslation = None
 
-    def newTranslate(self):
-        self.currentTags = {}
-        self.currentTranslation = {}
-        self.currentTranslation["text"] = ""
-        self.currentTranslation["tags"] = self.currentTags
-        self.currentTranslation["examples"] = []
-        self.currentExample = None
+    def setTranscription(self, text):
+        self.token["transcription"] = self.cleanupText(text)
+
+    def addTranslation(self, text):
+        translation = {}
+        translation["text"] = self.cleanupText(text)
+        translation["tags"] = self.currentPometas
+        translation["examples"] = []
+        self.token["translations"].append(translation)
         #
-        self.token["translations"].append(self.currentTranslation)
+        self.currentTranslation = translation
 
-    def newIdiom(self):
-        self.currentIdiom = {}
-        self.currentIdiom["text"] = ""
-        self.token["idioms"].append(self.currentIdiom)
+    def addExample(self, text):
+        # Для некоторых слов нет перевода, например суффиксов, производных слов и т.п.
+        # Например суффикс "`d" в английском словаре или слово "абордажный" в русском.
+        if (self.currentTranslation == None):
+            self.addTranslation("")
 
-    def next(self, text, tokenType):
-        textStrip = text.strip()
+        example = {}
+        example["text"] = self.cleanupText(text)
+        example["tags"] = self.currentPometas
+        self.currentTranslation["examples"].append(example)
+
+    def addIdiom(self, text):
+        idiom = {}
+        idiom["text"] = self.cleanupText(text)
+        self.token["idioms"].append(idiom)
+
+    def currentStringFlush(self):
+        currentString = self.currentString.strip()
+        if currentString == "":
+            return
+
+        # print("[" + str(self.state)[6:].ljust(18, ' ') + "]: " + currentString)
+
+        if self.state == self.State.WAIT_WORD:
+            self.createToken(currentString)
+            pass
+        elif self.state == self.State.WAIT_INFO:
+            self.setTranscription(currentString)
+            pass
+        elif self.state == self.State.COLLECT_TRANSLATE:
+            self.addTranslation(currentString)
+            pass
+        elif self.state == self.State.COLLECT_EXAMPLE:
+            self.addExample(currentString)
+            pass
+        elif self.state == self.State.COLLECT_IDIOMS:
+            self.addIdiom(currentString)
+            pass
+
+        #
+        self.currentString = ""
+        self.currentStringRaw = ""
+        self.currentPometas = []
+
+    def currentStringCollect(self, text):
+        self.currentStringRaw = self.currentStringRaw + text
+
+        self.collectPometa(text)
+
+        if self.modePometa == True:
+            self.currentString = self.currentString + "{" + text + "}"
+        else:
+            self.currentString = self.currentString + text
+
+    def startPometa(self):
+        self.modePometa = True
+        self.currentPometa = ""
+
+    def collectPometa(self, text):
+        if self.modePometa == True:
+            self.currentPometa = self.currentPometa + text
+
+    def stopPometa(self):
+        if len(self.currentPometa) != 0:
+            self.currentPometas.append(self.currentPometa)
+        #
+        self.modePometa = False
+        self.currentPometa = None
+
+    def handle(self, text, tokenType):
 
         if tokenType == "new-line":
             self.flushToken()
+            #
             self.state = self.State.WAIT_WORD
             #
             return
 
         if tokenType == "tag":
-            self.tags[text] = True
+
+            if text == "p":
+                self.startPometa()
+
+                #
+                return
 
             if text == "trn":
-                self.tags = {}
+                self.currentStringFlush()
                 #
                 self.state = self.State.WAIT_TRANSLATE
                 #
@@ -143,28 +188,31 @@ class ParserDict(ParserBase):
 
             if text == "ex":
                 if self.state == self.State.COLLECT_IDIOMS:
-                    self.newIdiom()
+                    pass
                 else:
-                    self.newExample()
-                    #
                     self.state = self.State.COLLECT_EXAMPLE
                 #
                 return
 
-            if text == "m1" or text == "m2":
+            if text == "m1" or text == "m2" or text == "m3" or text == "m4":
+                if self.state == self.State.WAIT_INFO:
+                    return
+
+                #
+                self.currentStringFlush()
+
+                #
                 if self.state == self.State.COLLECT_IDIOMS:
-                    self.newIdiom()
+                    pass
                 else:
-                    self.newTranslate()
-                    #
                     self.state = self.State.COLLECT_TRANSLATE
                 #
                 return
 
             if text == "diamond":
-                if (self.currentExample == None) or (not self.currentExample["text"].strip().endswith("[см. тж.")):
-                    self.newIdiom()
-                    #
+                # В ряде статей встречается ссылка на раздел с идиомами,
+                # путем помещения символа diamond после выражениия "cм. тж."
+                if not self.currentStringRaw.strip().endswith("[см. тж."):
                     self.state = self.State.COLLECT_IDIOMS
                 #
                 return
@@ -173,13 +221,16 @@ class ParserDict(ParserBase):
             return
 
         if tokenType == "tag-close":
-            self.tags.pop(text, "")
+
+            if text == "p":
+                #
+                self.stopPometa()
+
+                #
+                return
 
             if text == "m":
-                self.tags.pop("m1", "")
-                self.tags.pop("m2", "")
-                self.tags.pop("m3", "")
-                self.tags.pop("m4", "")
+                self.currentStringFlush()
 
                 #
                 if self.state == self.State.COLLECT_IDIOMS:
@@ -191,6 +242,10 @@ class ParserDict(ParserBase):
                 return
 
             if text == "ex":
+                #
+                self.currentStringFlush()
+
+                #
                 if self.state == self.State.COLLECT_IDIOMS:
                     pass
                 else:
@@ -200,57 +255,32 @@ class ParserDict(ParserBase):
                 #
                 return
 
-            #
-            return
+            if text == "trn":
+                #
+                self.currentStringFlush()
 
-        if self.state == self.State.WAIT_WORD:
-            if len(textStrip) > 0:
-                self.clearTags()
-                self.newToken()
-                self.token["text"] = textStrip
                 #
                 self.state = self.State.WAIT_INFO
 
-            #
-            return
-
-        if self.state == self.State.WAIT_INFO:
-            if tokenType == "text":
-
-                if len(self.tags.keys()) == 0 and len(textStrip) != 0:
-                    self.token["transcription"] = textStrip
-                    #
-                    self.state = self.State.WAIT_TRANSLATE
-                    #
-                    return
-
-                else:
-                    pass
-
                 #
                 return
+
             #
             return
 
-        if self.state == self.State.COLLECT_TRANSLATE:
-            if self.tags.get("com", None) == None:
-                self.currentTranslation["text"] = self.currentTranslation["text"] + text
-            else:
-                if len(textStrip) == 0:
-                    self.currentTranslation["text"] = self.currentTranslation["text"] + text
-                else:
-                    self.currentTranslation["text"] = self.currentTranslation["text"] + "**" + text + "**"
-                    #
-                    self.currentTags[textStrip] = True
+        #
+        # Пока собираем блок
+        #
+        if tokenType == "text":
             #
-            return
+            self.currentStringCollect(text)
 
-        if self.state == self.State.COLLECT_EXAMPLE:
-            self.currentExample["text"] = self.currentExample["text"] + text
+        if self.state == self.State.WAIT_WORD:
             #
-            return
+            self.currentStringFlush()
 
-        if self.state == self.State.COLLECT_IDIOMS:
-            self.currentIdiom["text"] = self.currentIdiom["text"] + text
+            #
+            self.state = self.State.WAIT_INFO
+
             #
             return

@@ -1,4 +1,28 @@
 
+'d
+ \[-d\] [com][i][c][p]разг.[/p][/c] [c][p]сокр.[/p][/c] от had, should, would (в любых типах предложений, за исключением общевопросительных)[/i][/com]
+ [trn][m2][*][ex][lang name="English"]I~ better go[/lang] - я, пожалуй, пойду [/ex][/*][/m]
+ [m2][*][ex][lang name="English"]I~ like to work[/lang] - я бы хотел поработать [/ex][/*][/m]
+ [m1][/m][/trn]
+
+
+we
+ [com][i]\[wi: (полная форма); wı (редуцированная форма)\][c][p]pers[/p][/c] [c][p]pron[/p][/c] (us)[/i][/com]
+ [trn][m1]1) мы [/m]
+ [m2][*][ex][lang name="English"]where shall ~ go?[/lang] - куда мы пойдём? [/ex][/*][/m]
+ [m2][*][ex][lang name="English"]~ both thank you[/lang] - мы оба благодарим вас [/ex][/*][/m]
+ [m1]2) [com][i][c][p]шутл.[/p][/c] [/i][/com]мы ([com][i][c][p]употр.[/p][/c] вместо 2-го лица с оттенком участия[/i][/com]) [/m]
+ [m2][*][ex][lang name="English"]~ll, Jane, and how are ~ this morning?[/lang] - ну, Джейн, как мы себя чувствуем сегодня? [/ex][/*][/m]
+ [m1]3) мы ([com][i]при высказываниях от 1-го лица в статье, научных трудах [c][p]и т. п.[/p][/c][/i][/com]); авторское «мы» [/m]
+ [m2][*][ex][lang name="English"]~ are of the opinion that ...[/lang] - по нашему мнению ... [/ex][/*][/m]
+ [m1]4) мы ([com][i]для обозначения определенного круга лиц, связанных единством цели, профессии [c][p]и т. п.[/p][/c][/i][/com]) [/m]
+ [m2][*][ex][lang name="English"]~ lawyers ...[/lang] - мы, адвокаты ... [/ex][/*][/m]
+ [m1]5) мы ([com][i]для обозначения неопределённого круга лиц в обобщённых суждениях[/i][/com]) [/m]
+ [m2][*][ex][lang name="English"]as ~ are often apt to think[/lang] - как мы часто бываем склонны считать [/ex][/*][/m]
+ [m2][*][ex][lang name="English"]~ in the United States believe that ...[/lang] - в Соединённых Штатах считают, что ... [/ex][/*][/m]
+ [m1]6) мы ([com][i]употребляется монархами в значении[/i][/com] «я») [/m]
+ [m1][/m][/trn]
+
 arm
  [b]I[/b]
  [m1][b]1.[/b] \[ɑ:m\] [com][i][c][p]n[/p][/c][/i][/com][/m] [trn][m3]1. 1) рука ([com][i]от плеча до кисти[/i][/com]) [/m]

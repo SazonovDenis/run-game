@@ -11,7 +11,7 @@ import java.nio.file.*
  */
 class ItemFactTags_fb extends BaseFixtureBuilder {
 
-    String dirBase = "data/dsl-grab/out/"
+    String dirBase = "data/dsl-grab/out/eng-rus/"
 
     protected void onBuild() {
         FixtureTable fxFact = fx.table("Fact")

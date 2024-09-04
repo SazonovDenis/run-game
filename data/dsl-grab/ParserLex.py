@@ -22,14 +22,14 @@ class ParserLex(ParserBase):
 
     def flushToken(self):
         if self.token != None:
-            self.onToken.next(self.token, self.tokenType)
+            self.onToken(self.token, self.tokenType)
             self.token = None
             self.tokenType = None
 
-    def next(self, token, tokenType):
+    def handle(self, token, tokenType):
         # прокидываем не обрабатываемый токен выше
         if tokenType == "new-line":
-            self.onToken.next(token, tokenType)
+            self.onToken(token, tokenType)
             #
             return
 

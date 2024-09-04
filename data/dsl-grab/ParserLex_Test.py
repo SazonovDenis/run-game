@@ -9,10 +9,10 @@ inFileName = "/home/dvsa/projects/jc2-projects/run-game/t/_En-Ru-Apresyan-t.dsl"
 parserPrint = ParserPrinter()
 
 parserLex = ParserLex()
-parserLex.onToken = parserPrint
+parserLex.nextParser = parserPrint
 
 parserStr = ParserStr()
-parserStr.onToken = parserLex
+parserStr.nextParser = parserLex
 
 ###
 with open(inFileName, 'r', encoding="utf-8") as inFile:
@@ -24,4 +24,4 @@ with open(inFileName, 'r', encoding="utf-8") as inFile:
         print("===")
         print(line, end="")
         print("---")
-        parserStr.next(line, None)
+        parserStr.handle(line, None)

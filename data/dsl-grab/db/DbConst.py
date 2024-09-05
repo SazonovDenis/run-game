@@ -20,18 +20,7 @@ class TagType:
     plan_access = "1010"  # Уровень доступа к плану
     plan_question_factType = "1011"  # Тип вопросов в плане
     plan_answer_factType = "1012"  # Тип ответов в плане
-
-
-class Tag:
-    eng = "100"
-    rus = "101"
-    kaz = "102"
-    eng_rus = "200"
-    rus_eng = "201"
-    rus_kaz = "202"
-    kaz_rus = "203"
-    eng_eng = "204"
-    default = "300"
+    dictionary = "1100"  # Пометка словаря (источника)
 
 
 class TagValue:
@@ -44,3 +33,4 @@ class TagValue:
     kaz_rus = "kaz-rus"
     eng_eng = "eng-eng"
     default = "default"
+    dictionary_full = "full"

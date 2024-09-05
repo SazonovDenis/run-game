@@ -35,7 +35,7 @@ class ItemSaver(ParserBase):
 
         # self.csvItem.write("id\tvalue" + "\n")
         # self.csvFact.write("id\titem\tfactType\tvalue" + "\n")
-        # self.csvItemTag.write("id\titem\ttagType\ttagValue" + "\n")
+        # self.csvItemTag.write("id\titem\tfact\ttagType\ttagValue" + "\n")
         # self.csvFactTag.write("id\tfact\ttagType\ttagValue" + "\n")
 
         print("out directory: " + self.outDirName)
@@ -52,49 +52,61 @@ class ItemSaver(ParserBase):
         print("write done")
 
     def writeToken(self, token):
+        #
         self.idItem = self.idItem + 1
         self.csvItem.write(str(self.idItem) + "\t" + token["text"] + "\n")
         self.idItemTag = self.idItemTag + 1
         self.csvItemTag.write(str(self.idItemTag) + "\t" + str(self.idItem) + "\t" + TagType.word_lang + "\t" + TagValue.eng + "\n")
 
+        #
         self.idFact = self.idFact + 1
-        self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + FactType.spelling + "\t" + token["text"] + "\n")
+        self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.spelling + "\t" + token["text"] + "\n")
         self.idFactTag = self.idFactTag + 1
         self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_lang + "\t" + TagValue.eng + "\n")
 
+        #
         if token.get("transcription") != None:
             self.idFact = self.idFact + 1
-            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + FactType.transcription + "\t" + token["transcription"] + "\n")
+            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.transcription + "\t" + token["transcription"] + "\n")
 
+        #
         idioms = token["idioms"]
         for idiom in idioms:
-            if (idiom["text"] == ""):
+            idiom_text = idiom["text"]
+            if len(idiom_text) == 0:
                 continue
-            if len(idiom["text"]) > 500:
-                self.errors.write("text too long, item: " + token["text"] + "\n")
-                self.errors.write("idiom: " + idiom["text"] + "\n")
+            if len(idiom_text) > 1000:
+                self.errors.write("idiom too long, item: " + token["text"] + "\n")
+                self.errors.write(idiom_text + "\n")
                 self.errors.write("\n")
                 continue
 
             self.idFact = self.idFact + 1
-            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + FactType.idiom + "\t" + idiom["text"] + "\n")
+            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.idiom + "\t" + idiom_text + "\n")
 
+        #
         for translation in token["translations"]:
             translation_text = translation["text"]
             if (translation_text == ""):
                 continue
 
+            #
             self.idFact = self.idFact + 1
-            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + FactType.translate + "\t" + translation_text + "\n")
+            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.translate + "\t" + translation_text + "\n")
             self.idFactTag = self.idFactTag + 1
             self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_translate_direction + "\t" + TagValue.eng_rus + "\n")
+            self.idFactTag = self.idFactTag + 1
+            self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.dictionary + "\t" + TagValue.dictionary_full + "\n")
+            #
+            idFactRoot = self.idFact
 
+            #
             for example in translation["examples"]:
-                example_text = example["text"].strip()
-                if len(example_text) > 500:
-                    self.errors.write("text too long, item: " + token["text"] + "\n")
-                    self.errors.write("example: " + example_text + "\n")
+                example_text = example["text"]
+                if len(example_text) > 1000:
+                    self.errors.write("example too long, item: " + token["text"] + "\n")
+                    self.errors.write(example_text + "\n")
                     self.errors.write("\n")
                     continue
-                self.idFactTag = self.idFactTag + 1
-                self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_use_sample + "\t" + example_text + "\n")
+                self.idFact = self.idFact + 1
+                self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + str(idFactRoot) + "\t" + FactType.example + "\t" + example_text + "\n")

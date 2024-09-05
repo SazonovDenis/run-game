@@ -43,7 +43,7 @@ class ItemFactTags_fb extends BaseFixtureBuilder {
         mdb.execQuery("delete from Item")
 
         csvToDb("Item", "id,value")
-        csvToDb("Fact", "id,item,factType,value")
+        csvToDb("Fact", "id,item,fact,factType,value")
         csvToDb("ItemTag", "id,item,tagType,tagValue")
         csvToDb("FactTag", "id,fact,tagType,tagValue")
 

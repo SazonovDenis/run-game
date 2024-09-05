@@ -10,3 +10,4 @@ id,text,code
 1010,Уровень доступа к плану,plan-access
 1011,Тип вопросов в плане,plan-question-facttype
 1012,Тип ответов в плане,plan-answer-facttype
+1100,Пометка словаря (источника),dictionary

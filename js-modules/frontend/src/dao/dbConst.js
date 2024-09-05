@@ -31,6 +31,7 @@ export default {
     TagType_plan_access: 1010,               // Уровень доступа к плану
     TagType_plan_question_factType: 1011,    // Тип вопросов в плане
     TagType_plan_answer_factType: 1012,      // Тип ответов в плане
+    TagType_dictionary: 1100,                // Пометка словаря (источника)
 
     Tag_eng: 100,
     Tag_rus: 101,

@@ -10,7 +10,7 @@
         <field name="fact" parent="Fact/ref" title="О каком факте"/>
 
         <field name="tagType" parent="TagType/ref"/>
-        <field name="tagValue" parent="string" size="500" title="Значение тэга"/>
+        <field name="tagValue" parent="string" size="50" title="Значение тэга"/>
     </domain>
 
 

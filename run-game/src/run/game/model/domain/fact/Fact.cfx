@@ -9,8 +9,16 @@
         -->
         <field name="item" parent="Item/ref" title="О какой сущности"/>
 
+        <field name="fact" parent="Fact/ref" title="О каком факте">
+            <!--@
+            Не обязательно заполнено.
+            Для фактов типа "перевод" - не заполняется,
+            для факта "пример использования" - ссылается на перевод слова.
+            -->
+        </field>
+
         <field name="factType" parent="FactType/ref"/>
-        <field name="value" parent="string" size="500" title="Содержание факта"/>
+        <field name="value" parent="string" size="1000" title="Содержание факта"/>
     </domain>
 
 

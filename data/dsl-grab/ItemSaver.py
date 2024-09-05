@@ -59,6 +59,8 @@ class ItemSaver(ParserBase):
 
         self.idFact = self.idFact + 1
         self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + FactType.spelling + "\t" + token["text"] + "\n")
+        self.idFactTag = self.idFactTag + 1
+        self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_lang + "\t" + TagValue.eng + "\n")
 
         if token.get("transcription") != None:
             self.idFact = self.idFact + 1

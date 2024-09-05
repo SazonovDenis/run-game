@@ -7,21 +7,23 @@ from ParserStr import ParserStr
 outDirName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/out/"
 # inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__En-Ru-Apresyan.dsl"
 # inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__Ru-En-Smirnitsky.dsl"
-#inFileName = "_En-Ru-Apresyan-arm.dsl"
-inFileName = "_En-Ru-Apresyan-test.dsl"
-#inFileName = "_En-Ru-Apresyan-diameter.dsl"
+# inFileName = "_En-Ru-Apresyan-bar.dsl"
+# inFileName = "_En-Ru-Apresyan-arm.dsl"
+# inFileName = "_En-Ru-Apresyan-test.dsl"
+# inFileName = "_En-Ru-Apresyan-diameter.dsl"
 # inFileName = "_En-Ru-Apresyan-out.dsl"
-# inFileName = "_En-Ru-Apresyan-can.dsl"
+inFileName = "_En-Ru-Apresyan-can.dsl"
 
 ###
 itemSaver = ItemSaver()
 itemSaver.open(outDirName)
 
 itemPrinter = ItemPrinter()
+itemPrinter.printSamples = False
 
 parserDict = ParserDict()
-parserDict.nextParser = itemPrinter
-# parserDict.nextParser = itemSaver
+#parserDict.nextParser = itemPrinter
+parserDict.nextParser = itemSaver
 
 parserLex = ParserLex()
 parserLex.nextParser = parserDict

@@ -1,5 +1,6 @@
 from enum import IntEnum
 
+import TextUtils as textUtils
 from Parser import ParserBase
 
 
@@ -21,22 +22,58 @@ class ParserDict(ParserBase):
     modePometa = False
     currentPometas = []
 
+    groupTags = None
+    groupLevel = None
+    groupLevelNumber = None
+
     def __init__(self):
         self.state = self.State.WAIT_WORD
         self.token = None
         self.tokenType = None
 
-    def cleanupText(self, text):
+    def deletePometas(self, text):
+        while len(text) > 0:
+            n0 = text.find("{")
+            n1 = text.find("}")
+            if n0 == -1:
+                break
+            text = text[0:n0] + text[n1 + 1:]
+
         text = text.strip()
 
-        cleanSymbols = " 1234567890.)"
+        return text
+
+    # Удаляет пометы, находящиеся в начале строки
+    def deleteStartingPometas(self, text):
         while len(text) > 0:
-            if cleanSymbols.find(text[0:1]) != -1:
-                text = text[1:]
-            else:
+            text = text.strip()
+
+            n0 = text.find("{")
+            n1 = text.find("}")
+            if n0 != 0:
                 break
+            text = text[0:n0] + text[n1 + 1:]
+
+        #
+        text = text.strip()
 
         return text
+
+    def isValid_translation(self, translation):
+        translation_text = translation["text"]
+
+        #
+        if (translation["examples"] != None and len(translation["examples"]) != 0):
+            return True
+
+        #
+        cleanText = textUtils.cleanNumberLevel(translation_text)
+        cleanText = self.deletePometas(cleanText)
+        if len(cleanText) == 0:
+            return False
+
+        #
+        return True
 
     def cleanupData(self, token):
         translations = token["translations"]
@@ -46,19 +83,66 @@ class ParserDict(ParserBase):
             examples = translation["examples"]
 
             #
-            translation_text = translation["text"]
-
-            translation_text = self.cleanupText(translation_text)
-            if (translation_text == "" and len(examples) == 0):
+            if (not self.isValid_translation(translation)):
                 translations.pop(translation_idx)
                 continue
 
-            translation["text"] = translation_text
+            # Уберем любые цифры спереди
+            cleanText = textUtils.cleanNumberLevel(translation["text"])
+            # Уберем помены спереди
+            cleanText = self.deleteStartingPometas(cleanText)
+            #
+            translation["text"] = cleanText
 
             #
             for example in examples:
                 example_text = example["text"].strip()
                 example["text"] = example_text
+
+    def postpocessData(self, token):
+        translations = token["translations"]
+        for translation_idx in range(0, len(translations)):
+            translation = translations[translation_idx]
+            translation_text = translation["text"]
+            translation_tags = translation["tags"]
+
+            # Распространим тэги с верхнего уровня
+            cleanText = textUtils.cleanNumberLevel(translation_text)
+            cleanText = self.deletePometas(cleanText)
+            #
+            (groupLevel, groupLevelNumber) = textUtils.getTextLevelNumber(translation_text)
+            if len(cleanText) == 0:
+                # Запомним тэги уровня
+                self.groupLevel = groupLevel
+                self.groupLevelNumber = groupLevelNumber
+                self.groupTags = translation_tags
+            else:
+                if self.groupTags != None:
+                    if groupLevel > self.groupLevel:
+                        # Унаследуем тэги уровня
+                        translation_tags.extend(self.groupTags)
+                    else:
+                        # Сбросим тэги уровня
+                        self.groupTags = None
+                else:
+                    # Сбросим тэги уровня
+                    self.groupTags = None
+
+    def fillPometasTemp(self, token):
+        translations = token["translations"]
+        for translation_idx in range(0, len(translations)):
+            translation = translations[translation_idx]
+            translation_text = translation["text"]
+            translation_tags = translation["tags"]
+
+            for tag in translation_tags:
+                tagStr = "{" + tag + "}"
+                if translation_text.find(tagStr) == -1:
+                    translation_text = tagStr + " " + translation_text
+                else:
+                    pass
+
+            translation["text"] = translation_text
 
     def clearToken(self):
         self.token = None
@@ -67,7 +151,14 @@ class ParserDict(ParserBase):
 
     def flushToken(self):
         if self.token != None:
+            self.postpocessData(self.token)
             self.cleanupData(self.token)
+
+            # ВРЕМЕННО!
+            # Заполним тэгами текст перевода
+            # Пока не сделали нормальную загрузки и отображение произвольных (а не только языковых) тэгов
+            self.fillPometasTemp(self.token)
+
             #
             self.onToken(self.token, self.tokenType)
             #
@@ -76,17 +167,17 @@ class ParserDict(ParserBase):
     def createToken(self, text):
         self.token = {}
         self.tokenType = "item"
-        self.token["text"] = self.cleanupText(text)
+        self.token["text"] = textUtils.cleanNumberLevel(text)
         self.token["idioms"] = []
         self.token["translations"] = []
         self.currentTranslation = None
 
     def setTranscription(self, text):
-        self.token["transcription"] = self.cleanupText(text)
+        self.token["transcription"] = textUtils.cleanNumberLevel(text)
 
     def addTranslation(self, text):
         translation = {}
-        translation["text"] = self.cleanupText(text)
+        translation["text"] = text  # self.cleanupText(text)
         translation["tags"] = self.currentPometas
         translation["examples"] = []
         self.token["translations"].append(translation)
@@ -100,13 +191,13 @@ class ParserDict(ParserBase):
             self.addTranslation("")
 
         example = {}
-        example["text"] = self.cleanupText(text)
+        example["text"] = textUtils.cleanNumberLevel(text)
         example["tags"] = self.currentPometas
         self.currentTranslation["examples"].append(example)
 
     def addIdiom(self, text):
         idiom = {}
-        idiom["text"] = self.cleanupText(text)
+        idiom["text"] = textUtils.cleanNumberLevel(text)
         self.token["idioms"].append(idiom)
 
     def currentStringFlush(self):

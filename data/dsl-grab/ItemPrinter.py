@@ -2,6 +2,7 @@ from Parser import ParserBase
 
 
 class ItemPrinter(ParserBase):
+    printSamples = True
 
     def handle(self, token, tokenType):
         self.printToken(token)
@@ -36,19 +37,20 @@ class ItemPrinter(ParserBase):
                     print("{" + tag + "}", end="")
                 print("")
 
-            examples = translation["examples"]
-            if len(examples) != 0:
-                en = 0
-                for example in translation["examples"]:
-                    en = en + 1
-                    print("      smp[" + str(en) + "] " + example["text"])
+            if self.printSamples:
+                examples = translation["examples"]
+                if len(examples) != 0:
+                    en = 0
+                    for example in translation["examples"]:
+                        en = en + 1
+                        print("      smp[" + str(en) + "] " + example["text"])
 
-                    exampleTags = example["tags"]
-                    if len(exampleTags) > 0:
-                        print("         tags: ", end="")
-                        for tag in exampleTags:
-                            print("{" + tag + "}", end="")
-                        print("")
+                        exampleTags = example["tags"]
+                        if len(exampleTags) > 0:
+                            print("         tags: ", end="")
+                            for tag in exampleTags:
+                                print("{" + tag + "}", end="")
+                            print("")
 
         print("------ token end ------")
         print("")

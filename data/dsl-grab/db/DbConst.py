@@ -33,13 +33,14 @@ class Tag:
     eng_eng = "204"
     default = "300"
 
+
 class TagValue:
     eng = "eng"
     rus = "rus"
     kaz = "kaz"
-    eng_rus = "eng_rus"
-    rus_eng = "rus_eng"
-    rus_kaz = "rus_kaz"
-    kaz_rus = "kaz_rus"
-    eng_eng = "eng_eng"
+    eng_rus = "eng-rus"
+    rus_eng = "rus-eng"
+    rus_kaz = "rus-kaz"
+    kaz_rus = "kaz-rus"
+    eng_eng = "eng-eng"
     default = "default"

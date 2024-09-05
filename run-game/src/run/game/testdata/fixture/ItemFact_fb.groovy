@@ -6,6 +6,7 @@ import jandcode.core.dbm.fixture.*
 import jandcode.core.store.*
 import org.apache.commons.io.filefilter.*
 import org.slf4j.*
+import run.game.dao.*
 import run.game.dao.backstage.*
 import run.game.util.*
 
@@ -21,6 +22,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
     String dirBase = "data/web-grab/"
     String badCsv = "temp/bad-db.csv"
 
+    long genIdItemTag = 1000000
+    long genIdFactTag = 1000000
 
     Set<String> notFoundThing = new HashSet<>()
 
@@ -82,8 +85,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
         Map<String, Long> wordFrequencyMap_eng = loadWordFrequencyMap(dirBase + "eng_top-50000.txt")
 
         //
-        long genIdItem = 0
-        long genIdFact = 0
+        long genIdItem = 1000000
+        long genIdFact = 1000000
 
         //
         long idItem = 0
@@ -257,6 +260,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                         // Добавляем FactTag
                                         String direction = wordLang_1 + "-" + wordLang_2
                                         addFactTag(genIdFact, "word-translate-direction", direction, stFactTag)
+                                        // Добавляем FactTag
+                                        addFactTag(genIdFact, "dictionary", RgmDbConst.TagValue_dictionary_base, stFactTag)
                                     }
                                 }
                             }
@@ -651,7 +656,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
         String key = idItem + "_" + tagType + "_" + tagValue
         if (!tagValueSet.contains(key)) {
             tagValueSet.add(key)
-            long idItemTag = stItemTag.size() + 1
+            long idItemTag = stItemTag.size() + this.genIdItemTag
             StoreRecord rec = stItemTag.add()
             rec.setValue("id", idItemTag)
             rec.setValue("item", idItem)
@@ -661,12 +666,12 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
     }
 
-    void addFactTag(long idFact, String tagTypeStr, String tagValue, stItemTag) {
+    void addFactTag(long idFact, String tagTypeStr, String tagValue, stFactTag) {
         long tagType = getTagType(tagTypeStr)
 
-        long idItemTag = stItemTag.size() + 1
-        StoreRecord rec = stItemTag.add()
-        rec.setValue("id", idItemTag)
+        long idFactTag = stFactTag.size() + this.genIdFactTag
+        StoreRecord rec = stFactTag.add()
+        rec.setValue("id", idFactTag)
         rec.setValue("fact", idFact)
         rec.setValue("tagType", tagType)
         rec.setValue("tagValue", tagValue)

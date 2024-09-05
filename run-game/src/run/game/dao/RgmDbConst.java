@@ -17,6 +17,7 @@ public class RgmDbConst {
     public static String Tag_word_translate_direction_kaz_rus = "kaz-rus"; // 203;
 
     public static String TagValue_plan_access_default = "default";         // План по умолчанию
+    public static String TagValue_dictionary_base = "base";                // Малый словарь
 
     public static long TagType_word_lang = 1001;                // Язык слова
     public static long TagType_word_translate_direction = 1002; // Направление перевода слова

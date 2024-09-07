@@ -187,11 +187,59 @@ class Item_list extends RgmMdbUtils {
         FactDataLoader ldr = mdb.create(FactDataLoader)
         ldr.fillFactBody(stFact)
 
+        // Уберем полные (dictionary=full) варианты перевода,
+        // если найдены базовые (dictionary=base) переводы
+        filterFullIfBaseExists(stFact)
+
         // --- Обеспечим порядок, как в исходном тексте
-        Store stFactOrderd = makeOrdered(stItem, stFact)
+        Store stFactOrderd = orderByItem(stItem, stFact)
 
         //
         return stFactOrderd
+    }
+
+    private void filterFullIfBaseExists(Store stFact) {
+        // Соберем те item-ы, у фактов которых есть базовый перевод
+        Set<String> itemsHasBase = new HashSet<>()
+        for (StoreRecord rec : stFact) {
+            //
+            Map tag = (Map) rec.getValue("tag")
+            // todo ПОТОМ long keyValue =rec.getLong("item")
+            String keyValue = (rec.getValue("question") as Map).get("valueSpelling")
+            //
+            if (tag != null && tag.get(RgmDbConst.TagType_dictionary) == RgmDbConst.TagValue_dictionary_base) {
+                itemsHasBase.add(keyValue)
+            }
+        }
+
+        // Уберем факты с расширенным переводом у тех item, у которых нашли базовый перевод
+        Set<String> itemsWasFullDeleted = new HashSet<>()
+        for (int i = stFact.size() - 1; i >= 0; i--) {
+            StoreRecord rec = stFact.get(i)
+            //
+            Map tag = (Map) rec.getValue("tag")
+            // todo ПОТОМ long keyValue =rec.getLong("item")
+            String keyValue = (rec.getValue("question") as Map).get("valueSpelling")
+            //
+            if (itemsHasBase.contains(keyValue) && tag != null && tag.get(RgmDbConst.TagType_dictionary) == RgmDbConst.TagValue_dictionary_full) {
+                stFact.remove(i)
+                //
+                itemsWasFullDeleted.add(keyValue)
+            }
+        }
+
+        // Для тех item, у которых удалили расширенный перевод выставим флаг "wasFullDeleted"
+        for (StoreRecord rec : stFact) {
+            //
+            Map tag = (Map) rec.getValue("tag")
+            // todo ПОТОМ long keyValue =rec.getLong("item")
+            String keyValue = (rec.getValue("question") as Map).get("valueSpelling")
+            //
+            if (itemsWasFullDeleted.contains(keyValue)) {
+                tag.put("hasDictionaryFull", true)
+            }
+        }
+
     }
 
     /**
@@ -218,13 +266,19 @@ class Item_list extends RgmMdbUtils {
         Store stFact = mdb.createStore("PlanFact.list")
         mdb.loadQuery(stFact, sqlPlanFactStatistic_Items(itemIds), [usr: idUsr, plan: idPlan])
 
-        // Фильтруем все варианты перевода, оставляем только подхоящие по тэгам
+        // --- Загрузим тэги фактов
         Fact_list factList = mdb.create(Fact_list)
-        // Тэги фактов
-        Store stTags = factList.loadTagsByIds(stFact.getUniqueValues("factAnswer"), tags.keySet())
+        // Загрузим тэги
+        // NB: Тут написано = tags.keySet().toList() а не просто = tags.keySet(),
+        // т.к. почему-то в случае просто tags.keySet() у возавращенного объекта
+        // метод add() выкидывает Exception. Не стал разбираться в чем дело.
+        List<Long> tagTypes = tags.keySet().toList()
+        tagTypes.add(RgmDbConst.TagType_dictionary)
+        Store stTags = factList.loadTagsByIds(stFact.getUniqueValues("factAnswer"), tagTypes)
         // Распределим тэги
         factList.spreadTags(stTags, stFact)
-        // Фильтруем
+
+        // --- Фильтруем все варианты перевода, оставляем только подхоящие по тэгам
         UtTag.cleanStoreByTags(stFact, tags)
 
         //
@@ -243,18 +297,29 @@ class Item_list extends RgmMdbUtils {
         return stPlanFact
     }
 
-    private Store makeOrdered(Store stItem, Store stFact) {
+    private Store orderByItem(Store stItem, Store stFact) {
         Store stFactRes = mdb.createStore("PlanFact.list")
 
         //
-        Map<Object, List<StoreRecord>> factsByItems = StoreUtils.collectGroupBy_records(stFact, ["item"])
+        Map<Object, List<StoreRecord>> factsByItem = StoreUtils.collectGroupBy_records(stFact, ["item"])
+
+        //
         for (StoreRecord recItem : stItem) {
             String item = recItem.getString("id")
-            List<StoreRecord> lstItemFacts = factsByItems.get(item)
+            List<StoreRecord> lstItemFacts = factsByItem.get(item)
             if (lstItemFacts != null) {
                 for (StoreRecord recFact : lstItemFacts) {
                     StoreRecord recFactRes = stFactRes.add(recFact)
-                    recFactRes.setValue("tag", recItem.getValue("tag"))
+                    Map tag = new HashMap()
+                    if (recFactRes.getValue("tag") != null) {
+                        tag.putAll(recFactRes.getValue("tag") as Map)
+                    }
+                    if (recItem.getValue("tag") != null) {
+                        tag.putAll(recItem.getValue("tag") as Map)
+                    }
+                    if (tag.size() != 0) {
+                        recFactRes.setValue("tag", tag)
+                    }
                 }
             }
         }

@@ -314,9 +314,13 @@ class ItemFinder extends BaseMdbUtils {
         //
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction)
 
-        // Поиск по атрибуту word-spelling-distorted
-        Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling_distorted, word, tagTypes)
+        // Поиск по атрибуту word-spelling
+        Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling, word, tagTypes)
         stFactSpelling.sort("factValue")
+
+        // Поиск по атрибуту word-spelling-distorted
+        Store stFactSpelling_distorted = list.findBy_factType_value(RgmDbConst.FactType_word_spelling_distorted, word, tagTypes)
+        stFactSpelling_distorted.sort("factValue")
 
         // Поиск по атрибуту word-translate
         Store stFactTranslate = list.findBy_factType_value(RgmDbConst.FactType_word_translate, word, tagTypes)
@@ -334,14 +338,17 @@ class ItemFinder extends BaseMdbUtils {
 
         // В первую очередь перенесём слова, ТОЧНО СОВПАДАЮЩИЕ с фрагментом
         copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_EQUAL)
+        copyToFoundResult(word, stFactSpelling_distorted, stItem, setItemsFound, MODE_EQUAL)
         copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_EQUAL)
 
         // Во вторую очередь слова НАЧИНАЮЩИЕСЯ на фрагмент
         copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFactSpelling_distorted, stItem, setItemsFound, MODE_STARTS_WITH)
         copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_STARTS_WITH)
 
         // Во вторую очередь слова СОДЕРЖАЩИЕ фрагмент.
         copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_CONTAINS)
+        copyToFoundResult(word, stFactSpelling_distorted, stItem, setItemsFound, MODE_CONTAINS)
         copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_CONTAINS)
 
 

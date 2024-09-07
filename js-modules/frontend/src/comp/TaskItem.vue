@@ -67,6 +67,14 @@
 
             <div class="text-grey-8 q-gutter-xs">
 
+                <q-btn v-if="item.tag.hasDictionaryFull"
+                       no-caps dense round unelevated
+                       size="1.2em"
+                       :outlined="true"
+                       icon="more-h"
+                       @click.stop="findItemFull(item)"
+                />
+
                 <template v-for="menuItem in itemMenu">
 
                     <template v-if="menuItem.label">
@@ -203,7 +211,7 @@ export default {
     methods: {
 
         itemClick() {
-            if (this.maskAnswer){
+            if (this.maskAnswer) {
                 this.item.maskAnswer = !this.item.maskAnswer
             }
 
@@ -211,6 +219,10 @@ export default {
             if (!this.maskAnswer || !this.item.maskAnswer) {
                 this.playQuestion()
             }
+        },
+
+        findItemFull(item) {
+            console.info("findItemFull: " + item)
         },
 
         playQuestion() {

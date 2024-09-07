@@ -12,6 +12,9 @@ class Item_list_Test extends RgmBase_Test {
     String word_1 = "синий"
     String word_text = "синий warm up"
 
+    String word_4 = "liquoric"
+    String word_5 = "liquor"
+
 
     @Test
     void findItems() {
@@ -40,6 +43,28 @@ class Item_list_Test extends RgmBase_Test {
 
         println()
         println("findItems: '" + word_text + "'")
+        mdb.outTable(stFact)
+    }
+
+    @Test
+    void findItems_4() {
+        Store stFact
+        Item_list lst = mdb.create(Item_list)
+
+
+        //
+        stFact = lst.findItems(word_4, 0, [:])
+
+        println()
+        println("findItems: '" + word_4 + "'")
+        mdb.outTable(stFact)
+
+
+        //
+        stFact = lst.findItems(word_5, 0, [:])
+
+        println()
+        println("findItems: '" + word_5 + "'")
         mdb.outTable(stFact)
     }
 

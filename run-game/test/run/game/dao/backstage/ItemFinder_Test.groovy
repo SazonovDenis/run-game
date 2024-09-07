@@ -15,6 +15,8 @@ class ItemFinder_Test extends RgmBase_Test {
     String word_2 = "пар"
     String word_3 = "сыр"
 
+    String word_4 = "liquoric"
+
 
     /**
      * Найдем по точному совпадению
@@ -56,6 +58,19 @@ class ItemFinder_Test extends RgmBase_Test {
 
         println()
         println("findTextExact: '" + text + "'")
+        mdb.outTable(stItem)
+    }
+
+    @Test
+    void findWordPart_4() {
+        ItemFinder finder = mdb.create(ItemFinder)
+        Store stItem
+
+        //
+        stItem = finder.findWordPart(word_4, [:])
+
+        println()
+        println("findTextExact: '" + word_4 + "'")
         mdb.outTable(stItem)
     }
 

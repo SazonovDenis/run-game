@@ -186,7 +186,7 @@ class Item_find extends BaseMdbUtils {
         }
 
         //
-        StoreIndex idxItemFound = stItemFound.getIndex("value")
+        StoreIndex idxItemFound = stItemFound.getIndex("factValue")
         //
         for (TextPosition textPosition : textPositionsSearched) {
             if (idxItemFound.get(textPosition.text) != null) {

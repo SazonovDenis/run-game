@@ -61,7 +61,7 @@ class Item_list extends RgmMdbUtils {
         // --- Получим результат, где ключ - позиция
         // Объединим позиции с одинаковым текстом, объединим одинаковые позиции
         Map<Position, Set<TextItem>> mapPositions = new HashMap<>()
-        StoreIndex idxItem = stItem.getIndex("value")
+        StoreIndex idxItem = stItem.getIndex("factValue")
 
         for (TextPosition textPosition : textPositionsRes) {
             StoreRecord recFound = idxItem.get(textPosition.text)
@@ -71,7 +71,7 @@ class Item_list extends RgmMdbUtils {
             Long item = 0
             if (recFound != null) {
                 item = recFound.getLong("id")
-                text = recFound.getString("value")
+                text = recFound.getString("factValue")
             }
 
             //

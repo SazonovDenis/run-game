@@ -11,7 +11,7 @@ import run.game.model.service.*
  * Поиск по словам или тексту.
  */
 @TypeChecked
-class Item_find extends BaseMdbUtils {
+class ItemFinder extends BaseMdbUtils {
 
 
     public int MAX_COUNT_FOUND = 20
@@ -250,7 +250,7 @@ class Item_find extends BaseMdbUtils {
 
                     // Фильтр по тэгам
                     Map recFactTags = (Map) recFact.getValue("tag")
-                    if (!tagsEquals(tagsParam, recFactTags)) {
+                    if (!UtTag.tagsEquals(tagsParam, recFactTags)) {
                         continue
                     }
 
@@ -258,7 +258,7 @@ class Item_find extends BaseMdbUtils {
                     // а не факт factId: укажем пустое поле factId, это спровоцирует в дальнейшем
                     // загрузку ВСЕХ переводов сущности.
                     // В противном случае укажем factId не пустой, тогда останется именно этот найденный перевод.
-                    if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling) {
+                    if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling || recFact.getValue("factType") == RgmDbConst.FactType_word_spelling_distorted) {
                         factId = null
                     }
 
@@ -276,55 +276,6 @@ class Item_find extends BaseMdbUtils {
 
         //
         return stItem
-    }
-
-    public static boolean tagsEquals(Map<Long, String> tags0, Map<Long, String> tags1) {
-
-        if (tags1 == null || tags0 == null || tags1.size() == 0 || tags0.size() == 0) {
-            return true
-        }
-
-        //
-        boolean result = true
-        //
-        for (Map.Entry<Long, String> entry0 : tags0.entrySet()) {
-            long tagKey = entry0.getKey()
-            String tagValue0 = entry0.getValue()
-            if (tags1.containsKey(tagKey)) {
-                String tagValue1 = tags1.get(tagKey)
-                if (!tagValue0.equals(tagValue1)) {
-                    result = false
-                    break
-                }
-            }
-        }
-        //
-        for (Map.Entry<Long, String> entry1 : tags1.entrySet()) {
-            long tagKey = entry1.getKey()
-            String tagValue1 = entry1.getValue()
-            if (tags0.containsKey(tagKey)) {
-                String tagValue0 = tags0.get(tagKey)
-                if (!tagValue1.equals(tagValue0)) {
-                    result = false
-                    break
-                }
-            }
-        }
-
-        //
-        return result
-    }
-
-    public static void cleanStoreByTags(Store st, Map<Long, String> tags) {
-        int n = st.size() - 1
-        while (n >= 0) {
-            StoreRecord rec = st.get(n)
-            Map recTags = (Map) rec.getValue("tag")
-            if (!tagsEquals(tags, recTags)) {
-                st.remove(n)
-            }
-            n = n - 1
-        }
     }
 
 
@@ -363,17 +314,17 @@ class Item_find extends BaseMdbUtils {
         //
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction)
 
-        // Поиск по атрибуту word_spelling
-        Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling, word, tagTypes)
+        // Поиск по атрибуту word-spelling-distorted
+        Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling_distorted, word, tagTypes)
         stFactSpelling.sort("factValue")
 
-        // Поиск по атрибуту word_translate
+        // Поиск по атрибуту word-translate
         Store stFactTranslate = list.findBy_factType_value(RgmDbConst.FactType_word_translate, word, tagTypes)
         stFactTranslate.sort("factValue")
 
         // Фильтр по тэгам
-        cleanStoreByTags(stFactSpelling, tagsValue_word_lang)
-        cleanStoreByTags(stFactTranslate, tagsValues_translate_direction)
+        UtTag.cleanStoreByTags(stFactSpelling, tagsValue_word_lang)
+        UtTag.cleanStoreByTags(stFactTranslate, tagsValues_translate_direction)
 
 
         // ---
@@ -442,7 +393,7 @@ class Item_find extends BaseMdbUtils {
             // а не факт factId: укажем пустое поле factId, это спровоцирует в дальнейшем
             // загрузку ВСЕХ переводов сущности.
             // В противном случае укажем factId не пустой, тогда останется именно этот найденный перевод.
-            if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling) {
+            if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling || recFact.getValue("factType") == RgmDbConst.FactType_word_spelling_distorted) {
                 factId = null
             }
 

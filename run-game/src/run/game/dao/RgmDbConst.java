@@ -6,6 +6,7 @@ public class RgmDbConst {
     public static long FactType_word_translate = 1002;
     public static long FactType_word_sound = 1003;
     public static long FactType_word_picture = 1004;
+    public static long FactType_word_spelling_distorted = 1010;
 
     public static String TagValue_word_lang_eng = "eng"; //100;
     public static String TagValue_word_lang_rus = "rus"; //101;

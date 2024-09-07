@@ -103,4 +103,31 @@ class Item_list_Test extends RgmBase_Test {
     }
 
 
+    @Test
+    void findItems_distorted() {
+        Store stFact
+        Item_list lst = mdb.create(Item_list)
+
+        //
+        word_0 = "қасқ"
+        word_1 = "каск"
+
+
+        //
+        stFact = lst.findItems(word_0, 0, [:])
+
+        println()
+        println("findItems: '" + word_0 + "'")
+        mdb.outTable(stFact)
+
+
+        //
+        stFact = lst.findItems(word_1, 0, [:])
+
+        println()
+        println("findItems: '" + word_1 + "'")
+        mdb.outTable(stFact)
+    }
+
+
 }

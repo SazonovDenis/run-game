@@ -23,7 +23,7 @@ class Item_list extends RgmMdbUtils {
         textPositions.add(new TextPosition(text))
 
         // --- Поиск слов среди введенного
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Map<Long, String> tagsToFind = prepareParamsTags(tags)
         Store stItem = finder.collectItems(textPositions, tagsToFind, null)
 
@@ -48,7 +48,7 @@ class Item_list extends RgmMdbUtils {
 
 
         // --- Поиск слов среди введенного
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Map tagsToFind = prepareParamsTags(tags)
         List<TextPosition> textPositionsRes = new ArrayList<>()
         Store stItem = finder.collectItems(textPositions, tagsToFind, textPositionsRes)
@@ -225,7 +225,7 @@ class Item_list extends RgmMdbUtils {
         // Распределим тэги
         factList.spreadTags(stTags, stFact)
         // Фильтруем
-        Item_find.cleanStoreByTags(stFact, tags)
+        UtTag.cleanStoreByTags(stFact, tags)
 
         //
         stFact.copyTo(stPlanFact)

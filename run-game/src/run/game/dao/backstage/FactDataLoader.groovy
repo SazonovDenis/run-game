@@ -19,10 +19,13 @@ class FactDataLoader extends RgmMdbUtils {
 
 
     // region fillFactBody Дополняет факты "богатыми" данными вопроса и ответа (звук, перевод и т.п.)
-    //
-    // Дополняет факты "богатыми" данными вопроса и ответа (звук, перевод и т.п.),
-    // т.е. заполним поля question и answer.
-    // Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
+
+    /**
+     Семейство методов fillFactBody***
+     Дополняет факты "богатыми" данными вопроса и ответа (звук, перевод и т.п.),
+     т.е. заполним поля question и answer.
+     Расчитываем, что в stTasks есть поля factQuestion и factAnswer.
+     */
 
     /**
      */
@@ -75,11 +78,13 @@ class FactDataLoader extends RgmMdbUtils {
 
 
     // region convertToFlatRecord Запись типа Fact раскладываем в "плоскую" запись
+
     /**
-     * Запись типа Fact раскладываем в "плоскую" запись.
-     * Берем пару полей recFact.factType+recFact.value и заполняем
-     * соответствующее поле (valueSound, valueTranslate, valueSpelling или valuePicture),
-     * в зависимости от recFact.factType.
+     Семейство методов convertFactsToFlatRecord
+     Запись типа Fact раскладываем в "плоскую" запись.
+     Берем пару полей recFact.factType+recFact.value и заполняем
+     соответствующее поле (valueSound, valueTranslate, valueSpelling или valuePicture),
+     в зависимости от recFact.factType.
      */
 
     void convertFactToFlatRecord(StoreRecord recFact, StoreRecord recTask) {

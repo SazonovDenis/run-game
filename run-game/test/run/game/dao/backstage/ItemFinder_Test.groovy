@@ -6,7 +6,7 @@ import org.junit.jupiter.api.*
 import run.game.dao.*
 import run.game.dao.backstage.impl.*
 
-class Item_find_Test extends RgmBase_Test {
+class ItemFinder_Test extends RgmBase_Test {
 
     String word_0 = "warm"
     String word_1 = "синий"
@@ -21,7 +21,7 @@ class Item_find_Test extends RgmBase_Test {
      */
     @Test
     void findTextExact() {
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stItem
 
         //
@@ -65,7 +65,7 @@ class Item_find_Test extends RgmBase_Test {
      */
     @Test
     void findWordPart() {
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stItem
 
 
@@ -91,7 +91,7 @@ class Item_find_Test extends RgmBase_Test {
      */
     @Test
     void findTextExact_tags() {
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stFact
         Map<Long, String> tags
 
@@ -134,10 +134,69 @@ class Item_find_Test extends RgmBase_Test {
         mdb.outTable(stFact)
     }
 
+    @Test
+    void findTextExact_distorted() {
+        ItemFinder finder = mdb.create(ItemFinder)
+        Store stFact
+        Map<Long, String> tags
+
+        //
+        word_2 = "қасқыр"
+        word_3 = "каскыр"
+
+        //
+        List<TextPosition> textPositions = new ArrayList<>()
+        textPositions.add(new TextPosition(word_2))
+
+        //
+        tags = [:]
+        stFact = finder.findTextExact(textPositions, tags)
+
+        println()
+        println("findItems: '" + word_2 + "', tags: " + tags)
+        mdb.outTable(stFact)
+
+
+        //
+        textPositions.clear()
+        textPositions.add(new TextPosition(word_3))
+        stFact = finder.findTextExact(textPositions, tags)
+
+        println()
+        println("findItems: '" + word_3 + "', tags: " + tags)
+        mdb.outTable(stFact)
+    }
+
+
+    @Test
+    void findWordPart_distorted() {
+        ItemFinder finder = mdb.create(ItemFinder)
+        Store stItem
+
+        //
+        word_2 = "қасқ"
+        word_3 = "каск"
+
+        //
+        stItem = finder.findWordPart(word_2, [:])
+
+        println()
+        println("findWordPart: '" + word_2 + "'")
+        mdb.outTable(stItem)
+
+
+        //
+        stItem = finder.findWordPart(word_3, [:])
+
+        println()
+        println("findWordPart: '" + word_3 + "'")
+        mdb.outTable(stItem)
+    }
+
 
     @Test
     void findWordPart_tags() {
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stItem
         Map<Long, String> tags
 
@@ -178,7 +237,7 @@ class Item_find_Test extends RgmBase_Test {
 
     @Test
     void findWordPart_tags_dictionary() {
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stItem
 
 
@@ -216,7 +275,7 @@ class Item_find_Test extends RgmBase_Test {
 
     @Test
     void findWordPart_tags_dictionary_lang() {
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stItem
 
         //
@@ -252,7 +311,7 @@ class Item_find_Test extends RgmBase_Test {
         textPositions.add(new TextPosition(text))
 
         // Поиск слов среди введенного
-        Item_find finder = mdb.create(Item_find)
+        ItemFinder finder = mdb.create(ItemFinder)
         Store stItem = finder.collectItems(textPositions, [:], null)
 
         println()

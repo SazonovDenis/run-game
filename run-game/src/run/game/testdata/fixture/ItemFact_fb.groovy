@@ -225,6 +225,39 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             String wordLang = wordLang_1
                             addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
                         }
+                        // Добавляем два факта Fact:word-spelling-distorted
+                        key = idItem + "_word-spelling_distorted_" + word_1
+                        if (!tagValueSet.contains(key)) {
+                            tagValueSet.add(key)
+                            // Добавляем Fact
+                            genIdFact = genIdFact + 1
+                            StoreRecord recFact = stFact.add()
+                            recFact.setValue("id", genIdFact)
+                            recFact.setValue("item", idItem)
+                            recFact.setValue("factType", getFactType("word-spelling-distorted"))
+                            recFact.setValue("value", word_1)
+                            // Добавляем FactTag:word-lang
+                            String wordLang = wordLang_1
+                            addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
+                        }
+
+                        String word_Distorted = makeDistorted(word_1)
+                        if (!word_1.equalsIgnoreCase(word_Distorted)) {
+                            key = idItem + "_word-spelling_distorted_" + word_Distorted
+                            if (!tagValueSet.contains(key)) {
+                                tagValueSet.add(key)
+                                // Добавляем Fact
+                                genIdFact = genIdFact + 1
+                                StoreRecord recFact = stFact.add()
+                                recFact.setValue("id", genIdFact)
+                                recFact.setValue("item", idItem)
+                                recFact.setValue("factType", getFactType("word-spelling-distorted"))
+                                recFact.setValue("value", word_Distorted)
+                                // Добавляем FactTag:word-lang
+                                String wordLang = wordLang_1
+                                addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
+                            }
+                        }
 
                         // Добавляем Fact:word-transcription
                         String transcription = recCsv.getString("trans")
@@ -675,6 +708,22 @@ class ItemFact_fb extends BaseFixtureBuilder {
         rec.setValue("fact", idFact)
         rec.setValue("tagType", tagType)
         rec.setValue("tagValue", tagValue)
+    }
+
+    /**
+     * Актуально для казахского языка: заменяет буквы с хвостиками на обычные.
+     * Облегчает поиск при отсутствии/незнании казахской раскладки.
+     */
+    String makeDistorted(String word_1) {
+        String s1 = "әғқңөұүhі"
+        String s2 = "эгкноуухи"
+
+        String word_Distorted = word_1
+        for (int i = 0; i < s1.length(); i++) {
+            word_Distorted = word_Distorted.replace(s1[i], s2[i])
+        }
+
+        return word_Distorted
     }
 
 

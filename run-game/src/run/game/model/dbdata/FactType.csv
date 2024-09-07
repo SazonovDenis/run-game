@@ -6,3 +6,4 @@ id,text,code
 1005,Транскрибция слова,word-transcription
 1006,Идиоматическое выражение,word-idiom
 1007,Пример использования,word-example
+1010,Альтернативное или ошибочное,word-spelling-distorted

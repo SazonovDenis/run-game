@@ -3,7 +3,6 @@ package run.game.dao.backstage
 import jandcode.commons.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
-import run.game.dao.*
 import run.game.util.*
 
 class Fact_list extends BaseMdbUtils {
@@ -20,6 +19,12 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
+    /**
+     * Загружаем все факты указанного типа.
+     * В результате поле tag заполняется тэгами, заказанными в tagTypes.
+     *
+     * @param tagTypes Типы тэгов, которвые должны попасть в поле tag
+     */
     public Store loadBy_factType(long factType, Collection<Long> tagTypes) {
         Store st = mdb.createStore("Fact.list")
 
@@ -36,7 +41,11 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
-    public Store loadBy_value_factType(String value, long factType) {
+    /**
+     * Загружаем факты указанного типа с указанным значением.
+     * В результате поле tag не заполняется.
+     */
+    public Store loadBy_value_factType(long factType, String value) {
         Store st = mdb.createStore("Fact.list")
 
         mdb.loadQuery(st, sqlBy_value_factType(), [value: value, factType: factType])
@@ -45,13 +54,8 @@ class Fact_list extends BaseMdbUtils {
     }
 
     /**
-     * Ищем факты по типу и значению.
-     * <br>
-     * Результат имеет поле tag, куда подгружены значения тэгов word-lang и word-translate-direction.
-     *
-     * @param factValue
-     * @param factType
-     * @return
+     * Ищем факты по типу факта и значению, по частичному совпадению.
+     * В результате поле tag не заполняется.
      */
     public Store findBy_factType_value(long factType, String factValue) {
         Store st = mdb.createStore("Fact.list")
@@ -64,16 +68,10 @@ class Fact_list extends BaseMdbUtils {
     }
 
     /**
-     * Ищем факты по типу и значению, с дополнительной фильтрацией по тэгам.
-     * Каждый тэг фильтруется по условию или, т.е. достаточно найти одно совпадение по тэгу,
-     * чтобы запись попала в результат.
-     * <br>
-     * Результат имеет поле tag, куда подгружены значения искомых тэгов.
+     * Ищем факты по типу факта и значению, по частичному совпадению.
+     * В результате поле tag заполняется тэгами, заказанными в tagTypes.
      *
-     * @param factType
-     * @param factValue
-     * @param tags
-     * @return
+     * @param tagTypes Типы тэгов, которвые должны попасть в поле tag
      */
     public Store findBy_factType_value(long factType, String factValue, Collection<Long> tagTypes) {
         Store st = mdb.createStore("Fact.list")
@@ -97,6 +95,34 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
+    StoreRecord loadFact(long idFact) {
+        StoreRecord rec = mdb.createStoreRecord("Fact.list")
+        mdb.loadQueryRecord(rec, sqlFact(), [id: idFact])
+        return rec
+    }
+
+    StoreRecord loadFact(long idFact, Collection<Long> tagTypes) {
+        StoreRecord rec = mdb.createStoreRecord("Fact.list")
+        mdb.loadQueryRecord(rec, sqlFact(), [id: idFact])
+
+        // Тэги фактов (для загруженных id)
+        Store stTags = loadTagsByIds([rec.getLong("id")], tagTypes)
+
+        // Распределим тэги
+        spreadTags(stTags, rec)
+
+        //
+        return rec
+    }
+
+    StoreRecord loadItem(long idItem) {
+        StoreRecord rec = mdb.createStoreRecord("Item")
+        mdb.loadQueryRecord(rec, sqlItem(), [id: idItem])
+        return rec
+    }
+
+
+    // region утилиты
 
     Store loadTagsByIds(Collection ids, Collection<Long> tagTypes) {
         Store stTag = mdb.loadQuery(sqlTag_ByTagTypes(ids, tagTypes, "FactTag", "fact"))
@@ -108,27 +134,49 @@ class Fact_list extends BaseMdbUtils {
 
         // Заполним поле tag
         for (StoreRecord recDest : stDest) {
-            Map<Long, String> mapTag = new HashMap<>()
-
             // Найдем в загруженном список StoreRecord со значениями
             List<StoreRecord> lstTagRecs = mapTagLoaded.get(recDest.getLong("id"))
 
-            // Превратим список StoreRecord со значениями тэгов в Map тегов
-            if (lstTagRecs != null) {
-                for (StoreRecord recTag : lstTagRecs) {
-                    mapTag.put(recTag.getLong("tagType"), recTag.getString("tagValue"))
-                }
-            }
-
-            // Запишем Map тегов в получателя
-            if (mapTag.size() != 0) {
-                recDest.setValue("tag", mapTag)
-            }
+            // Превратим список lstTagRecs (со значениями тэгов) в Map тегов,
+            // запишем Map тегов в получателя
+            fillRecordTags(lstTagRecs, recDest)
         }
     }
 
+    void spreadTags(Store stTag, StoreRecord recDest) {
+        Map<Object, List<StoreRecord>> mapTagLoaded = StoreUtils.collectGroupBy_records(stTag, "fact")
 
-    protected String sqlTag(Collection ids, String tagTableName, String tagRefFieldName) {
+        // Найдем в загруженном список StoreRecord со значениями
+        List<StoreRecord> lstTagRecs = mapTagLoaded.get(recDest.getLong("id"))
+
+        // Превратим список lstTagRecs (со значениями тэгов) в Map тегов,
+        // запишем Map тегов в получателя
+        fillRecordTags(lstTagRecs, recDest)
+    }
+
+    void fillRecordTags(List<StoreRecord> lstTagRecs, StoreRecord recDest) {
+        // Заполним поле tag
+        Map<Long, String> mapTag = new HashMap<>()
+
+        // Превратим список StoreRecord со значениями тэгов в Map тегов
+        if (lstTagRecs != null) {
+            for (StoreRecord recTag : lstTagRecs) {
+                mapTag.put(recTag.getLong("tagType"), recTag.getString("tagValue"))
+            }
+        }
+
+        // Запишем Map тегов в получателя
+        if (mapTag.size() != 0) {
+            recDest.setValue("tag", mapTag)
+        }
+    }
+
+    // endregion
+
+
+    // region sql
+
+    String sqlTag(Collection ids, String tagTableName, String tagRefFieldName) {
         String strIds
         if (ids.size() == 0) {
             strIds = "0"
@@ -145,8 +193,7 @@ where
 """
     }
 
-
-    protected String sqlTag_ByTagTypes(Collection ids, Collection tagTypes, String tagTableName, String tagRefFieldName) {
+    String sqlTag_ByTagTypes(Collection ids, Collection tagTypes, String tagTableName, String tagRefFieldName) {
         String strIds
         if (ids.size() == 0) {
             strIds = "0"
@@ -170,106 +217,20 @@ where
 """
     }
 
-
-/*
-    public Store loadFactsByTagValue(String tagValue, long tagType) {
-        TagType_list tagTypeList = mdb.create(TagType_list)
-        StoreRecord recTag = tagTypeList.loadTagByValue(tagValue, tagType)
-        Store st = mdb.loadQuery(sqlFactsByTagValue(), [tag: recTag.getLong("id")])
-        return st
-    }
-*/
-
-/*
-    public Store loadFactsByTagValue(long idItem, String tagValue, long tagType) {
-        Store st = mdb.loadQuery(sqlFactByTagValue(), [id: idItem, tagType: tagType, tagValue: tagValue])
-        return st
-    }
-*/
-
-    StoreRecord loadFact(long idFact) {
-        StoreRecord rec = mdb.createStoreRecord("Fact.list")
-        mdb.loadQueryRecord(rec, sqlFact(), [id: idFact])
-        return rec
-    }
-
-    StoreRecord loadFactWithTags(long idFact, Collection tagTypes) {
-        StoreRecord rec = mdb.createStoreRecord("Fact.list")
-        StoreRecord recLoaded = mdb.loadQueryRecord(sql__withTags(tagTypes), [id: idFact])
-        //
-        rec.setValues(recLoaded)
-        Long tagType = recLoaded.getLong("tagType")
-        String tagValue = recLoaded.getString("tagValue")
-        rec.setValue("tag", [(tagType): tagValue])
-        //
-        return rec
-    }
-
-    StoreRecord loadItem(long idItem) {
-        StoreRecord rec = mdb.createStoreRecord("Item")
-        mdb.loadQueryRecord(rec, sqlItem(), [id: idItem])
-        return rec
-    }
-
-    void fillTag(Store stLoaded, Store st) {
-        for (StoreRecord recLoaded : stLoaded) {
-            StoreRecord recNew = st.add(recLoaded.getValues())
-            Long tagType = recLoaded.getLong("tagType")
-            String tagValue = recLoaded.getString("tagValue")
-            recNew.setValue("tag", [(tagType): tagValue])
-        }
-    }
-
     String sqlFact() {
         return """
 select
-    Item.id item,
-    Item.value itemValue,
+    Fact.item,
     
     Fact.id,
     Fact.factType factType,
     Fact.value factValue
 
 from
-    Item
-    join Fact on (Fact.item = Item.id)
+    Fact
 
 where
     Fact.id = :id
-
-order by
-    Fact.id
-"""
-    }
-
-    String sql__withTags(Collection<Long> tagTypes) {
-        String tagTypesStr = UtString.join(tagTypes, ",")
-
-        return """
-select
-    Item.id item,
-    Item.value itemValue,
-    
-    Fact.id,
-    Fact.factType factType,
-    Fact.value factValue,
-    
-    FactTag.tagType, 
-    FactTag.tagValue
-
-from
-    Item
-    join Fact on (Fact.item = Item.id)
-    left join FactTag on (
-        FactTag.fact = Fact.id and
-        FactTag.tagType in (${tagTypesStr})
-    )
-
-where
-    Fact.id = :id
-
-order by
-    Fact.id
 """
     }
 
@@ -425,114 +386,6 @@ order by
 """
     }
 
-    String sqlBy_value_factType__withTags(Map<Long, String> tags) {
-        String tagFilterSql = tagFilterSql(tags)
-
-        return """
-select
-    Item.id item,
-    Item.value itemValue,
-    
-    Fact.id,
-    Fact.id fact,
-    Fact.factType factType,
-    Fact.value factValue,
-                   
-    FactTag.tagType, 
-    FactTag.tagValue
-
-from
-    Item
-    join Fact on (Fact.item = Item.id)
-    join FactTag on (
-        FactTag.fact = Fact.id and
-        (${tagFilterSql})
-    )
-
-where
-    Fact.value like :value and
-    Fact.factType = :factType
-
-order by
-    Fact.id
-"""
-    }
-
-    String tagFilterSql(Map<Long, String> tags) {
-        String cond = ""
-        for (Long tagTypeId : tags.keySet()) {
-            if (cond.length() != 0) {
-                cond = cond + " and "
-            }
-            cond = cond + "(FactTag.tagType = " + tagTypeId + " and FactTag.tagValue = :_" + tagTypeId + ")"
-        }
-        return cond
-    }
-
-    Map sqlParamsByTags(Map<Long, String> tags) {
-        Map params = new HashMap()
-        for (Long tagTypeId : tags.keySet()) {
-            String tagType = "_" + tagTypeId
-            String tagValue = tags.get(tagTypeId)
-            params.put(tagType, tagValue)
-        }
-        return params
-    }
-
-/*
-    String sqlFactsByTagValue() {
-        return """
-select
-    Item.id item,
-    Item.value itemValue,
-    
-    Fact.id,
-    Fact.factType factType,
-    Fact.value factValue
-
-from
-    Item
-    join Fact on (Fact.item = Item.id)
-    join FactTag on (FactTag.fact = Fact.id)
-
-where
-    FactTag.tag = :tag
-
-order by
-    Item.id,
-    Fact.factType,
-    Fact.id,
-    FactTag.tag
-"""
-    }
-
-    String sqlFactByTagValue() {
-        return """
-select
-    Item.id item,
-    Item.value itemValue,
-    
-    Fact.id,
-    Fact.factType factType,
-    Fact.value factValue
-
-from
-    Item
-    join Fact on (Fact.item = Item.id)
-    join FactTag on (FactTag.fact = Fact.id)
-
-where
-    Item.id = :id and
-    FactTag.code = :factType
-
-order by
-    Item.id,
-    Fact.factType,
-    Fact.id,
-    FactTag.tag
-"""
-    }
-*/
-
+    // endregion
 
 }

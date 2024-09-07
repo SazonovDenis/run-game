@@ -40,8 +40,8 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         //
         Fact_list list = mdb.create(Fact_list)
         Collection tagTypes = [RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction]
-        StoreRecord recFactQuestion = list.loadFactWithTags(factQuestion, tagTypes)
-        StoreRecord recFactAnswer = list.loadFactWithTags(factAnswer, tagTypes)
+        StoreRecord recFactQuestion = list.loadFact(factQuestion, tagTypes)
+        StoreRecord recFactAnswer = list.loadFact(factAnswer, tagTypes)
         //
         long idItem = recFactQuestion.getLong("item")
         long idItemAnswer = recFactAnswer.getLong("item")

@@ -235,7 +235,7 @@ class PlanCreator extends RgmMdbUtils  {
             long factTypeAnswer = recFactCombinations.getLong("factTypeAnswer")
 
             // Ищем все item, у которых есть такое значение факта
-            Store stFactQuestion = list.loadBy_value_factType(factValueQuestion, factTypeQuestion)
+            Store stFactQuestion = list.loadBy_value_factType(factTypeQuestion, factValueQuestion)
 
             //
             if (stFactQuestion.size() == 0) {

@@ -809,22 +809,6 @@ export default {
             }
 
 
-            /*
-                        //
-                        let planTag_translate_direction = planTags[dbConst.TagType_word_translate_direction]
-                        //
-                        let filterTag_eng = this.viewSettings.filterTags["eng"]
-                        if (filterTag_eng && (!planTag_translate_direction || planTag_translate_direction.indexOf("eng") === -1)) {
-                            return false
-                        }
-                        //
-                        let filterTag_kaz = this.viewSettings.filterTags["kaz"]
-                        if (filterTag_kaz && (!planTag_translate_direction || planTag_translate_direction.indexOf("kaz") === -1)) {
-                            return false
-                        }
-            */
-
-
             //
             return true
         },
@@ -933,10 +917,6 @@ export default {
         },
 
         checkShowHiddenMode() {
-            // Если скрытых нет, то выключаем режим "показать скрытые"
-            //if (this.hiddenCount === 0) {
-            //    this.viewSettings.showHidden = false
-            //}
         },
 
         checkViewMode() {

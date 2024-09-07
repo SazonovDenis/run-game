@@ -21,7 +21,7 @@ export default {
     ConfirmState_cancelled: 1004,  // Отменен
 
     TagType_word_lang: 1001,                 // Язык слова
-    TagType_word_translate_direction: 1002,  // Направление перевода слова
+    TagType_translate_direction: 1002,  // Направление перевода слова
     TagType_word_part_of_speech: 1003,       // Часть речи
     TagType_word_use_sample: 1004,           // Пример использования слова
     TagType_word_category: 1005,             // Тема слова

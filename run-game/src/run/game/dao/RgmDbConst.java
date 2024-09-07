@@ -7,20 +7,21 @@ public class RgmDbConst {
     public static long FactType_word_sound = 1003;
     public static long FactType_word_picture = 1004;
 
-    public static String Tag_word_lang_eng = "eng"; //100;
-    public static String Tag_word_lang_rus = "rus"; //101;
-    public static String Tag_word_lang_kaz = "kaz"; //102;
+    public static String TagValue_word_lang_eng = "eng"; //100;
+    public static String TagValue_word_lang_rus = "rus"; //101;
+    public static String TagValue_word_lang_kaz = "kaz"; //102;
 
-    public static String Tag_word_translate_direction_eng_rus = "eng-rus"; // 200;
-    public static String Tag_word_translate_direction_rus_eng = "rus-eng"; // 201;
-    public static String Tag_word_translate_direction_rus_kaz = "rus-kaz"; // 202;
-    public static String Tag_word_translate_direction_kaz_rus = "kaz-rus"; // 203;
+    public static String TagValue_translate_direction_eng_rus = "eng-rus"; // 200;
+    public static String TagValue_translate_direction_rus_eng = "rus-eng"; // 201;
+    public static String TagValue_translate_direction_rus_kaz = "rus-kaz"; // 202;
+    public static String TagValue_translate_direction_kaz_rus = "kaz-rus"; // 203;
 
     public static String TagValue_plan_access_default = "default";         // План по умолчанию
     public static String TagValue_dictionary_base = "base";                // Малый словарь
+    public static String TagValue_dictionary_full = "full";                // Полный словарь
 
     public static long TagType_word_lang = 1001;                // Язык слова
-    public static long TagType_word_translate_direction = 1002; // Направление перевода слова
+    public static long TagType_translate_direction = 1002;      // Направление перевода слова
     public static long TagType_word_part_of_speech = 1003;      // Часть речи
     public static long TagType_word_use_sample = 1004;          // Пример использования слова
     public static long TagType_word_category = 1005;            // Тема слова
@@ -28,6 +29,7 @@ public class RgmDbConst {
     public static long TagType_top_list = 1007;                 // Топ ххх слов
     public static long TagType_word_sound_info = 1008;          // Звук для слова
     public static long TagType_plan_access = 1010;              // Уровень доступа к плану
+    public static long TagType_dictionary = 1100;               // Пометка словаря (источника)
 
     public static long LinkType_myFriend = 1001;   // Друг
     public static long LinkType_myParent = 1002;   // Родитель

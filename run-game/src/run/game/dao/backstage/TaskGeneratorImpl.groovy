@@ -39,7 +39,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
 
         //
         Fact_list list = mdb.create(Fact_list)
-        Collection tagTypes = [RgmDbConst.TagType_word_lang, RgmDbConst.TagType_word_translate_direction]
+        Collection tagTypes = [RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction]
         StoreRecord recFactQuestion = list.loadFactWithTags(factQuestion, tagTypes)
         StoreRecord recFactAnswer = list.loadFactWithTags(factAnswer, tagTypes)
         //
@@ -148,7 +148,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем stTaskOption: готовим правильный и неправильные ответы
 
         // Выбираем неправильные ответы (и их порядок)
-        Store stAnswer = list.loadItemFactsByFactType(idItem, factTypeAnswer)
+        Store stAnswer = list.loadBy_item_factType(idItem, factTypeAnswer)
         StoreIndex idxAnswer = stAnswer.getIndex("factValue")
         //
         int n = 0
@@ -206,7 +206,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем дополнительную информацию
         if (factTypeQuestion != RgmDbConst.FactType_word_sound) {
             // Загружаем факты "звук"
-            Store stFact = list.loadItemFactsByFactType(idItem, RgmDbConst.FactType_word_sound)
+            Store stFact = list.loadBy_item_factType(idItem, RgmDbConst.FactType_word_sound)
             // Выбираем факт "звук"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)
@@ -219,7 +219,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         }
         if (factTypeQuestion != RgmDbConst.FactType_word_spelling) {
             // Загружаем факты "написание"
-            Store stFact = list.loadItemFactsByFactType(idItem, RgmDbConst.FactType_word_spelling)
+            Store stFact = list.loadBy_item_factType(idItem, RgmDbConst.FactType_word_spelling)
             // Выбираем факт "написание"
             if (stFact.size() != 0) {
                 int idx = rnd.num(0, stFact.size() - 1)

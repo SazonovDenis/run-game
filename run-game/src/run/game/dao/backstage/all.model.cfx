@@ -15,9 +15,10 @@
 
     <!-- Item_list -->
 
-    <domain name="Item.find" parent="Item">
+    <domain name="Item.find" parent="id">
 
         <field name="fact" parent="Fact/ref"/>
+        <field name="factValue" parent="Fact/value"/>
 
         <field name="tag" parent="object"/>
 
@@ -54,7 +55,9 @@
         <field name="tag" parent="object"/>
 
         <field name="item" parent="Item/id"/>
-        <field name="itemValue" parent="Item/value"/>
+        <!--
+                <field name="itemValue" parent="Item/value"/>
+        -->
 
     </domain>
 
@@ -66,7 +69,6 @@
         <field name="isAllowed" parent="boolean"/>
 
     </domain>
-
 
 
 </root>

@@ -10,7 +10,7 @@ class FactType:
 
 class TagType:
     word_lang = "1001"  # Язык слова
-    word_translate_direction = "1002"  # Направление перевода" слов
+    translate_direction = "1002"  # Направление перевода" слов
     word_part_of_speech = "1003"  # Часть речи
     word_use_sample = "1004"  # Пример использования" слов
     word_category = "1005"  # Тема слова

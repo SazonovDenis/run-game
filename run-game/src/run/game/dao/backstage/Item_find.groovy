@@ -15,7 +15,7 @@ class Item_find extends BaseMdbUtils {
 
 
     public int MAX_COUNT_FOUND = 20
-    public int MAX_COUNT_FOUND_ONE_TYPE = 10
+    public int MAX_COUNT_FOUND_ONE_TYPE = 20
 
 
     /**
@@ -84,21 +84,21 @@ class Item_find extends BaseMdbUtils {
 
         // --- Обновляем результирующие списки
 
-        // Store
+        // Результирующий store
         // Первая порция поиска поступает в исходно пустой store, поэтому копируется полностью
         copyToStore(stItemFound, stItemRes)
 
-        // List
+        // Результирующий список textPositions
         // Первая порция поиска поступает в список позиций в том случае,
         // если что-то нашлось сверх того, что поступило на поиск.
         // В этой итерации свверх ранее добавленного будут ПАРЫ слов.
-        copyToList(stItemFound, textPositionPairs, textPositionsRes)
+        copyFoundTextPositions(stItemFound, textPositionPairs, textPositionsRes)
 
 
         // --- Поиск того, что не нашлось: по точному совпадению, но с перобразованем словоформ
 
         // Проверим, какие слова не нашлись по непосредственному написанию
-        StoreIndex idxItem = stItemRes.getIndex("value")
+        StoreIndex idxItem = stItemRes.getIndex("factValue")
         List<TextPosition> textItemsNotFound = new ArrayList<>()
         //
         for (TextPosition textPosition : textPositions) {
@@ -134,7 +134,7 @@ class Item_find extends BaseMdbUtils {
             // Вторая порция поиска поступает в список позиций в том случае,
             // если что-то нашлось сверх того, что поступило на поиск.
             // В этой итерации свверх ранее добавленного будут пары ПРЕОБРАЗОВАННЫХ слов.
-            copyToList(stItemFoundTransformed, textPositionPairs, textPositionsRes)
+            copyFoundTextPositions(stItemFoundTransformed, textPositionPairs, textPositionsRes)
         }
 
 
@@ -180,7 +180,7 @@ class Item_find extends BaseMdbUtils {
      * @param textPositionsSearched Позиции, которые искали
      * @param textPositionsRes Сюда пополняем найденные
      */
-    void copyToList(Store stItemFound, List<TextPosition> textPositionsSearched, List<TextPosition> textPositionsRes) {
+    void copyFoundTextPositions(Store stItemFound, List<TextPosition> textPositionsSearched, List<TextPosition> textPositionsRes) {
         if (textPositionsRes == null) {
             return
         }
@@ -240,7 +240,8 @@ class Item_find extends BaseMdbUtils {
             List<StoreRecord> recsFact = idxFacts.get(word)
             if (recsFact != null) {
                 for (StoreRecord recFact : recsFact) {
-                    long itemId = recFact.getLong("item")
+                    Long itemId = recFact.getLong("item")
+                    Long factId = recFact.getLong("id")
 
                     // Повторы не нужны
                     if (setItems.contains(itemId)) {
@@ -248,29 +249,25 @@ class Item_find extends BaseMdbUtils {
                     }
 
                     // Фильтр по тэгам
-                    boolean wasTagComparationTrue = true
-                    Map factTags = (Map) recFact.getValue("tag")
-                    if (factTags != null && tagsParam != null && tagsParam.size() != 0) {
-                        wasTagComparationTrue = false
-                        for (Map.Entry<Long, String> entry : tagsParam.entrySet()) {
-                            long tagKey = entry.getKey()
-                            String tagValue = entry.getValue()
-                            if (tagValue.equals(factTags.get(tagKey))) {
-                                wasTagComparationTrue = true
-                                break
-                            }
-                        }
-                    }
-                    if (!wasTagComparationTrue) {
+                    Map recFactTags = (Map) recFact.getValue("tag")
+                    if (!tagsEquals(tagsParam, recFactTags)) {
                         continue
                     }
 
-                    // Возвращаем именно item, а не fact со spelling-ом или translate-ом этого item,
-                    // т.к. мы ищем СЛОВА (item) по написанию, а не их НАПИСАНИЯ или ПЕРЕВОДЫ (fact)
+                    // Если мы нашли совпадение по spelling - скажем, что нашли сущность itemId,
+                    // а не факт factId: укажем пустое поле factId, это спровоцирует в дальнейшем
+                    // загрузку ВСЕХ переводов сущности.
+                    // В противном случае укажем factId не пустой, тогда останется именно этот найденный перевод.
+                    if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling) {
+                        factId = null
+                    }
+
+                    //
                     stItem.add([
-                            id   : itemId,
-                            value: recFact.getValue("itemValue"),
-                            tag  : factTags
+                            id       : itemId,
+                            fact     : factId,
+                            factValue: recFact.getValue("factValue"),
+                            tag      : recFactTags
                     ])
                     setItems.add(itemId)
                 }
@@ -279,6 +276,55 @@ class Item_find extends BaseMdbUtils {
 
         //
         return stItem
+    }
+
+    public static boolean tagsEquals(Map<Long, String> tags0, Map<Long, String> tags1) {
+
+        if (tags1 == null || tags0 == null || tags1.size() == 0 || tags0.size() == 0) {
+            return true
+        }
+
+        //
+        boolean result = true
+        //
+        for (Map.Entry<Long, String> entry0 : tags0.entrySet()) {
+            long tagKey = entry0.getKey()
+            String tagValue0 = entry0.getValue()
+            if (tags1.containsKey(tagKey)) {
+                String tagValue1 = tags1.get(tagKey)
+                if (!tagValue0.equals(tagValue1)) {
+                    result = false
+                    break
+                }
+            }
+        }
+        //
+        for (Map.Entry<Long, String> entry1 : tags1.entrySet()) {
+            long tagKey = entry1.getKey()
+            String tagValue1 = entry1.getValue()
+            if (tags0.containsKey(tagKey)) {
+                String tagValue0 = tags0.get(tagKey)
+                if (!tagValue1.equals(tagValue0)) {
+                    result = false
+                    break
+                }
+            }
+        }
+
+        //
+        return result
+    }
+
+    public static void cleanStoreByTags(Store st, Map<Long, String> tags) {
+        int n = st.size() - 1
+        while (n >= 0) {
+            StoreRecord rec = st.get(n)
+            Map recTags = (Map) rec.getValue("tag")
+            if (!tagsEquals(tags, recTags)) {
+                st.remove(n)
+            }
+            n = n - 1
+        }
     }
 
 
@@ -293,173 +339,59 @@ class Item_find extends BaseMdbUtils {
         Store stItem = mdb.createStore("Item.find")
 
         //
-        int count
         Fact_list list = mdb.create(Fact_list)
-        Set<Long> setItemsFound = new HashSet<>()
 
 
         // ---
         // Поиск
 
-        Map<Long, String> tagsValue_word_lang = null
-        Map<Long, String> tagsValues_word_translate_direction = null
+        Map<Long, String> tagsValue_word_lang = new HashMap<>()
+        Map<Long, String> tagsValues_translate_direction = new HashMap<>()
         if (tags != null) {
-            tagsValue_word_lang = [(RgmDbConst.TagType_word_lang): tags.get(RgmDbConst.TagType_word_lang)]
-            tagsValues_word_translate_direction = [(RgmDbConst.TagType_word_translate_direction): tags.get(RgmDbConst.TagType_word_translate_direction)]
+            if (tags.containsKey(RgmDbConst.TagType_word_lang)) {
+                tagsValue_word_lang.put(RgmDbConst.TagType_word_lang, tags.get(RgmDbConst.TagType_word_lang))
+            }
+            if (tags.containsKey(RgmDbConst.TagType_word_lang)) {
+                tagsValues_translate_direction.put(RgmDbConst.TagType_translate_direction, tags.get(RgmDbConst.TagType_translate_direction))
+            }
+            if (tags.containsKey(RgmDbConst.TagType_dictionary)) {
+                tagsValue_word_lang.put(RgmDbConst.TagType_dictionary, tags.get(RgmDbConst.TagType_dictionary))
+                tagsValues_translate_direction.put(RgmDbConst.TagType_dictionary, tags.get(RgmDbConst.TagType_dictionary))
+            }
         }
 
-        // Поиск по атрибуту word_spelling
-        Store stFactSpelling = list.findBy_value_factType_tags(RgmDbConst.FactType_word_spelling, word, tagsValue_word_lang)
-        stFactSpelling.sort("itemValue")
+        //
+        Collection tagTypes = Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction)
 
+        // Поиск по атрибуту word_spelling
+        Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling, word, tagTypes)
+        stFactSpelling.sort("factValue")
 
         // Поиск по атрибуту word_translate
-        Store stFactTranslate = list.findBy_value_factType_tags(RgmDbConst.FactType_word_translate, word, tagsValues_word_translate_direction)
+        Store stFactTranslate = list.findBy_factType_value(RgmDbConst.FactType_word_translate, word, tagTypes)
         stFactTranslate.sort("factValue")
+
+        // Фильтр по тэгам
+        cleanStoreByTags(stFactSpelling, tagsValue_word_lang)
+        cleanStoreByTags(stFactTranslate, tagsValues_translate_direction)
 
 
         // ---
         // Перенос найденных слов в результат
 
+        Set<Long> setItemsFound = new HashSet<>()
 
-        // В первую очередь перенесём слова, НАЧИНАЮЩИЕСЯ на фрагмент.
+        // В первую очередь перенесём слова, ТОЧНО СОВПАДАЮЩИЕ с фрагментом
+        copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_EQUAL)
+        copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_EQUAL)
 
-        // Результат по атрибуту word_spelling.
-        count = 0
-        for (StoreRecord rec : stFactSpelling) {
-            long itemId = rec.getLong("item")
-            String value = rec.getString("itemValue")
-            Object factTags = rec.getValue("tag")
-
-            // Сейчас - только слова НАЧИНАЮЩИЕСЯ на фрагмент
-            if (!value.startsWith(word)) {
-                continue
-            }
-
-            // Повторы не нужны
-            if (setItemsFound.contains(itemId)) {
-                continue
-            }
-
-            // Не более MAX_COUNT_FOUND_ONE_TYPE в результатах
-            if (count > MAX_COUNT_FOUND_ONE_TYPE) {
-                break
-            }
-            count++
-
-            //
-            stItem.add([
-                    id   : itemId,
-                    value: value,
-                    tag  : factTags,
-            ])
-            setItemsFound.add(itemId)
-        }
-
-
-        // Результат по атрибуту word_translate.
-        count = 0
-        for (StoreRecord rec : stFactTranslate) {
-            long item = rec.getLong("item")
-            String factValue = rec.getString("factValue")
-            String value = rec.getString("itemValue")
-            Object factTags = rec.getValue("tag")
-
-            // Сейчас - только слова НАЧИНАЮЩИЕСЯ на фрагмент
-            if (!factValue.startsWith(word)) {
-                continue
-            }
-
-            // Повторы не нужны
-            if (setItemsFound.contains(item)) {
-                continue
-            }
-
-            // Не более MAX_COUNT_FOUND_ONE_TYPE в результатах
-            if (count > MAX_COUNT_FOUND_ONE_TYPE) {
-                break
-            }
-            count++
-
-            //
-            stItem.add([
-                    id   : item,
-                    value: value,
-                    fact : rec.getValue("id"),
-                    tag  : factTags,
-            ])
-            setItemsFound.add(item)
-        }
-
+        // Во вторую очередь слова НАЧИНАЮЩИЕСЯ на фрагмент
+        copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_STARTS_WITH)
 
         // Во вторую очередь слова СОДЕРЖАЩИЕ фрагмент.
-
-        // Результат по атрибуту word_spelling.
-        count = 0
-        for (StoreRecord rec : stFactSpelling) {
-            long item = rec.getLong("item")
-            String value = rec.getString("itemValue")
-            Object factTags = rec.getValue("tag")
-
-            // Сейчас - только слова СОДЕРЖАЩИЕ фрагмент
-            if (value.startsWith(word)) {
-                continue
-            }
-
-            // Повторы не нужны
-            if (setItemsFound.contains(item)) {
-                continue
-            }
-
-            // Не более MAX_COUNT_FOUND_ONE_TYPE в результатах
-            if (count > MAX_COUNT_FOUND_ONE_TYPE) {
-                break
-            }
-            count++
-
-            //
-            stItem.add([
-                    id   : item,
-                    value: rec.getValue("itemValue"),
-                    tag  : factTags,
-            ])
-            setItemsFound.add(item)
-        }
-
-
-        // Результат по атрибуту word_translate.
-        count = 0
-        for (StoreRecord rec : stFactTranslate) {
-            long item = rec.getLong("item")
-            String factValue = rec.getString("factValue")
-            String value = rec.getString("itemValue")
-            Object factTags = rec.getValue("tag")
-
-            // Сейчас - только слова СОДЕРЖАЩИЕ фрагмент
-            if (factValue.startsWith(word)) {
-                continue
-            }
-
-            // Повторы не нужны
-            if (setItemsFound.contains(item)) {
-                continue
-            }
-
-            // Не более MAX_COUNT_FOUND_ONE_TYPE в результатах
-            if (count > MAX_COUNT_FOUND_ONE_TYPE) {
-                break
-            }
-            count++
-
-            //
-            stItem.add([
-                    id   : item,
-                    value: value,
-                    fact : rec.getValue("id"),
-                    tag  : factTags,
-            ])
-            setItemsFound.add(item)
-        }
+        copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_CONTAINS)
+        copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_CONTAINS)
 
 
         // ---
@@ -468,45 +400,63 @@ class Item_find extends BaseMdbUtils {
 
 
     // Загрузим тэги для item
-/*      // Загрузим тэги для item
-        Store stItemTag = mdb.loadQuery(sqlItemTag(stItem.getUniqueValues("id")))
-        Map<Object, List<StoreRecord>> mapItemsTag = StoreUtils.collectGroupBy_records(stItemTag, "item")
+    //tagUtils.loadTags("ItemTag", ....)
 
-        // Заполним поле тэги (itemTag)
-        for (StoreRecord recItem : stItem) {
-            List<StoreRecord> lstRecItemTag = mapItemsTag.get(recItem.getLong("id"))
-            if (lstRecItemTag != null) {
-                // Превратим список тэгов в Map тегов
-                Map<Long, String> mapItemTag = new HashMap<>()
-                for (StoreRecord recItemTag : lstRecItemTag) {
-                    mapItemTag.put(recItemTag.getLong("tagType"), recItemTag.getString("tagValue"))
+    static final int MODE_EQUAL = 1
+    static final int MODE_STARTS_WITH = 2
+    static final int MODE_CONTAINS = 3
+
+    void copyToFoundResult(String word, Store stSource, Store stResult, Set setFound, int mode) {
+        for (StoreRecord recFact : stSource) {
+            Long itemId = recFact.getLong("item")
+            Long factId = recFact.getLong("id")
+            String factValue = recFact.getString("factValue")
+            Object factTags = recFact.getValue("tag")
+
+            // Тип совпадения
+            if (mode == MODE_EQUAL) {
+                if (!factValue.equalsIgnoreCase(word)) {
+                    continue
                 }
-                recItem.setValue("itemTag", mapItemTag)
+            } else if (mode == MODE_STARTS_WITH) {
+                if (!factValue.startsWithIgnoreCase(word)) {
+                    continue
+                }
+            } else if (mode == MODE_CONTAINS) {
+                if (!factValue.containsIgnoreCase(word)) {
+                    continue
+                }
             }
+
+            // Повторы не нужны
+            if (setFound.contains(itemId)) {
+                continue
+            }
+
+            // Не более MAX_COUNT_FOUND_ONE_TYPE в результатах
+            if (mode != MODE_EQUAL && stResult.size() > MAX_COUNT_FOUND_ONE_TYPE) {
+                break
+            }
+
+            // Если мы нашли совпадение по spelling - скажем, что нашли сущность itemId,
+            // а не факт factId: укажем пустое поле factId, это спровоцирует в дальнейшем
+            // загрузку ВСЕХ переводов сущности.
+            // В противном случае укажем factId не пустой, тогда останется именно этот найденный перевод.
+            if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling) {
+                factId = null
+            }
+
+            //
+            stResult.add([
+                    id       : itemId,
+                    fact     : factId,
+                    factValue: factValue,
+                    tag      : factTags,
+            ])
+            //
+            setFound.add(itemId)
         }
-
-        //
-        return stItem
     }
-
-    protected String sqlItemTag(Set ids) {
-        String strIds
-        if (ids.size() == 0) {
-            strIds = "0"
-        } else {
-            strIds = ids.join(",")
-        }
-        return """
-select
-    ItemTag.*
-from
-    ItemTag
-where
-    ItemTag.item in ( ${strIds} )
-"""
-    }
-*/
-
 
     // region Внутренние утилиты
 

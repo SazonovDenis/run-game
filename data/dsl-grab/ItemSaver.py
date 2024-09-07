@@ -94,7 +94,7 @@ class ItemSaver(ParserBase):
             self.idFact = self.idFact + 1
             self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.translate + "\t" + translation_text + "\n")
             self.idFactTag = self.idFactTag + 1
-            self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_translate_direction + "\t" + TagValue.eng_rus + "\n")
+            self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.translate_direction + "\t" + TagValue.eng_rus + "\n")
             self.idFactTag = self.idFactTag + 1
             self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.dictionary + "\t" + TagValue.dictionary_full + "\n")
             #

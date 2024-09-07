@@ -25,18 +25,6 @@
         <field name="planText" parent="Plan/text"/>
     </domain>
 
-<!--
-    <domain name="Game.statistic">
-        <field name="ratingTask" parent="double" scale="3"/>
-        <field name="ratingQuickness" parent="double" scale="3"/>
-
-        <field name="ratingTaskInc" parent="double" scale="3"/>
-        <field name="ratingTaskDec" parent="double" scale="3"/>
-
-        <field name="ratingMax" parent="double" scale="3"/>
-    </domain>
--->
-
 
     <!--
     Данные задания, вопроса или ответа, "плоская" запись.
@@ -68,7 +56,7 @@
 
 
     <!-- Список заданий (пары фактов вопрос+ответ) -->
-    <domain name="PlanFact.list">
+    <domain name="PlanFact.list" parent="id">
         <field name="item" parent="Item/ref"/>
 
         <!-- Факт -->

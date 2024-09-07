@@ -47,7 +47,7 @@ export default {
             }
 
             //
-            let tagValueDirection = this.tags[dbConst.TagType_word_translate_direction]
+            let tagValueDirection = this.tags[dbConst.TagType_translate_direction]
             if (!tagValueDirection) {
                 return null
             }

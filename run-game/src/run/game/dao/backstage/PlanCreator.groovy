@@ -87,8 +87,8 @@ class PlanCreator extends RgmMdbUtils  {
 
         // Загружаем список фактов для "вопроса" и "ответа"
         Fact_list list = mdb.create(Fact_list)
-        Store stQuestionLoaded = list.loadItemFactsByFactType(item, factTypeQuestion)
-        Store stAnswer = list.loadItemFactsByFactType(item, factTypeAnswer)
+        Store stQuestionLoaded = list.loadBy_item_factType(item, factTypeQuestion)
+        Store stAnswer = list.loadBy_item_factType(item, factTypeAnswer)
 
         //
         if (stQuestionLoaded.size() == 0) {
@@ -253,7 +253,7 @@ class PlanCreator extends RgmMdbUtils  {
             StoreRecord recFactAnswer = null
             for (StoreRecord recFactQuestionSelected : stFactQuestion) {
                 long item = recFactQuestionSelected.getLong("item")
-                Store stFactAnswer = list.loadFactsByValueFactType(item, factValueAnswer, factTypeAnswer)
+                Store stFactAnswer = list.loadBy_item_value_factType(item, factValueAnswer, factTypeAnswer)
                 if (stFactAnswer.size() != 0) {
                     recFactQuestion = recFactQuestionSelected
                     recFactAnswer = stFactAnswer.get(0)

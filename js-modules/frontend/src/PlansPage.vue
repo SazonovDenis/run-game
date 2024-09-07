@@ -337,7 +337,7 @@ export default {
 
 
             //
-            let planTag_translate_direction = planTags[dbConst.TagType_word_translate_direction]
+            let planTag_translate_direction = planTags[dbConst.TagType_translate_direction]
             //
             let filterTag_eng = this.viewSettings.filterTags["eng"]
             if (filterTag_eng && (!planTag_translate_direction || planTag_translate_direction.indexOf("eng") === -1)) {

@@ -39,7 +39,7 @@ class UtWordDistance extends BaseMdbUtils {
         // (word-translate) имеется в двух записях, а для построения синонимов дубликаты не нужны.
 
         // Получим список слов - rus
-        Store stWordRus = mdb.loadQuery(sqlFactsByTag([RgmDbConst.Tag_word_translate_direction_eng_rus, RgmDbConst.Tag_word_translate_direction_kaz_rus]))
+        Store stWordRus = mdb.loadQuery(sqlFactsByTag([RgmDbConst.TagValue_translate_direction_eng_rus, RgmDbConst.TagValue_translate_direction_kaz_rus]))
         //
         utils.saveToCsv(stWordRus, new File("temp/stWordRus.csv"))
 
@@ -48,7 +48,7 @@ class UtWordDistance extends BaseMdbUtils {
 
 
         // Получим список слов - kaz
-        Store stWordKaz = mdb.loadQuery(sqlItemsByTag([RgmDbConst.Tag_word_lang_kaz]))
+        Store stWordKaz = mdb.loadQuery(sqlItemsByTag([RgmDbConst.TagValue_word_lang_kaz]))
         //
         utils.saveToCsv(stWordKaz, new File("temp/stWordKaz.csv"))
 
@@ -57,7 +57,7 @@ class UtWordDistance extends BaseMdbUtils {
 
 
         // Получим список слов - eng
-        Store stWordEng = mdb.loadQuery(sqlItemsByTag([RgmDbConst.Tag_word_lang_eng]))
+        Store stWordEng = mdb.loadQuery(sqlItemsByTag([RgmDbConst.TagValue_word_lang_eng]))
         //
         utils.saveToCsv(stWordEng, new File("temp/stWordEng.csv"))
 

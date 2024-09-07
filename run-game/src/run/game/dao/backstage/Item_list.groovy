@@ -28,7 +28,7 @@ class Item_list extends RgmMdbUtils {
         Store stItem = finder.collectItems(textPositions, tagsToFind, null)
 
         // --- Заполнение свойств найденных слов
-        Store stFact = makeFactList(stItem, idPlan)
+        Store stFact = makeFactList(stItem, idPlan, tagsToFind)
 
         // ---
         return stFact
@@ -55,7 +55,7 @@ class Item_list extends RgmMdbUtils {
 
 
         // --- Заполнение свойств найденных слов
-        Store stFact = makeFactList(stItem, idPlan)
+        Store stFact = makeFactList(stItem, idPlan, tagsToFind)
 
 
         // --- Получим результат, где ключ - позиция
@@ -131,19 +131,19 @@ class Item_list extends RgmMdbUtils {
 
     private Map<Long, String> prepareParamsTags(Map tags) {
         if (tags == null || tags.size() == 0) {
-            return null
+            return [:]
         } else if (tags.get("kaz") != null) {
             return [
-                    (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_kaz,
-                    (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_kaz_rus,
+                    (RgmDbConst.TagType_word_lang)          : RgmDbConst.TagValue_word_lang_kaz,
+                    (RgmDbConst.TagType_translate_direction): RgmDbConst.TagValue_translate_direction_kaz_rus,
             ] as Map<Long, String>
         } else if (tags.get("eng") != null) {
             return [
-                    (RgmDbConst.TagType_word_lang)               : RgmDbConst.Tag_word_lang_eng,
-                    (RgmDbConst.TagType_word_translate_direction): RgmDbConst.Tag_word_translate_direction_eng_rus,
+                    (RgmDbConst.TagType_word_lang)          : RgmDbConst.TagValue_word_lang_eng,
+                    (RgmDbConst.TagType_translate_direction): RgmDbConst.TagValue_translate_direction_eng_rus,
             ] as Map<Long, String>
         } else {
-            return null
+            return [:]
         }
 
     }
@@ -179,9 +179,9 @@ class Item_list extends RgmMdbUtils {
     }
 
 
-    private Store makeFactList(Store stItem, long idPlan) {
-        // --- Превратим список Item в список пар фактов (сгенерим комбинации)
-        Store stFact = loadFactList(stItem, idPlan)
+    private Store makeFactList(Store stItem, long idPlan, Map<Long, String> tags) {
+        // --- Превратим список Item в список пар фактов (сгенерим комбинации переводов)
+        Store stFact = loadFactList(stItem, idPlan, tags)
 
         // --- Дополним факты в плане "богатыми" данными для вопроса и ответа
         FactDataLoader ldr = mdb.create(FactDataLoader)
@@ -194,7 +194,10 @@ class Item_list extends RgmMdbUtils {
         return stFactOrderd
     }
 
-    private Store loadFactList(Store stItem, long idPlan) {
+    /**
+     * @return Список с информацией пользователя, наличие/отсутствие в указанном плане, статистикой.
+     */
+    private Store loadFactList(Store stItem, long idPlan, Map<Long, String> tags) {
         Store stPlanFact = mdb.createStore("PlanFact.list")
 
         // Соберем отдельно item, отдельно конкретные факты
@@ -208,15 +211,35 @@ class Item_list extends RgmMdbUtils {
             }
         }
 
-        // Поиск Item: формируем пары фактов spelling -> translate, т.е. все варианты перевода (для списка itemIds).
-        // Список с информацией пользователя, наличие/отсутствие в указанном плане, статистикой.
-        long idUsr = getContextOrCurrentUsrId()
-        mdb.loadQuery(stPlanFact, sqlPlanFactStatistic_Items(itemIds), [usr: idUsr, plan: idPlan])
+        // --- Обработка списка itemIds
 
-        // Поиск Fact
-        mdb.loadQuery(stPlanFact, sqlPlanFactStatistic_Facts(factIds), [usr: idUsr, plan: idPlan])
+        // Формируем пары фактов spelling -> translate, т.е. все варианты перевода
+        long idUsr = getContextOrCurrentUsrId()
+        Store stFact = mdb.createStore("PlanFact.list")
+        mdb.loadQuery(stFact, sqlPlanFactStatistic_Items(itemIds), [usr: idUsr, plan: idPlan])
+
+        // Фильтруем все варианты перевода, оставляем только подхоящие по тэгам
+        Fact_list factList = mdb.create(Fact_list)
+        // Тэги фактов
+        Store stTags = factList.loadTagsByIds(stFact.getUniqueValues("factAnswer"), tags.keySet())
+        // Распределим тэги
+        factList.spreadTags(stTags, stFact)
+        // Фильтруем
+        Item_find.cleanStoreByTags(stFact, tags)
 
         //
+        stFact.copyTo(stPlanFact)
+
+
+        // --- Обработка списка factIds
+        stFact.clear()
+        mdb.loadQuery(stFact, sqlPlanFactStatistic_Facts(factIds), [usr: idUsr, plan: idPlan])
+
+        //
+        stFact.copyTo(stPlanFact)
+
+
+        // ---
         return stPlanFact
     }
 
@@ -254,9 +277,12 @@ class Item_list extends RgmMdbUtils {
         }
 
         return """ 
--- Формируем пары фактов spelling -> translate, т.е. все варианты перевода, для сущностей по списку
+-- Формируем пары фактов spelling -> translate, т.е. все варианты перевода, для сущностей по списку items
+-- Загрузим информацию об этих фактах
 select 
-    Item.id item,
+    Fact_Translate.id, 
+    
+    Fact_Spelling.item,
     
     Fact_Spelling.id factQuestion,
     Fact_Spelling.factType factTypeSpelling,
@@ -309,7 +335,7 @@ where
     Item.id in (${itemsStr})   
 
 order by
-    Item.id,
+    Fact_Spelling.item,
     Fact_Spelling.id,    
     Fact_Translate.id    
 """
@@ -322,9 +348,11 @@ order by
         }
 
         return """ 
--- Формируем пары фактов spelling -> translate, т.е. все варианты перевода, для сущностей по списку
+-- Загрузим информацию о фактах по списку facts
 select 
-    Item.id item,
+    Fact_Translate.id, 
+
+    Fact_Spelling.item,
     
     Fact_Spelling.id factQuestion,
     Fact_Spelling.factType factTypeSpelling,
@@ -377,7 +405,7 @@ where
     Fact_Translate.id in (${factsStr})   
 
 order by
-    Item.id,
+    Fact_Spelling.item,
     Fact_Spelling.id,    
     Fact_Translate.id    
 """

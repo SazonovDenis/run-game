@@ -277,15 +277,22 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         WordCacheService wordService = mdb.getModel().bean(WordCacheService)
         Store stFact = wordService.getStFact()
 
-        // Выбираем из всех слов нужное количество.
-        // Делаем большое, но конечное число попыток найти слова на нужном языке в списке всех слов.
-        // Обеспечивает не зависание процесса поиска, если нужных слов не набирается.
+        // Выбираем нужное количество случайных слов из списка всех слов.
+        // Проверяем, подходит ли выбранное слово на роль неправильного ответа: слово
+        // должно быть на нужном языке, с нужной длинной.
+        // Делаем большое, но конечное число попыток. Ограничение числа попыток обеспечивает
+        // не зависание процесса поиска, если нужных слов не набирается.
         for (int n = 0; n < VALUES_FALSE_MAX_COUNT * 100; n++) {
             // Выбираем случайное слово
             int pos = rnd.num(0, stFact.size() - 1)
-            StoreRecord rec = stFact.get(pos)
-            Map valueFalseTag = rec.getValue("tag")
-            String valueFalse = rec.getString("factValue")
+            StoreRecord recFact = stFact.get(pos)
+            Map valueFalseTag = recFact.getValue("tag")
+            String valueFalse = recFact.getString("factValue")
+
+            // Факты только определенного типа (нужны только правильные написания и переводы)
+            if (recFact.getLong("factType") != RgmDbConst.FactType_word_spelling && recFact.getLong("factType") != RgmDbConst.FactType_word_translate) {
+                continue
+            }
 
             // Языки фактов совпадают?
             String valueFalseLang = UtTag.getLangByTag(valueFalseTag)

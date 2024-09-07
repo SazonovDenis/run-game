@@ -225,25 +225,11 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             String wordLang = wordLang_1
                             addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
                         }
-                        // Добавляем два факта Fact:word-spelling-distorted
-                        key = idItem + "_word-spelling_distorted_" + word_1
-                        if (!tagValueSet.contains(key)) {
-                            tagValueSet.add(key)
-                            // Добавляем Fact
-                            genIdFact = genIdFact + 1
-                            StoreRecord recFact = stFact.add()
-                            recFact.setValue("id", genIdFact)
-                            recFact.setValue("item", idItem)
-                            recFact.setValue("factType", getFactType("word-spelling-distorted"))
-                            recFact.setValue("value", word_1)
-                            // Добавляем FactTag:word-lang
-                            String wordLang = wordLang_1
-                            addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
-                        }
 
+                        // Добавляем Fact:word-spelling-distorted
                         String word_Distorted = makeDistorted(word_1)
                         if (!word_1.equalsIgnoreCase(word_Distorted)) {
-                            key = idItem + "_word-spelling_distorted_" + word_Distorted
+                            key = idItem + "_word-spelling-distorted_" + word_Distorted
                             if (!tagValueSet.contains(key)) {
                                 tagValueSet.add(key)
                                 // Добавляем Fact

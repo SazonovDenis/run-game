@@ -3,10 +3,12 @@ from ItemSaver import ItemSaver
 from ParserDict import ParserDict
 from ParserLex import ParserLex
 from ParserStr import ParserStr
+from db import DbConst
 
 outDirName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/out/"
 # inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__En-Ru-Apresyan.dsl"
 # inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__Ru-En-Smirnitsky.dsl"
+# inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__kaz-rus_Kazakh_v1_1.dsl"
 # inFileName = "_En-Ru-Apresyan-bar.dsl"
 # inFileName = "_En-Ru-Apresyan-arm.dsl"
 # inFileName = "_En-Ru-Apresyan-test.dsl"
@@ -16,13 +18,15 @@ inFileName = "_En-Ru-Apresyan-can.dsl"
 
 ###
 itemSaver = ItemSaver()
+itemSaver.tagValue_word_lang = DbConst.TagValue.kaz
+itemSaver.tagValue_translate_direction = DbConst.TagValue.kaz_rus
 itemSaver.open(outDirName)
 
 itemPrinter = ItemPrinter()
 itemPrinter.printSamples = False
 
 parserDict = ParserDict()
-#parserDict.nextParser = itemPrinter
+# parserDict.nextParser = itemPrinter
 parserDict.nextParser = itemSaver
 
 parserLex = ParserLex()

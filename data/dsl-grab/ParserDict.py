@@ -100,6 +100,8 @@ class ParserDict(ParserBase):
                 example["text"] = example_text
 
     def postpocessData(self, token):
+        # ---
+        # Распространим тэги с верхнего уровня вниз
         translations = token["translations"]
         for translation_idx in range(0, len(translations)):
             translation = translations[translation_idx]
@@ -127,6 +129,27 @@ class ParserDict(ParserBase):
                 else:
                     # Сбросим тэги уровня
                     self.groupTags = None
+
+        # ---
+        # Добавляем Fact:word-spelling-distorted - искаженное написание
+        # Актуально для казахского языка: замена букв с хвостиками на обычные.
+        # Облегчает поиск при отсутствии/незнании казахской раскладки.
+        spelling = token["text"]
+        spelling_distorted = self.makeDistorted(spelling)
+        if spelling_distorted != spelling:
+            token["spelling_distorted"] = spelling_distorted
+
+    # Актуально для казахского языка: заменяет буквы с хвостиками на обычные.
+    # Облегчает поиск при отсутствии/незнании казахской раскладки.
+    def makeDistorted(self, word):
+        s1 = "әғқңөұүhіүқ"
+        s2 = "эгкноуухиук"
+
+        word_Distorted = word
+        for i in range(0, len(s1)):
+            word_Distorted = word_Distorted.replace(s1[i:i + 1], s2[i:i + 1])
+
+        return word_Distorted
 
     def fillPometasTemp(self, token):
         translations = token["translations"]
@@ -201,7 +224,7 @@ class ParserDict(ParserBase):
         self.token["idioms"].append(idiom)
 
     def currentStringFlush(self):
-        currentString = self.currentString.strip()
+        currentString = self.currentString.replace("\xa0", " ").strip()
         if currentString == "":
             return
 

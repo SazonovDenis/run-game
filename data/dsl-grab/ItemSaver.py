@@ -6,12 +6,17 @@ from db.DbConst import FactType, TagType, TagValue
 
 class ItemSaver(ParserBase):
     outDirName = None
+    tagValue_word_lang = None
+    tagValue_translate_direction = None
+    idStartValue = 0
+
     #
     csvItem = None
     csvFact = None
     csvItemTag = None
     csvFactTag = None
     errors = None
+
     #
     idItem = 0
     idFact = 0
@@ -24,6 +29,11 @@ class ItemSaver(ParserBase):
 
     def open(self, outDirName):
         self.outDirName = outDirName
+
+        self.idItem = self.idStartValue
+        self.idFact = self.idStartValue
+        self.idItemTag = self.idStartValue
+        self.idFactTag = self.idStartValue
 
         os.makedirs(self.outDirName, exist_ok=True)
 
@@ -56,13 +66,21 @@ class ItemSaver(ParserBase):
         self.idItem = self.idItem + 1
         self.csvItem.write(str(self.idItem) + "\t" + token["text"] + "\n")
         self.idItemTag = self.idItemTag + 1
-        self.csvItemTag.write(str(self.idItemTag) + "\t" + str(self.idItem) + "\t" + TagType.word_lang + "\t" + TagValue.eng + "\n")
+        self.csvItemTag.write(str(self.idItemTag) + "\t" + str(self.idItem) + "\t" + TagType.word_lang + "\t" + self.tagValue_word_lang + "\n")
 
         #
         self.idFact = self.idFact + 1
         self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.spelling + "\t" + token["text"] + "\n")
         self.idFactTag = self.idFactTag + 1
-        self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_lang + "\t" + TagValue.eng + "\n")
+        self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_lang + "\t" + self.tagValue_word_lang + "\n")
+
+        #
+        spelling_distorted = token.get("spelling_distorted")
+        if spelling_distorted != None:
+            self.idFact = self.idFact + 1
+            self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.spelling_distorted + "\t" + spelling_distorted + "\n")
+            self.idFactTag = self.idFactTag + 1
+            self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_lang + "\t" + self.tagValue_word_lang + "\n")
 
         #
         if token.get("transcription") != None:
@@ -94,11 +112,11 @@ class ItemSaver(ParserBase):
             self.idFact = self.idFact + 1
             self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.translate + "\t" + translation_text + "\n")
             self.idFactTag = self.idFactTag + 1
-            self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.translate_direction + "\t" + TagValue.eng_rus + "\n")
+            self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.translate_direction + "\t" + self.tagValue_translate_direction + "\n")
             self.idFactTag = self.idFactTag + 1
             self.csvFactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.dictionary + "\t" + TagValue.dictionary_full + "\n")
             #
-            idFactRoot = self.idFact
+            idFact_translation = self.idFact
 
             #
             for example in translation["examples"]:
@@ -109,4 +127,4 @@ class ItemSaver(ParserBase):
                     self.errors.write("\n")
                     continue
                 self.idFact = self.idFact + 1
-                self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + str(idFactRoot) + "\t" + FactType.example + "\t" + example_text + "\n")
+                self.csvFact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + str(idFact_translation) + "\t" + FactType.example + "\t" + example_text + "\n")

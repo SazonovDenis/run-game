@@ -6,6 +6,7 @@ class FactType:
     transcription = "1005"  # Транскрибция слова
     idiom = "1006"  # Идиоматическое выражение
     example = "1007"  # Пример использования
+    spelling_distorted = "1010"  # Альтернативное написание слова
 
 
 class TagType:

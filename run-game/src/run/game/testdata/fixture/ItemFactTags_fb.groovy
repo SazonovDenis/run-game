@@ -11,9 +11,16 @@ import java.nio.file.*
  */
 class ItemFactTags_fb extends BaseFixtureBuilder {
 
-    String dirBase = "data/dsl-grab/out/eng-rus/"
+    String dirBase = "data/dsl-grab/out/"
 
     protected void onBuild() {
+        buildIntenal(dirBase + "eng-rus/")
+        buildIntenal(dirBase + "kaz-rus/")
+    }
+
+    void buildIntenal(String dirName) {
+        println(dirName)
+
         FixtureTable fxFact = fx.table("Fact")
         FixtureTable fxFactTag = fx.table("FactTag")
         FixtureTable fxItem = fx.table("Item")
@@ -25,10 +32,10 @@ class ItemFactTags_fb extends BaseFixtureBuilder {
         Store stFact = mdb.createStore("Fact")
         Store stItemTag = mdb.createStore("ItemTag")
         Store stFactTag = mdb.createStore("FactTag")
-        utils.addFromCsv(stItem, dirBase + "/Item.csv")
-        utils.addFromCsv(stFact, dirBase + "/Fact.csv")
-        utils.addFromCsv(stItemTag, dirBase + "/ItemTag.csv")
-        utils.addFromCsv(stFactTag, dirBase + "/FactTag.csv")
+        utils.addFromCsv(stItem, dirName + "/Item.csv")
+        utils.addFromCsv(stFact, dirName + "/Fact.csv")
+        utils.addFromCsv(stItemTag, dirName + "/ItemTag.csv")
+        utils.addFromCsv(stFactTag, dirName + "/FactTag.csv")
 
         //stFact.copyTo(fxFact.getStore())
         //stFactTag.copyTo(fxFactTag.getStore())
@@ -37,15 +44,15 @@ class ItemFactTags_fb extends BaseFixtureBuilder {
 
 
         //
-        mdb.execQuery("delete from FactTag")
-        mdb.execQuery("delete from ItemTag")
-        mdb.execQuery("delete from Fact")
-        mdb.execQuery("delete from Item")
+        //mdb.execQuery("delete from FactTag")
+        //mdb.execQuery("delete from ItemTag")
+        //mdb.execQuery("delete from Fact")
+        //mdb.execQuery("delete from Item")
 
-        csvToDb("Item", "id,value")
-        csvToDb("Fact", "id,item,fact,factType,value")
-        csvToDb("ItemTag", "id,item,tagType,tagValue")
-        csvToDb("FactTag", "id,fact,tagType,tagValue")
+        csvToDb(dirName, "Item", "id,value")
+        csvToDb(dirName, "Fact", "id,item,fact,factType,value")
+        csvToDb(dirName, "ItemTag", "id,item,tagType,tagValue")
+        csvToDb(dirName, "FactTag", "id,fact,tagType,tagValue")
 
         return
 
@@ -88,9 +95,9 @@ class ItemFactTags_fb extends BaseFixtureBuilder {
         }
     }
 
-    void csvToDb(String tableName, String fields) {
+    void csvToDb(String dirName, String tableName, String fields) {
         println(tableName)
-        File file = new File(dirBase + tableName + ".csv")
+        File file = new File(dirName + tableName + ".csv")
         String dirTemp = System.getProperty("java.io.tmpdir")
         File fileTemp = new File(dirTemp + "/" + tableName + ".csv")
         Files.copy(file.toPath(), fileTemp.toPath(), StandardCopyOption.REPLACE_EXISTING)

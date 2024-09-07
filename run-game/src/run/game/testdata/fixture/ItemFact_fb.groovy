@@ -226,7 +226,9 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
                         }
 
-                        // Добавляем Fact:word-spelling-distorted
+                        // Добавляем Fact:word-spelling-distorted - искаженное написание
+                        // Актуально для казахского языка: замена букв с хвостиками на обычные.
+                        // Облегчает поиск при отсутствии/незнании казахской раскладки.
                         String word_Distorted = makeDistorted(word_1)
                         if (!word_1.equalsIgnoreCase(word_Distorted)) {
                             key = idItem + "_word-spelling-distorted_" + word_Distorted

@@ -36,10 +36,10 @@
             <RgmInputText
                 class="q-ma-sm"
 
-                :loading="filterTextLoading"
+                :loading="searchTextLoading"
 
-                v-model="filterText"
-                ref="filterText"
+                v-model="searchText"
+                ref="searchText"
 
                 placeholder="Поиск друзей"
             />
@@ -47,10 +47,10 @@
             <q-scroll-area class="q-scroll-area" style="height: calc(100% - 8rem);">
 
                 <LinkList
-                    v-if="filterTextShouldLoad"
+                    v-if="searchTextShouldLoad"
                     :usrs="usrsFind"
                     :splitLinkType="false"
-                    :messageNoItems="filterTextLoading ? '' : 'Пользователь не найден'"
+                    :messageNoItems="searchTextLoading ? '' : 'Пользователь не найден'"
                 />
 
             </q-scroll-area>
@@ -59,7 +59,7 @@
             <q-page-sticky position="bottom-right"
                            :offset="[10, 10]">
 
-                <q-btn v-if="filterText === ''"
+                <q-btn v-if="searchText === ''"
                        rounded no-caps
                        dropdown-icon=""
                        color="grey-2"
@@ -204,8 +204,8 @@ export default {
 
             frameMode: "list",
 
-            filterText: "",
-            filterTextLoading: false,
+            searchText: "",
+            searchTextLoading: false,
 
             linkText: null,
         }
@@ -213,7 +213,7 @@ export default {
 
     watch: {
 
-        async filterText(valueNow, valuePrior) {
+        async searchText(valueNow, valuePrior) {
             // Новый поиск
             this.doFind(valueNow)
         },
@@ -240,8 +240,8 @@ export default {
             }
         },
 
-        filterTextShouldLoad() {
-            return this.filterText && this.filterText.length >= 2
+        searchTextShouldLoad() {
+            return this.searchText && this.searchText.length >= 2
         }
 
     },
@@ -254,19 +254,19 @@ export default {
             }
         },
 
-        async doFind(filterText) {
+        async doFind(searchText) {
             // Ищем
             let usrsFind = []
 
             //
-            if (this.filterTextShouldLoad) {
-                let resApi = await daoApi.loadStore("m/Link/usrFind", [filterText], {
+            if (this.searchTextShouldLoad) {
+                let resApi = await daoApi.loadStore("m/Link/usrFind", [searchText], {
                     waitShow: false,
                     onRequestState: (requestState) => {
                         if (requestState === "start") {
-                            this.filterTextLoading = true
+                            this.searchTextLoading = true
                         } else {
-                            this.filterTextLoading = false
+                            this.searchTextLoading = false
                         }
                     }
                 })
@@ -279,7 +279,7 @@ export default {
                 // (параметр debounce меньше, чем время ответа сервера).
                 // Тогда сюда приходят УСТАРЕВШИЕ результаты, которые надо отбросить в надежде на то,
                 // что ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
-                if (filterText !== this.filterText) {
+                if (searchText !== this.searchText) {
                     return
                 }
             }
@@ -296,7 +296,7 @@ export default {
 
         async onChangeLink(usr) {
             if (this.frameMode === "find") {
-                this.doFind(this.filterText)
+                this.doFind(this.searchText)
             }
             this.doLoad()
 
@@ -342,13 +342,13 @@ export default {
             this.linkText = null
 
             //
-            this.filterText = ""
+            this.searchText = ""
             this.usrsFind = []
 
-            // Только после $nextTick filterText появится в DOM
+            // Только после $nextTick searchText появится в DOM
             // и тогда удастся добиться попадания фокуса на input
             await this.$nextTick()
-            this.$refs.filterText.focus()
+            this.$refs.searchText.focus()
         },
 
     },

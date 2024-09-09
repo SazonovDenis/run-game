@@ -29,9 +29,9 @@ export default {
 
     props: {
         tagsKeys: {type: Array, default: []},
-        onTagsChange: {type: Function, default: null},
-
         tags: {type: Object, default: {}},
+
+        onTagsChange: {type: Function, default: null},
     },
 
     setup() {
@@ -88,7 +88,6 @@ export default {
             }
 
             //
-            //this.updateParent("tags", tags)
             this.$emit("update:tags", tags)
         },
 

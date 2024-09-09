@@ -79,19 +79,14 @@
 
                 <TextInputText
                     ref="textInputText"
-                    :planId="planId"
-                    :items="itemsLoaded"
-
-                    :filterTags="viewSettings.filterTags"
-
-                    @itemsChange="itemsOnChange"
-                    @itemsLoading="itemsOnLoading"
+                    v-model:text="searchText"
+                    :loading="searchTextLoading"
                     @paste="onTextInputPaste"
                 />
 
                 <!-- -->
 
-                <template v-if="itemsShouldLoad">
+                <template v-if="searchTextShouldLoad">
 
                     <TaskListFilterBar
                         class="q-my-sm"
@@ -190,13 +185,13 @@
 
 
             <TaskList
-                v-if="itemsShouldLoad"
+                v-if="searchTextShouldLoad"
                 :showEdit="true"
                 :tasks="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
                 :filter="filter"
                 :actionLeftSlide="actionHide"
-                :messageNoItems="itemsIsLoading ? '' : taskListEmptyText"
+                :messageNoItems="searchTextLoading ? '' : taskListEmptyText"
             >
 
             </TaskList>
@@ -514,10 +509,7 @@ export default {
             //
             imageLoaded: null,
 
-            // Странный способ получить данные из дочернего компонента
-            itemsShouldLoad: false,
-            itemsIsLoading: false,
-
+            //
             itemsAdd: [],
             itemsDel: [],
             itemsHideAdd: [],
@@ -527,6 +519,9 @@ export default {
             hiddenCount: 0,
             hiddenCountLoaded: 0,
             notInPlanCountLoaded: 0,
+
+            searchText: "",
+            searchTextLoading: false,
 
             filterText: "",
             viewSettings: {
@@ -624,11 +619,18 @@ export default {
             deep: true
         },
 
+        async searchText(searchText, searchTextPrior) {
+            this.load(searchText)
+        },
 
     },
 
 
     computed: {
+
+        searchTextShouldLoad() {
+            return this.searchText && this.searchText.length >= 2
+        },
 
         planId() {
             if (this.isPlanExisting()) {
@@ -715,15 +717,46 @@ export default {
 
     methods: {
 
+        async load(searchText) {
+            // Новый поиск
+            let items = []
+
+            //
+            if (this.searchTextShouldLoad) {
+                let resApi = await daoApi.loadStore("m/Item/findItems", [searchText, this.planId, this.filterTags], {
+                    waitShow: false,
+                    onRequestState: (requestState) => {
+                        if (requestState === "start") {
+                            this.searchTextLoading = true
+                        } else {
+                            this.searchTextLoading = false
+                        }
+                    }
+                })
+
+                // Нашли
+                items = resApi.records
+
+                // Внешние условия поменялись - отбросим результаты.
+                // Это важно, если пользователь печатает чаще, чем приходит ответ от сервера,
+                // (параметр debounce меньше, чем время ответа сервера).
+                // Тогда сюда приходят УСТАРЕВШИЕ результаты, которые надо отбросить в надежде на то,
+                // что продолжающийся ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
+                if (searchText !== this.searchText) {
+                    return
+                }
+            }
+
+            // Заполним список
+            this.itemsLoaded = items
+        },
+
         isScreenWide() {
             return window.innerWidth > 700
         },
 
         shouldShowAddAll() {
-            // todo передалать по человечески: ищем сами, а не поручаем textInputText
-            let filterText = this.$refs.textInputText?.filterText
-
-            if ((filterText?.split(" ").length > 5) && (this.itemsLoaded.length > 5)) {
+            if ((this.searchText?.split(" ").length > 5) && (this.itemsLoaded.length > 5)) {
                 return true
             }
 
@@ -750,20 +783,8 @@ export default {
                 delete filterTags["kaz"]
             }
 
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            // todo передалать по человечески: ищем сами, а не поручаем textInputText
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            ////////////////////////////
-            this.$refs.textInputText.load(this.$refs.textInputText.filterText)
+            //this.$refs.textInputText.load(this.$refs.textInputText.filterText)
+            this.load(this.searchText)
         },
 
         filter(item) {
@@ -944,13 +965,7 @@ export default {
             this.itemAddMenuClick(item, false)
         },
 
-        itemsOnLoading(itemsIsLoading) {
-            this.itemsIsLoading = itemsIsLoading
-        },
-
-        itemsOnChange(itemsShouldLoad) {
-            this.itemsShouldLoad = itemsShouldLoad
-
+        itemsOnChange() {
             // Ранее сформированные списки с разницей очищаем, ведь ищем заново
             if (this.immediateSaveMode) {
                 this.itemsAdd = []
@@ -1673,7 +1688,7 @@ export default {
                 // Смена только режим просмотра или еще и режима ввода
                 if (this.isEditModeChanged(this.frameMode, frameMode)) {
                     // Фильтр очищаем, ведь ищем заново
-                    this.filterText = ""
+                    this.searchText = ""
 
                     // Ранее загруженные слова очищаем, ведь ищем заново
                     this.itemsLoaded.length = 0
@@ -1685,7 +1700,6 @@ export default {
                     // Уведомим кому надо.
                     // Дочерние элементы почистят свои дополнительные данные.
                     // Например, ввод по фото - очистит расположение найденных слов на фото.
-                    // Ввод по текту - очистит поисковое слово.
                     ctx.eventBus.emit('itemsCleared')
 
                     // Уведомим кому надо.

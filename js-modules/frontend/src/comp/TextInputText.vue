@@ -1,14 +1,15 @@
 <template>
 
     <RgmInputText
-        :inputType="getInputType()"
         class="q-ma-sm rgm-item-grow"
-        :loading="filterTextLoading"
         placeholder="Поиск в словаре"
 
-        v-model="filterText"
+        :modelValue="text"
+        :loading="loading"
+        :inputType="getInputType()"
+        @update:modelValue="updateParent('text', $event)"
 
-        ref="filterText"
+        ref="text"
     >
 
         <!-- Если родительский компонент захочет поставить что-то в конец -->
@@ -22,43 +23,19 @@
 
 <script>
 
-import {daoApi} from "../dao"
-import ctx from "../gameplayCtx"
 import RgmInputText from "./RgmInputText"
 
 export default {
+
+    name: "TextInputText",
 
     components: {
         RgmInputText,
     },
 
     props: {
-        planId: null,
-        items: {type: Array, default: []},
-        filterTags: {}
-    },
-
-    data() {
-        return {
-            filterText: "",
-            filterTextLoading: false,
-        }
-    },
-
-    computed: {
-
-        filterTextShouldLoad() {
-            return this.filterText && this.filterText.length >= 2
-        }
-
-    },
-
-    watch: {
-
-        async filterText(filterTextNow, filterTextPrior) {
-            this.load(filterTextNow)
-        },
-
+        text: "",
+        loading: false,
     },
 
     methods: {
@@ -71,77 +48,26 @@ export default {
             }
         },
 
-        onItemsCleared() {
-            // Фильтр очищаем, ведь ищем заново
-            this.filterText = ""
-        },
-
         doFocus() {
             // Только через setTimeout удается добиться попадания фокуса на input,
             // т.к. появлению нашего компонента в DOM мешают async-вызовы у родителя,
             // из-за чего после нашего mounted родительский компонент еще не прорисован.
             // Если async-загрузка родителя будет очень долгой, то и 500мс не хватит!
-            setTimeout(this.setFocusFilterText, 500);
+            setTimeout(this.setFocustext, 500);
         },
 
-        setFocusFilterText() {
-            this.$refs.filterText?.focus()
+        setFocustext() {
+            this.$refs.text?.focus()
         },
 
-        async load(filterTextNow) {
-            // Новый поиск
-            let items = []
-
-            //
-            if (this.filterTextShouldLoad) {
-                let resApi = await daoApi.loadStore("m/Item/findItems", [filterTextNow, this.planId, this.filterTags], {
-                    waitShow: false,
-                    onRequestState: (requestState) => {
-                        if (requestState === "start") {
-                            this.filterTextLoading = true
-                        } else {
-                            this.filterTextLoading = false
-                        }
-
-                        // Уведомим родителя
-                        this.$emit("itemsLoading", this.filterTextLoading)
-                    }
-                })
-
-                // Нашли
-                items = resApi.records
-
-                // Внешние условия поменялись - отбросим результаты.
-                // Это важно, если пользователь печатает чаще, чем приходит ответ от сервера,
-                // (параметр debounce меньше, чем время ответа сервера).
-                // Тогда сюда приходят УСТАРЕВШИЕ результаты, которые надо отбросить в надежде на то,
-                // что продолжающийся ввод пользователя иницирует запрос к сервру с АКТУАЛЬНЫМИ параметрами.
-                if (filterTextNow !== this.filterText) {
-                    return
-                }
-            }
-
-            // Заполним родительский список
-            this.items.length = 0
-            for (let item of items) {
-                this.items.push(item)
-            }
-
-            // Уведомим родителя
-            this.$emit("itemsChange", this.filterTextShouldLoad)
-        }
+        updateParent(valueModelName, value) {
+            this.$emit("update:" + valueModelName, value)
+        },
 
     },
 
     async mounted() {
-        ctx.eventBus.on('itemsCleared', this.onItemsCleared)
-
-        //
         this.doFocus()
-    },
-
-    unmounted() {
-        ctx.eventBus.off('itemsCleared', this.onItemsCleared)
     },
 
 }

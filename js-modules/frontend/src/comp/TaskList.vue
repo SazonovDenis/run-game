@@ -1,11 +1,11 @@
 <template>
 
-    <q-list v-if="tasks.length > 0" class="task-list">
+    <q-list v-if="tasks.length > 0" class="rgm-task-list">
 
         <template v-for="(taskItem, index) in tasks">
 
             <q-slide-item
-                class="task-item-container task-item-container-border"
+                class="rgm-task-item-container rgm-task-item-container-border"
                 v-if="isItemShown(taskItem)"
                 @left="onLeft($event, taskItem)"
                 @right="onRight($event, taskItem)"
@@ -62,7 +62,7 @@
         Элемент для последнего "пустого" элемента.
         Чтобы кнопки редактирования списка не загораживали последнюю строку
         -->
-        <q-item v-if="showLastItemPadding" class="task-item-container">
+        <q-item v-if="showLastItemPadding" class="rgm-task-item-container">
             <TaskItem
                 style="height: 3em; border-top: none;"
                 :item="{question:{},answer:{}}"

@@ -54,19 +54,19 @@
 
 /* Для списка заданий */
 
-.task-list {
+.rgm-task-list {
   flex-flow: wrap !important;
   display: flex !important;
   justify-content: center;
 }
 
-.task-item-container {
+.rgm-task-item-container {
   min-width: 15rem;
   _max-width: 35rem;
   flex-grow: 1;
 }
 
-.task-item-container-border {
+.rgm-task-item-container-border {
   border-right: 1px solid rgba(100, 100, 100, 0.3);
   border-left: 1px solid rgba(100, 100, 100, 0.3);
 }

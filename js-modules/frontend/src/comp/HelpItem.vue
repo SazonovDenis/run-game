@@ -43,7 +43,9 @@ export default {
         },
 
         text() {
-            return stringDat[this.helpValueKey]
+            // Добавляем пробелы в конец, чтобы последнее слово не перекрыло
+            // кнопку "Ок", которая находится на одном уровне с последней срокой.
+            return stringDat[this.helpValueKey] + "&nbsp;&nbsp;&nbsp;"
         },
 
     },

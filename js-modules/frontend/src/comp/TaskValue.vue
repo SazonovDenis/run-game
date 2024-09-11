@@ -13,7 +13,11 @@
                 </div>
 
                 <div class="task-sound q-ml-xs">
-                    <template v-if="soundPlaying">
+                    <template v-if="soundLoading">
+                        <q-spinner color="orange-10" :thickness="4"
+                                   size="1em"/>
+                    </template>
+                    <template v-else-if="soundPlaying">
                         <q-icon name="speaker-on" class="q-pb-xs" color="orange-10"
                                 size="0.9em"/>
                     </template>
@@ -57,7 +61,7 @@
 
 <script>
 
-import utils from '../utils'
+import AudioTask from "./AudioTask"
 import dbConst from "../dao/dbConst"
 
 
@@ -81,75 +85,37 @@ export default {
 
     data() {
         return {
-            taskSoundLoaded: false,
+            soundLoading: false,
             soundPlaying: false,
         }
     },
 
     watch: {
-        task: function() {
-            this.taskSoundLoaded = false
+        task: function(task) {
+            this.audio.setTask(task)
         }
     },
 
     methods: {
 
         play() {
-            if (this.canPlaySound) {
-                try {
-                    this.audio.play()
-                } catch(e) {
-                    console.error(e)
-                }
-            } else {
-                if (!this.taskSoundLoaded) {
-                    this.loadAudioTask()
-                }
-            }
-        },
-
-        loadAudioTask() {
-            // Останавливаем текущий звук
-            try {
-                this.audio.pause()
-            } catch(e) {
-                console.error(e)
-            }
-
-            // Новый звук
-            this.taskSoundLoaded = false
-            this.audio.src = utils.getAudioSrc(this.task)
-        },
-
-        onSoundLoaded() {
-            this.taskSoundLoaded = true
-
-            // Автоматически играем звук, если тип попроса это разрешает (тап вопроса - правописание или звук)
-            if (this.canPlaySoundAuto()) {
+            if (this.taskSoundIsNotSecret) {
                 this.audio.play()
             }
         },
 
-        onSoundError() {
-            this.taskSoundLoaded = false
-        },
+        onSoundState(state, event) {
+            this.soundLoading = state.soundLoading
+            this.soundPlaying = state.soundPlaying
 
-        onSoundPlay() {
-            this.soundPlaying = true
+            if (event === "loaded") {
+                // Автоматически играем звук, если тип вопроса это разрешает
+                // (т.е. тип вопроса - правописание или звук)
+                if (this.taskSoundIsNotSecret) {
+                    this.audio.play()
+                }
+            }
         },
-
-        onSoundPause() {
-            this.soundPlaying = false
-        },
-
-        canPlaySoundAuto() {
-            return (
-                this.showTaskHint ||
-                this.task.factType === dbConst.FactType_word_sound ||
-                this.task.factType === dbConst.FactType_word_spelling
-            )
-        },
-
 
     },
 
@@ -167,33 +133,24 @@ export default {
             )
         },
 
-        canPlaySound() {
-            return (
-                this.task != null &&
-                this.task.valueSound != null &&
-                this.taskSoundLoaded &&
-                this.canPlaySoundAuto()
-            )
-        },
+        taskSoundIsNotSecret() {
+            let taskSoundIsNotSecret =
+                this.task.factType === dbConst.FactType_word_sound ||
+                this.task.factType === dbConst.FactType_word_spelling
+
+            return this.showTaskHint || taskSoundIsNotSecret
+        }
 
     },
 
     mounted() {
-        this.audio = new Audio()
-        this.audio.addEventListener('loadeddata', this.onSoundLoaded, false)
-        this.audio.addEventListener('error', this.onSoundError, false)
-        this.audio.addEventListener('play', this.onSoundPlay, false)
-        this.audio.addEventListener('pause', this.onSoundPause, false)
+        this.audio = new AudioTask(this.task)
+        this.audio.onSoundState = this.onSoundState
     },
 
     unmounted() {
-        if (this.audio != null) {
-            this.audio.removeEventListener('loadeddata', this.onSoundLoaded)
-            this.audio.removeEventListener('error', this.onSoundError)
-            this.audio.removeEventListener('play', this.onSoundPlay)
-            this.audio.removeEventListener('pause', this.onSoundPause)
-            this.audio = null
-        }
+        this.audio.destroy()
+        this.audio = null
     },
 
 }

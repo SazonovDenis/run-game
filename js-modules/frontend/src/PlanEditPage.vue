@@ -488,12 +488,12 @@ export default {
     },
 
     data() {
-        let actionItemLoadFull = {
+        let actionItemShowFull = {
             outline: false,
             icon: "external-link",
             color: "red-10",
-            hidden: this.itemLoadFullMenuHidden,
-            onClick: this.itemLoadFull,
+            hidden: this.itemShowFullMenuHidden,
+            onClick: this.itemShowFull,
         };
 
         let actionHide = {
@@ -553,12 +553,12 @@ export default {
                 showHidden: false,
             },
 
-            actionItemLoadFull: actionItemLoadFull,
+            actionItemLoadFull: actionItemShowFull,
             actionHide: actionHide,
             actionDelete: actionDelete,
 
             itemsMenu_modeAddFact: [
-                actionItemLoadFull,
+                actionItemShowFull,
                 {
                     label: "Знаю",
                     outline: this.itemHideMenuOutline,
@@ -577,7 +577,7 @@ export default {
             ],
 
             itemsMenu_modeEdit: [
-                actionItemLoadFull,
+                actionItemShowFull,
                 actionHide,
                 actionDelete,
             ],
@@ -588,7 +588,7 @@ export default {
             ],
 
             itemsMenu_modeViewItemsDel: [
-                actionItemLoadFull,
+                actionItemShowFull,
                 {
                     label: "Знаю",
                     outline: this.itemHideMenuOutline,
@@ -617,7 +617,7 @@ export default {
             ],
 
             itemsMenu_modeViewHide: [
-                actionItemLoadFull,
+                actionItemShowFull,
                 {
                     label: "Знаю",
                     outline: true,
@@ -757,14 +757,15 @@ export default {
     methods: {
 
         async loadItem(itemId, filterTags) {
+            this.itemLoadedItem = {}
+            this.itemLoadedTask = []
+
+            //
             let resApi = await daoApi.loadStore("m/Item/loadItem", [itemId, this.planId, filterTags], {})
 
             //
             this.itemLoadedItem = resApi.item.records[0]
             this.itemLoadedTask = resApi.tasks.records
-
-            //
-            this.setFrameMode("viewItem")
         },
 
         async load(searchText, filterTags) {
@@ -1211,11 +1212,13 @@ export default {
 
         /* -------------------------------- */
 
-        itemLoadFull(item) {
-            this.loadItem(item.item, this.viewSettings.filterTags)
+        async itemShowFull(item) {
+            await this.loadItem(item.item, this.viewSettings.filterTags)
+            //
+            this.setFrameMode("viewItem")
         },
 
-        itemLoadFullMenuHidden(item) {
+        itemShowFullMenuHidden(item) {
             return !item.tag.hasDictionaryFull
         },
 

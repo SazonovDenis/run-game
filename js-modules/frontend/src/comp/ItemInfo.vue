@@ -18,7 +18,7 @@
                         [{{ item.valueTranscription }}]
                     </div>
 
-                    <div class="task-sound q-ml-sm">
+                    <div class="task-sound q-ml-sm q-mt-xs">
 
                         <div class="task-sound q-ml-xs">
                             <template v-if="soundLoading">

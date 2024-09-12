@@ -47,12 +47,13 @@ export default {
     data() {
         return {modelValueInternal: this.modelValue}
     },
+
     watch: {
 
         modelValue(valueNow, valuePrior) {
             // Использование атрибута clearable в q-input даёт кнопку "стереть",
             // которая не возвращает фокус в инпут - вернем сами
-            if (valueNow === null) {
+            if (!valueNow) {
                 this.setFocusInputText()
             }
         }

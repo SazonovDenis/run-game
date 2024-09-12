@@ -39,6 +39,9 @@
   padding-left: 1em;
 }
 
+.rgm-task-value-example-spelling {
+  font-weight: bold;
+}
 
 .rgm-link {
   text-decoration: underline;

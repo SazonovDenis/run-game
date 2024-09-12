@@ -113,7 +113,7 @@
                                      class="rgm-task-example q-my-sm"
                                      @click.stop="showValueExample(task, false)"
                                 >
-                                    {{ valueExample }}
+                                    <span v-html="makeValueExample(valueExample)"/>
                                 </div>
                             </q-item-label>
 
@@ -189,6 +189,11 @@ export default {
             }
         },
 
+        makeValueExample(valueExample) {
+            let valueSpellingWrapped = "<span class='rgm-task-value-example-spelling'>" + this.item.valueSpelling + "</span>"
+            return valueExample.replace("~", valueSpellingWrapped)
+        },
+
         getClass_taskAnswer(task) {
             if (task.showValueExample) {
                 return "task-answer-padding-top"
@@ -239,11 +244,5 @@ export default {
 .item-info-example {
     margin-top: -1.5em;
 }
-
-/*
-.task-example-first {
-    _margin-top: 0;
-}
-*/
 
 </style>

@@ -232,7 +232,7 @@
                 :planId="planId"
                 :items="itemsLoaded"
                 :itemsMenu="itemsMenu_modeAddFact"
-                @itemsChange="itemsOnChange"
+                @itemsChange="clearChangedItems"
                 @itemClick="itemOnClick"
                 @fileChoose="clickFileChoose"
             />
@@ -544,7 +544,7 @@ export default {
             notInPlanCountLoaded: 0,
 
             searchText: "",
-            searchTextLoading: false,
+            searchTextLoadingCounter: 0,
 
             filterText: "",
             viewSettings: {
@@ -687,6 +687,10 @@ export default {
             }
         },
 
+        searchTextLoading() {
+            return this.searchTextLoadingCounter !== 0
+        },
+
         title() {
             if (this.isModeView()) {
                 if (this.frameMode === "viewItem") {
@@ -782,9 +786,9 @@ export default {
                     waitShow: false,
                     onRequestState: (requestState) => {
                         if (requestState === "start") {
-                            this.searchTextLoading = true
+                            this.searchTextLoadingCounter = this.searchTextLoadingCounter + 1
                         } else {
-                            this.searchTextLoading = false
+                            this.searchTextLoadingCounter = this.searchTextLoadingCounter - 1
                         }
                     }
                 })
@@ -1020,8 +1024,10 @@ export default {
             this.itemAddMenuClick(item, false)
         },
 
-        itemsOnChange() {
-            // Ранее сформированные списки с разницей очищаем, ведь ищем заново
+        /**
+         * Ранее сформированные списки с разницей очищаем
+         */
+        clearChangedItems() {
             if (this.immediateSaveMode) {
                 this.itemsAdd = []
                 this.itemsDel = []
@@ -1764,7 +1770,6 @@ export default {
 
                     // Ранее загруженные слова очищаем, ведь ищем заново
                     this.itemsLoaded.length = 0
-                    this.itemsOnChange()
 
                     // Сменился не только режим просмотра, но и режим ввода
                     this.editMode = frameMode
@@ -1779,6 +1784,8 @@ export default {
                     ctx.eventBus.emit('editModeChanged', frameMode)
                 }
 
+                // Ранее сформированные списки с разницей очищаем
+                this.clearChangedItems()
 
                 // Если сейчас не просмотр - то вернемся потом в просмотр
                 if (!this.isModeView()) {

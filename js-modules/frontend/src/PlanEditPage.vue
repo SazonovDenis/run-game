@@ -1289,7 +1289,11 @@ export default {
         },
 
         itemDeleteMenuColor(taskItem) {
-            return "grey-8"
+            if (this.itemIsInPlan(taskItem)) {
+                return "grey-8"
+            } else {
+                return "green-7"
+            }
         },
 
         itemDeleteMenuClick(taskItem) {

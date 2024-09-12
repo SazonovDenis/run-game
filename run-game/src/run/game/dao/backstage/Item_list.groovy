@@ -128,7 +128,7 @@ class Item_list extends RgmMdbUtils {
 
 
     @DaoMethod
-    DataBox loadItem(long idItem, long idPlan, Map tags) {
+    DataBox loadItem(long idItem, long idPlan, Map<Long, String> tags) {
         // NB: Тут написано = tags.keySet().toList() а не просто = tags.keySet(),
         // т.к. почему-то в случае просто tags.keySet() у возавращенного объекта
         // метод add() выкидывает Exception. Не стал разбираться в чем дело.
@@ -145,7 +145,27 @@ class Item_list extends RgmMdbUtils {
         StoreRecord recItem = mdb.createStoreRecord("ItemInfo.item")
         Store stTasks = mdb.createStore("ItemInfo.task")
 
-        //
+        // Сначала написание (чтобы получить factQuestion)
+        long factQuestionId = 0
+        for (StoreRecord recRaw : stFactRaw) {
+            long factType = recRaw.getLong("factType")
+            long factId = recRaw.getLong("id")
+
+            // Данные по слову
+            if (factType == RgmDbConst.FactType_word_spelling) {
+                //
+                setFlatRecord_value(recRaw, recItem)
+                //
+                factQuestionId = factId
+            }
+        }
+
+        // Защита от дурака
+        if (factQuestionId == 0) {
+            throw new Exception("factQuestionId == 0")
+        }
+
+        // Переводы, примеры, транскрипция, звук
         for (StoreRecord recRaw : stFactRaw) {
             String dictionary = ""
             Map tag = recRaw.get("tag") as Map
@@ -157,15 +177,13 @@ class Item_list extends RgmMdbUtils {
             long factId = recRaw.getLong("id")
 
 
-            // Данные по слову
+            // Данные по слову (из полного и краткого словарей)
             if (dictionary.equals(RgmDbConst.TagValue_dictionary_base) &&
-                    (factType == RgmDbConst.FactType_word_translate ||
-                            factType == RgmDbConst.FactType_word_idiom)) {
+                    factType == RgmDbConst.FactType_word_translate) {
                 setFlatRecord_valueList(recRaw, recItem)
             }
 
-            if (factType == RgmDbConst.FactType_word_spelling ||
-                    factType == RgmDbConst.FactType_word_transcription ||
+            if (factType == RgmDbConst.FactType_word_transcription ||
                     factType == RgmDbConst.FactType_word_sound
             ) {
                 setFlatRecord_value(recRaw, recItem)
@@ -176,27 +194,45 @@ class Item_list extends RgmMdbUtils {
             }
 
 
-            // Данные по переводам слова
+            // Данные по переводам слова (из полного словаря)
             if (!dictionary.equals(RgmDbConst.TagValue_dictionary_base) &&
                     factType == RgmDbConst.FactType_word_translate) {
                 //
                 StoreRecord recTask = stTasks.add()
                 recTask.setValue("id", factId)
+                recTask.setValue("factQuestion", factQuestionId)
+                recTask.setValue("factAnswer", factId)
                 //
                 setFlatRecord_value(recRaw, recTask)
             }
         }
 
-        // Данные по примерам к переводам
+        // Примеры к переводам
         StoreIndex idxTasks = stTasks.getIndex("id")
         for (StoreRecord recRaw : stFactRaw) {
             long factType = recRaw.getLong("factType")
             long factOwnerId = recRaw.getLong("fact")
 
+            //
             if (factType == RgmDbConst.FactType_word_example) {
                 StoreRecord recTask = idxTasks.get(factOwnerId)
                 setFlatRecord_valueList(recRaw, recTask)
             }
+        }
+
+
+        // --- Наполним данными о свойствах плана
+        Set factIds = stFactRaw.getUniqueValues("id")
+        long idUsr = getContextOrCurrentUsrId()
+        Store stFactInfo = mdb.loadQuery(sqlPlanFactStatistic_Facts1(factIds), [usr: idUsr, plan: idPlan, factQuestion: factQuestionId])
+        StoreIndex idxFactInfo = stFactInfo.getIndex("id")
+        //
+        for (StoreRecord recTask : stTasks) {
+            StoreRecord recFactInfo = idxFactInfo.get(recTask.getLong("factAnswer"))
+            recTask.setValue("isHidden", recFactInfo.getValue("isHidden"))
+            recTask.setValue("isKnownGood", recFactInfo.getValue("isKnownGood"))
+            recTask.setValue("isKnownBad", recFactInfo.getValue("isKnownBad"))
+            recTask.setValue("isInPlan", recFactInfo.getValue("isInPlan"))
         }
 
 
@@ -613,6 +649,52 @@ order by
     Fact_Spelling.item,
     Fact_Spelling.id,    
     Fact_Translate.id    
+"""
+    }
+
+    protected String sqlPlanFactStatistic_Facts1(Collection facts) {
+        String factsStr = "0"
+        if (facts.size() > 0) {
+            factsStr = facts.join(",")
+        }
+
+        return """ 
+-- Загрузим информацию о фактах по списку facts
+select 
+    Fact.id, 
+    Fact.item,
+    
+    UsrFact.isHidden,
+    UsrFact.isKnownGood,
+    UsrFact.isKnownBad,
+    (case when PlanFact.id is null then 0 else 1 end) isInPlan,
+    
+    coalesce(Cube_UsrFact.ratingTask, 0) ratingTask,
+    coalesce(Cube_UsrFact.ratingQuickness, 0) ratingQuickness
+
+from    
+    Fact
+    -- Информация о наличии пары фактов в указанном плане
+    left join PlanFact on (
+        PlanFact.plan = :plan and
+        PlanFact.factQuestion = :factQuestion and 
+        PlanFact.factAnswer = Fact.id 
+    )
+    -- Информация пользователя о паре фактов
+    left join UsrFact on (
+        UsrFact.usr = :usr and
+        UsrFact.factQuestion = :factQuestion and 
+        UsrFact.factAnswer = Fact.id 
+    )
+    -- Статистическая информация о паре фактов
+    left join Cube_UsrFact on (
+        Cube_UsrFact.usr = :usr and 
+        Cube_UsrFact.factQuestion = :factQuestion and 
+        Cube_UsrFact.factAnswer = Fact.id
+    )
+    
+where
+    Fact.id in (${factsStr})   
 """
     }
 

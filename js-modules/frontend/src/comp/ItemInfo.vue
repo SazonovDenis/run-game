@@ -7,7 +7,7 @@
 
             <div>
 
-                <div class="row _q-my-sm">
+                <div class="row">
 
                     <div class="rgm-task-question">
                         {{ item.valueSpelling }}
@@ -42,7 +42,7 @@
                 </div>
 
 
-                <div class="row q-my-sm">
+                <div class="row q-mt-xs">
 
                     <template v-for="(translate, index) of item.valueTranslate">
                         <div v-if="index!==0" class="q-mx-sm">&bull;</div>
@@ -92,7 +92,7 @@
 
                                 <template v-for="menuItem in itemMenu">
 
-                                    <ItemMenuItem :item="item" :menuItem="menuItem"/>
+                                    <ItemMenuItem :item="task" :menuItem="menuItem"/>
 
                                 </template>
 
@@ -109,7 +109,7 @@
                         <q-item-section>
 
                             <q-item-label class="q-mt-xs">
-                                <div v-for="(valueExample, index) in task.valueExample"
+                                <div v-for="(valueExample) in task.valueExample"
                                      class="rgm-task-example q-my-sm"
                                      @click.stop="showValueExample(task, false)"
                                 >

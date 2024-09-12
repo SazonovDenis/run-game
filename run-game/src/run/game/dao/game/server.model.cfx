@@ -168,6 +168,17 @@
         Поля, используемые в списке переводов карточке слова.
         -->
 
+        <!-- Факт -->
+        <field name="factQuestion" parent="Fact/ref"/>
+        <field name="factAnswer" parent="Fact/ref"/>
+
+        <!-- Свойства факта (от пользователя) -->
+        <field name="isHidden" parent="UsrFact/isHidden"/>
+        <field name="isKnownGood" parent="UsrFact/isKnownGood"/>
+        <field name="isKnownBad" parent="UsrFact/isKnownBad"/>
+        <field name="isInPlan" parent="boolean"/>
+
+        <!-- Значения -->
         <field name="valueTranslate" parent="string"/>
         <field name="valueExample" parent="object"/>
 

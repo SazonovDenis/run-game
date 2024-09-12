@@ -14,8 +14,8 @@
         -->
         <field name="task" parent="Task/ref" title="На какое задание"/>
 
-        <field name="factType" parent="FactType/ref"/>
-        <field name="value" parent="string" size="500" title="Значение"/>
+        <field name="factType" parent="Fact/factType"/>
+        <field name="factValue" parent="Fact/factValue" title="Значение"/>
     </domain>
 
 

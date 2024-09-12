@@ -14,7 +14,7 @@
 
         <q-item-section class="task-item-task-question">
 
-            <q-item-label :class="'row question ' + getItemClass(item)"
+            <q-item-label :class="'row rgm-task-question ' + getItemClass(item)"
                           v-if="isFactFirstAnswer(item, index)">
 
                 <TaskValue v-if="showTaskData"
@@ -36,7 +36,7 @@
 
                 <template v-if="maskAnswer === true && item.maskAnswer">
 
-                    <div class="answer">
+                    <div class="rgm-task-answer">
                         * * * * * * * *
                     </div>
 
@@ -45,12 +45,12 @@
                 <template v-else>
 
                     <TaskValue v-if="showTaskData"
-                               class="answer"
+                               class="rgm-task-answer"
                                :task="item.taskAnswer"
                                :doShowText="true"/>
 
                     <TaskValue v-else
-                               class="answer"
+                               class="rgm-task-answer"
                                :task="item.answer"
                                :doShowText="true"/>
 
@@ -67,44 +67,9 @@
 
             <div class="text-grey-8 q-gutter-xs">
 
-                <q-btn v-if="item.tag.hasDictionaryFull"
-                       no-caps dense round unelevated
-                       size="1.2em"
-                       :outlined="true"
-                       icon="more-h"
-                       @click.stop="findItemFull(item)"
-                />
-
                 <template v-for="menuItem in itemMenu">
 
-                    <template v-if="menuItem.label">
-
-                        <q-btn v-if="menuItem.hidden !== true"
-                               no-caps dense rounded unelevated
-                               size="0.9em"
-                               :label="menuItem.label"
-                               :_flat="!itemMenuOutline(menuItem, item)"
-                               :outline="itemMenuOutline(menuItem, item)"
-                               :icon="itemMenuIcon(menuItem, item)"
-                               :color="itemMenuColor(menuItem, item)"
-                               :text-color="itemMenuTextColor(menuItem, item)"
-                               @click.stop="itemMenuClick(menuItem, item)"
-                        />
-
-                    </template>
-
-                    <template v-else>
-
-                        <q-btn v-if="!itemMenuHidden(menuItem, item)"
-                               dense round
-                               size="1.2em"
-                               :flat="!itemMenuOutline(menuItem, item)"
-                               :outline="itemMenuOutline(menuItem, item)"
-                               :icon="itemMenuIcon(menuItem, item)"
-                               :color="itemMenuColor(menuItem, item)"
-                               @click.stop="itemMenuClick(menuItem, item)"
-                        />
-                    </template>
+                    <ItemMenuItem :item="item" :menuItem="menuItem"/>
 
                 </template>
 
@@ -154,6 +119,7 @@ import utils from "../utils"
 import TaskValue from "./TaskValue"
 import TaskAnswerResult from "./TaskAnswerResult"
 import RaitingValue from "./RaitingValue"
+import ItemMenuItem from "./ItemMenuItem"
 
 
 /**
@@ -164,7 +130,7 @@ export default {
     name: "TaskItem",
 
     components: {
-        TaskValue, TaskAnswerResult, RaitingValue,
+        ItemMenuItem, TaskValue, TaskAnswerResult, RaitingValue,
     },
 
     setup() {
@@ -221,9 +187,11 @@ export default {
             }
         },
 
-        findItemFull(item) {
-            console.info("findItemFull: " + item)
-        },
+        /*
+                findItemFull(item) {
+                    console.info("findItemFull: " + item)
+                },
+        */
 
         playQuestion() {
             this.$refs.taskValue.play()
@@ -249,74 +217,6 @@ export default {
             return classStr
         },
 
-        itemMenuOutline(menuItem, item) {
-            if (menuItem.outline) {
-                if (menuItem.outline instanceof Function) {
-                    return menuItem.outline(item)
-                } else {
-                    return menuItem.outline
-                }
-            } else {
-                return false
-            }
-
-        },
-
-        itemMenuIcon(menuItem, item) {
-            if (menuItem.icon) {
-                if (menuItem.icon instanceof Function) {
-                    return menuItem.icon(item)
-                } else {
-                    return menuItem.icon
-                }
-            } else {
-                return undefined
-            }
-        },
-
-        itemMenuColor(menuItem, item) {
-            if (menuItem.color) {
-                if (menuItem.color instanceof Function) {
-                    return menuItem.color(item)
-                } else {
-                    return menuItem.color
-                }
-            } else {
-                return "primary"
-            }
-
-        },
-
-        itemMenuTextColor(menuItem, item) {
-            if (menuItem.textColor) {
-                if (menuItem.textColor instanceof Function) {
-                    return menuItem.textColor(item)
-                } else {
-                    return menuItem.textColor
-                }
-            } else {
-                return "black"
-            }
-
-        },
-
-        itemMenuHidden(menuItem, item) {
-            if (menuItem.hidden) {
-                if (menuItem.hidden instanceof Function) {
-                    return menuItem.hidden(item)
-                } else {
-                    return menuItem.hidden
-                }
-            } else {
-                return false
-            }
-        },
-
-        itemMenuClick(menuItem, item) {
-            if (menuItem.onClick) {
-                menuItem.onClick(item)
-            }
-        },
 
         getClassItemRow(task, index) {
             if (index === 0 || this.isFactFirstAnswer(task, index)) {
@@ -349,17 +249,6 @@ export default {
 </script>
 
 <style scoped>
-
-.question {
-    font-size: 1.2em;
-    color: #202020;
-}
-
-.answer {
-    font-size: 1.0em;
-    color: #09468e;
-    font-style: italic;
-}
 
 .item-is-hidden {
     color: rgba(20, 20, 150, 0.8);

@@ -7,8 +7,8 @@
 
         <field name="itemValue" parent="string"/>
 
-        <field name="factValueQuestion" parent="Fact/value"/>
-        <field name="factValueAnswer" parent="Fact/value"/>
+        <field name="factValueQuestion" parent="Fact/factValue"/>
+        <field name="factValueAnswer" parent="Fact/factValue"/>
 
         <field name="factTypeQuestion" parent="Fact/factType"/>
         <field name="factTypeAnswer" parent="Fact/factType"/>

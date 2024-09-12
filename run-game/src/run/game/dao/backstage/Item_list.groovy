@@ -1,6 +1,7 @@
 package run.game.dao.backstage
 
 import groovy.transform.*
+import jandcode.commons.*
 import jandcode.core.dao.*
 import jandcode.core.dbm.std.*
 import jandcode.core.store.*
@@ -126,8 +127,139 @@ class Item_list extends RgmMdbUtils {
     }
 
 
+    @DaoMethod
+    DataBox loadItem(long idItem, long idPlan, Map tags) {
+        // NB: Тут написано = tags.keySet().toList() а не просто = tags.keySet(),
+        // т.к. почему-то в случае просто tags.keySet() у возавращенного объекта
+        // метод add() выкидывает Exception. Не стал разбираться в чем дело.
+        List<Long> tagTypes = tags.keySet().toList()
+        tagTypes.add(RgmDbConst.TagType_dictionary)
+
+
+        // --- Загружаем все факты для idItem
+        Fact_list lst = mdb.create(Fact_list)
+        Store stFactRaw = lst.loadBy_item(idItem, tagTypes)
+
+
+        // --- Размажем список фактов в поля слова (recItem) и списку его переводов (stTasks)
+        StoreRecord recItem = mdb.createStoreRecord("ItemInfo.item")
+        Store stTasks = mdb.createStore("ItemInfo.task")
+
+        //
+        for (StoreRecord recRaw : stFactRaw) {
+            String dictionary = ""
+            Map tag = recRaw.get("tag") as Map
+            if (tag != null) {
+                dictionary = tag.get(RgmDbConst.TagType_dictionary)
+            }
+
+            long factType = recRaw.getLong("factType")
+            long factId = recRaw.getLong("id")
+
+
+            // Данные по слову
+            if (dictionary.equals(RgmDbConst.TagValue_dictionary_base) &&
+                    (factType == RgmDbConst.FactType_word_translate ||
+                            factType == RgmDbConst.FactType_word_idiom)) {
+                setFlatRecord_valueList(recRaw, recItem)
+            }
+
+            if (factType == RgmDbConst.FactType_word_spelling ||
+                    factType == RgmDbConst.FactType_word_transcription ||
+                    factType == RgmDbConst.FactType_word_sound
+            ) {
+                setFlatRecord_value(recRaw, recItem)
+            }
+
+            if (factType == RgmDbConst.FactType_word_idiom) {
+                setFlatRecord_valueList(recRaw, recItem)
+            }
+
+
+            // Данные по переводам слова
+            if (!dictionary.equals(RgmDbConst.TagValue_dictionary_base) &&
+                    factType == RgmDbConst.FactType_word_translate) {
+                //
+                StoreRecord recTask = stTasks.add()
+                recTask.setValue("id", factId)
+                //
+                setFlatRecord_value(recRaw, recTask)
+            }
+        }
+
+        // Данные по примерам к переводам
+        StoreIndex idxTasks = stTasks.getIndex("id")
+        for (StoreRecord recRaw : stFactRaw) {
+            long factType = recRaw.getLong("factType")
+            long factOwnerId = recRaw.getLong("fact")
+
+            if (factType == RgmDbConst.FactType_word_example) {
+                StoreRecord recTask = idxTasks.get(factOwnerId)
+                setFlatRecord_valueList(recRaw, recTask)
+            }
+        }
+
+
+        // ---
+        DataBox res = new DataBox()
+        res.put("item", recItem)
+        res.put("tasks", stTasks)
+        return res
+    }
+
     // region Внутренние методы
 
+    void setFlatRecord_value(StoreRecord recFact, StoreRecord recRes) {
+        long factType = recFact.getLong("factType")
+        String factValue = recFact.getValue("factValue")
+
+        //
+        String destFieldName = FactDataLoader.factTypeFieldNames.get(factType)
+
+        // Определить поле по factType не получилось?
+        if (UtCnv.isEmpty(destFieldName)) {
+            return
+        }
+
+        // Если поле в источнике не заполнено - не заполняем
+        if (UtCnv.isEmpty(factValue)) {
+            return
+        }
+
+        // Если поле в получателе уже заполнено - не заполняем
+        if (!recRes.isValueNull(destFieldName)) {
+            return
+        }
+
+        // Заполняем
+        recRes.setValue(destFieldName, factValue)
+    }
+
+    void setFlatRecord_valueList(StoreRecord recFact, StoreRecord recRes) {
+        long factType = recFact.getLong("factType")
+        String factValue = recFact.getValue("factValue")
+        String destFieldName = FactDataLoader.factTypeFieldNames.get(factType)
+
+        // Определить поле по factType не получилось?
+        if (UtCnv.isEmpty(destFieldName)) {
+            return
+        }
+
+        // Если поле в источнике не заполнено - не заполняем
+        if (UtCnv.isEmpty(factValue)) {
+            return
+        }
+
+        // Создаем значение типа List
+        List valueRes = recRes.getValue(destFieldName) as List
+        if (valueRes == null) {
+            valueRes = new ArrayList()
+            recRes.setValue(destFieldName, valueRes)
+        }
+
+        // Заполняем
+        valueRes.add(factValue)
+    }
 
     private Map<Long, String> prepareParamsTags(Map tags) {
         if (tags == null || tags.size() == 0) {
@@ -248,7 +380,7 @@ class Item_list extends RgmMdbUtils {
     private Store loadFactList(Store stItem, long idPlan, Map<Long, String> tags) {
         Store stPlanFact = mdb.createStore("PlanFact.list")
 
-        // Соберем отдельно item, отдельно конкретные факты
+        // --- Соберем отдельно item, отдельно конкретные факты
         Set itemIds = new HashSet()
         Set factIds = new HashSet()
         for (StoreRecord recItem : stItem) {
@@ -259,7 +391,8 @@ class Item_list extends RgmMdbUtils {
             }
         }
 
-        // --- Обработка списка itemIds
+
+        // --- Загрузка списка itemIds
 
         // Формируем пары фактов spelling -> translate, т.е. все варианты перевода
         long idUsr = getContextOrCurrentUsrId()
@@ -267,16 +400,23 @@ class Item_list extends RgmMdbUtils {
         mdb.loadQuery(stFact, sqlPlanFactStatistic_Items(itemIds), [usr: idUsr, plan: idPlan])
 
         // --- Загрузим тэги фактов
-        Fact_list factList = mdb.create(Fact_list)
-        // Загрузим тэги
+
+        // Загрузим заказанные
         // NB: Тут написано = tags.keySet().toList() а не просто = tags.keySet(),
         // т.к. почему-то в случае просто tags.keySet() у возавращенного объекта
         // метод add() выкидывает Exception. Не стал разбираться в чем дело.
         List<Long> tagTypes = tags.keySet().toList()
+
+        // Также безусловно загрузим TagType:dictionary
         tagTypes.add(RgmDbConst.TagType_dictionary)
+
+        // Загрузим тэги
+        Fact_list factList = mdb.create(Fact_list)
         Store stTags = factList.loadTagsByIds(stFact.getUniqueValues("factAnswer"), tagTypes)
+
         // Распределим тэги
         factList.spreadTags(stTags, stFact)
+
 
         // --- Фильтруем все варианты перевода, оставляем только подхоящие по тэгам
         UtTag.cleanStoreByTags(stFact, tags)
@@ -285,7 +425,7 @@ class Item_list extends RgmMdbUtils {
         stFact.copyTo(stPlanFact)
 
 
-        // --- Обработка списка factIds
+        // --- Загрузка списка factIds
         stFact.clear()
         mdb.loadQuery(stFact, sqlPlanFactStatistic_Facts(factIds), [usr: idUsr, plan: idPlan])
 
@@ -351,11 +491,11 @@ select
     
     Fact_Spelling.id factQuestion,
     Fact_Spelling.factType factTypeSpelling,
-    Fact_Spelling.value valueSpelling,
+    Fact_Spelling.factValue valueSpelling,
     
     Fact_Translate.id factAnswer, 
     Fact_Translate.factType factTypeTranslate,
-    Fact_Translate.value valueTranslate,
+    Fact_Translate.factValue valueTranslate,
     
     UsrFact.isHidden,
     UsrFact.isKnownGood,
@@ -421,11 +561,11 @@ select
     
     Fact_Spelling.id factQuestion,
     Fact_Spelling.factType factTypeSpelling,
-    Fact_Spelling.value valueSpelling,
+    Fact_Spelling.factValue valueSpelling,
     
     Fact_Translate.id factAnswer, 
     Fact_Translate.factType factTypeTranslate,
-    Fact_Translate.value valueTranslate,
+    Fact_Translate.factValue valueTranslate,
     
     UsrFact.isHidden,
     UsrFact.isKnownGood,

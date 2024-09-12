@@ -195,7 +195,7 @@ order by
         return """
 select
     distinct
-    Fact.value
+    Fact.factValue
 
 from
     Fact
@@ -205,7 +205,7 @@ where
     FactTag.tag in (${tags.join(",")})
 
 order by
-    Fact.value
+    Fact.factValue
 """
     }
 

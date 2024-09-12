@@ -16,6 +16,30 @@
 }
 
 
+.rgm-task-question {
+  font-size: 1.2em;
+  color: #202020;
+}
+
+.rgm-task-transcription {
+  font-size: 1.2em;
+  color: #4e4e4e;
+}
+
+.rgm-task-answer {
+  font-size: 1.0em;
+  color: #0a4fa2;
+  font-style: italic;
+}
+
+.rgm-task-example {
+  font-size: 1em;
+  color: #304050;
+  font-style: italic;
+  padding-left: 1em;
+}
+
+
 .rgm-link {
   text-decoration: underline;
   text-decoration-style: solid;

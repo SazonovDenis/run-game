@@ -3,8 +3,6 @@
     <q-input
         dense outlined clearable
         debounce="300"
-
-        :__value="modelValueInternal"
         v-model="modelValueInternal"
 
         :type="inputType"

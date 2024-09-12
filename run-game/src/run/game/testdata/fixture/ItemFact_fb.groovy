@@ -19,9 +19,15 @@ class ItemFact_fb extends BaseFixtureBuilder {
     StoreIndex idxTagType
     StoreIndex idxFactType
 
+    // Уникальность значений
+    Set<String> factValuesAdded = new HashSet<>()
+    Map<String, StoreRecord> itemsAdded = new HashMap<>()
+
+    //
     String dirBase = "data/web-grab/"
     String badCsv = "temp/bad-db.csv"
 
+    //
     long genIdItemTag = 1000000
     long genIdFactTag = 1000000
 
@@ -57,9 +63,6 @@ class ItemFact_fb extends BaseFixtureBuilder {
             "200-puzzle-english" : 200,
     ]
 
-    // Уникальность значений
-    Set<String> tagValueSet = new HashSet<>()
-    Map<String, StoreRecord> itemsMap = new HashMap<>()
 
     protected void onBuild() {
         FixtureTable fxItem = fx.table("Item")
@@ -77,6 +80,18 @@ class ItemFact_fb extends BaseFixtureBuilder {
         //
         idxTagType = mdb.loadQuery("select * from TagType").getIndex("code")
         idxFactType = mdb.loadQuery("select * from FactType").getIndex("code")
+
+        // Существующие записи в БД учитываем
+        Store stItemExists = mdb.loadQuery("select item id, factValue from Fact where factType = ${RgmDbConst.FactType_word_spelling}")
+        for (StoreRecord recItemExists : stItemExists) {
+            String valueExists = recItemExists.getString("factValue")
+            //
+            itemsAdded.put(valueExists, recItemExists)
+            //
+            long idItem = recItemExists.getLong("id")
+            String key = idItem + "_word-spelling_" + valueExists
+            factValuesAdded.add(key)
+        }
 
         //
         Store stCsvBad = mdb.createStore("dat.csv.bad")
@@ -155,7 +170,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         List<String> soundFilesArr = getSoundFiles(dirBase + dir + "/mp3/", dirsSound, word_1)
 
                         // Первый раз встретили слово?
-                        StoreRecord recItem = itemsMap.get(word_1)
+                        StoreRecord recItem = itemsAdded.get(word_1)
 
                         // Для плохих источников не пополняем переводы, берем только новые слова
                         boolean doAddTranslations = true
@@ -167,7 +182,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         if (recItem == null) {
                             // Добавляем Item
                             recItem = stItem.add()
-                            itemsMap.put(word_1, recItem)
+                            itemsAdded.put(word_1, recItem)
                             //
                             genIdItem = genIdItem + 1
                             recItem.setValue("id", genIdItem)
@@ -212,15 +227,15 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
                         // Добавляем Fact:word-spelling
                         key = idItem + "_word-spelling_" + word_1
-                        if (!tagValueSet.contains(key)) {
-                            tagValueSet.add(key)
+                        if (!factValuesAdded.contains(key)) {
+                            factValuesAdded.add(key)
                             // Добавляем Fact
                             genIdFact = genIdFact + 1
                             StoreRecord recFact = stFact.add()
                             recFact.setValue("id", genIdFact)
                             recFact.setValue("item", idItem)
                             recFact.setValue("factType", getFactType("word-spelling"))
-                            recFact.setValue("value", word_1)
+                            recFact.setValue("factValue", word_1)
                             // Добавляем FactTag:word-lang
                             String wordLang = wordLang_1
                             addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
@@ -232,15 +247,15 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         String word_Distorted = makeDistorted(word_1)
                         if (!word_1.equalsIgnoreCase(word_Distorted)) {
                             key = idItem + "_word-spelling-distorted_" + word_Distorted
-                            if (!tagValueSet.contains(key)) {
-                                tagValueSet.add(key)
+                            if (!factValuesAdded.contains(key)) {
+                                factValuesAdded.add(key)
                                 // Добавляем Fact
                                 genIdFact = genIdFact + 1
                                 StoreRecord recFact = stFact.add()
                                 recFact.setValue("id", genIdFact)
                                 recFact.setValue("item", idItem)
                                 recFact.setValue("factType", getFactType("word-spelling-distorted"))
-                                recFact.setValue("value", word_Distorted)
+                                recFact.setValue("factValue", word_Distorted)
                                 // Добавляем FactTag:word-lang
                                 String wordLang = wordLang_1
                                 addFactTag(genIdFact, "word-lang", wordLang, stFactTag)
@@ -252,15 +267,15 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         transcription = clearTranscription(transcription)
                         if (!UtCnv.isEmpty(transcription)) {
                             key = idItem + "_word-transcription_" + transcription
-                            if (!tagValueSet.contains(key)) {
-                                tagValueSet.add(key)
+                            if (!factValuesAdded.contains(key)) {
+                                factValuesAdded.add(key)
                                 //
                                 genIdFact = genIdFact + 1
                                 StoreRecord recFact_3 = stFact.add()
                                 recFact_3.setValue("id", genIdFact)
                                 recFact_3.setValue("item", idItem)
                                 recFact_3.setValue("factType", getFactType("word-transcription"))
-                                recFact_3.setValue("value", transcription)
+                                recFact_3.setValue("factValue", transcription)
                             }
                         }
 
@@ -269,15 +284,15 @@ class ItemFact_fb extends BaseFixtureBuilder {
                             for (String translate : word_2_arr) {
                                 if (!UtCnv.isEmpty(translate)) {
                                     key = idItem + "_word-translate_" + translate
-                                    if (!tagValueSet.contains(key)) {
-                                        tagValueSet.add(key)
+                                    if (!factValuesAdded.contains(key)) {
+                                        factValuesAdded.add(key)
                                         // Добавляем Fact
                                         genIdFact = genIdFact + 1
                                         StoreRecord recFact_1 = stFact.add()
                                         recFact_1.setValue("id", genIdFact)
                                         recFact_1.setValue("item", idItem)
                                         recFact_1.setValue("factType", getFactType("word-translate"))
-                                        recFact_1.setValue("value", translate)
+                                        recFact_1.setValue("factValue", translate)
                                         // Добавляем FactTag
                                         String direction = wordLang_1 + "-" + wordLang_2
                                         addFactTag(genIdFact, "word-translate-direction", direction, stFactTag)
@@ -292,8 +307,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
                         for (String soundFile : soundFilesArr) {
                             if (!UtCnv.isEmpty(soundFile)) {
                                 key = idItem + "_word-sound_" + soundFile
-                                if (!tagValueSet.contains(key)) {
-                                    tagValueSet.add(key)
+                                if (!factValuesAdded.contains(key)) {
+                                    factValuesAdded.add(key)
                                     // Добавляем Fact:word-sound
                                     genIdFact = genIdFact + 1
                                     StoreRecord recFact_1 = stFact.add()
@@ -301,7 +316,7 @@ class ItemFact_fb extends BaseFixtureBuilder {
                                     recFact_1.setValue("item", idItem)
                                     recFact_1.setValue("factType", getFactType("word-sound"))
                                     String soundFileValue = soundFile.substring(dirBase.length())
-                                    recFact_1.setValue("value", soundFileValue)
+                                    recFact_1.setValue("factValue", soundFileValue)
                                     // Добавляем FactTag:word-sound-info
                                     String[] soundSourceArr = soundFile.split("/")
                                     if (!soundSourceArr[soundSourceArr.length - 2].equals("mp3")) {
@@ -675,8 +690,8 @@ class ItemFact_fb extends BaseFixtureBuilder {
 
         // С обеспечением уникальности значения тэга для idItem
         String key = idItem + "_" + tagType + "_" + tagValue
-        if (!tagValueSet.contains(key)) {
-            tagValueSet.add(key)
+        if (!factValuesAdded.contains(key)) {
+            factValuesAdded.add(key)
             long idItemTag = stItemTag.size() + this.genIdItemTag
             StoreRecord rec = stItemTag.add()
             rec.setValue("id", idItemTag)

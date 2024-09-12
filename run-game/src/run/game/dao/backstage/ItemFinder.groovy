@@ -206,7 +206,7 @@ class ItemFinder extends BaseMdbUtils {
 
         //
         for (StoreRecord rec : stItemFound) {
-            String text = rec.getString("value")
+            String text = rec.getString("factValue")
             textPositionsRes.add(new TextPosition(text, textPosition))
         }
     }

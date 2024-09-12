@@ -13,8 +13,8 @@
         <field name="isTrue" parent="boolean"
                title="Заполняется, если вариант ответа правильный"/>
 
-        <field name="factType" parent="FactType/ref"/>
-        <field name="value" parent="string" size="500"
+        <field name="factType" parent="Fact/factType"/>
+        <field name="factValue" parent="Fact/factValue"
                title="Содержание варианта ответа"/>
     </domain>
 

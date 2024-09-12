@@ -243,6 +243,17 @@
         <!-- frameMode: другие -->
 
 
+        <div v-if="frameMode==='viewItem'">
+
+            <ItemInfo
+                :itemMenu="itemsMenu_modeViewItemInfo"
+                :item="itemLoadedItem"
+                :tasks="itemLoadedTask"
+            />
+
+        </div>
+
+
         <div v-if="frameMode==='viewItemsLoaded'">
 
             <TaskList
@@ -432,13 +443,14 @@ import TaskList from "./comp/TaskList"
 import BtnsEditAdd from "./comp/BtnsEditAdd"
 import BtnHidden from "./comp/filter/BtnHidden"
 import BtnAddAll from "./comp/BtnAddAll"
+import ItemInfo from "./comp/ItemInfo"
 
 
 export default {
 
     components: {
         MenuContainer, HelpPanel, TaskListFilterBar, BtnHidden, BtnAddAll,
-        TextInputPhoto, TextInputText, BtnsEditAdd, TaskList,
+        TextInputPhoto, TextInputText, BtnsEditAdd, TaskList, ItemInfo,
     },
 
     props: {
@@ -476,6 +488,14 @@ export default {
     },
 
     data() {
+        let actionItemLoadFull = {
+            outline: false,
+            icon: "external-link",
+            color: "red-10",
+            hidden: this.itemLoadFullMenuHidden,
+            onClick: this.itemLoadFull,
+        };
+
         let actionHide = {
             label: "Знаю",
             //info: "Слово больше не появится в играх",
@@ -506,6 +526,9 @@ export default {
             itemsExternal: [],
             itemsLoaded: [],
 
+            itemLoadedItem: {},
+            itemLoadedTask: [],
+
             //
             imageLoaded: null,
 
@@ -530,10 +553,12 @@ export default {
                 showHidden: false,
             },
 
+            actionItemLoadFull: actionItemLoadFull,
             actionHide: actionHide,
             actionDelete: actionDelete,
 
             itemsMenu_modeAddFact: [
+                actionItemLoadFull,
                 {
                     label: "Знаю",
                     outline: this.itemHideMenuOutline,
@@ -552,11 +577,18 @@ export default {
             ],
 
             itemsMenu_modeEdit: [
+                actionItemLoadFull,
+                actionHide,
+                actionDelete,
+            ],
+
+            itemsMenu_modeViewItemInfo: [
                 actionHide,
                 actionDelete,
             ],
 
             itemsMenu_modeViewItemsDel: [
+                actionItemLoadFull,
                 {
                     label: "Знаю",
                     outline: this.itemHideMenuOutline,
@@ -585,6 +617,7 @@ export default {
             ],
 
             itemsMenu_modeViewHide: [
+                actionItemLoadFull,
                 {
                     label: "Знаю",
                     outline: true,
@@ -656,7 +689,9 @@ export default {
 
         title() {
             if (this.isModeView()) {
-                if (this.frameMode === "viewItemsHideAdd") {
+                if (this.frameMode === "viewItem") {
+                    return "Слово"
+                } else if (this.frameMode === "viewItemsHideAdd") {
                     return "Известные слова"
                 } else if (this.frameMode === "viewItemsHideDel") {
                     return "Показанные слова"
@@ -717,13 +752,33 @@ export default {
 
     methods: {
 
-        async load(searchText) {
+        async loadItem(itemId, filterTags) {
+            let resApi = await daoApi.loadStore("m/Item/loadItem", [itemId, this.planId, filterTags], {})
+
+            //
+            this.itemLoadedItem = resApi.item.records[0]
+            this.itemLoadedTask = resApi.tasks.records
+
+            //
+            this.setFrameMode("viewItem")
+        },
+
+        async load(searchText, filterTags) {
             // Новый поиск
             let items = []
 
             //
             if (this.searchTextShouldLoad) {
-                let resApi = await daoApi.loadStore("m/Item/findItems", [searchText, this.planId, this.filterTags], {
+                //
+                if (!filterTags) {
+                    filterTags = this.viewSettings.filterTags
+                } else {
+                    filterTags = Object.assign({}, this.viewSettings.filterTags)
+                    filterTags["dictionary"] = "full"
+                }
+
+                //
+                let resApi = await daoApi.loadStore("m/Item/findItems", [searchText, this.planId, filterTags], {
                     waitShow: false,
                     onRequestState: (requestState) => {
                         if (requestState === "start") {
@@ -870,7 +925,7 @@ export default {
         },
 
         isModeView() {
-            return this.frameMode.startsWith("viewItems")
+            return this.frameMode.startsWith("viewItem")
         },
 
         isMobile() {
@@ -1146,6 +1201,16 @@ export default {
 
             //
             this.checkViewMode()
+        },
+
+        /* -------------------------------- */
+
+        itemLoadFull(item) {
+            this.loadItem(item.item, this.viewSettings.filterTags)
+        },
+
+        itemLoadFullMenuHidden(item) {
+            return !item.tag.hasDictionaryFull
         },
 
         /* -------------------------------- */
@@ -1676,7 +1741,10 @@ export default {
         },
 
         execFrameReturn() {
-            if (this.frameModePrior) {
+            if (this.frameMode === "viewItem") {
+                this.setFrameMode(this.frameModePrior)
+                this.frameModePrior = null
+            } else if (this.frameModePrior) {
                 this.setFrameMode(this.frameModePrior)
                 this.frameModePrior = null
             }
@@ -1724,7 +1792,9 @@ export default {
         },
 
         isEditModeChanged(viewModeNow, viewModeNew) {
-            if (viewModeNew.startsWith("add") && viewModeNow !== viewModeNew) {
+            if (viewModeNow === "viewItem") {
+                return false
+            } else if (viewModeNew.startsWith("add") && viewModeNow !== viewModeNew) {
                 return true
             } else {
                 return false
@@ -1834,7 +1904,7 @@ export default {
 
     },
 
-    async mounted() {
+    mounted() {
         if (this.defaultMode) {
             this.frameMode = this.defaultMode
         }

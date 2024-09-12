@@ -69,7 +69,7 @@
         <field name="answer" parent="object"
                title="Данные ответа (структура - Task.fields)"/>
 
-        <!-- Свойства факта -->
+        <!-- Свойства факта (от пользователя) -->
         <field name="isHidden" parent="UsrFact/isHidden"/>
         <field name="isKnownGood" parent="UsrFact/isKnownGood"/>
         <field name="isKnownBad" parent="UsrFact/isKnownBad"/>
@@ -140,10 +140,36 @@
 
         <field name="item" parent="Item/ref" title="О какой сущности"/>
 
-        <field name="valueSpelling" parent="string" size="200"/>
-        <field name="valueTranslate" parent="string" size="200"/>
-        <field name="valueSound" parent="string" size="200"/>
-        <field name="valueImage" parent="string" size="200"/>
+        <field name="valueSpelling" parent="string"/>
+        <field name="valueTranslate" parent="string"/>
+        <field name="valueSound" parent="string"/>
+        <field name="valueImage" parent="string"/>
+
+    </domain>
+
+
+    <domain name="ItemInfo.item" parent="tab.id">
+        <!--@
+        Поля, используемые в карточке слова.
+        -->
+        
+        <field name="valueSpelling" parent="string"/>
+        <field name="valueTranscription" parent="string"/>
+        <field name="valueTranslate" parent="object"/>
+        <field name="valueSound" parent="string"/>
+        <field name="valueIdiom" parent="object"/>
+        <field name="valueExample" parent="object"/>
+
+    </domain>
+
+
+    <domain name="ItemInfo.task" parent="tab.id">
+        <!--@
+        Поля, используемые в списке переводов карточке слова.
+        -->
+
+        <field name="valueTranslate" parent="string"/>
+        <field name="valueExample" parent="object"/>
 
     </domain>
 

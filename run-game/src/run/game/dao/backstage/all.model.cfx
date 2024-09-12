@@ -18,7 +18,7 @@
     <domain name="Item.find" parent="id">
 
         <field name="fact" parent="Fact/ref"/>
-        <field name="factValue" parent="Fact/value"/>
+        <field name="factValue" parent="Fact/factValue"/>
 
         <field name="tag" parent="object"/>
 
@@ -50,14 +50,12 @@
     <domain name="Fact.list" parent="id">
 
         <field name="factType" parent="Fact/factType"/>
-        <field name="factValue" parent="Fact/value"/>
+        <field name="factValue" parent="Fact/factValue"/>
 
         <field name="tag" parent="object"/>
 
         <field name="item" parent="Item/id"/>
-        <!--
-                <field name="itemValue" parent="Item/value"/>
-        -->
+        <field name="fact" parent="Fact/id"/>
 
     </domain>
 

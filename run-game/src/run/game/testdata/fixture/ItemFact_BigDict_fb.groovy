@@ -9,7 +9,7 @@ import java.nio.file.*
 /**
  *
  */
-class ItemFactTags_fb extends BaseFixtureBuilder {
+class ItemFact_BigDict_fb extends BaseFixtureBuilder {
 
     String dirBase = "data/dsl-grab/out/"
 
@@ -50,7 +50,7 @@ class ItemFactTags_fb extends BaseFixtureBuilder {
         //mdb.execQuery("delete from Item")
 
         csvToDb(dirName, "Item", "id,value")
-        csvToDb(dirName, "Fact", "id,item,fact,factType,value")
+        csvToDb(dirName, "Fact", "id,item,fact,factType,factValue")
         csvToDb(dirName, "ItemTag", "id,item,tagType,tagValue")
         csvToDb(dirName, "FactTag", "id,fact,tagType,tagValue")
 

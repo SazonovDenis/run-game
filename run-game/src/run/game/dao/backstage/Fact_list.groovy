@@ -13,9 +13,24 @@ class Fact_list extends BaseMdbUtils {
         return st
     }
 
-    public Store loadBy_item_value_factType(long item, String value, long factType) {
+    public Store loadBy_item(long idItem, Collection<Long> tagTypes) {
         Store st = mdb.createStore("Fact.list")
-        mdb.loadQuery(st, sqlBy_item_value_factType__equal(), [item: item, value: value, factType: factType])
+
+        mdb.loadQuery(st, sqlItemFact(), [id: idItem])
+
+        // Тэги фактов (для загруженных id)
+        Store stTags = loadTagsByIds(st.getUniqueValues("id"), tagTypes)
+
+        // Распределим тэги
+        spreadTags(stTags, st)
+
+        //
+        return st
+    }
+
+    public Store loadBy_item_value_factType(long idItem, String factValue, long factType) {
+        Store st = mdb.createStore("Fact.list")
+        mdb.loadQuery(st, sqlBy_item_value_factType__equal(), [item: idItem, factType: factType, factValue: factValue])
         return st
     }
 
@@ -45,10 +60,10 @@ class Fact_list extends BaseMdbUtils {
      * Загружаем факты указанного типа с указанным значением.
      * В результате поле tag не заполняется.
      */
-    public Store loadBy_value_factType(long factType, String value) {
+    public Store loadBy_value_factType(long factType, String factValue) {
         Store st = mdb.createStore("Fact.list")
 
-        mdb.loadQuery(st, sqlBy_value_factType(), [value: value, factType: factType])
+        mdb.loadQuery(st, sqlBy_value_factType(), [factType: factType, factValue: factValue])
 
         return st
     }
@@ -61,7 +76,7 @@ class Fact_list extends BaseMdbUtils {
         Store st = mdb.createStore("Fact.list")
 
         // Факты
-        mdb.loadQuery(st, sqlBy_value_factType__like(), [value: "%" + factValue + "%", factType: factType])
+        mdb.loadQuery(st, sqlBy_value_factType__like(), [factValue: "%" + factValue + "%", factType: factType])
 
         //
         return st
@@ -82,7 +97,7 @@ class Fact_list extends BaseMdbUtils {
         }
 
         // Факты
-        Map params = [factType: factType, value: "%" + factValue + "%"]
+        Map params = [factType: factType, factValue: "%" + factValue + "%"]
         mdb.loadQuery(st, sqlBy_value_factType__like(), params)
 
         // Тэги фактов (для загруженных id)
@@ -223,8 +238,9 @@ select
     Fact.item,
     
     Fact.id,
+    Fact.fact fact,
     Fact.factType factType,
-    Fact.value factValue
+    Fact.factValue
 
 from
     Fact
@@ -251,11 +267,12 @@ where
         return """
 select
     Item.id item,
-    Item.value itemValue,
+    --Item.value itemValue,
     
     Fact.id,
+    Fact.fact fact,
     Fact.factType factType,
-    Fact.value factValue
+    Fact.factValue
 
 from
     Item
@@ -270,6 +287,30 @@ order by
 """
     }
 
+    String sqlItemFact() {
+        return """
+select
+    Item.id item,
+    --Item.value itemValue,
+    
+    Fact.id,
+    Fact.fact fact,
+    Fact.factType factType,
+    Fact.factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+
+where
+    Item.id = :id
+
+order by
+    Fact.factType,
+    Fact.id
+"""
+    }
+
     String sqlBy_factType() {
         return """
 select
@@ -277,8 +318,9 @@ select
     --Item.value itemValue,
     
     Fact.id,
+    Fact.fact fact,
     Fact.factType factType,
-    Fact.value factValue
+    Fact.factValue
 
 from
     Fact
@@ -319,18 +361,19 @@ order by
         return """
 select
     Item.id item,
-    Item.value itemValue,
+    --Item.value itemValue,
     
     Fact.id,
+    Fact.fact fact,
     Fact.factType factType,
-    Fact.value factValue
+    Fact.factValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
 
 where
-    Fact.value = :value and
+    Fact.factValue = :factValue and
     Fact.factType = :factType
 
 order by
@@ -342,11 +385,12 @@ order by
         return """
 select
     Item.id item,
-    Item.value itemValue,
+    --Item.value itemValue,
     
     Fact.id,
+    Fact.fact fact,
     Fact.factType factType,
-    Fact.value factValue
+    Fact.factValue
 
 from
     Item
@@ -354,7 +398,7 @@ from
 
 where
     Fact.item = :item and
-    Fact.value = :value and
+    Fact.factValue = :factValue and
     Fact.factType = :factType
 
 order by
@@ -366,19 +410,19 @@ order by
         return """
 select
     Item.id item,
-    Item.value itemValue,
+    --Item.value itemValue,
     
     Fact.id,
     Fact.id fact,
     Fact.factType factType,
-    Fact.value factValue
+    Fact.factValue
 
 from
     Item
     join Fact on (Fact.item = Item.id)
 
 where
-    Fact.value like :value and
+    Fact.factValue like :factValue and
     Fact.factType = :factType
 
 order by

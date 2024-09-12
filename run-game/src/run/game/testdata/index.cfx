@@ -16,8 +16,8 @@
             <fixture-builder name="link"
                              class="run.game.testdata.fixture.Link_fb"/>
 
-            <fixture-builder name="itemFactTags"
-                             class="run.game.testdata.fixture.ItemFactTags_fb"/>
+            <fixture-builder name="itemFact_BigDict"
+                             class="run.game.testdata.fixture.ItemFact_BigDict_fb"/>
 
             <fixture-builder name="itemFact"
                              class="run.game.testdata.fixture.ItemFact_fb"/>

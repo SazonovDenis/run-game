@@ -180,14 +180,14 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
                 // Правильный ответ
                 recOption.setValue("isTrue", true)
                 recOption.setValue("factType", recFactAnswer.getValue("factType"))
-                recOption.setValue("value", valueTrue)
+                recOption.setValue("factValue", valueTrue)
             } else {
                 // Неправильные варианты
                 int falseOptionIndex = falseOntionsIndexes[i]
                 String valueFalse = valuesFalseArr[falseOptionIndex]
                 //
                 recOption.setValue("factType", recFactAnswer.getValue("factType"))
-                recOption.setValue("value", valueFalse)
+                recOption.setValue("factValue", valueFalse)
             }
         }
 
@@ -200,7 +200,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
         // Формируем основной вопрос
         StoreRecord recTaskQuestion = stTaskQuestion.add()
         recTaskQuestion.setValue("factType", recFactQuestion.getValue("factType"))
-        recTaskQuestion.setValue("value", recFactQuestion.getValue("factValue"))
+        recTaskQuestion.setValue("factValue", recFactQuestion.getValue("factValue"))
 
 
         // Формируем дополнительную информацию
@@ -213,7 +213,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
                 StoreRecord recFact = stFact.get(idx)
                 recTaskQuestion = stTaskQuestion.add()
                 recTaskQuestion.setValue("factType", recFact.getValue("factType"))
-                recTaskQuestion.setValue("value", recFact.getValue("factValue"))
+                recTaskQuestion.setValue("factValue", recFact.getValue("factValue"))
 
             }
         }
@@ -226,7 +226,7 @@ public class TaskGeneratorImpl extends RgmMdbUtils implements TaskGenerator {
                 StoreRecord recFact = stFact.get(idx)
                 recTaskQuestion = stTaskQuestion.add()
                 recTaskQuestion.setValue("factType", recFact.getValue("factType"))
-                recTaskQuestion.setValue("value", recFact.getValue("factValue"))
+                recTaskQuestion.setValue("factValue", recFact.getValue("factValue"))
             }
         }
 

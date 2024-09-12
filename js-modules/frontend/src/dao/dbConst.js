@@ -42,5 +42,8 @@ export default {
     Tag_kaz_rus: 203,
     Tag_eng_eng: 204,
 
+    TagValue_dictionary_base: "base",  // Малый словарь
+    TagValue_dictionary_full: "full",  // Полный словарь
+
 
 }

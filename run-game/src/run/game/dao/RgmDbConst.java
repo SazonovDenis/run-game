@@ -6,6 +6,9 @@ public class RgmDbConst {
     public static long FactType_word_translate = 1002;
     public static long FactType_word_sound = 1003;
     public static long FactType_word_picture = 1004;
+    public static long FactType_word_transcription = 1005;
+    public static long FactType_word_idiom = 1006;
+    public static long FactType_word_example = 1007;
     public static long FactType_word_spelling_distorted = 1010;
 
     public static String TagValue_word_lang_eng = "eng"; //100;
@@ -18,6 +21,7 @@ public class RgmDbConst {
     public static String TagValue_translate_direction_kaz_rus = "kaz-rus"; // 203;
 
     public static String TagValue_plan_access_default = "default";         // План по умолчанию
+
     public static String TagValue_dictionary_base = "base";                // Малый словарь
     public static String TagValue_dictionary_full = "full";                // Полный словарь
 

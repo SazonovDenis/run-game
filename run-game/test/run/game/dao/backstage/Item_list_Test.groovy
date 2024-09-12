@@ -1,6 +1,7 @@
 package run.game.dao.backstage
 
 import jandcode.commons.*
+import jandcode.core.dbm.std.*
 import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
@@ -43,6 +44,39 @@ class Item_list_Test extends RgmBase_Test {
 
         println()
         println("findItems: '" + word_text + "'")
+        mdb.outTable(stFact)
+    }
+
+
+    @Test
+    void loadItem() {
+        //utils.logOn()
+
+        Store stFact
+        Item_list lst = mdb.create(Item_list)
+
+        // --- Выберем слово
+        word_0 = "rabbit"
+        Store stFactFind = lst.findItems(word_0, 0, [dictionary: "base"])
+
+        println()
+        println("findItems: '" + word_0 + "'")
+        mdb.outTable(stFactFind)
+
+        // ---
+        long idItem = stFactFind.get(0).getLong("item")
+
+        // --- Подробно
+        DataBox res = lst.loadItem(idItem, 0, [:])
+        stFact = res.get("tasks")
+        StoreRecord recItem = res.get("item")
+
+        println()
+        println("loadItem: " + idItem)
+        println("recItem:")
+        mdb.outTable(recItem)
+        println()
+        println("tasks:")
         mdb.outTable(stFact)
     }
 

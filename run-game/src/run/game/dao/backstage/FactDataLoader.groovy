@@ -11,10 +11,13 @@ class FactDataLoader extends RgmMdbUtils {
 
 
     static Map<Long, String> factTypeFieldNames = [
-            (RgmDbConst.FactType_word_spelling) : "valueSpelling",
-            (RgmDbConst.FactType_word_translate): "valueTranslate",
-            (RgmDbConst.FactType_word_sound)    : "valueSound",
-            (RgmDbConst.FactType_word_picture)  : "valuePicture",
+            (RgmDbConst.FactType_word_spelling)     : "valueSpelling",
+            (RgmDbConst.FactType_word_translate)    : "valueTranslate",
+            (RgmDbConst.FactType_word_sound)        : "valueSound",
+            (RgmDbConst.FactType_word_picture)      : "valuePicture",
+            (RgmDbConst.FactType_word_example)      : "valueExample",
+            (RgmDbConst.FactType_word_idiom)        : "valueIdiom",
+            (RgmDbConst.FactType_word_transcription): "valueTranscription",
     ]
 
 
@@ -88,8 +91,8 @@ class FactDataLoader extends RgmMdbUtils {
      */
 
     void convertFactToFlatRecord(StoreRecord recFact, StoreRecord recTask) {
-        long sourceDatatype = recFact.getLong("factType")
-        String destFieldName = factTypeFieldNames.get(sourceDatatype)
+        long sourceFactType = recFact.getLong("factType")
+        String destFieldName = factTypeFieldNames.get(sourceFactType)
         if (UtCnv.isEmpty(destFieldName)) {
             return
         }
@@ -100,17 +103,17 @@ class FactDataLoader extends RgmMdbUtils {
         }
 
         // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
-        if (sourceDatatype == RgmDbConst.FactType_word_spelling && !recTask.isValueNull("valueTranslate")) {
+        if (sourceFactType == RgmDbConst.FactType_word_spelling && !recTask.isValueNull("valueTranslate")) {
             return
         }
 
         // Если поле "valueSpelling" уже заполнено - не заполняем "valueTranslate"
-        if (sourceDatatype == RgmDbConst.FactType_word_translate && !recTask.isValueNull("valueSpelling")) {
+        if (sourceFactType == RgmDbConst.FactType_word_translate && !recTask.isValueNull("valueSpelling")) {
             return
         }
 
         //
-        recTask.setValue(destFieldName, recFact.getValue("value"))
+        recTask.setValue(destFieldName, recFact.getValue("factValue"))
     }
 
     void convertFactsToFlatRecord(Store stFactData, Collection<String> keyFields, Store stDest, String fieldDest) {
@@ -148,7 +151,7 @@ select
     
     Fact.item,
     Fact.factType,
-    Fact.value
+    Fact.factValue
 
 from 
     PlanFact
@@ -179,7 +182,7 @@ select
     Item.id item,
     Fact.id fact,
     Fact.factType factType,
-    Fact.value value
+    Fact.factValue
 
 from    
     Item
@@ -209,7 +212,7 @@ select
     Fact.item item,
     Fact.id as ${factFieldKeyName},
     Fact.factType factType,
-    Fact.value value
+    Fact.factValue
 
 from    
     Fact
@@ -224,7 +227,7 @@ where
 select 
     GameTask.*,
     TaskQuestion.factType,
-    TaskQuestion.value
+    TaskQuestion.factValue
 
 from 
     GameTask
@@ -243,7 +246,7 @@ where
 select 
     GameTask.*,
     TaskOption.factType,
-    TaskOption.value
+    TaskOption.factValue
 
 from 
     GameTask
@@ -266,7 +269,7 @@ select
     
     Fact.item,
     Fact.factType,
-    Fact.value
+    Fact.factValue
 
 from 
     PlanFact
@@ -287,7 +290,7 @@ select
     PlanFact.factAnswer, 
     
     Fact.factType,
-    Fact.value
+    Fact.factValue
 
 from 
     PlanFact

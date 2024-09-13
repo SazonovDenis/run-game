@@ -154,7 +154,7 @@ class Item_list_Test extends RgmBase_Test {
         Store stItem = lst.findItems(text, 0, [:])
 
         println()
-        println("findTextExact, file: '" + fileName + "'")
+        println("findWordExact, file: '" + fileName + "'")
         mdb.outTable(stItem)
     }
 

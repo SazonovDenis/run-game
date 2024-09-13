@@ -3,6 +3,7 @@ package run.game.dao.backstage
 import groovy.transform.*
 import jandcode.core.dbm.mdb.*
 import jandcode.core.store.*
+import org.slf4j.*
 import run.game.dao.*
 import run.game.dao.backstage.impl.*
 import run.game.model.service.*
@@ -17,6 +18,8 @@ class ItemFinder extends BaseMdbUtils {
     public int MAX_COUNT_FOUND = 20
     public int MAX_COUNT_FOUND_ONE_TYPE = 20
 
+    //
+    protected static Logger log = LoggerFactory.getLogger(ItemFinder.class)
 
     /**
      * Выполняет поиск элементов textPositionsRaw в словарях.
@@ -79,7 +82,7 @@ class ItemFinder extends BaseMdbUtils {
         List<TextPosition> textPositionPairs = createPairs(textPositions)
 
         // Ищем Items по точному совпадению с textPositions
-        Store stItemFound = findTextExact(textPositionPairs, tags)
+        Store stItemFound = findWordExact(textPositionPairs, tags)
 
 
         // --- Обновляем результирующие списки
@@ -120,7 +123,7 @@ class ItemFinder extends BaseMdbUtils {
             textPositionPairs = createPairs(textItemsTranformed)
 
             // Ищем Items по преобразованным словам
-            Store stItemFoundTransformed = findTextExact(textPositionPairs, tags)
+            Store stItemFoundTransformed = findWordExact(textPositionPairs, tags)
 
 
             // --- Обновляем результирующие списки
@@ -221,7 +224,10 @@ class ItemFinder extends BaseMdbUtils {
      * @param text список слов (очищенный)
      * @return Найденные слова: store со списком Item
      */
-    Store findTextExact(List<TextPosition> textPositions, Map<Long, String> tagsParam) {
+    Store findWordExact(List<TextPosition> textPositions, Map<Long, String> tagsParam) {
+        log.info("findWordExact")
+
+        //
         Store stItem = mdb.createStore("Item.find")
 
         // Уберем повторы в textPositions - превратим их в Set
@@ -275,6 +281,9 @@ class ItemFinder extends BaseMdbUtils {
         }
 
         //
+        log.info("findWordExact - done")
+
+        //
         return stItem
     }
 
@@ -287,6 +296,9 @@ class ItemFinder extends BaseMdbUtils {
      * @return Найденные слова: store со списком Item
      */
     Store findWordPart(String word, Map<Long, String> tags) {
+        log.info("findWordPart")
+
+        //
         Store stItem = mdb.createStore("Item.find")
 
         //
@@ -314,6 +326,7 @@ class ItemFinder extends BaseMdbUtils {
         //
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction)
 
+/*
         // Поиск по атрибуту word-spelling
         Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling, word, tagTypes)
         stFactSpelling.sort("factValue")
@@ -325,10 +338,24 @@ class ItemFinder extends BaseMdbUtils {
         // Поиск по атрибуту word-translate
         Store stFactTranslate = list.findBy_factType_value(RgmDbConst.FactType_word_translate, word, tagTypes)
         stFactTranslate.sort("factValue")
+*/
+        Store stFact = list.findBy_factType_value(
+                [
+                        RgmDbConst.FactType_word_spelling,
+                        RgmDbConst.FactType_word_spelling_distorted,
+                        RgmDbConst.FactType_word_translate
+                ],
+                word,
+                tagTypes
+        )
+
 
         // Фильтр по тэгам
-        UtTag.cleanStoreByTags(stFactSpelling, tagsValue_word_lang)
-        UtTag.cleanStoreByTags(stFactTranslate, tagsValues_translate_direction)
+        UtTag.cleanStoreByTags(stFact, tagsValue_word_lang)
+        UtTag.cleanStoreByTags(stFact, tagsValues_translate_direction)
+
+        // Чтобы после всего - по алфавиту
+        stFact.sort("factValue")
 
 
         // ---
@@ -337,20 +364,23 @@ class ItemFinder extends BaseMdbUtils {
         Set<Long> setItemsFound = new HashSet<>()
 
         // В первую очередь перенесём слова, ТОЧНО СОВПАДАЮЩИЕ с фрагментом
-        copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_EQUAL)
-        copyToFoundResult(word, stFactSpelling_distorted, stItem, setItemsFound, MODE_EQUAL)
-        copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_EQUAL)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_EQUAL)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_EQUAL)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_EQUAL)
 
         // Во вторую очередь слова НАЧИНАЮЩИЕСЯ на фрагмент
-        copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_STARTS_WITH)
-        copyToFoundResult(word, stFactSpelling_distorted, stItem, setItemsFound, MODE_STARTS_WITH)
-        copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_STARTS_WITH)
 
         // Во вторую очередь слова СОДЕРЖАЩИЕ фрагмент.
-        copyToFoundResult(word, stFactSpelling, stItem, setItemsFound, MODE_CONTAINS)
-        copyToFoundResult(word, stFactSpelling_distorted, stItem, setItemsFound, MODE_CONTAINS)
-        copyToFoundResult(word, stFactTranslate, stItem, setItemsFound, MODE_CONTAINS)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_CONTAINS)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_CONTAINS)
+        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_CONTAINS)
 
+
+        //
+        log.info("findWordPart - done")
 
         // ---
         return stItem
@@ -364,13 +394,19 @@ class ItemFinder extends BaseMdbUtils {
     static final int MODE_STARTS_WITH = 2
     static final int MODE_CONTAINS = 3
 
-    void copyToFoundResult(String word, Store stSource, Store stResult, Set setFound, int mode) {
+    void copyToFoundResult(String word, Store stSource, Store stResult, Set setFound, long factType, int mode) {
         for (StoreRecord recFact : stSource) {
             Long itemId = recFact.getLong("item")
             Long factId = recFact.getLong("id")
+            Long factTypeId = recFact.getLong("factType")
             String factValue = recFact.getString("factValue")
             Object factTags = recFact.getValue("tag")
 
+            // Тип факта
+            if (factType != factTypeId) {
+                continue
+            }
+            
             // Тип совпадения
             if (mode == MODE_EQUAL) {
                 if (!factValue.equalsIgnoreCase(word)) {

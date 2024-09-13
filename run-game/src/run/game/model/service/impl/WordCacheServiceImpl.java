@@ -6,6 +6,7 @@ import jandcode.core.dbm.*;
 import jandcode.core.dbm.impl.*;
 import jandcode.core.dbm.mdb.*;
 import jandcode.core.store.*;
+import org.slf4j.*;
 import run.game.dao.*;
 import run.game.dao.backstage.*;
 import run.game.model.service.*;
@@ -27,6 +28,8 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
     private Map<Object, List<StoreRecord>> idxFacts;
     private StoreIndex idxOcrStopWords;
 
+    //
+    protected static Logger log = LoggerFactory.getLogger(ItemFinder.class);
 
     @Override
     protected void onConfigure(BeanConfig cfg) throws Exception {
@@ -61,22 +64,19 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
      * Загружает список всех слов из БД и готовит его к работе.
      */
     private void loadData() throws Exception {
+        log.info("loadData");
+
         // --- idxFacts
         Fact_list list = mdb.create(Fact_list.class);
 
-        // Загружаем spelling-distorted для всех слов из БД.
-        Store stFactSpelling_distorted = list.loadBy_factType(RgmDbConst.FactType_word_spelling_distorted, Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang));
-        // Загружаем spelling для всех слов из БД.
-        Store stFactSpelling = list.loadBy_factType(RgmDbConst.FactType_word_spelling, Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang));
-        // Загружаем word-translate для всех слов из БД.
-        Store stFactTranslate = list.loadBy_factType(RgmDbConst.FactType_word_translate, Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_translate_direction));
-
-        //
+        // Загружаем word_spelling и word_spelling_distorted для всех слов из БД
         stFact = mdb.createStore("Fact.list");
-        //
-        stFactSpelling.copyTo(stFact);
-        stFactSpelling_distorted.copyTo(stFact);
-        stFactTranslate.copyTo(stFact);
+        list.loadBy_factType(
+                stFact,
+                Arrays.asList(RgmDbConst.FactType_word_spelling, RgmDbConst.FactType_word_spelling_distorted),
+                Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang)
+        );
+
         //
         idxFacts = StoreUtils.collectGroupBy_records(stFact, "factValue");
 
@@ -86,6 +86,9 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
         RgmCsvUtils utils = mdb.create(RgmCsvUtils.class);
         utils.addFromCsv(stOcrStopWords, "res:run/game/dao/game/OcrStopWords.csv");
         idxOcrStopWords = stOcrStopWords.getIndex("value");
+
+        //
+        log.info("loadData - ok");
     }
 
 

@@ -22,7 +22,7 @@ class ItemFinder_Test extends RgmBase_Test {
      * Найдем по точному совпадению
      */
     @Test
-    void findTextExact() {
+    void findWordExact() {
         ItemFinder finder = mdb.create(ItemFinder)
         Store stItem
 
@@ -32,20 +32,20 @@ class ItemFinder_Test extends RgmBase_Test {
         //
         textPositions.clear()
         textPositions.add(new TextPosition(word_0))
-        stItem = finder.findTextExact(textPositions, [:])
+        stItem = finder.findWordExact(textPositions, [:])
 
         println()
-        println("findTextExact: '" + word_0 + "'")
+        println("findWordExact: '" + word_0 + "'")
         mdb.outTable(stItem)
 
 
         //
         textPositions.clear()
         textPositions.add(new TextPosition(word_1))
-        stItem = finder.findTextExact(textPositions, [:])
+        stItem = finder.findWordExact(textPositions, [:])
 
         println()
-        println("findTextExact: '" + word_1 + "'")
+        println("findWordExact: '" + word_1 + "'")
         mdb.outTable(stItem)
 
 
@@ -54,10 +54,10 @@ class ItemFinder_Test extends RgmBase_Test {
         for (String word : text) {
             textPositions.add(new TextPosition(word))
         }
-        stItem = finder.findTextExact(textPositions, [:])
+        stItem = finder.findWordExact(textPositions, [:])
 
         println()
-        println("findTextExact: '" + text + "'")
+        println("findWordExact: '" + text + "'")
         mdb.outTable(stItem)
     }
 
@@ -70,7 +70,7 @@ class ItemFinder_Test extends RgmBase_Test {
         stItem = finder.findWordPart(word_4, [:])
 
         println()
-        println("findTextExact: '" + word_4 + "'")
+        println("findWordExact: '" + word_4 + "'")
         mdb.outTable(stItem)
     }
 
@@ -116,7 +116,7 @@ class ItemFinder_Test extends RgmBase_Test {
 
         //
         tags = [:]
-        stFact = finder.findTextExact(textPositions, tags)
+        stFact = finder.findWordExact(textPositions, tags)
 
         println()
         println("findItems: '" + word_3 + "', tags: " + tags)
@@ -130,7 +130,7 @@ class ItemFinder_Test extends RgmBase_Test {
                 (RgmDbConst.TagType_word_lang)          : RgmDbConst.TagValue_word_lang_eng,
                 (RgmDbConst.TagType_translate_direction): RgmDbConst.TagValue_translate_direction_eng_rus,
         ]
-        stFact = finder.findTextExact(textPositions, tags)
+        stFact = finder.findWordExact(textPositions, tags)
 
         println()
         println("findItems: '" + word_3 + "', tags: " + tags)
@@ -142,7 +142,7 @@ class ItemFinder_Test extends RgmBase_Test {
                 (RgmDbConst.TagType_word_lang)          : RgmDbConst.TagValue_word_lang_kaz,
                 (RgmDbConst.TagType_translate_direction): RgmDbConst.TagValue_translate_direction_kaz_rus,
         ]
-        stFact = finder.findTextExact(textPositions, tags)
+        stFact = finder.findWordExact(textPositions, tags)
 
         println()
         println("findItems: '" + word_3 + "', tags: " + tags)
@@ -165,7 +165,7 @@ class ItemFinder_Test extends RgmBase_Test {
 
         //
         tags = [:]
-        stFact = finder.findTextExact(textPositions, tags)
+        stFact = finder.findWordExact(textPositions, tags)
 
         println()
         println("findItems: '" + word_2 + "', tags: " + tags)
@@ -175,7 +175,7 @@ class ItemFinder_Test extends RgmBase_Test {
         //
         textPositions.clear()
         textPositions.add(new TextPosition(word_3))
-        stFact = finder.findTextExact(textPositions, tags)
+        stFact = finder.findWordExact(textPositions, tags)
 
         println()
         println("findItems: '" + word_3 + "', tags: " + tags)
@@ -330,7 +330,7 @@ class ItemFinder_Test extends RgmBase_Test {
         Store stItem = finder.collectItems(textPositions, [:], null)
 
         println()
-        println("findTextExact, file: '" + fileName + "'")
+        println("findWordExact, file: '" + fileName + "'")
         mdb.outTable(stItem)
     }
 

@@ -40,20 +40,15 @@ class Fact_list extends BaseMdbUtils {
      *
      * @param tagTypes Типы тэгов, которвые должны попасть в поле tag
      */
-    public Store loadBy_factType(long factType, Collection<Long> tagTypes) {
-        Store st = mdb.createStore("Fact.list")
-
+    public void loadBy_factType(Store stFact, Collection<Long> factTypes, Collection<Long> tagTypes) {
         // Факты (большим общим списком)
-        mdb.loadQuery(st, sqlBy_factType(), [factType: factType])
+        mdb.loadQuery(stFact, sqlBy_factType(factTypes))
 
         // Тэги фактов (большим общим списком)
-        Store stTags = mdb.loadQuery(sqlBy_factType__tags(tagTypes), [factType: factType])
+        Store stTags = mdb.loadQuery(sqlBy_factType__tags(factTypes, tagTypes))
 
         // Распределим тэги
-        spreadTags(stTags, st)
-
-        //
-        return st
+        spreadTags(stTags, stFact)
     }
 
     /**
@@ -76,7 +71,8 @@ class Fact_list extends BaseMdbUtils {
         Store st = mdb.createStore("Fact.list")
 
         // Факты
-        mdb.loadQuery(st, sqlBy_value_factType__like(), [factValue: "%" + factValue + "%", factType: factType])
+        Map params = [factType: factType, factValue: "%" + factValue + "%"]
+        mdb.loadQuery(st, sqlBy_value_factType__like(), params)
 
         //
         return st
@@ -99,6 +95,23 @@ class Fact_list extends BaseMdbUtils {
         // Факты
         Map params = [factType: factType, factValue: "%" + factValue + "%"]
         mdb.loadQuery(st, sqlBy_value_factType__like(), params)
+
+        // Тэги фактов (для загруженных id)
+        Store stTags = loadTagsByIds(st.getUniqueValues("id"), tagTypes)
+
+        // Распределим тэги
+        spreadTags(stTags, st)
+
+        //
+        return st
+    }
+
+    public Store findBy_factType_value(Collection<Long> factTypes, String factValue, Collection<Long> tagTypes) {
+        Store st = mdb.createStore("Fact.list")
+
+        // Факты
+        Map params = [factValue: "%" + factValue + "%"]
+        mdb.loadQuery(st, sqlBy_value_factType__like(factTypes), params)
 
         // Тэги фактов (для загруженных id)
         Store stTags = loadTagsByIds(st.getUniqueValues("id"), tagTypes)
@@ -281,9 +294,6 @@ from
 where
     Item.id = :id and
     Fact.factType = :factType
-
-order by
-    Fact.id
 """
     }
 
@@ -304,14 +314,12 @@ from
 
 where
     Item.id = :id
-
-order by
-    Fact.factType,
-    Fact.id
 """
     }
 
-    String sqlBy_factType() {
+    String sqlBy_factType(Collection<Long> factTypes) {
+        String factTypesStr = UtString.join(factTypes, ",")
+
         return """
 select
     Fact.item,
@@ -326,12 +334,13 @@ from
     Fact
 
 where
-    Fact.factType = :factType
+    Fact.factType in (${factTypesStr})
 """
     }
 
 
-    String sqlBy_factType__tags(Collection tagTypes) {
+    String sqlBy_factType__tags(Collection<Long> factTypes, Collection tagTypes) {
+        String factTypesStr = UtString.join(factTypes, ",")
         String tagTypesStr = UtString.join(tagTypes, ",")
 
         return """
@@ -349,10 +358,7 @@ from
     )
 
 where
-    Fact.factType = :factType
-
-order by
-    Fact.id
+    Fact.factType in (${factTypesStr})
 """
     }
 
@@ -375,9 +381,6 @@ from
 where
     Fact.factValue = :factValue and
     Fact.factType = :factType
-
-order by
-    Fact.id
 """
     }
 
@@ -400,9 +403,6 @@ where
     Fact.item = :item and
     Fact.factValue = :factValue and
     Fact.factType = :factType
-
-order by
-    Fact.id
 """
     }
 
@@ -424,9 +424,29 @@ from
 where
     Fact.factValue like :factValue and
     Fact.factType = :factType
+"""
+    }
 
-order by
-    Fact.id
+    String sqlBy_value_factType__like(Collection factTypes) {
+        String factTypesStr = UtString.join(factTypes, ",")
+
+        return """
+select
+    Item.id item,
+    --Item.value itemValue,
+    
+    Fact.id,
+    Fact.id fact,
+    Fact.factType factType,
+    Fact.factValue
+
+from
+    Item
+    join Fact on (Fact.item = Item.id)
+
+where
+    Fact.factValue like :factValue and
+    Fact.factType in (${factTypesStr})
 """
     }
 

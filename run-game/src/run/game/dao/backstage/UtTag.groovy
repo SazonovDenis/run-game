@@ -41,6 +41,10 @@ class UtTag {
     }
 
 
+    /**
+     * Сравниваем набры тэгов на совпадение
+     * Наборы не равны, если есть тэг в обоих наборах, и его значение различается.
+     */
     public static boolean tagsEquals(Map<Long, String> tags0, Map<Long, String> tags1) {
 
         if (tags1 == null || tags0 == null || tags1.size() == 0 || tags0.size() == 0) {

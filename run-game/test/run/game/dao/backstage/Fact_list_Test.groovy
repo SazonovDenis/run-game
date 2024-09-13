@@ -69,9 +69,15 @@ class Fact_list_Test extends RgmBase_Test {
     @Test
     void loadFactsByFactType() {
         // Получаем spelling для всех слов из БД
-        Fact_list list = mdb.create(Fact_list.class);
-        Store stFactSpelling = list.loadBy_factType(RgmDbConst.FactType_word_spelling, Arrays.asList(RgmDbConst.TagType_word_lang))
-        Store stFactTranslate = list.loadBy_factType(RgmDbConst.FactType_word_translate, Arrays.asList(RgmDbConst.TagType_translate_direction))
+        Fact_list list = mdb.create(Fact_list.class)
+
+        //
+        Store stFactSpelling = mdb.createStore("Fact.list")
+        Store stFactTranslate = mdb.createStore("Fact.list")
+
+        //
+        list.loadBy_factType(stFactSpelling, [RgmDbConst.FactType_word_spelling], Arrays.asList(RgmDbConst.TagType_word_lang))
+        list.loadBy_factType(stFactTranslate, [RgmDbConst.FactType_word_translate], Arrays.asList(RgmDbConst.TagType_translate_direction))
 
         //
         println()

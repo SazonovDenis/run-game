@@ -1,6 +1,7 @@
 <template>
 
     <PlanEditPage
+        tabMenuName="WordsPage"
         :plan="plan"
         :doEditPlan="false"
         defaultMode="addByText"
@@ -15,6 +16,7 @@ import auth from "./auth"
 import {daoApi} from "./dao"
 import MenuContainer from "./comp/MenuContainer"
 import PlanEditPage from "./PlanEditPage"
+import ctx from "run-game-frontend/src/gameplayCtx"
 
 /**
  * Главная страница.
@@ -23,7 +25,7 @@ import PlanEditPage from "./PlanEditPage"
  */
 export default {
 
-    name: "HomePage",
+    name: "WordsPage",
 
     components: {
         MenuContainer,
@@ -39,21 +41,31 @@ export default {
     },
 
     async mounted() {
-        // Текущий пользователь и его план
-        let userInfo = auth.getContextUserInfo()
-        let planDefaultId = userInfo.planDefault
+        let globalState = ctx.getGlobalState()
 
-        // Загрузим план по умолчанию текущего пользователя
-        let resApi = await daoApi.loadStore(
-            'm/Plan/getPlan', [planDefaultId]
-        )
-        let planDefault = resApi.records[0]
+        // Уже загружен план по умолчанию?
+        if (!globalState.planDefault) {
+            // Текущий пользователь и его план
+            let userInfo = auth.getContextUserInfo()
+            let planDefaultId = userInfo.planDefault
+
+            // Загрузим план по умолчанию текущего пользователя
+            let resApi = await daoApi.loadStore(
+                'm/Plan/getPlan', [planDefaultId]
+            )
+            let planDefault = resApi.records[0]
+
+            // Сохраним на будущее
+            globalState.planDefault = planDefault
+        }
+
 
         //
-        this.plan = planDefault
+        this.plan = globalState.planDefault
 
         //
         this.dataLoaded = true
+
     }
 
 }

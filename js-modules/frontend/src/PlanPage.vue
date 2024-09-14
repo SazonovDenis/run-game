@@ -15,7 +15,10 @@
         <!-- -->
 
 
-        <div class="justify-center row q-pt-sm">
+        <div v-if="tasks.length !== 0"
+             class="justify-center row q-pt-sm"
+             @click="onPlanStatistic()"
+        >
 
             <StatisticWordsLearned :statistic="statistic"/>
 
@@ -25,28 +28,24 @@
 
         <div class="row">
 
-            <jc-btn class="q-ma-sm"
-                    kind="secondary"
-                    label="Статистика"
-                    style="min-width: 8em;"
-                    @click="onPlanStatistic()">
-            </jc-btn>
-
-            <jc-btn class="q-ma-sm"
-                    kind="secondary"
-                    label="Поделиться"
-                    style="min-width: 8em;"
-                    @click="onPlanUsrPlan()">
-            </jc-btn>
+            <q-btn class="q-ma-sm"
+                   round no-caps
+                   color="teal-6"
+                   size="1.1rem"
+                   icon="share"
+                   @click="onPlanUsrPlan()">
+            </q-btn>
 
             <q-space/>
 
-            <jc-btn class="q-ma-sm"
-                    kind="primary"
-                    label="Играть уровень"
-                    style="min-width: 12em;"
-                    @click="gameStart()">
-            </jc-btn>
+            <q-btn class="q-ma-sm q-px-lg"
+                   rounded _flat no-caps
+                   color="red-9"
+                   size="1.1rem"
+                   :disabled="tasks.length === 0"
+                   label="Играть уровень"
+                   @click="gameStart()">
+            </q-btn>
 
         </div>
 
@@ -58,6 +57,7 @@
             v-model:sortField="sortField"
             v-model:showHidden="showHidden"
             v-model:maskAnswer="maskAnswer"
+            :disabled="tasks.length === 0"
             :hiddenCount="hiddenCount"
             :visibleCount="visibleCount"
         />
@@ -88,15 +88,14 @@
             position="bottom-left"
             :offset="[10, 10]">
 
-            <div class="row q-gutter-x-sm"
-                 style="_border: solid 1px red; align-items: end;">
+            <div class="row q-gutter-x-sm">
                 <q-btn
                     v-if="canDeletePlan()"
                     rounded no-caps class="q-py-xs q-px-md"
                     color="red-7"
                     icon="del"
                     label="Удалить уровень"
-                    size="1.2em"
+                    size="1.1rem"
                     style="width: 15rem"
                     @click="onPlanDelete"
                 />
@@ -225,10 +224,14 @@ export default {
     methods: {
 
         getHelpKey() {
-            if (this.maskAnswer){
-                return ["help.plan.game", "help.plan.edit", "help.plan.maskAnswer.masked"]
+            if (this.tasks.length === 0) {
+                return ["help.plan.empty"]
             } else {
-                return ["help.plan.game", "help.plan.edit", "help.plan.maskAnswer"]
+                if (this.maskAnswer) {
+                    return ["help.plan.word-hide", "help.plan.maskAnswer.masked"]
+                } else {
+                    return ["help.plan.word-hide", "help.plan.maskAnswer"]
+                }
             }
         },
 

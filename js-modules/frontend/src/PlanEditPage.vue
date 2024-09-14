@@ -1,7 +1,7 @@
 <template>
     <MenuContainer
         :title="title"
-        tabMenuName="PlanEditPage"
+        :tabMenuName="tabMenuName"
         :frameReturn="getFrameReturn"
         :frameReturnProps="frameReturnProps"
         :showFooter="true"
@@ -483,6 +483,7 @@ export default {
 
         defaultMode: null,
 
+        tabMenuName: {default: "PlanEditPage"},
         frameReturn: null,
         frameReturnProps: null,
     },
@@ -911,7 +912,7 @@ export default {
                     return "help.mainPage.foundHidden"
                 }
 
-                return "help.mainPage.found"
+                return ["help.plan.word-hide", "help.mainPage.found"]
 
             } else if (this.frameMode === "editPlan") {
                 return "help.mainPage.editPlan"

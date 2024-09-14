@@ -5,7 +5,7 @@
         <template v-if="edFilter">
 
             <q-btn
-                :disabled="!((visibleCount > 0) || (showHidden && hiddenCount > 0))"
+                :disabled="disabled || !((visibleCount > 0) || (showHidden && hiddenCount > 0))"
                 v-show="!filterTextIsExpanded"
                 @click="elFilterText_show()" color="primary"
 
@@ -19,6 +19,7 @@
                 placeholder="Поиск в плане"
 
                 v-show="filterTextIsExpanded"
+                :disabled="disabled"
                 :value="filterText"
                 @update:modelValue="updateParent('filterText', $event)"
 
@@ -35,6 +36,7 @@
             style="width: 10em;"
 
             v-if="edSort"
+            :disabled="disabled"
             :options="cbValues"
             :value="sortField"
             @update:value="updateParent('sortField', $event)"
@@ -42,6 +44,7 @@
 
         <Tags
             v-if="edTags"
+            :disabled="disabled"
             :tags="tags"
             :tagsKeys="utils.Langs_keys"
             :onTagsChange="onTagsChange"
@@ -49,6 +52,7 @@
 
         <BtnMaskAnswer
             v-if="edMaskAnswer"
+            :disabled="disabled"
             :maskAnswer="maskAnswer"
             :compact="filterTextIsExpanded"
             @update:maskAnswer="updateParent('maskAnswer', $event)"
@@ -57,6 +61,7 @@
         <BtnHidden
             class="q-mx-sm"
             v-if="edHidden"
+            :disabled="disabled"
             :hiddenCount="hiddenCount"
             :showHidden="showHidden"
             @update:showHidden="updateParent('showHidden', $event)"
@@ -103,6 +108,7 @@ export default {
 
         onTagsChange: {type: Function, default: null},
 
+        disabled: false,
         hiddenCount: 0,
         visibleCount: 0,
 

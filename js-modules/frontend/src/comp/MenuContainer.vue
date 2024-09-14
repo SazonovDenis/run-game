@@ -62,12 +62,12 @@
                         class="q-gutter-x-md bg-primary text-white"
                     >
 
-                        <q-tab name="PlanEditPage" label="Слова"
-                               @click="onMainPage()"/>
+                        <q-tab name="WordsPage" label="Слова"
+                               @click="onWordsPage()"/>
                         <q-tab name="PlansPage" label="Уровни"
-                               @click="onPlans()"/>
+                               @click="onPlansPage()"/>
                         <q-tab name="StatisticPage" label="Результаты"
-                               @click="onStatistic()"/>
+                               @click="onStatisticPage()"/>
 
 
                     </q-tabs>
@@ -469,6 +469,7 @@ export default {
 
         getReturnFrame(currentPath) {
             let returnPaths = {
+                "/words": "/words",
                 "/game": "/game",
                 "/gameStatistic": "/gameStatistic",
                 "/statistic": "/statistic",
@@ -515,21 +516,27 @@ export default {
             }
         },
 
-        onMainPage: function() {
+        onWordsPage: function() {
             apx.showFrame({
-                frame: '/',
+                frame: '/words',
+            })
+        },
+
+        onPlansPage: function() {
+            apx.showFrame({
+                frame: '/plans',
+            })
+        },
+
+        onStatisticPage: function() {
+            apx.showFrame({
+                frame: '/statistic',
             })
         },
 
         onAbout: function() {
             apx.showFrame({
                 frame: '/about',
-            })
-        },
-
-        onStatistic: function() {
-            apx.showFrame({
-                frame: '/statistic',
             })
         },
 
@@ -542,12 +549,6 @@ export default {
         onLink: function() {
             apx.showFrame({
                 frame: '/link',
-            })
-        },
-
-        onPlans: function() {
-            apx.showFrame({
-                frame: '/plans',
             })
         },
 

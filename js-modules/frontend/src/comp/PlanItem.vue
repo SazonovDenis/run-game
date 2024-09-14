@@ -20,7 +20,12 @@
                 {{ plan.planText }}
             </div>
             <div class="plan-info">
-                {{ plan.wordCount }} {{ wordsText(plan.wordCount) }}
+                <template v-if="plan.isDefault && plan.wordCount === 0">
+                    Ваш личный список для изучения
+                </template>
+                <template v-else>
+                    {{ plan.wordCount }} {{ wordsText(plan.wordCount) }}
+                </template>
             </div>
             <TagTranslateDirection :tags="plan.tags"/>
         </q-item-section>

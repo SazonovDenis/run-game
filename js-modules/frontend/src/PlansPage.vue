@@ -65,7 +65,7 @@
                 color="positive"
                 icon="gallery-add"
                 _label="Создать свой уровень"
-                size="1.2em"
+                size="1.1rem"
                 @click="onCreatePlan"
             />
 

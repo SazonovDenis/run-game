@@ -3,7 +3,7 @@ import App from './App'
 import theme from 'theme/default'
 import icons from 'all/icons'
 
-import Home from './HomePage'
+import WordsPage from './WordsPage'
 
 import gameplay from "./gameplay"
 
@@ -12,22 +12,23 @@ export async function run() {
     apx.icons.registerIcons(icons)
 
     let routes = [
-        {path: '', frame: Home},
-        {path: '/test', frame: import('./TestPage')},
-        {path: '/exit', frame: import('./ExitPage')},
+        {path: '', frame: import('./PlansPage')},
+        {path: '/words', frame: WordsPage},
+        {path: '/plans', frame: import('./PlansPage')},
+        {path: '/statistic', frame: import('./StatisticPage')},
         {path: '/about', frame: import('./AboutPage')},
         {path: '/login', frame: import('./LoginPage')},
-        {path: '/game', frame: import('./GamePage')},
         {path: '/user', frame: import('./UserInfoPage')},
+        {path: '/game', frame: import('./GamePage')},
         {path: '/link', frame: import('./LinkPage')},
         {path: '/linkAdd', frame: import('./LinkAddPage')},
         {path: '/plan', frame: import('./PlanPage')},
         {path: '/planEdit', frame: import('./PlanEditPage')},
         {path: '/planUsrPlan', frame: import('./PlanUsrPlanPage')},
-        {path: '/plans', frame: import('./PlansPage')},
-        {path: '/statistic', frame: import('./StatisticPage')},
         {path: '/planStatistic', frame: import('./PlanStatisticPage')},
         {path: '/gameStatistic', frame: import('./GameStatisticPage')},
+        {path: '/test', frame: import('./TestPage')},
+        {path: '/exit', frame: import('./ExitPage')},
     ]
 
     apx.app.onBeforeRun(async () => {

@@ -4,7 +4,7 @@
         class="rgm-style"
         unelevated no-caps
         icon="quasar.chip.selected"
-        :disabled="hiddenCount === 0"
+        :disabled="disabled || hiddenCount === 0"
         :label="getLabel_showHidden()"
         :color="getColor_showHidden()"
         :text-color="getTextColor_showHidden()"
@@ -27,6 +27,7 @@ export default {
     name: "BtnHidden",
 
     props: {
+        disabled: false,
         showHidden: {type: Boolean, default: false},
         hiddenCount: {type: Number, default: 0},
         compact: {type: Boolean, default: false},

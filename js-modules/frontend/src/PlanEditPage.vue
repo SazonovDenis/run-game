@@ -810,6 +810,9 @@ export default {
 
             // Заполним список
             this.itemsLoaded = items
+
+            // Ранее сформированные списки с разницей очищаем
+            this.clearChangedItems()
         },
 
         isScreenWide() {

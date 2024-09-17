@@ -88,34 +88,18 @@
 }
 
 .rgm-task-item-container {
-  min-width: 15rem;
-  _max-width: 35rem;
   flex-grow: 1;
+  width: 25rem;
+  max-width: 50rem;
+  min-width: 15rem;
 }
 
 .rgm-task-item-container-border {
-  border-right: 1px solid rgba(100, 100, 100, 0.3);
   border-left: 1px solid rgba(100, 100, 100, 0.3);
 }
 
 .task-item {
   padding-right: 0.5em !important;
-}
-
-.task-item-task-question {
-  min-width: 18em !important;
-}
-
-@media (max-width: 600px) {
-  .task-item-task-question {
-    min-width: 15em !important;
-  }
-}
-
-@media (max-width: 320px) {
-  .task-item-task-question {
-    min-width: 13em !important;
-  }
 }
 
 .task-item-menu {

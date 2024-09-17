@@ -5,6 +5,7 @@ import jandcode.core.store.*
 import org.junit.jupiter.api.*
 import run.game.dao.*
 import run.game.dao.backstage.impl.*
+import run.game.model.service.*
 
 class ItemFinder_Test extends RgmBase_Test {
 
@@ -334,5 +335,66 @@ class ItemFinder_Test extends RgmBase_Test {
         mdb.outTable(stItem)
     }
 
+
+    /**
+     * Найдем по началу
+     */
+    @Test
+    void binarySearch() {
+        WordCacheService wordService = mdb.getModel().bean(WordCacheService)
+        Store stFact = wordService.getStFact()
+
+        println()
+        println("stFact")
+        mdb.outTable(stFact, 15)
+
+        //
+        ItemFinder finder = mdb.create(ItemFinder)
+
+        //
+        int pos = finder.binarySearch(stFact, "'cell")
+
+        println()
+        println("stFact pos: " + pos)
+        outTableFromPos(stFact, pos)
+
+
+        //
+        pos = finder.binarySearch(stFact, "'celli")
+
+        println()
+        println("stFact pos: " + pos)
+        outTableFromPos(stFact, pos)
+
+
+        //
+        pos = finder.binarySearch(stFact, "'cellis")
+
+        println()
+        println("stFact pos: " + pos)
+        outTableFromPos(stFact, pos)
+    }
+
+    void outTableFromPos(Store stFact, int pos) {
+        if (pos == -1) {
+            return
+        }
+
+        //
+        Store stTmp = stFact.cloneStore()
+        stTmp.addField("pos", "int")
+
+        //
+        stTmp.add(stFact.get(pos - 2))
+        stTmp.add(stFact.get(pos - 1))
+        stTmp.add(stFact.get(pos + 0)).setValue("pos", pos + 0)
+        stTmp.add(stFact.get(pos + 1))
+        stTmp.add(stFact.get(pos + 2))
+        stTmp.add(stFact.get(pos + 3))
+        stTmp.add(stFact.get(pos + 4))
+
+        //
+        mdb.outTable(stTmp)
+    }
 
 }

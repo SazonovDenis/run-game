@@ -148,7 +148,7 @@ class ItemFinder extends BaseMdbUtils {
             // Ищем Items по фрагменту
             TextPosition textPositionWord = textPositions.get(0)
             String word = textPositionWord.text
-            Store stItemFoundWord = findWordPart(word, tags)
+            Store stItemFoundWord = findWordStarts(word, tags)
 
 
             // --- Обновляем результирующие списки
@@ -287,6 +287,117 @@ class ItemFinder extends BaseMdbUtils {
         return stItem
     }
 
+    int binarySearch(Store st, String word) {
+        int res = -1
+
+        if (word == null || word.length() == 0) {
+            return res
+        }
+
+        //
+        int posA = 0
+        int posB = st.size() - 1
+
+        // Ищем начало
+        while (posA <= posB) {
+            int pos = (posA + posB) / 2 as int
+
+            //
+            String factValue = st.get(pos).getString("factValue")
+
+            //
+            //println("[" + posA + "-" + pos + "-" + posB + "] " + factValue)
+
+            //
+            boolean starts = factValue.startsWithIgnoreCase(word)
+            if (starts) {
+                res = pos
+            }
+
+            //
+            int cmp = word.compareToIgnoreCase(factValue)
+            if (cmp > 0) {
+                posA = pos + 1
+            } else {
+                posB = pos - 1
+            }
+        }
+
+        //
+        return res
+    }
+
+    /**
+     * Ищем ОДНО слово, по ФРАГМЕНТУ написания или перевода,
+     * среди наших словарных слов.
+     *
+     * @param word слово или его фрагмент
+     * @return Найденные слова: store со списком Item
+     */
+    Store findWordStarts(String word, Map<Long, String> tags) {
+        long factType = RgmDbConst.FactType_word_spelling
+
+        //
+        Store stResult = mdb.createStore("Item.find")
+
+        //
+        WordCacheService wordService = mdb.getModel().bean(WordCacheService)
+        Store stFact = wordService.getStFact()
+
+        //
+        int pos = binarySearch(stFact, word)
+        //
+        if (pos == -1) {
+            return stResult
+        }
+
+        while (pos < stFact.size()) {
+            StoreRecord recFact = stFact.get(pos)
+            pos = pos + 1
+
+            //
+            Long itemId = recFact.getLong("item")
+            Long factId = recFact.getLong("id")
+            Long factTypeId = recFact.getLong("factType")
+            String factValue = recFact.getString("factValue")
+            Object factTags = recFact.getValue("tag")
+
+            // Тип факта
+            if (factType != factTypeId) {
+                continue
+            }
+
+            // Значение факта
+            if (!factValue.startsWithIgnoreCase(word)) {
+                break
+            }
+
+            // Не более MAX_COUNT_FOUND_ONE_TYPE в результатах
+            if (stResult.size() > MAX_COUNT_FOUND_ONE_TYPE) {
+                break
+            }
+
+            // Если мы нашли совпадение по spelling - скажем, что нашли сущность itemId,
+            // а не факт factId: укажем пустое поле factId, это спровоцирует в дальнейшем
+            // загрузку ВСЕХ переводов сущности.
+            // В противном случае укажем factId не пустой, тогда останется именно этот найденный перевод.
+            if (recFact.getValue("factType") == RgmDbConst.FactType_word_spelling || recFact.getValue("factType") == RgmDbConst.FactType_word_spelling_distorted) {
+                factId = null
+            }
+
+            //
+            stResult.add([
+                    id       : itemId,
+                    fact     : factId,
+                    factValue: factValue,
+                    tag      : factTags,
+            ])
+        }
+
+
+        //
+        return stResult
+    }
 
     /**
      * Ищем ОДНО слово, по ФРАГМЕНТУ написания или перевода,
@@ -326,20 +437,8 @@ class ItemFinder extends BaseMdbUtils {
         //
         Collection tagTypes = Arrays.asList(RgmDbConst.TagType_dictionary, RgmDbConst.TagType_word_lang, RgmDbConst.TagType_translate_direction)
 
-/*
-        // Поиск по атрибуту word-spelling
-        Store stFactSpelling = list.findBy_factType_value(RgmDbConst.FactType_word_spelling, word, tagTypes)
-        stFactSpelling.sort("factValue")
-
-        // Поиск по атрибуту word-spelling-distorted
-        Store stFactSpelling_distorted = list.findBy_factType_value(RgmDbConst.FactType_word_spelling_distorted, word, tagTypes)
-        stFactSpelling_distorted.sort("factValue")
-
-        // Поиск по атрибуту word-translate
-        Store stFactTranslate = list.findBy_factType_value(RgmDbConst.FactType_word_translate, word, tagTypes)
-        stFactTranslate.sort("factValue")
-*/
-        Store stFact = list.findBy_factType_value(
+        // Поиск по атрибутам word-spelling, word-spelling-distorted, word-translate
+        Store stFactFound = list.findBy_factType_value(
                 [
                         RgmDbConst.FactType_word_spelling,
                         RgmDbConst.FactType_word_spelling_distorted,
@@ -351,11 +450,11 @@ class ItemFinder extends BaseMdbUtils {
 
 
         // Фильтр по тэгам
-        UtTag.cleanStoreByTags(stFact, tagsValue_word_lang)
-        UtTag.cleanStoreByTags(stFact, tagsValues_translate_direction)
+        UtTag.cleanStoreByTags(stFactFound, tagsValue_word_lang)
+        UtTag.cleanStoreByTags(stFactFound, tagsValues_translate_direction)
 
         // Чтобы после всего - по алфавиту
-        stFact.sort("factValue")
+        stFactFound.sort("factValue")
 
 
         // ---
@@ -364,19 +463,19 @@ class ItemFinder extends BaseMdbUtils {
         Set<Long> setItemsFound = new HashSet<>()
 
         // В первую очередь перенесём слова, ТОЧНО СОВПАДАЮЩИЕ с фрагментом
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_EQUAL)
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_EQUAL)
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_EQUAL)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_EQUAL)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_EQUAL)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_EQUAL)
 
         // Во вторую очередь слова НАЧИНАЮЩИЕСЯ на фрагмент
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_STARTS_WITH)
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_STARTS_WITH)
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_STARTS_WITH)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_STARTS_WITH)
 
         // Во вторую очередь слова СОДЕРЖАЩИЕ фрагмент.
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_CONTAINS)
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_CONTAINS)
-        copyToFoundResult(word, stFact, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_CONTAINS)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_spelling, MODE_CONTAINS)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_spelling_distorted, MODE_CONTAINS)
+        copyToFoundResult(word, stFactFound, stItem, setItemsFound, RgmDbConst.FactType_word_translate, MODE_CONTAINS)
 
 
         //
@@ -406,7 +505,7 @@ class ItemFinder extends BaseMdbUtils {
             if (factType != factTypeId) {
                 continue
             }
-            
+
             // Тип совпадения
             if (mode == MODE_EQUAL) {
                 if (!factValue.equalsIgnoreCase(word)) {

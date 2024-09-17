@@ -80,6 +80,11 @@ public class WordCacheServiceImpl extends BaseModelMember implements WordCacheSe
         //
         idxFacts = StoreUtils.collectGroupBy_records(stFact, "factValue");
 
+
+        // --- Чтобы работал бинарный поиск по началу строки
+        stFact.sort("factValue");
+
+
         // ---idxOcrStopWords
         // Стоп-слова при разборе сфотографировании текста
         Store stOcrStopWords = mdb.createStore("OcrStopWords");

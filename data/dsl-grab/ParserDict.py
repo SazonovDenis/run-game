@@ -26,6 +26,9 @@ class ParserDict(ParserBase):
     groupLevel = None
     groupLevelNumber = None
 
+    WAIT_TAG_M2_AS_TRASLATION = False
+    WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = False
+
     def __init__(self):
         self.state = self.State.WAIT_WORD
         self.token = None
@@ -224,7 +227,9 @@ class ParserDict(ParserBase):
         self.token["idioms"].append(idiom)
 
     def currentStringFlush(self):
-        currentString = self.currentString.replace("\xa0", " ").strip()
+        currentString = self.currentString.replace("\xa0", " ")
+        currentString = currentString.replace("\t", " ")
+        currentString = currentString.strip()
         if currentString == "":
             return
 
@@ -297,6 +302,21 @@ class ParserDict(ParserBase):
                 self.currentStringFlush()
                 #
                 self.state = self.State.WAIT_TRANSLATE
+                #
+                return
+
+            if self.WAIT_TAG_M2_AS_TRASLATION and text == "m2":
+                if self.token["text"] == "сыр":
+                    pass
+                if self.state == self.State.WAIT_INFO:
+                    self.currentStringFlush()
+                    #
+                    self.state = self.State.COLLECT_TRANSLATE
+                    #
+                    return
+
+            if self.WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN and text == "c dimgray":
+                self.state = self.State.COLLECT_EXAMPLE
                 #
                 return
 

@@ -28,6 +28,11 @@ def convert(inFileName, outDirName, tagValue_word_lang, tagValue_translate_direc
     parserStr = ParserStr()
     parserStr.nextParser = parserLex
 
+    # Настройка парсера для казахского словаря
+    if tagValue_word_lang == DbConst.TagValue.kaz:
+        parserDict.WAIT_TAG_M2_AS_TRASLATION = True
+        parserDict.WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = True
+
     ###
     with open(inFileName, 'r', encoding="utf-8") as inFile:
         while True:
@@ -48,16 +53,26 @@ def convert(inFileName, outDirName, tagValue_word_lang, tagValue_translate_direc
 outDirRoot = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/out/"
 inDirRoot = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/"
 
+#
+outDirName = outDirRoot + "rus-kaz/"
+inFileName = inDirRoot + "__rus-kaz_Kazakh_v1_1.dsl"
+convert(inFileName, outDirName, DbConst.TagValue.rus, DbConst.TagValue.rus_kaz, 2000000)
+
+#
+outDirName = outDirRoot + "rus-eng/"
+inFileName = inDirRoot + "__Ru-En-Smirnitsky.dsl"
+convert(inFileName, outDirName, DbConst.TagValue.rus, DbConst.TagValue.rus_eng, 5000000)
+
 
 #
 outDirName = outDirRoot + "kaz-rus/"
 inFileName = inDirRoot + "__kaz-rus_Kazakh_v1_1.dsl"
-convert(inFileName, outDirName, DbConst.TagValue.kaz, DbConst.TagValue.kaz_rus, 2000000)
+convert(inFileName, outDirName, DbConst.TagValue.kaz, DbConst.TagValue.kaz_rus, 3000000)
 
 #
 outDirName = outDirRoot + "eng-rus/"
 inFileName = inDirRoot + "__En-Ru-Apresyan.dsl"
-convert(inFileName, outDirName, DbConst.TagValue.eng, DbConst.TagValue.eng_rus, 3000000)
+convert(inFileName, outDirName, DbConst.TagValue.eng, DbConst.TagValue.eng_rus, 4000000)
 
 exit(0)
 

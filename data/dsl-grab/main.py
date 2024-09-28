@@ -8,13 +8,13 @@ from db import DbConst
 outDirName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/out/"
 # inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__En-Ru-Apresyan.dsl"
 # inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__Ru-En-Smirnitsky.dsl"
-# inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__kaz-rus_Kazakh_v1_1.dsl"
+inFileName = "/home/dvsa/projects/jc2-projects/run-game/data/dsl-grab/__kaz-rus_Kazakh_v1_1.dsl"
 # inFileName = "_En-Ru-Apresyan-bar.dsl"
 # inFileName = "_En-Ru-Apresyan-arm.dsl"
 # inFileName = "_En-Ru-Apresyan-test.dsl"
 # inFileName = "_En-Ru-Apresyan-diameter.dsl"
 # inFileName = "_En-Ru-Apresyan-out.dsl"
-inFileName = "_En-Ru-Apresyan-can.dsl"
+# inFileName = "_En-Ru-Apresyan-can.dsl"
 
 ###
 itemSaver = ItemSaver()
@@ -29,11 +29,16 @@ parserDict = ParserDict()
 # parserDict.nextParser = itemPrinter
 parserDict.nextParser = itemSaver
 
+#
 parserLex = ParserLex()
 parserLex.nextParser = parserDict
 
 parserStr = ParserStr()
 parserStr.nextParser = parserLex
+
+# Настройка парсера для казахского словаря
+parserDict.WAIT_TAG_M2_AS_TRASLATION = True
+parserDict.WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = True
 
 ###
 with open(inFileName, 'r', encoding="utf-8") as inFile:

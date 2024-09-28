@@ -20,6 +20,10 @@ class ParserDict(ParserBase):
     currentStringRaw = ""
 
     modePometa = False
+
+    # Из помет в английском словаре мы берем тэги, напр:
+    # [p]муз.[/p]
+    # дает тэг "муз."
     currentPometas = []
 
     groupTags = None
@@ -28,17 +32,20 @@ class ParserDict(ParserBase):
 
     WAIT_TAG_M2_AS_TRASLATION = False
     WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = False
+    KZ_DICT_EXAMPLE_MODE = False
+    KZ_DICT_POMETA_MODE = False
 
     def __init__(self):
         self.state = self.State.WAIT_WORD
         self.token = None
         self.tokenType = None
 
+    # Удаляет все пометы в строке
     def deletePometas(self, text):
         while len(text) > 0:
             n0 = text.find("{")
             n1 = text.find("}")
-            if n0 == -1:
+            if n0 == -1 or n1 == -1:
                 break
             text = text[0:n0] + text[n1 + 1:]
 
@@ -53,7 +60,7 @@ class ParserDict(ParserBase):
 
             n0 = text.find("{")
             n1 = text.find("}")
-            if n0 != 0:
+            if n0 != 0 or n1 == -1:
                 break
             text = text[0:n0] + text[n1 + 1:]
 
@@ -61,6 +68,22 @@ class ParserDict(ParserBase):
         text = text.strip()
 
         return text
+
+    def isLike_KzDict_Example(self, text):
+        token_text = self.token["text"]
+        if text.lower().strip().find(token_text) != -1:
+            return True
+        else:
+            return False
+
+    def isLike_KzDict_Translation(self, text):
+        token_text = self.token["text"]
+        if text.lower().strip().find(token_text) != -1:
+            return False
+        elif text.strip()[0:1] == "-":
+            return False
+        else:
+            return True
 
     def isValid_translation(self, translation):
         translation_text = translation["text"]
@@ -79,6 +102,9 @@ class ParserDict(ParserBase):
         return True
 
     def cleanupData(self, token):
+        # if self.token["text"] == "қасқыр":
+        #    pass
+
         translations = token["translations"]
         translationsLen = len(translations)
         for translation_idx in range(translationsLen - 1, -1, -1):
@@ -92,7 +118,7 @@ class ParserDict(ParserBase):
 
             # Уберем любые цифры спереди
             cleanText = textUtils.cleanNumberLevel(translation["text"])
-            # Уберем помены спереди
+            # Уберем пометы спереди
             cleanText = self.deleteStartingPometas(cleanText)
             #
             translation["text"] = cleanText
@@ -145,8 +171,8 @@ class ParserDict(ParserBase):
     # Актуально для казахского языка: заменяет буквы с хвостиками на обычные.
     # Облегчает поиск при отсутствии/незнании казахской раскладки.
     def makeDistorted(self, word):
-        s1 = "әғқңөұүhіүқ"
-        s2 = "эгкноуухиук"
+        s1 = "әғқңөұүhіүқ ё"
+        s2 = "эгкноуухиук е"
 
         word_Distorted = word
         for i in range(0, len(s1)):
@@ -213,6 +239,7 @@ class ParserDict(ParserBase):
     def addExample(self, text):
         # Для некоторых слов нет перевода, например суффиксов, производных слов и т.п.
         # Например суффикс "`d" в английском словаре или слово "абордажный" в русском.
+        # А примеры навешивать на что-то надо.
         if (self.currentTranslation == None):
             self.addTranslation("")
 
@@ -233,23 +260,45 @@ class ParserDict(ParserBase):
         if currentString == "":
             return
 
-        # print("[" + str(self.state)[6:].ljust(18, ' ') + "]: " + currentString)
-
         if self.state == self.State.WAIT_WORD:
             self.createToken(currentString)
-            pass
+
         elif self.state == self.State.WAIT_INFO:
             self.setTranscription(currentString)
-            pass
+
         elif self.state == self.State.COLLECT_TRANSLATE:
-            self.addTranslation(currentString)
-            pass
+            if self.KZ_DICT_EXAMPLE_MODE:
+                if self.token["text"] == "із":
+                    pass
+
+                if self.isLike_KzDict_Example(currentString):
+                    self.addExample(currentString)
+                elif self.isLike_KzDict_Translation(currentString):
+                    self.addTranslation(currentString)
+                else:
+                    currentString = currentString.strip(" -")
+                    if len(currentString) != 0:
+                        translations = self.token["translations"]
+                        if len(translations) != 0:
+                            last_translation = translations[len(translations) - 1]
+                            last_translation_examples = last_translation["examples"]
+                            if len(last_translation_examples) == 0:
+                                last_translation["text"] = last_translation["text"] + currentString
+                            else:
+                                last_translation_example = last_translation_examples[len(last_translation_examples) - 1]
+                                last_translation_example["text"] = last_translation_example["text"] + currentString
+                        else:
+                            self.onError(self.token, "unmached currentString: " + currentString)
+                            # self.addTranslation(currentString)
+
+            else:
+                self.addTranslation(currentString)
+
         elif self.state == self.State.COLLECT_EXAMPLE:
             self.addExample(currentString)
-            pass
+
         elif self.state == self.State.COLLECT_IDIOMS:
             self.addIdiom(currentString)
-            pass
 
         #
         self.currentString = ""
@@ -275,7 +324,7 @@ class ParserDict(ParserBase):
             self.currentPometa = self.currentPometa + text
 
     def stopPometa(self):
-        if len(self.currentPometa) != 0:
+        if self.currentPometa != None and len(self.currentPometa) != 0:
             self.currentPometas.append(self.currentPometa)
         #
         self.modePometa = False
@@ -293,6 +342,12 @@ class ParserDict(ParserBase):
         if tokenType == "tag":
 
             if text == "p":
+                self.startPometa()
+
+                #
+                return
+
+            if self.KZ_DICT_POMETA_MODE and text == "c darkorange":
                 self.startPometa()
 
                 #
@@ -357,6 +412,13 @@ class ParserDict(ParserBase):
         if tokenType == "tag-close":
 
             if text == "p":
+                #
+                self.stopPometa()
+
+                #
+                return
+
+            if self.KZ_DICT_POMETA_MODE and text == "c":
                 #
                 self.stopPometa()
 

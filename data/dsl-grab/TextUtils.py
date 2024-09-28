@@ -2,7 +2,7 @@
 def cleanNumberLevel(text):
     text = text.strip()
 
-    cleanSymbols = " 1234567890.)IV"
+    cleanSymbols = " 1234567890.)IV-"
     while len(text) > 0:
         if cleanSymbols.find(text[0:1]) != -1:
             text = text[1:]

@@ -41,7 +41,7 @@ class ItemSaver(ParserBase):
         self.csvFact = open(self.outDirName + "Fact.csv", "w", encoding="utf-8")
         self.csvItemTag = open(self.outDirName + "ItemTag.csv", "w", encoding="utf-8")
         self.csvFactTag = open(self.outDirName + "FactTag.csv", "w", encoding="utf-8")
-        self.errors = open(self.outDirName + "errors.txt", "w", encoding="utf-8")
+        self.errors = open(self.outDirName + "errors.save.txt", "w", encoding="utf-8")
 
         # self.csvItem.write("id\tvalue" + "\n")
         # self.csvFact.write("id\titem\tfactType\tvalue" + "\n")

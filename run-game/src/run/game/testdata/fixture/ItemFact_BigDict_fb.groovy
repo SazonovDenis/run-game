@@ -16,6 +16,7 @@ class ItemFact_BigDict_fb extends BaseFixtureBuilder {
     protected void onBuild() {
         buildIntenal(dirBase + "eng-rus/")
         buildIntenal(dirBase + "kaz-rus/")
+        //buildIntenal("data/text-grab/kz.dict/")
     }
 
     void buildIntenal(String dirName) {

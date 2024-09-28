@@ -1,43 +1,99 @@
 import docx
 
+from DbConst import TagType, FactType, TagValue
+
 
 class DocxReader():
     line_no = 0
     full_line = ""
-    lineType = 0
+    line_type = 0
 
-    file_out = None
-    file_out_bad = None
-    file_out_good = None
+    #
+    idFact = 3000000
+    idFactTag = 3000000
+    idItem = 3000000
+    idItemTag = 3000000
+    #
+    file_out_Fact = None
+    file_out_FactTag = None
+    file_out_Item = None
+    file_out_ItemTag = None
+
+    #
+    file_out_csv = None
+    file_out_csv_bad = None
+    file_out_csv_good = None
 
     def flishLine(self):
         self.full_line = self.stripLine(self.full_line)
 
         if len(self.full_line) != 0:
-            self.validateLine(self.lineType, self.full_line)
+            self.validateLine(self.line_type, self.full_line)
 
             #
-            self.file_out.write(str(self.lineType) + "\t" + self.full_line + "\n")
+            self.file_out_csv.write(str(self.line_type) + "\t" + self.full_line + "\n")
 
             # Для анализа
-            if self.lineType == 1 and self.full_line.count(",") >= 3:
-                self.file_out_bad.write(str(self.lineType) + "\t" + self.full_line + "\n")
+            if self.line_type == 1 and self.full_line.count(",") >= 3:
+                self.file_out_csv_bad.write(str(self.line_type) + "\t" + self.full_line + "\n")
             else:
-                self.file_out_good.write(str(self.lineType) + "\t" + self.full_line + "\n")
+                self.file_out_csv_good.write(str(self.line_type) + "\t" + self.full_line + "\n")
+
+            # В базу
+            self.full_line = self.full_line.lower()
+            tab_pos = self.full_line.find("\t")
+            if tab_pos != -1:
+                text1 = self.full_line[0:tab_pos]
+                text2 = self.full_line[tab_pos + 1:]
+            else:
+                text1 = self.full_line
+                text2 = ""
+
+            if self.line_type == 1:
+                self.idItem = self.idItem + 1
+                self.file_out_Item.write(str(self.idItem) + "\t" + text1 + "\n")
+                self.idItemTag = self.idItemTag + 1
+                self.file_out_ItemTag.write(str(self.idItemTag) + "\t" + str(self.idItem) + "\t" + TagType.word_lang + "\t" + TagValue.kaz + "\n")
+
+                #
+                self.idFact = self.idFact + 1
+                self.file_out_Fact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.spelling + "\t" + text1 + "\n")
+                self.idFactTag = self.idFactTag + 1
+                self.file_out_FactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.word_lang + "\t" + TagValue.kaz + "\n")
+                #
+                self.idFact_ref = self.idFact
+
+                #
+                if len(text2) != 0:
+                    self.idFact = self.idFact + 1
+                    self.file_out_Fact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + "\\N" + "\t" + FactType.translate + "\t" + text2 + "\n")
+                    self.idFactTag = self.idFactTag + 1
+                    self.file_out_FactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.translate_direction + "\t" + TagValue.kaz_rus + "\n")
+                    self.idFactTag = self.idFactTag + 1
+                    self.file_out_FactTag.write(str(self.idFactTag) + "\t" + str(self.idFact) + "\t" + TagType.dictionary + "\t" + TagValue.dictionary_full + "\n")
+                    #
+                    self.idFact_ref = self.idFact
+
+
+            elif self.line_type == 2:
+                text_example = text1 + "--" + text2
+                #
+                self.idFact = self.idFact + 1
+                self.file_out_Fact.write(str(self.idFact) + "\t" + str(self.idItem) + "\t" + str(self.idFact_ref) + "\t" + FactType.example + "\t" + text_example + "\n")
 
         #
         self.full_line = ""
-        self.lineType = 0
+        self.line_type = 0
 
-    def validateLine(self, lineType, line):
-        if lineType == 1 and not line[:1].isupper():
+    def validateLine(self, line_type, line):
+        if line_type == 1 and not line[:1].isupper():
             print(line)
-            self.file_out.close()
+            self.file_out_csv.close()
             raise Exception("lineType == 1 and not text isupper, text: " + line)
 
-        if lineType == 2 and line.find("\t") == -1:
+        if line_type == 2 and line.find("\t") == -1:
             print(line)
-            self.file_out.close()
+            self.file_out_csv.close()
             raise Exception("lineType == 2 and line.find(tab), text: " + line)
 
     def stripLine(self, line):
@@ -98,10 +154,15 @@ class DocxReader():
     def collectLine(self, text):
         self.full_line = self.full_line + "\t" + text
 
-    def read_docx_with_indents(self, file_in, file_out):
-        self.file_out = open(file_out + ".csv", "w", encoding="utf-8")
-        self.file_out_bad = open(file_out + "_bad.csv", "w", encoding="utf-8")
-        self.file_out_good = open(file_out + "_good.csv", "w", encoding="utf-8")
+    def read_docx_with_indents(self, file_in, dir_out):
+        self.file_out_Fact = open(dir_out + "/Fact.csv", "w", encoding="utf-8")
+        self.file_out_FactTag = open(dir_out + "/FactTag.csv", "w", encoding="utf-8")
+        self.file_out_Item = open(dir_out + "/Item.csv", "w", encoding="utf-8")
+        self.file_out_ItemTag = open(dir_out + "/ItemTag.csv", "w", encoding="utf-8")
+
+        self.file_out_csv = open(dir_out + "/out.csv", "w", encoding="utf-8")
+        self.file_out_csv_bad = open(dir_out + "/out_bad.csv", "w", encoding="utf-8")
+        self.file_out_csv_good = open(dir_out + "/out_good.csv", "w", encoding="utf-8")
 
         # Открываем документ
         doc = docx.Document(file_in)
@@ -147,13 +208,13 @@ class DocxReader():
             if indent == 0:
                 # слово
                 self.flishLine()
-                self.lineType = 1
+                self.line_type = 1
                 self.collectLine(text)
 
             elif indent >= 567 and indent <= 851:
                 # пример использования слова
                 self.flishLine()
-                self.lineType = 2
+                self.line_type = 2
                 self.collectLine(text)
 
             elif indent >= 3510 and indent <= 4962:
@@ -172,12 +233,20 @@ class DocxReader():
         self.flishLine()
 
         #
-        self.file_out.close()
-        self.file_out_bad.close()
+        self.file_out_Fact.close()
+        self.file_out_FactTag.close()
+        self.file_out_Item.close()
+        self.file_out_ItemTag.close()
+
+        #
+        self.file_out_csv.close()
+        self.file_out_csv_good.close()
+        self.file_out_csv_bad.close()
 
 
 # Пример использования
 reader = DocxReader()
 file_in = "3875_sozdik.docx"
 file_out = "3875_sozdik"
-reader.read_docx_with_indents(file_in, file_out)
+dir_out = "."
+reader.read_docx_with_indents(file_in, dir_out)

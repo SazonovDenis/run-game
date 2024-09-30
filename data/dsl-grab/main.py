@@ -39,6 +39,8 @@ parserStr.nextParser = parserLex
 # Настройка парсера для казахского словаря
 parserDict.WAIT_TAG_M2_AS_TRASLATION = True
 parserDict.WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = True
+parserDict.KZ_DICT_EXAMPLE_MODE = True
+parserDict.KZ_DICT_POMETA_MODE = True
 
 ###
 with open(inFileName, 'r', encoding="utf-8") as inFile:
@@ -47,9 +49,7 @@ with open(inFileName, 'r', encoding="utf-8") as inFile:
         if line == '':
             break
 
-        # print("===")
-        # print("str: " + line, end="")
-        # print("---")
+        #
         parserStr.handle(line, None)
 
 ###

@@ -18,6 +18,7 @@ class ParserDict(ParserBase):
 
     currentString = ""
     currentStringRaw = ""
+    currentStringTags = []
 
     modePometa = False
 
@@ -34,6 +35,7 @@ class ParserDict(ParserBase):
     WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = False
     KZ_DICT_EXAMPLE_MODE = False
     KZ_DICT_POMETA_MODE = False
+    KZ_DICT_SEMICOLUMN_SEPARATOR_MODE = False
 
     def __init__(self):
         self.state = self.State.WAIT_WORD
@@ -253,46 +255,39 @@ class ParserDict(ParserBase):
         idiom["text"] = textUtils.cleanNumberLevel(text)
         self.token["idioms"].append(idiom)
 
-    def currentStringFlush(self):
-        currentString = self.currentString.replace("\xa0", " ")
-        currentString = currentString.replace("\t", " ")
-        currentString = currentString.strip()
-        if currentString == "":
-            return
-
+    def currentStringFlushInternal(self, currentString):
         if self.state == self.State.WAIT_WORD:
             self.createToken(currentString)
 
         elif self.state == self.State.WAIT_INFO:
             self.setTranscription(currentString)
 
-        elif self.state == self.State.COLLECT_TRANSLATE:
-            if self.KZ_DICT_EXAMPLE_MODE:
-                if self.token["text"] == "із":
-                    pass
-
-                if self.isLike_KzDict_Example(currentString):
-                    self.addExample(currentString)
-                elif self.isLike_KzDict_Translation(currentString):
-                    self.addTranslation(currentString)
-                else:
-                    currentString = currentString.strip(" -")
-                    if len(currentString) != 0:
-                        translations = self.token["translations"]
-                        if len(translations) != 0:
-                            last_translation = translations[len(translations) - 1]
-                            last_translation_examples = last_translation["examples"]
-                            if len(last_translation_examples) == 0:
-                                last_translation["text"] = last_translation["text"] + currentString
-                            else:
-                                last_translation_example = last_translation_examples[len(last_translation_examples) - 1]
-                                last_translation_example["text"] = last_translation_example["text"] + currentString
-                        else:
-                            self.onError(self.token, "unmached currentString: " + currentString)
-                            # self.addTranslation(currentString)
-
-            else:
+        if self.KZ_DICT_EXAMPLE_MODE:
+            if self.isLike_KzDict_Example(currentString):
+                self.addExample(currentString)
+            elif self.isLike_KzDict_Translation(currentString):
                 self.addTranslation(currentString)
+            else:
+                # строка ничинается с минуса "-" - это добавление текста
+                # к последнему переводу или примеру,
+                # без добавления нового перевода или примера
+                currentString = currentString.strip(" -")
+                if len(currentString) != 0:
+                    translations = self.token["translations"]
+                    if len(translations) != 0:
+                        last_translation = translations[len(translations) - 1]
+                        last_translation_examples = last_translation["examples"]
+                        if len(last_translation_examples) == 0:
+                            last_translation["text"] = last_translation["text"] + currentString
+                        else:
+                            last_translation_example = last_translation_examples[len(last_translation_examples) - 1]
+                            last_translation_example["text"] = last_translation_example["text"] + currentString
+                    else:
+                        self.onError(self.token, "unmached currentString: " + currentString)
+                        # self.addTranslation(currentString)
+
+        elif self.state == self.State.COLLECT_TRANSLATE:
+            self.addTranslation(currentString)
 
         elif self.state == self.State.COLLECT_EXAMPLE:
             self.addExample(currentString)
@@ -300,10 +295,29 @@ class ParserDict(ParserBase):
         elif self.state == self.State.COLLECT_IDIOMS:
             self.addIdiom(currentString)
 
+    def currentStringFlush(self):
+        currentString = self.currentString.replace("\xa0", " ")
+        currentString = currentString.replace("\t", " ")
+        currentString = currentString.strip()
+        if currentString == "":
+            return
+
+        #
+        if self.KZ_DICT_SEMICOLUMN_SEPARATOR_MODE:
+            currentStrings = currentString.strip("@").split("@")
+            if len(currentStrings) > 1:
+                for currentString in currentStrings:
+                    self.currentStringFlushInternal(currentString)
+            else:
+                self.currentStringFlushInternal(currentString)
+        else:
+            self.currentStringFlushInternal(currentString)
+
         #
         self.currentString = ""
         self.currentStringRaw = ""
         self.currentPometas = []
+        self.tagsReset()
 
     def currentStringCollect(self, text):
         self.currentStringRaw = self.currentStringRaw + text
@@ -330,6 +344,52 @@ class ParserDict(ParserBase):
         self.modePometa = False
         self.currentPometa = None
 
+    def tagsPush(self, text):
+        # [c red] -> c
+        if text.find(" ") != -1:
+            text = text.split(" ")[0]
+        #
+        self.currentStringTags.append(text)
+        pass
+
+    def tagsPop(self, text):
+        posCurr = len(self.currentStringTags) - 1
+
+        # Стек не пуст
+        if posCurr == -1:
+            raise Exception("len(self.currentStringTags) == 0")
+
+        # [c red] -> c
+        if text.find(" ") != -1:
+            text = text.split(" ")[0]
+
+        # Тэг m ищем на любую глубину и извлекаем из стека всё, что выше
+        if text == "m":
+            # Ищем вхождение
+            popToPop = posCurr
+            while popToPop >= 0 and self.currentStringTags[popToPop][0:1] != "m":
+                popToPop = popToPop - 1
+            # Нашли?
+            if popToPop == -1:
+                raise Exception("self.currentStringTags[posCurr] != " + text + ", currentStringTags[posCurr]: " + self.currentStringTags[posCurr])
+            # Извлекаем из стека остальное
+            while posCurr >= popToPop:
+                self.currentStringTags.pop()
+                posCurr = posCurr - 1
+            #
+            return
+
+        # Совпадение извлекаемого имени
+        if self.currentStringTags[posCurr] != text:
+            return
+
+        # Извлекаем
+        self.currentStringTags.pop()
+
+    def tagsReset(self):
+        self.currentStringTags = []
+        pass
+
     def handle(self, text, tokenType):
 
         if tokenType == "new-line":
@@ -339,7 +399,18 @@ class ParserDict(ParserBase):
             #
             return
 
+        if self.KZ_DICT_SEMICOLUMN_SEPARATOR_MODE:
+            # Есть точка с запятой в середине строки?
+            if text.find(";") != -1:
+                # Точка с запятой считается разделителем, только внутри тэга тэга m1, m2 и т.д.
+                if len(self.currentStringTags) == 1 and self.currentStringTags[0] == "m2":
+                    # Добавляем сильный разделитель (для последующей обработки)
+                    text = text.replace(";", "@")
+                pass
+
         if tokenType == "tag":
+
+            self.tagsPush(text)
 
             if text == "p":
                 self.startPometa()
@@ -410,6 +481,8 @@ class ParserDict(ParserBase):
             return
 
         if tokenType == "tag-close":
+
+            self.tagsPop(text)
 
             if text == "p":
                 #

@@ -39,6 +39,7 @@ def convert(inFileName, outDirName, tagValue_word_lang, tagValue_translate_direc
         parserDict.WAIT_TAG_DIMGRAY_AS_EXAMPLE_SIGN = True
         parserDict.KZ_DICT_EXAMPLE_MODE = True
         parserDict.KZ_DICT_POMETA_MODE = True
+        parserDict.KZ_DICT_SEMICOLUMN_SEPARATOR_MODE = True
 
     ###
     with open(inFileName, 'r', encoding="utf-8") as inFile:
@@ -47,9 +48,7 @@ def convert(inFileName, outDirName, tagValue_word_lang, tagValue_translate_direc
             if line == '':
                 break
 
-            # print("===")
-            # print("str: " + line, end="")
-            # print("---")
+            #
             parserStr.handle(line, None)
 
     ###

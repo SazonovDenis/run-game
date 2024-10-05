@@ -190,6 +190,20 @@ export default {
         },
 
         makeValueExample(valueExample) {
+            let valueExampleArr = valueExample.split("-")
+            if (valueExampleArr.length === 2) {
+                let valueExampleSpelling = valueExampleArr[0]
+                let valueExampleTranslate = valueExampleArr[1]
+                valueExample = valueExampleSpelling + " &ndash; <span class='rgm-task-value-example-translate'>" + valueExampleTranslate + "</span>"
+            } else {
+                valueExampleArr = valueExample.split("--")
+                if (valueExampleArr.length === 2) {
+                    let valueExampleSpelling = valueExampleArr[0]
+                    let valueExampleTranslate = valueExampleArr[1]
+                    valueExample = valueExampleSpelling + " &ndash; <span class='rgm-task-value-example-translate'>" + valueExampleTranslate + "</span>"
+                }
+            }
+
             let valueSpellingWrapped = "<span class='rgm-task-value-example-spelling'>" + this.item.valueSpelling + "</span>"
             return valueExample.replace("~", valueSpellingWrapped)
         },

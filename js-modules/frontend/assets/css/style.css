@@ -43,6 +43,10 @@
   font-weight: bold;
 }
 
+.rgm-task-value-example-translate {
+  color: #0a4fa2;
+}
+
 .rgm-link {
   text-decoration: underline;
   text-decoration-style: solid;

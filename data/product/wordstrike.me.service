@@ -7,9 +7,9 @@ After=syslog.target network-online.target
 [Service]
 Type=simple
 ExecStart=/home/wordstrike.me/product/app-run-serve.sh
-# Restart=on-failure
-# RestartSec=10
-KillMode=process
+Restart=always
+RestartSec=10
+KillMode=control-group
 
 [Install]
 WantedBy=multi-user.target

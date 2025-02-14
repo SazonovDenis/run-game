@@ -1,105 +1,109 @@
 <template>
 
+    <div>
 
-    <template v-if="this.splitLinkType === true">
+        <template v-if="this.splitLinkType === true">
 
-        <q-list v-if="usrsLength > 0">
-
-
-            <template v-for="(usrsLikType) in usrsByLinkType">
-
-                <q-item>
-
-                    <q-item-section class="q-mt-md">
-                        {{ dictLinkType[usrsLikType[0].linkType] }}
-                    </q-item-section>
+            <q-list v-if="usrsLength > 0">
 
 
-                </q-item>
+                <template v-for="(usrsLikType) in usrsByLinkType">
 
-                <q-separator/>
+                    <q-item>
 
-                <template v-for="usr in usrsLikType">
+                        <q-item-section class="q-mt-md">
+                            {{ dictLinkType[usrsLikType[0].linkType] }}
+                        </q-item-section>
+
+
+                    </q-item>
+
+                    <q-separator/>
+
+                    <template v-for="usr in usrsLikType">
+
+                        <LinkItem :usr="usr"/>
+
+                    </template>
+
+                </template>
+
+
+                <template v-if="usrsTo.length > 0">
+
+                    <q-item>
+
+                        <q-item-section class="q-mt-md">
+                            Запросы на добавление
+                        </q-item-section>
+
+                    </q-item>
+
+                    <q-separator/>
+
+                    <template v-for="usr in usrsTo">
+
+                        <LinkItem :usr="usr"/>
+
+                    </template>
+
+                </template>
+
+
+                <template v-if="usrsFrom.length > 0">
+
+                    <q-item>
+
+                        <q-item-section class="q-mt-md">
+                            Ожидают ответа
+                        </q-item-section>
+
+                    </q-item>
+
+                    <q-separator/>
+
+                    <template v-for="usr in usrsFrom">
+
+                        <LinkItem :usr="usr"/>
+
+                    </template>
+
+                </template>
+
+
+            </q-list>
+
+
+            <div v-else
+                 class="q-pt-md rgm-state-text">
+                {{ messageNoItems }}
+            </div>
+
+        </template>
+
+
+        <template v-if="this.splitLinkType === false">
+
+            <q-list v-if="usrsLength > 0">
+
+                <template v-for="usr in usrsOther">
 
                     <LinkItem :usr="usr"/>
 
                 </template>
 
-            </template>
+            </q-list>
 
 
-            <template v-if="usrsTo.length > 0">
+            <div v-else
+                 class="q-pt-md rgm-state-text">
+                {{ messageNoItems }}
+            </div>
 
-                <q-item>
-
-                    <q-item-section class="q-mt-md">
-                        Запросы на добавление
-                    </q-item-section>
-
-                </q-item>
-
-                <q-separator/>
-
-                <template v-for="usr in usrsTo">
-
-                    <LinkItem :usr="usr"/>
-
-                </template>
-
-            </template>
+        </template>
 
 
-            <template v-if="usrsFrom.length > 0">
-
-                <q-item>
-
-                    <q-item-section class="q-mt-md">
-                        Ожидают ответа
-                    </q-item-section>
-
-                </q-item>
-
-                <q-separator/>
-
-                <template v-for="usr in usrsFrom">
-
-                    <LinkItem :usr="usr"/>
-
-                </template>
-
-            </template>
-
-
-        </q-list>
-
-
-        <div v-else
-             class="q-pt-md rgm-state-text">
-            {{ messageNoItems }}
-        </div>
-
-    </template>
-
-
-    <template v-if="this.splitLinkType === false">
-
-        <q-list v-if="usrsLength > 0">
-
-            <template v-for="usr in usrsOther">
-
-                <LinkItem :usr="usr"/>
-
-            </template>
-
-        </q-list>
-
-
-        <div v-else
-             class="q-pt-md rgm-state-text">
-            {{ messageNoItems }}
-        </div>
-
-    </template>
+    </div>
 
 
 </template>

@@ -28,7 +28,7 @@
         <q-scroll-area class="q-scroll-area" style="height: calc(100% - 8rem);">
 
 
-            <q-list>
+            <q-list class="max-width">
 
                 <template v-for="plan in plans">
 
@@ -433,3 +433,13 @@ export default {
 }
 
 </script>
+
+
+<style>
+
+.max-width {
+    max-width: 50rem;
+    margin: auto;
+}
+
+</style>

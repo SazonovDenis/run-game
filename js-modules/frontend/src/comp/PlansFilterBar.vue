@@ -27,6 +27,7 @@
         <div class="row q-mr-sm q-gutter-x-xs">
 
             <q-btn
+                style="min-width: 3rem;"
                 @click="toggleFavourite()"
                 :color="this.favourite !== true ? 'green-9' : 'green'"
                 :outline="this.favourite !== true"
@@ -40,6 +41,7 @@
             />
 
             <q-btn
+                style="min-width: 3rem;"
                 @click="toggleTag_TrueFalseNull('word-sound')" color="orange-10"
                 :outline="getOutline_WordSound()"
                 :icon="getIcon_WordSound()"

@@ -48,6 +48,7 @@
 
                 <LinkList
                     v-if="searchTextShouldLoad"
+                    class="max-width"
                     :usrs="usrsFind"
                     :splitLinkType="false"
                     :messageNoItems="searchTextLoading ? '' : 'Пользователь не найден'"
@@ -103,6 +104,7 @@
 
                 <LinkList
                     v-if="dataLoaded"
+                    class="max-width"
                     :usrs="usrs"
                     :splitLinkType="false"
                     :linkTypes="[2000]"
@@ -121,14 +123,19 @@
 
                 <LinkList
                     v-if="dataLoaded"
+                    class="max-width"
                     :usrs="usrs"
                     :splitLinkType="true"
                     :linkTypes="[1001,1002,1003,1004,1005]"
                     messageNoItems="У вас пока нет связей"
                 />
 
-                <div class="q-ml-md q-mt-lg q-mb-xl q-mb-xs rgm-link-soft"
-                     @click="setFrameMode_list_blocked">Заблокированные пользователи
+                <div class="max-width">
+
+                    <div class="q-ml-md q-mt-lg q-mb-xl q-mb-xs rgm-link-soft"
+                         @click="setFrameMode_list_blocked">Заблокированные пользователи
+                    </div>
+
                 </div>
 
             </q-scroll-area>
@@ -381,6 +388,11 @@ export default {
     text-align: center;
     color: #6c6c6c;
     user-select: all;
+}
+
+.max-width {
+    max-width: 50rem;
+    margin: auto;
 }
 
 </style>

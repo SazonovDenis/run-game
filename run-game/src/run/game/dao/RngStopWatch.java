@@ -117,7 +117,7 @@ public class RngStopWatch {
     }
 
     /**
-     * Остановить таймер.
+     * Обнулить таймер.
      * Существующий запущенный таймер - продолжит работать, но сбросится.
      * Существующий стоящий таймер - продолжит стоять.
      * Таймер не существует - вызов метода игнорируется.
@@ -125,7 +125,7 @@ public class RngStopWatch {
      * @param timerName имя таймера
      * @return данные таймера или null, если таймера нет
      */
-    public IVariantMap clear(String timerName) {
+    public IVariantMap reset(String timerName) {
         IVariantMap metric = stopWatchItems.get(timerName);
 
         // Таймер есть и он запущен - останавливаем
@@ -135,6 +135,16 @@ public class RngStopWatch {
 
         //
         return metric;
+    }
+
+    /**
+     * Удалить таймер.
+     * Таймер не существует - вызов метода игнорируется.
+     *
+     * @param timerName имя таймера
+     */
+    public void delete(String timerName) {
+        stopWatchItems.remove(timerName);
     }
 
     /**
